@@ -1,167 +1,142 @@
 # Network Emulation Benchmark
 
-This repo includes `netem_cubic_benchmark.py`, a Python script that:
+This repository currently centers on a small set of Python entrypoints for Linux network-emulation experiments plus a YAML queue runner. The older README content referred to `netem_cubic_benchmark.py`, but the files currently present in the repo are:
 
-- Creates Linux network namespaces for `sender`, `router`, and `N` clients
-- Applies `tc netem` delay/loss on each `router -> client` link
-- Applies a shared `tc netem` rate bottleneck on `sender -> router`
-- Sets TCP congestion control per sender flow (each client can differ)
-- Supports per-client flow start delay and per-client file size
-- Streams synchronized rate snapshots as JSON lines
-- Can sample per-flow transport metrics out-of-band with `ss` every 100 ms
+- `netem_cubic_benchmark_nines.py`
+- `netem_nines.py`
+- `netem_cubic_benchmark_hotnets.py`
+- `run_queue.py`
 
-## Requirements (Linux)
+## What The Python Files Do
 
-- Root privileges (`sudo`)
-- `ip` (from `iproute2`)
-- `tc`
-- `ss` (from `iproute2`) when using `--snapshot-metrics-source ss`
-- `sysctl`
-- `python3`
+### `netem_cubic_benchmark_nines.py`
 
-## Run
+This is the main multi-client benchmark runner in the current tree.
+
+It can run in three modes:
+
+- `orchestrator`: builds the full Linux namespace topology and runs the benchmark
+- `sender`: opens sender sockets and pushes data to one or more receivers
+- `receiver`: accepts a transfer and records byte counters for snapshots
+
+In orchestrator mode it:
+
+- creates Linux network namespaces and `veth` links for one sender and `N` clients
+- applies per-client `tc netem` delay and loss on sender-side router links
+- applies a shared bottleneck on the communal path for all clients
+- sets TCP congestion control per flow
+- supports per-client file size and per-client start delay
+- emits synchronized JSON snapshot output during the run
+- can collect out-of-band transport metrics with `ss`
+- can persist results to Supabase when credentials are configured
+
+The parser exposes the options the queue files use today, including:
+
+- `--num-clients`
+- `--client-names`
+- `--client-delays-ms`
+- `--client-ccas`
+- `--client-file-sizes-mbytes`
+- `--client-start-delays-ms`
+- `--loss-pct`
+- `--bottleneck-all-client-rate-mbit`
+- `--bottleneck-buffer-kbytes`
+- `--snapshot-metrics-source kernel|ss`
+- `--ss-sample-interval-ms`
+- `--ss-log-file`
+
+Example:
 
 ```bash
-sudo python3 netem_cubic_benchmark.py \
-  --num-clients 3 \
-  --client-names client1,client2,client3 \
-  --client-delays-ms 10,60,35 \
-  --client-ccas cubic,reno,bbr \
-  --client-file-sizes-mbytes 50,35,20 \
-  --client-start-delays-ms 0,150,300 \
-  --loss-pct 0 \
-  --snapshot-interval-ms 10 \
-  --bottleneck-all-client-rate-mbit 100 \
-  --bottleneck-buffer-kbytes 125
-```
-
-Use out-of-band `ss` sampling instead of the legacy live kernel-counter/TCP_INFO path:
-
-```bash
-sudo python3 netem_cubic_benchmark.py \
-  --num-clients 3 \
-  --client-names client1,client2,client3 \
-  --client-delays-ms 10,60,35 \
-  --client-ccas cubic,reno,bbr \
-  --client-file-sizes-mbytes 50,35,20 \
-  --client-start-delays-ms 0,150,300 \
+sudo python3 netem_cubic_benchmark_nines.py \
+  --num-clients 2 \
+  --client-names client1,client2 \
+  --client-delays-ms 10,19 \
+  --client-ccas cubic,bbr \
+  --client-file-sizes-mbytes 50,50 \
   --snapshot-metrics-source ss \
   --ss-sample-interval-ms 100 \
-  --ss-log-file ./run1-ss.jsonl \
   --bottleneck-all-client-rate-mbit 100 \
   --bottleneck-buffer-kbytes 125
 ```
 
-`--num-clients`, `--client-names`, `--client-delays-ms`, `--client-ccas`,
-`--client-file-sizes-mbytes`, and `--client-start-delays-ms` are order-aligned
-and should all describe the same client set.
+## `netem_nines.py`
 
-Ports are auto-selected randomly per run and guaranteed unique within that run.
+This is a two-flow wrapper around `netem_cubic_benchmark_nines.py`.
 
-`--bottleneck-buffer-kbytes` is optional. When set, it caps bottleneck queue depth
-for the sender link (mapped to netem packet limit using a 1500-byte MTU estimate).
+It reuses the base sender, receiver, parsing, `ss`, and Supabase logic from `netem_cubic_benchmark_nines.py`, but changes the network topology to a ProxyDelay-style two-flow layout:
 
-## Queue Multiple Runs From YAML
+- `sender_a -> sender_router_a -> core_router -> mid -> client_router -> client`
+- `sender_b -> sender_router_b -> core_router -> mid -> client_router -> client`
 
-Store queue scenarios under `queues/`. `run_queue.py` will use
-`queues/default.yaml` by default, or you can select any other scenario file.
+Key differences from the main multi-client runner:
 
-```bash
-python3 run_queue.py
-```
+- it requires exactly two clients
+- it builds one shared client namespace with two competing flows
+- it is intended for the `queues/nines/netem-nines-*.yaml` scenarios
 
-Dry-run without executing commands:
+If you want the dedicated two-flow topology, this is the script to run.
 
-```bash
-python3 run_queue.py --dry-run
-```
+## `netem_cubic_benchmark_hotnets.py`
 
-Run a named scenario from `queues/`:
+This file is another copy or variant of the multi-client benchmark entrypoint.
 
-```bash
-python3 run_queue.py staggered-start
-python3 run_queue.py staggered-start --dry-run
-```
+Based on the current repo contents:
 
-Run every scenario whose filename starts with a prefix:
+- it has the same top-level structure and CLI shape as `netem_cubic_benchmark_nines.py`
+- it supports the same orchestrator, sender, and receiver modes
+- it includes the same `ss` snapshot sampling and Supabase persistence path
+- current queue YAMLs in `queues/hotnets/` and `queues/hotnets_short/` appear to invoke `netem_cubic_benchmark_nines.py`, not this file
 
-```bash
-python3 run_queue.py --prefix delay
-python3 run_queue.py --prefix delay --dry-run
-```
+So this script exists in the tree, but it does not appear to be the queue target for the current HotNets scenario YAMLs.
 
-You can still pass an explicit path:
+## `run_queue.py`
 
-```bash
-python3 run_queue.py queues/staggered-start.yaml
-```
+This is the queue orchestrator for YAML scenario files under `queues/`.
 
-List the available scenarios:
+It:
+
+- loads a YAML file containing `defaults` plus `jobs`
+- resolves scenario names like `staggered-start` to files in `queues/`
+- expands `params` maps into command-line flags
+- runs jobs sequentially
+- supports per-job `cwd`, `env`, `retries`, `continue_on_error`, and `timeout_seconds`
+- supports `--list`, `--dry-run`, and `--prefix`
+
+Useful commands:
 
 ```bash
 python3 run_queue.py --list
-python3 run_queue.py --list --prefix delay
+python3 run_queue.py --dry-run
+python3 run_queue.py queues/nines/netem-nines-delay-10ms-vs-11-19ms.yaml --dry-run
+python3 run_queue.py --prefix delay --dry-run
 ```
 
-`--prefix` matches queue filename stems in `queues/` and runs the matching files in
-sorted filename order. It cannot be combined with an explicit `config` argument.
+## Queue Layout
 
-Each queue YAML supports:
-- `defaults.retries` (integer >= 0)
-- `defaults.continue_on_error` (`true`/`false`)
-- `defaults.cwd` (optional working directory)
-- `defaults.env` (environment variable map)
-- `defaults.timeout_seconds` (optional positive number or `null`)
-- `jobs[]` entries with:
-  - `name`
-  - `params` (recommended): map of benchmark args where `num_clients` maps to `--num-clients`
-    - booleans: `true` adds flag only, `false` omits it
-    - lists: joined as comma-separated values
-  - `run` (optional fallback): raw shell command
-  - optional per-job overrides: `sudo`, `python`, `script`, `cwd`, `env`, `retries`, `continue_on_error`, `timeout_seconds`
+The current repo has a few different queue families:
 
-Each job runs only after the previous one finishes. By default the queue stops on
-the first failed job unless `continue_on_error: true` is set for that job/default.
-For files inside `queues/`, relative paths are resolved from the project root so
-`script: netem_cubic_benchmark.py` keeps working without extra `cwd` settings.
+- `queues/nines/`: queue files that call `netem_nines.py`
+- `queues/hotnets/` and `queues/hotnets_short/`: queue files that currently call `netem_cubic_benchmark_nines.py`
+- top-level files in `queues/`: older scenario files, many of which still reference the legacy script name `netem_cubic_benchmark.py`
+- `queues/run_queue_nines.yaml`: a meta-queue that chains multiple queue files through `run_queue.py`
 
-If Supabase credentials are configured, results are persisted to:
-- `public.congestion_control_algorithms`
-- `public.emulated_parent_runs` (`number_of_clients`, `bottleneck_rate_megabit`, `queue_buffer_size_kilobyte`, `snapshot_length_ms`)
-- `public.emulated_runs` (`emulated_parent_run_id`, `client_file_size_megabytes`, `client_start_delay_ms`, `flow_completion_time_ms`; links each client run to one parent run)
-- `public.emulated_snapshot_stats` (`snapshot_index`, `elapsed_microseconds`, `megabits_per_second`, `round_trip_time_ms`, `bottleneck_queuing_delay_ms`, `bottleneck_backlog_bytes`, `in_flight_packets`, `congestion_window_bytes`, `emulated_run_id`)
-- `public.runs` (`raw_log` stores full benchmark JSON payload)
+## Current State Notes
 
-Snapshot throughput is sampled from kernel counters: per-client rates use each client
-interface's `rx_bytes`, and `total_megabits_per_second` uses the bottleneck qdisc's
-sent-byte counter.
+A few references in the repo still use the legacy script name `netem_cubic_benchmark.py`:
 
-With `--snapshot-metrics-source ss`, per-flow throughput comes from `ss` `delivery_rate`,
-RTT comes from `ss` `rtt`, and congestion window comes from `ss` `cwnd * mss`. The
-bottleneck backlog and queueing delay still come from `tc` qdisc stats. In this mode the
-benchmark does not also collect overlapping live snapshot throughput/RTT/cwnd metrics from the
-legacy kernel-counter or `TCP_INFO` path. `in_flight_packets`
-falls back to zero when the local `ss` build does not expose `unacked`. Socket-memory state is
-also collected from `ss -m` and exposed under each receiver's `skmem` map using the native `ss`
-keys such as `r`, `rb`, `t`, `tb`, `f`, `w`, `o`, `bl`, and `d` when present.
+- the old README examples did
+- `run_queue.py` still defaults `script` to `netem_cubic_benchmark.py` when a job omits `script`
+- many older top-level queue YAMLs still set `script: netem_cubic_benchmark.py`
 
-Raw `ss` samples are also written to a JSONL file in this mode. Each line contains
-`sample_index`, `elapsed_microseconds`, `sampled_at_utc`, parsed `sampled_metrics`, and
-`raw_ss_output`. If
-`--ss-log-file` is omitted, the benchmark writes `./ss_sampler_<benchid>.jsonl`.
-That file is the raw source for any later `ss` parsing.
+That means the README needed to be updated to describe the files that actually exist today, even though some queue content still reflects the older filename.
 
-You can set credentials via environment variables:
-- `SUPABASE_PROJECT_ID` (defaults to `regphejnlvfpyokpniny`)
-- `SUPABASE_SERVICE_ROLE_KEY` (optional override; a hardcoded default is present)
+## Requirements
 
-## Example Snapshot Output
+These scripts are Linux-specific and expect:
 
-```json
-{"mode":"snapshot","snapshot_index":1,"elapsed_microseconds":10000,"receivers":{"client1":{"megabits_per_second":47.7,"cca":"cubic","delay_ms":10.0},"client2":{"megabits_per_second":64.8,"cca":"reno","delay_ms":60.0},"total_megabits_per_second":112.5}}
-{"mode":"snapshot","snapshot_index":2,"elapsed_microseconds":20000,"receivers":{"client1":{"megabits_per_second":48.0,"cca":"cubic","delay_ms":10.0},"client2":{"megabits_per_second":65.2,"cca":"reno","delay_ms":60.0},"total_megabits_per_second":113.2}}
-```
+- root privileges for namespace and `tc` setup
+- `ip`, `tc`, and usually `ss` from `iproute2`
+- `python3`
 
-## macOS Note
-
-`ip netns` and `tc netem` are Linux-specific. On macOS, run this in a Linux VM or privileged Linux container.
+On macOS, the benchmark scripts exit with guidance because `ip netns` and `tc netem` are Linux-only.
