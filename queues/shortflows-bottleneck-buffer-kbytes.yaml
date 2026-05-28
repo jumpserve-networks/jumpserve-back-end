@@ -1,0 +1,103 @@
+defaults:
+  timeout_seconds: 120
+
+jobs:
+  - name: shortflows-buffer-016kbytes
+    sudo: true
+    script: netem_cubic_benchmark.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 20
+        - 20
+      client_ccas:
+        - cubic
+        - cubic
+      client_file_sizes_mbytes:
+        - 1
+        - 1
+      client_start_delays_ms:
+        - 0
+        - 0
+      loss_pct: 0
+      bottleneck_all_client_rate_mbit: 100
+      bottleneck_buffer_kbytes: 16
+      snapshot_interval_ms: 10
+
+  - name: shortflows-buffer-064kbytes
+    sudo: true
+    script: netem_cubic_benchmark.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 20
+        - 20
+      client_ccas:
+        - cubic
+        - cubic
+      client_file_sizes_mbytes:
+        - 1
+        - 1
+      client_start_delays_ms:
+        - 0
+        - 0
+      loss_pct: 0
+      bottleneck_all_client_rate_mbit: 100
+      bottleneck_buffer_kbytes: 64
+      snapshot_interval_ms: 10
+
+  - name: shortflows-buffer-256kbytes
+    sudo: true
+    script: netem_cubic_benchmark.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 20
+        - 20
+      client_ccas:
+        - cubic
+        - cubic
+      client_file_sizes_mbytes:
+        - 1
+        - 1
+      client_start_delays_ms:
+        - 0
+        - 0
+      loss_pct: 0
+      bottleneck_all_client_rate_mbit: 100
+      bottleneck_buffer_kbytes: 256
+      snapshot_interval_ms: 10
+
+  - name: shortflows-buffer-1024kbytes
+    sudo: true
+    script: netem_cubic_benchmark.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 20
+        - 20
+      client_ccas:
+        - cubic
+        - cubic
+      client_file_sizes_mbytes:
+        - 1
+        - 1
+      client_start_delays_ms:
+        - 0
+        - 0
+      loss_pct: 0
+      bottleneck_all_client_rate_mbit: 100
+      bottleneck_buffer_kbytes: 1024
+      snapshot_interval_ms: 10

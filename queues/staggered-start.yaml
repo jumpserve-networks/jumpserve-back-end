@@ -1,0 +1,32 @@
+defaults:
+  timeout_seconds: 240
+
+jobs:
+  - name: staggered-three-client-run
+    sudo: true
+    script: netem_cubic_benchmark.py
+    params:
+      num_clients: 3
+      client_names:
+        - client1
+        - client2
+        - client3
+      client_delays_ms:
+        - 10
+        - 35
+        - 60
+      client_ccas:
+        - cubic
+        - bbr
+        - reno
+      client_file_sizes_mbytes:
+        - 30
+        - 30
+        - 30
+      client_start_delays_ms:
+        - 0
+        - 150
+        - 300
+      loss_pct: 0.25
+      snapshot_interval_ms: 10
+      bottleneck_all_client_rate_mbit: 120

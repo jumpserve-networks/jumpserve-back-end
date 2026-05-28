@@ -1,0 +1,17 @@
+jobs:
+  - name: delay-10ms-to-19ms-10flows-all-bbr-10MB-bottleneck-bandwidth-500kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-to-19ms-10flows-all-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml
+  - name: delay-10ms-to-19ms-10flows-all-cubic-10MB-bottleneck-bandwidth-500kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-to-19ms-10flows-all-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml
+  - name: delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml
+  - name: delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-125kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-125kb-queue.yaml
+  - name: delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-500kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml
+  - name: delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-125kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-125kb-queue.yaml
+  - name: delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-500kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml
+  - name: delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-125kb-queue
+    run: python3 run_queue.py queues/_nines/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-125kb-queue.yaml

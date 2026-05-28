@@ -1,0 +1,518 @@
+defaults:
+  timeout_seconds: 120
+
+job_defaults: &job_defaults
+  sudo: true
+  script: netem_cubic_benchmark.py
+  params: &base_params
+    num_clients: 2
+    client_names: [client1, client2]
+    client_ccas: [cubic, cubic]
+    client_file_sizes_mbytes: [1, 1]
+    client_start_delays_ms: [0, 0]
+    loss_pct: 0
+    bottleneck_all_client_rate_mbit: 100
+    bottleneck_buffer_kbytes: 64
+    snapshot_interval_ms: 10
+
+jobs:
+  - <<: *job_defaults
+    name: shortflows-delay-000ms
+    params:
+      <<: *base_params
+      client_delays_ms: [0, 0]
+  - <<: *job_defaults
+    name: shortflows-delay-005ms
+    params:
+      <<: *base_params
+      client_delays_ms: [5, 5]
+  - <<: *job_defaults
+    name: shortflows-delay-010ms
+    params:
+      <<: *base_params
+      client_delays_ms: [10, 10]
+  - <<: *job_defaults
+    name: shortflows-delay-015ms
+    params:
+      <<: *base_params
+      client_delays_ms: [15, 15]
+  - <<: *job_defaults
+    name: shortflows-delay-020ms
+    params:
+      <<: *base_params
+      client_delays_ms: [20, 20]
+  - <<: *job_defaults
+    name: shortflows-delay-025ms
+    params:
+      <<: *base_params
+      client_delays_ms: [25, 25]
+  - <<: *job_defaults
+    name: shortflows-delay-030ms
+    params:
+      <<: *base_params
+      client_delays_ms: [30, 30]
+  - <<: *job_defaults
+    name: shortflows-delay-035ms
+    params:
+      <<: *base_params
+      client_delays_ms: [35, 35]
+  - <<: *job_defaults
+    name: shortflows-delay-040ms
+    params:
+      <<: *base_params
+      client_delays_ms: [40, 40]
+  - <<: *job_defaults
+    name: shortflows-delay-045ms
+    params:
+      <<: *base_params
+      client_delays_ms: [45, 45]
+  - <<: *job_defaults
+    name: shortflows-delay-050ms
+    params:
+      <<: *base_params
+      client_delays_ms: [50, 50]
+  - <<: *job_defaults
+    name: shortflows-delay-055ms
+    params:
+      <<: *base_params
+      client_delays_ms: [55, 55]
+  - <<: *job_defaults
+    name: shortflows-delay-060ms
+    params:
+      <<: *base_params
+      client_delays_ms: [60, 60]
+  - <<: *job_defaults
+    name: shortflows-delay-065ms
+    params:
+      <<: *base_params
+      client_delays_ms: [65, 65]
+  - <<: *job_defaults
+    name: shortflows-delay-070ms
+    params:
+      <<: *base_params
+      client_delays_ms: [70, 70]
+  - <<: *job_defaults
+    name: shortflows-delay-075ms
+    params:
+      <<: *base_params
+      client_delays_ms: [75, 75]
+  - <<: *job_defaults
+    name: shortflows-delay-080ms
+    params:
+      <<: *base_params
+      client_delays_ms: [80, 80]
+  - <<: *job_defaults
+    name: shortflows-delay-085ms
+    params:
+      <<: *base_params
+      client_delays_ms: [85, 85]
+  - <<: *job_defaults
+    name: shortflows-delay-090ms
+    params:
+      <<: *base_params
+      client_delays_ms: [90, 90]
+  - <<: *job_defaults
+    name: shortflows-delay-095ms
+    params:
+      <<: *base_params
+      client_delays_ms: [95, 95]
+  - <<: *job_defaults
+    name: shortflows-delay-100ms
+    params:
+      <<: *base_params
+      client_delays_ms: [100, 100]
+  - <<: *job_defaults
+    name: shortflows-delay-105ms
+    params:
+      <<: *base_params
+      client_delays_ms: [105, 105]
+  - <<: *job_defaults
+    name: shortflows-delay-110ms
+    params:
+      <<: *base_params
+      client_delays_ms: [110, 110]
+  - <<: *job_defaults
+    name: shortflows-delay-115ms
+    params:
+      <<: *base_params
+      client_delays_ms: [115, 115]
+  - <<: *job_defaults
+    name: shortflows-delay-120ms
+    params:
+      <<: *base_params
+      client_delays_ms: [120, 120]
+  - <<: *job_defaults
+    name: shortflows-delay-125ms
+    params:
+      <<: *base_params
+      client_delays_ms: [125, 125]
+  - <<: *job_defaults
+    name: shortflows-delay-130ms
+    params:
+      <<: *base_params
+      client_delays_ms: [130, 130]
+  - <<: *job_defaults
+    name: shortflows-delay-135ms
+    params:
+      <<: *base_params
+      client_delays_ms: [135, 135]
+  - <<: *job_defaults
+    name: shortflows-delay-140ms
+    params:
+      <<: *base_params
+      client_delays_ms: [140, 140]
+  - <<: *job_defaults
+    name: shortflows-delay-145ms
+    params:
+      <<: *base_params
+      client_delays_ms: [145, 145]
+  - <<: *job_defaults
+    name: shortflows-delay-150ms
+    params:
+      <<: *base_params
+      client_delays_ms: [150, 150]
+  - <<: *job_defaults
+    name: shortflows-delay-155ms
+    params:
+      <<: *base_params
+      client_delays_ms: [155, 155]
+  - <<: *job_defaults
+    name: shortflows-delay-160ms
+    params:
+      <<: *base_params
+      client_delays_ms: [160, 160]
+  - <<: *job_defaults
+    name: shortflows-delay-165ms
+    params:
+      <<: *base_params
+      client_delays_ms: [165, 165]
+  - <<: *job_defaults
+    name: shortflows-delay-170ms
+    params:
+      <<: *base_params
+      client_delays_ms: [170, 170]
+  - <<: *job_defaults
+    name: shortflows-delay-175ms
+    params:
+      <<: *base_params
+      client_delays_ms: [175, 175]
+  - <<: *job_defaults
+    name: shortflows-delay-180ms
+    params:
+      <<: *base_params
+      client_delays_ms: [180, 180]
+  - <<: *job_defaults
+    name: shortflows-delay-185ms
+    params:
+      <<: *base_params
+      client_delays_ms: [185, 185]
+  - <<: *job_defaults
+    name: shortflows-delay-190ms
+    params:
+      <<: *base_params
+      client_delays_ms: [190, 190]
+  - <<: *job_defaults
+    name: shortflows-delay-195ms
+    params:
+      <<: *base_params
+      client_delays_ms: [195, 195]
+  - <<: *job_defaults
+    name: shortflows-delay-200ms
+    params:
+      <<: *base_params
+      client_delays_ms: [200, 200]
+  - <<: *job_defaults
+    name: shortflows-delay-205ms
+    params:
+      <<: *base_params
+      client_delays_ms: [205, 205]
+  - <<: *job_defaults
+    name: shortflows-delay-210ms
+    params:
+      <<: *base_params
+      client_delays_ms: [210, 210]
+  - <<: *job_defaults
+    name: shortflows-delay-215ms
+    params:
+      <<: *base_params
+      client_delays_ms: [215, 215]
+  - <<: *job_defaults
+    name: shortflows-delay-220ms
+    params:
+      <<: *base_params
+      client_delays_ms: [220, 220]
+  - <<: *job_defaults
+    name: shortflows-delay-225ms
+    params:
+      <<: *base_params
+      client_delays_ms: [225, 225]
+  - <<: *job_defaults
+    name: shortflows-delay-230ms
+    params:
+      <<: *base_params
+      client_delays_ms: [230, 230]
+  - <<: *job_defaults
+    name: shortflows-delay-235ms
+    params:
+      <<: *base_params
+      client_delays_ms: [235, 235]
+  - <<: *job_defaults
+    name: shortflows-delay-240ms
+    params:
+      <<: *base_params
+      client_delays_ms: [240, 240]
+  - <<: *job_defaults
+    name: shortflows-delay-245ms
+    params:
+      <<: *base_params
+      client_delays_ms: [245, 245]
+  - <<: *job_defaults
+    name: shortflows-delay-250ms
+    params:
+      <<: *base_params
+      client_delays_ms: [250, 250]
+  - <<: *job_defaults
+    name: shortflows-delay-255ms
+    params:
+      <<: *base_params
+      client_delays_ms: [255, 255]
+  - <<: *job_defaults
+    name: shortflows-delay-260ms
+    params:
+      <<: *base_params
+      client_delays_ms: [260, 260]
+  - <<: *job_defaults
+    name: shortflows-delay-265ms
+    params:
+      <<: *base_params
+      client_delays_ms: [265, 265]
+  - <<: *job_defaults
+    name: shortflows-delay-270ms
+    params:
+      <<: *base_params
+      client_delays_ms: [270, 270]
+  - <<: *job_defaults
+    name: shortflows-delay-275ms
+    params:
+      <<: *base_params
+      client_delays_ms: [275, 275]
+  - <<: *job_defaults
+    name: shortflows-delay-280ms
+    params:
+      <<: *base_params
+      client_delays_ms: [280, 280]
+  - <<: *job_defaults
+    name: shortflows-delay-285ms
+    params:
+      <<: *base_params
+      client_delays_ms: [285, 285]
+  - <<: *job_defaults
+    name: shortflows-delay-290ms
+    params:
+      <<: *base_params
+      client_delays_ms: [290, 290]
+  - <<: *job_defaults
+    name: shortflows-delay-295ms
+    params:
+      <<: *base_params
+      client_delays_ms: [295, 295]
+  - <<: *job_defaults
+    name: shortflows-delay-300ms
+    params:
+      <<: *base_params
+      client_delays_ms: [300, 300]
+  - <<: *job_defaults
+    name: shortflows-delay-305ms
+    params:
+      <<: *base_params
+      client_delays_ms: [305, 305]
+  - <<: *job_defaults
+    name: shortflows-delay-310ms
+    params:
+      <<: *base_params
+      client_delays_ms: [310, 310]
+  - <<: *job_defaults
+    name: shortflows-delay-315ms
+    params:
+      <<: *base_params
+      client_delays_ms: [315, 315]
+  - <<: *job_defaults
+    name: shortflows-delay-320ms
+    params:
+      <<: *base_params
+      client_delays_ms: [320, 320]
+  - <<: *job_defaults
+    name: shortflows-delay-325ms
+    params:
+      <<: *base_params
+      client_delays_ms: [325, 325]
+  - <<: *job_defaults
+    name: shortflows-delay-330ms
+    params:
+      <<: *base_params
+      client_delays_ms: [330, 330]
+  - <<: *job_defaults
+    name: shortflows-delay-335ms
+    params:
+      <<: *base_params
+      client_delays_ms: [335, 335]
+  - <<: *job_defaults
+    name: shortflows-delay-340ms
+    params:
+      <<: *base_params
+      client_delays_ms: [340, 340]
+  - <<: *job_defaults
+    name: shortflows-delay-345ms
+    params:
+      <<: *base_params
+      client_delays_ms: [345, 345]
+  - <<: *job_defaults
+    name: shortflows-delay-350ms
+    params:
+      <<: *base_params
+      client_delays_ms: [350, 350]
+  - <<: *job_defaults
+    name: shortflows-delay-355ms
+    params:
+      <<: *base_params
+      client_delays_ms: [355, 355]
+  - <<: *job_defaults
+    name: shortflows-delay-360ms
+    params:
+      <<: *base_params
+      client_delays_ms: [360, 360]
+  - <<: *job_defaults
+    name: shortflows-delay-365ms
+    params:
+      <<: *base_params
+      client_delays_ms: [365, 365]
+  - <<: *job_defaults
+    name: shortflows-delay-370ms
+    params:
+      <<: *base_params
+      client_delays_ms: [370, 370]
+  - <<: *job_defaults
+    name: shortflows-delay-375ms
+    params:
+      <<: *base_params
+      client_delays_ms: [375, 375]
+  - <<: *job_defaults
+    name: shortflows-delay-380ms
+    params:
+      <<: *base_params
+      client_delays_ms: [380, 380]
+  - <<: *job_defaults
+    name: shortflows-delay-385ms
+    params:
+      <<: *base_params
+      client_delays_ms: [385, 385]
+  - <<: *job_defaults
+    name: shortflows-delay-390ms
+    params:
+      <<: *base_params
+      client_delays_ms: [390, 390]
+  - <<: *job_defaults
+    name: shortflows-delay-395ms
+    params:
+      <<: *base_params
+      client_delays_ms: [395, 395]
+  - <<: *job_defaults
+    name: shortflows-delay-400ms
+    params:
+      <<: *base_params
+      client_delays_ms: [400, 400]
+  - <<: *job_defaults
+    name: shortflows-delay-405ms
+    params:
+      <<: *base_params
+      client_delays_ms: [405, 405]
+  - <<: *job_defaults
+    name: shortflows-delay-410ms
+    params:
+      <<: *base_params
+      client_delays_ms: [410, 410]
+  - <<: *job_defaults
+    name: shortflows-delay-415ms
+    params:
+      <<: *base_params
+      client_delays_ms: [415, 415]
+  - <<: *job_defaults
+    name: shortflows-delay-420ms
+    params:
+      <<: *base_params
+      client_delays_ms: [420, 420]
+  - <<: *job_defaults
+    name: shortflows-delay-425ms
+    params:
+      <<: *base_params
+      client_delays_ms: [425, 425]
+  - <<: *job_defaults
+    name: shortflows-delay-430ms
+    params:
+      <<: *base_params
+      client_delays_ms: [430, 430]
+  - <<: *job_defaults
+    name: shortflows-delay-435ms
+    params:
+      <<: *base_params
+      client_delays_ms: [435, 435]
+  - <<: *job_defaults
+    name: shortflows-delay-440ms
+    params:
+      <<: *base_params
+      client_delays_ms: [440, 440]
+  - <<: *job_defaults
+    name: shortflows-delay-445ms
+    params:
+      <<: *base_params
+      client_delays_ms: [445, 445]
+  - <<: *job_defaults
+    name: shortflows-delay-450ms
+    params:
+      <<: *base_params
+      client_delays_ms: [450, 450]
+  - <<: *job_defaults
+    name: shortflows-delay-455ms
+    params:
+      <<: *base_params
+      client_delays_ms: [455, 455]
+  - <<: *job_defaults
+    name: shortflows-delay-460ms
+    params:
+      <<: *base_params
+      client_delays_ms: [460, 460]
+  - <<: *job_defaults
+    name: shortflows-delay-465ms
+    params:
+      <<: *base_params
+      client_delays_ms: [465, 465]
+  - <<: *job_defaults
+    name: shortflows-delay-470ms
+    params:
+      <<: *base_params
+      client_delays_ms: [470, 470]
+  - <<: *job_defaults
+    name: shortflows-delay-475ms
+    params:
+      <<: *base_params
+      client_delays_ms: [475, 475]
+  - <<: *job_defaults
+    name: shortflows-delay-480ms
+    params:
+      <<: *base_params
+      client_delays_ms: [480, 480]
+  - <<: *job_defaults
+    name: shortflows-delay-485ms
+    params:
+      <<: *base_params
+      client_delays_ms: [485, 485]
+  - <<: *job_defaults
+    name: shortflows-delay-490ms
+    params:
+      <<: *base_params
+      client_delays_ms: [490, 490]
+  - <<: *job_defaults
+    name: shortflows-delay-495ms
+    params:
+      <<: *base_params
+      client_delays_ms: [495, 495]

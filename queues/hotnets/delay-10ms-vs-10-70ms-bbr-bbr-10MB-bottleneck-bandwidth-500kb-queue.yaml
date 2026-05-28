@@ -1,0 +1,230 @@
+defaults:
+  timeout_seconds: 240
+  cwd: ../..
+
+jobs:
+  - name: delay-010ms-vs-011ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 11
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-011ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-012ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 12
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-012ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-013ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 13
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-013ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-014ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 14
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-014ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-015ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 15
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-015ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-016ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 16
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-016ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-017ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 17
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-017ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-018ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 18
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-018ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125
+  - name: delay-010ms-vs-019ms
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 19
+      client_ccas:
+        - bbr
+        - bbr
+      client_file_sizes_mbytes:
+        - 100
+        - 100
+      client_start_delays_ms:
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-vs-019ms-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125

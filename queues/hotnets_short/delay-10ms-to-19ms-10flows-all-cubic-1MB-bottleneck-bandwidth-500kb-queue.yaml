@@ -1,0 +1,70 @@
+defaults:
+  timeout_seconds: 240
+  cwd: ../..
+
+jobs:
+  - name: delay-010ms-to-019ms-10flows
+    sudo: true
+    script: netem_cubic_benchmark_nines.py
+    params:
+      num_clients: 10
+      client_names:
+        - client1
+        - client2
+        - client3
+        - client4
+        - client5
+        - client6
+        - client7
+        - client8
+        - client9
+        - client10
+      client_delays_ms:
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+      client_ccas:
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+        - cubic
+      client_file_sizes_mbytes:
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+        - 1
+      client_start_delays_ms:
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: /home/bradley/jumpserve/sslogs/nines_short/delay-10ms-to-19ms-10flows-all-cubic-1MB-bottleneck-bandwidth-500kb-queue/run-delay-010ms-to-019ms-10flows-ss.jsonl
+      bottleneck_all_client_rate_mbit: 80
+      bottleneck_buffer_kbytes: 125

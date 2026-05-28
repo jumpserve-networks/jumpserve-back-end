@@ -1,0 +1,27 @@
+defaults:
+  timeout_seconds: 180
+
+jobs:
+  - name: two-client-baseline
+    sudo: true
+    script: netem_cubic_benchmark.py
+    params:
+      num_clients: 2
+      client_names:
+        - client1
+        - client2
+      client_delays_ms:
+        - 10
+        - 40
+      client_ccas:
+        - cubic
+        - reno
+      client_file_sizes_mbytes:
+        - 25
+        - 25
+      client_start_delays_ms:
+        - 0
+        - 0
+      loss_pct: 0
+      snapshot_interval_ms: 10
+      bottleneck_all_client_rate_mbit: 100
