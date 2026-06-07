@@ -201,16 +201,41 @@ def list_queue_scenarios() -> list[Path]:
         return []
     return sorted(
         path
-        for path in QUEUE_DIR.iterdir()
+        for path in QUEUE_DIR.rglob("*")
         if path.is_file() and path.suffix.lower() in {".yaml", ".yml"}
     )
+
+
+def _path_without_suffix(path: Path) -> str:
+    return path.with_suffix("").as_posix()
+
+
+def _normalize_prefix(prefix: str) -> str:
+    return prefix.strip().replace("\\", "/")
+
+
+def _scenario_prefix_keys(scenario: Path) -> list[str]:
+    relative_to_project = scenario.relative_to(PROJECT_DIR)
+    relative_to_queue = scenario.relative_to(QUEUE_DIR)
+    return [
+        scenario.stem,
+        relative_to_project.as_posix(),
+        _path_without_suffix(relative_to_project),
+        relative_to_queue.as_posix(),
+        _path_without_suffix(relative_to_queue),
+    ]
 
 
 def matching_queue_scenarios(prefix: str | None) -> list[Path]:
     scenarios = list_queue_scenarios()
     if prefix is None:
         return scenarios
-    return [scenario for scenario in scenarios if scenario.stem.startswith(prefix)]
+    normalized_prefix = _normalize_prefix(prefix)
+    return [
+        scenario
+        for scenario in scenarios
+        if any(key.startswith(normalized_prefix) for key in _scenario_prefix_keys(scenario))
+    ]
 
 
 def load_jobs(config_path: Path) -> list[Job]:
@@ -367,11 +392,15 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Scenario name or path to queue YAML file (default: queues/default.yaml). Incompatible with --prefix.",
     )
-    parser.add_argument("--list", action="store_true", help="List scenario files in queues/ and exit.")
+    parser.add_argument("--list", action="store_true", help="List scenario files under queues/ recursively and exit.")
     parser.add_argument("--dry-run", action="store_true", help="Print jobs without executing commands.")
     parser.add_argument(
         "--prefix",
-        help="Run every queue scenario in queues/ whose filename stem starts with this prefix.",
+        help=(
+            "Run every queue scenario under queues/ whose prefix matches either the filename stem, "
+            "the path relative to queues/, or the path relative to the repo. "
+            "Example: queues/nines_many/netem-nines-many-clients-10ms-vs-11-19ms"
+        ),
     )
     args = parser.parse_args()
     if args.prefix is not None and args.config is not None:

@@ -1,0 +1,19 @@
+defaults:
+  sudo: true
+  continue_on_error: false
+  cwd: ../..
+
+jobs:
+  - name: netem-nines-bbr-delay-10ms-vs-11ms
+    script: netem_nines_many_clients.py
+    params:
+      num_clients: 2
+      client_names: [flow_a, flow_b]
+      client_delays_ms: [10, 15]
+      client_ccas: [bbr, bbr]
+      client_file_sizes_mbytes: [100, 100]
+      snapshot_metrics_source: ss
+      ss_sample_interval_ms: 100
+      ss_log_file: sslogs/netem_nines/bbr-delay-10ms-vs-11ms.jsonl
+      bottleneck_all_client_rate_mbit: 50
+      bottleneck_buffer_kbytes: 500
