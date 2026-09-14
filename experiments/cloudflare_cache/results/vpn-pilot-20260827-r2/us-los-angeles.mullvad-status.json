@@ -1,0 +1,28 @@
+{
+  "details": {
+    "endpoint": {
+      "address": "146.70.172.130:25847",
+      "daita": false,
+      "entry_endpoint": null,
+      "obfuscation": null,
+      "protocol": "udp",
+      "quantum_resistant": true,
+      "tunnel_interface": "utun8"
+    },
+    "feature_indicators": [
+      "QuantumResistance"
+    ],
+    "location": {
+      "city": "Los Angeles, CA",
+      "country": "USA",
+      "entry_hostname": null,
+      "hostname": "us-lax-wg-404",
+      "ipv4": "146.70.172.228",
+      "ipv6": null,
+      "latitude": 34.052235,
+      "longitude": -118.243683,
+      "mullvad_exit_ip": true
+    }
+  },
+  "state": "connected"
+}

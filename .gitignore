@@ -1,2 +1,8 @@
 sslogs
 
+# Repository-local Codex MCP credentials
+.codex/config.toml
+
+# Python build and test artifacts
+__pycache__/
+*.py[cod]

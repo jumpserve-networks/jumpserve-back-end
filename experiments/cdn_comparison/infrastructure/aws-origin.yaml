@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Provider-neutral S3 origin for the Jumpserve CDN cache experiment
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Globally unique bucket name for immutable experiment objects
+
+Resources:
+  OriginBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false
+      Tags:
+        - Key: project
+          Value: jumpserve-cdn-cache-study
+        - Key: purpose
+          Value: provider-neutral-public-read-origin
+
+  OriginBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref OriginBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !Sub "${OriginBucket.Arn}"
+              - !Sub "${OriginBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+          - Sid: PublicReadExperimentObjectsOnly
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${OriginBucket.Arn}/objects/*"
+
+Outputs:
+  BucketName:
+    Value: !Ref OriginBucket
+  BucketArn:
+    Value: !GetAtt OriginBucket.Arn
+  RegionalDomainName:
+    Value: !GetAtt OriginBucket.RegionalDomainName
+  ObjectBaseUrl:
+    Value: !Sub "https://${OriginBucket.RegionalDomainName}/objects/"

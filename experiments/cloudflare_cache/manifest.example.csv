@@ -1,0 +1,5 @@
+object_id,treatment,url
+hot-001,hot,https://assets.example.com/cache-study/hot-001.bin
+hot-002,hot,https://assets.example.com/cache-study/hot-002.bin
+cold-001,cold,https://assets.example.com/cache-study/cold-001.bin
+cold-002,cold,https://assets.example.com/cache-study/cold-002.bin

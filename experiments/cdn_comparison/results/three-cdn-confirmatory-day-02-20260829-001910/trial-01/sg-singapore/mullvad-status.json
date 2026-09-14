@@ -1,0 +1,28 @@
+{
+  "details": {
+    "endpoint": {
+      "address": "146.70.199.130:39595",
+      "daita": false,
+      "entry_endpoint": null,
+      "obfuscation": null,
+      "protocol": "udp",
+      "quantum_resistant": true,
+      "tunnel_interface": "utun8"
+    },
+    "feature_indicators": [
+      "QuantumResistance"
+    ],
+    "location": {
+      "city": "Singapore",
+      "country": "Singapore",
+      "entry_hostname": null,
+      "hostname": "sg-sin-wg-102",
+      "ipv4": null,
+      "ipv6": null,
+      "latitude": 1.293056,
+      "longitude": 103.855833,
+      "mullvad_exit_ip": true
+    }
+  },
+  "state": "connected"
+}

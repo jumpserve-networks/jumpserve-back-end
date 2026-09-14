@@ -1,0 +1,16 @@
+fl=637f40
+h=www.cloudflare.com
+ip=135.136.19.191
+ts=1787797431.000
+visit_scheme=https
+uag=curl/8.7.1
+colo=FRA
+sliver=none
+http=http/2
+loc=DE
+tls=TLSv1.3
+sni=plaintext
+warp=off
+gateway=off
+rbi=off
+kex=X25519

@@ -1,0 +1,17 @@
+{
+  "created_at_utc": "2026-08-27T20:31:28Z",
+  "files": {
+    "experiments/cdn_comparison/analyze_confirmatory.py": "044942cb69a662df512d5f89b2724cc9926b9f8c5383ae47dfe28f10c5f4c8d1",
+    "experiments/cdn_comparison/analyze_vpn_trials.py": "f358dd707c4ddf6ab1f61043ea4c3f859ca678c73ff738e2717ed6851cfe2fde",
+    "experiments/cdn_comparison/cloudflare_neutral_origin_worker.js": "27395ec5b53ddb6bc57d0ff12bdbf51eea40e6519c56d95c7c68bbfa7552c9d1",
+    "experiments/cdn_comparison/confirmatory-config-v1.json": "86753d5c230b1cc273855707bb2ee61b421e1eb786652c9b52d0c50d8995334c",
+    "experiments/cdn_comparison/deployed-target-snapshot-v1.json": "51171a070d5deb0e1fca80cd9f9a80e3b6ab336d7a38ccea98b3a182cf890a1e",
+    "experiments/cdn_comparison/infrastructure/aws-origin.yaml": "46aa76f3d410138c181a2f6d6291b8601e2874ff70080c86e7b62bdf264d3ae6",
+    "experiments/cdn_comparison/preregistration-20260827.md": "c045dc21331e66b196c681681d54c42bb91fefdbf90e9915841a21b5109a58d2",
+    "experiments/cdn_comparison/run_confirmatory_day.py": "254ec0c3858380cc187c4cc4661886c95e38c2da2295a7d1014dc18a8e748d59",
+    "experiments/cdn_comparison/run_vpn_trials.py": "01383a1b0fdde7d807d5d4b1dc962d47c76d3f63e578c8a288fff75ae2e7e854",
+    "experiments/cloudflare_cache/probe.py": "1199256245f91c8a5ec2f7b6f76bd3184e47c4bd02b79848d9ed7f47e22fc8f7"
+  },
+  "protocol_id": "cdn-demand-confirmatory-v1",
+  "schema_version": 1
+}

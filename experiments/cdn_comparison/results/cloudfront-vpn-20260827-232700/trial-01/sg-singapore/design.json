@@ -1,0 +1,245 @@
+{
+  "assignment_seed": 20271128,
+  "objects": [
+    {
+      "object_id": "obj-001",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-001.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-002",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-002.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-003",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-003.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-004",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-004.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-005",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-005.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-006",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-006.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-007",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-007.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-008",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-008.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-009",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-009.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-010",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-010.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-011",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-011.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-012",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-012.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-013",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-013.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-014",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-014.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-015",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-015.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-016",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-016.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-017",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-017.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-018",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-018.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-019",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-019.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-020",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-020.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-021",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-021.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-022",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-022.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-023",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-023.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-024",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-024.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-025",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-025.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-026",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-026.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-027",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-027.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-028",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-028.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-029",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-029.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-030",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-030.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-031",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-031.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-032",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-032.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-033",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-033.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-034",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-034.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-035",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-035.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-036",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-036.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-037",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-037.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-038",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-038.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-039",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-039.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-040",
+      "s3_key": "objects/trials/cloudfront-vpn-20260827t232808z/trial-01/sg-singapore/obj-040.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    }
+  ]
+}

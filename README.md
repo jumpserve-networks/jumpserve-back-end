@@ -7,6 +7,15 @@ This repository currently centers on a small set of Python entrypoints for Linux
 - `netem_cubic_benchmark_hotnets.py`
 - `run_queue.py`
 
+An independent, real-network experiment for measuring Cloudflare cache residency
+from distributed vantage points is documented in
+[`experiments/cloudflare_cache/README.md`](experiments/cloudflare_cache/README.md).
+The provider-neutral paired Cloudflare/Fastly experiment is documented in
+[`experiments/cdn_comparison/README.md`](experiments/cdn_comparison/README.md).
+That directory also contains the isolated exploratory CloudFront extension and
+its external-VPN pilot; its same-provider Amazon S3 origin confound is documented
+separately from the frozen Cloudflare/Fastly protocol.
+
 ## What The Python Files Do
 
 ### `netem_cubic_benchmark_nines.py`

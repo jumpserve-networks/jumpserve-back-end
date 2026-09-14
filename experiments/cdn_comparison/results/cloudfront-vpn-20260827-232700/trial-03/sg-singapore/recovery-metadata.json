@@ -1,0 +1,27 @@
+{
+  "audit": {
+    "failed_rows": [
+      {
+        "curl_exit_code": 35,
+        "curl_stderr": "curl: (35) Recv failure: Connection reset by peer",
+        "object_id": "obj-007",
+        "sample_index": 3
+      }
+    ],
+    "hot_objects": 20,
+    "hot_objects_with_successful_hit": 20,
+    "rows": 60,
+    "successful_rows": 59,
+    "warmup_pop": "SIN2-P6"
+  },
+  "deviation": "one failed third warmup request; main observation had not started",
+  "failure": null,
+  "measurement_repeated": false,
+  "new_object_keys_created": false,
+  "preflight_pop": "SIN2-P6",
+  "protocol": "exploratory-cloudfront-s3-origin-v1",
+  "recovery_finished_at_utc": "2026-08-27T23:52:49Z",
+  "recovery_started_at_utc": "2026-08-27T23:51:19Z",
+  "same_pop_required": true,
+  "warmup_repeated": false
+}

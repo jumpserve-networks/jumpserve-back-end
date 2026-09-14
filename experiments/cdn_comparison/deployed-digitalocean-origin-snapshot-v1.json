@@ -1,0 +1,86 @@
+{
+  "calibration": {
+    "body_bytes": 262144,
+    "cache_control": "public, max-age=3600, immutable",
+    "content_type": "application/octet-stream",
+    "object_path": "/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+    "storage": "droplet-local-disk",
+    "validated_at_utc": "2026-08-28T00:22:08Z"
+  },
+  "cdn_migration": {
+    "cloudflare_uses_this_origin": false,
+    "cloudfront_uses_this_origin": false,
+    "fastly_uses_this_origin": false,
+    "frozen_confirmatory_v1_modified": false,
+    "state": "origin-ready-awaiting-isolated-successor-targets"
+  },
+  "deployed_at_utc": "2026-08-28T00:18:57Z",
+  "dns": {
+    "hostname": "origin.jumpserve.dev",
+    "ipv4": "174.138.88.63",
+    "provider": "Amazon Route 53",
+    "record_type": "A",
+    "ttl_seconds": 60
+  },
+  "droplet": {
+    "disk_gib": 25,
+    "id": 595750731,
+    "image": "ubuntu-24-04-x64",
+    "ipv4": "174.138.88.63",
+    "memory_mib": 1024,
+    "monthly_price_usd": 6.0,
+    "name": "jumpserve-neutral-origin-nyc3",
+    "provider": "DigitalOcean",
+    "region": "nyc3",
+    "size": "s-1vcpu-1gb",
+    "status": "active",
+    "tag": "jumpserve-neutral-origin",
+    "vcpus": 1
+  },
+  "firewall": {
+    "http_sources": [
+      "0.0.0.0/0",
+      "::/0"
+    ],
+    "https_sources": [
+      "0.0.0.0/0",
+      "::/0"
+    ],
+    "id": "9d46dd7f-30d7-4aca-a0a8-ca1416fa89bd",
+    "name": "jumpserve-neutral-origin",
+    "outbound": "all ICMP, TCP, and UDP over IPv4 and IPv6",
+    "ssh_source": "single operator IPv4 /32 (redacted)",
+    "status": "succeeded",
+    "target_tag": "jumpserve-neutral-origin"
+  },
+  "protocol": "digitalocean-neutral-origin-v1",
+  "public_url": "https://origin.jumpserve.dev",
+  "software": {
+    "automatic_https": true,
+    "caddy_version": "2.11.4",
+    "cloud_init_status": "done",
+    "compression_configured": false,
+    "file_server_root": "/srv/jumpserve",
+    "operating_system": "Ubuntu 24.04 LTS"
+  },
+  "ssh_key": {
+    "digitalocean_id": 58860099,
+    "fingerprint": "21:56:f9:02:a6:c5:2d:09:f0:7a:74:14:f0:94:af:23",
+    "name": "jumpserve-neutral-origin-michael",
+    "private_key_uploaded": false
+  },
+  "tool_digests_sha256": {
+    "experiments/cdn_comparison/infrastructure/digitalocean-origin-cloud-init.yaml": "8564d376bb2d9cbefd64c9b0e377ab1e7a4936d8be28bc76a4cfd31d17bc3605"
+  },
+  "validation": {
+    "caddy_active": true,
+    "caddy_config_valid": true,
+    "dns_resolved_to_expected_ipv4": true,
+    "health_http_status": 200,
+    "object_http_status": 200,
+    "public_body_bytes_match": true,
+    "public_sha256_match": true,
+    "tls_valid": true
+  }
+}

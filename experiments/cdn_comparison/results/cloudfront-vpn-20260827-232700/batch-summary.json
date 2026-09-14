@@ -1,0 +1,46 @@
+{
+  "batch_slug": "cloudfront-vpn-20260827t232808z",
+  "confirmatory_v1_unchanged": true,
+  "delay_ms": 50.0,
+  "exploratory_same_provider_origin_confound": true,
+  "failures": [
+    "trial-03 sg-singapore: Command '['/Library/Frameworks/Python.framework/Versions/3.13/bin/python3', '/Users/Shared/allstar/jumpserve-back-end/experiments/cdn_comparison/probe_v2.py', '--manifest', '/Users/Shared/allstar/jumpserve-back-end/experiments/cdn_comparison/results/cloudfront-vpn-20260827-232700/trial-03/sg-singapore/cloudfront.manifest.csv', '--output', '/Users/Shared/allstar/jumpserve-back-end/experiments/cdn_comparison/results/cloudfront-vpn-20260827-232700/trial-03/sg-singapore/cloudfront.warmup.jsonl', '--vantage', 'sg-singapore', '--phase', 'warmup', '--samples', '3', '--delay-ms', '50.0', '--timeout-seconds', '30', '--ip-version', '4', '--seed', '20264128', '--shuffle', '--treatment', 'hot']' returned non-zero exit status 1."
+  ],
+  "fresh_s3_keys": 360,
+  "locations": [
+    "us-los-angeles",
+    "de-frankfurt",
+    "sg-singapore"
+  ],
+  "objects_per_class": 20,
+  "protocol": "exploratory-cloudfront-s3-origin-v1",
+  "requested_relays": {
+    "de-frankfurt": {
+      "city": "fra",
+      "country": "de",
+      "hostname": "de-fra-wg-202"
+    },
+    "sg-singapore": {
+      "city": "sin",
+      "country": "sg",
+      "hostname": "sg-sin-wg-102"
+    },
+    "us-los-angeles": {
+      "city": "lax",
+      "country": "us",
+      "hostname": "us-lax-wg-006"
+    }
+  },
+  "source_object": {
+    "bucket": "jumpserve-cdn-origin-395567831870-us-east-1",
+    "cache_control": "public, max-age=3600, immutable",
+    "content_length": 262144,
+    "content_type": "application/octet-stream",
+    "etag": "\"34b0d52309248727a1a3eead94144758\"",
+    "key": "objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580"
+  },
+  "target": "https://cloudfront.jumpserve.dev",
+  "trials": 3,
+  "warm_samples": 3
+}

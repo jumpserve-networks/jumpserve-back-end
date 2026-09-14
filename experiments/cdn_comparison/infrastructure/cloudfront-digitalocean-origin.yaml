@@ -1,0 +1,132 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Isolated CloudFront target using the independent DigitalOcean origin
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: cloudfront-do.jumpserve.dev
+    Description: Public HTTPS hostname for the successor CloudFront target
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route 53 public hosted zone that owns DomainName
+  OriginDomainName:
+    Type: String
+    Default: origin.jumpserve.dev
+    Description: Independent public HTTPS origin outside Amazon
+
+Resources:
+  ViewerCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+      Tags:
+        - Key: project
+          Value: jumpserve-cdn-cache-study
+        - Key: purpose
+          Value: three-cdn-digitalocean-origin
+
+  CachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: jumpserve-three-cdn-digitalocean-cache-v1
+        Comment: One-hour immutable-object policy with a path-only cache key
+        MinTTL: 0
+        DefaultTTL: 3600
+        MaxTTL: 3600
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingBrotli: false
+          EnableAcceptEncodingGzip: false
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
+  DiagnosticResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: jumpserve-three-cdn-digitalocean-diagnostics-v1
+        Comment: Public diagnostics excluded from timing-only features
+        ServerTimingHeadersConfig:
+          Enabled: true
+          SamplingRate: 100
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref DomainName
+        Comment: Three-CDN successor target with independent DigitalOcean origin
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        Origins:
+          - DomainName: !Ref OriginDomainName
+            Id: digitalocean-neutral-origin
+            ConnectionAttempts: 3
+            ConnectionTimeout: 10
+            OriginShield:
+              Enabled: false
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginKeepaliveTimeout: 5
+              OriginProtocolPolicy: https-only
+              OriginReadTimeout: 30
+              OriginSSLProtocols:
+                - TLSv1.2
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          CachePolicyId: !Ref CachePolicy
+          Compress: false
+          ResponseHeadersPolicyId: !Ref DiagnosticResponseHeadersPolicy
+          TargetOriginId: digitalocean-neutral-origin
+          ViewerProtocolPolicy: https-only
+        PriceClass: PriceClass_All
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: none
+        ViewerCertificate:
+          AcmCertificateArn: !Ref ViewerCertificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+      Tags:
+        - Key: project
+          Value: jumpserve-cdn-cache-study
+        - Key: purpose
+          Value: three-cdn-digitalocean-origin
+
+  PublicDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      ResourceRecords:
+        - !GetAtt Distribution.DomainName
+      TTL: 60
+      Type: CNAME
+
+Outputs:
+  CertificateArn:
+    Value: !Ref ViewerCertificate
+  DistributionArn:
+    Value: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+  DistributionDomainName:
+    Value: !GetAtt Distribution.DomainName
+  DistributionId:
+    Value: !Ref Distribution
+  PublicUrl:
+    Value: !Sub "https://${DomainName}"

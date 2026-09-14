@@ -1,0 +1,95 @@
+{
+  "calibration": {
+    "cloudflare": {
+      "first_cache_status": "MISS",
+      "observed_colo": "STL",
+      "second_cache_status": "HIT"
+    },
+    "cloudfront": {
+      "first_cache_status": "MISS",
+      "observed_pop": "MSP50-P4",
+      "second_cache_status": "HIT"
+    },
+    "content_length": 262144,
+    "fastly": {
+      "body_verified_on_hit": true,
+      "initial_header_probe_cache_status": "MISS",
+      "observed_pop": "MSP"
+    },
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580"
+  },
+  "cloudflare": {
+    "cache_options": {
+      "cross_version_cache": false,
+      "enabled": true
+    },
+    "compatibility_date": "2026-08-28",
+    "deployment_id": "bee9ad98-ced1-4d46-9289-a3c802094251",
+    "script_name": "cf-cache-do-origin-probe",
+    "url": "https://cf-cache-do-origin-probe.jumpserve-cache-study-20260826.workers.dev",
+    "version_id": "1ab73a45-b249-4189-a2b2-3855112b2581",
+    "version_percentage": 100,
+    "workers_dev_enabled": true
+  },
+  "cloudfront": {
+    "aliases": [
+      "cloudfront-do.jumpserve.dev"
+    ],
+    "cache_policy_id": "84a1a119-9ae2-49f1-9516-9521e72b69f0",
+    "distribution_domain_name": "d1en8vx6sp0agj.cloudfront.net",
+    "distribution_id": "E1PLG78KNPCT3U",
+    "enabled": true,
+    "origin": {
+      "domain_name": "origin.jumpserve.dev",
+      "origin_protocol_policy": "https-only",
+      "origin_shield": false
+    },
+    "server_timing_sampling_rate_percent": 100,
+    "stack_name": "jumpserve-cloudfront-do-origin",
+    "status": "Deployed",
+    "url": "https://cloudfront-do.jumpserve.dev"
+  },
+  "fastly": {
+    "active": true,
+    "active_version": 1,
+    "backend": {
+      "address": "origin.jumpserve.dev",
+      "between_bytes_timeout_ms": 10000,
+      "connect_timeout_ms": 3000,
+      "first_byte_timeout_ms": 10000,
+      "hostname": "origin.jumpserve.dev",
+      "name": "digitalocean_neutral_origin",
+      "override_host": "origin.jumpserve.dev",
+      "port": 443,
+      "shield": null,
+      "ssl_cert_hostname": "origin.jumpserve.dev",
+      "ssl_check_cert": true,
+      "ssl_sni_hostname": "origin.jumpserve.dev",
+      "use_ssl": true
+    },
+    "domain_id": "uTy69WhIt7IfqzjYGkZNeQ",
+    "domain_verified_and_activated": true,
+    "managed_tls_state": "issued",
+    "service_id": "yTQU7KjtcSsvobIGI5gsdB",
+    "service_name": "jumpserve-fastly-do-origin-20260828",
+    "tls_configuration_id": "bSpxg3lQaRXwVVXL0gBAEA",
+    "tls_subscription_id": "10H4ixCyCmDNvERAZ0RQVA",
+    "url": "https://fastly-do.jumpserve.dev"
+  },
+  "origin": {
+    "calibration_path": "/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "cache_control": "public, max-age=3600, immutable",
+    "content_length": 262144,
+    "content_type": "application/octet-stream",
+    "droplet_id": 595750731,
+    "hostname": "origin.jumpserve.dev",
+    "ipv4": "174.138.88.63",
+    "provider": "DigitalOcean",
+    "region": "nyc3",
+    "runtime_storage": "Droplet local disk",
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+    "url": "https://origin.jumpserve.dev"
+  },
+  "protocol_id": "cdn-demand-three-cdn-do-origin-v1",
+  "snapshot_at_utc": "2026-08-28T00:44:24Z"
+}

@@ -1,0 +1,28 @@
+{
+  "details": {
+    "endpoint": {
+      "address": "147.78.240.190:6765",
+      "daita": false,
+      "entry_endpoint": null,
+      "obfuscation": null,
+      "protocol": "udp",
+      "quantum_resistant": true,
+      "tunnel_interface": "utun8"
+    },
+    "feature_indicators": [
+      "QuantumResistance"
+    ],
+    "location": {
+      "city": "Frankfurt",
+      "country": "Germany",
+      "entry_hostname": null,
+      "hostname": "de-fra-wg-202",
+      "ipv4": "176.119.150.203",
+      "ipv6": null,
+      "latitude": 50.110924,
+      "longitude": 8.682127,
+      "mullvad_exit_ip": true
+    }
+  },
+  "state": "connected"
+}

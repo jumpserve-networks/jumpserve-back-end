@@ -1,0 +1,49 @@
+{
+  "cloudflare": {
+    "cache_options": {
+      "cross_version_cache": false,
+      "enabled": true
+    },
+    "compatibility_date": "2026-08-27",
+    "deployment_id": "0117c370-890e-4386-9e74-12658b4d6d1b",
+    "script_name": "cf-cache-neutral-origin-probe",
+    "url": "https://cf-cache-neutral-origin-probe.jumpserve-cache-study-20260826.workers.dev",
+    "version_id": "17bda154-195f-4f8a-b02b-9c768b102482",
+    "version_percentage": 100
+  },
+  "fastly": {
+    "active": true,
+    "active_version": 2,
+    "backend": {
+      "address": "jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com",
+      "between_bytes_timeout_ms": 10000,
+      "connect_timeout_ms": 3000,
+      "first_byte_timeout_ms": 10000,
+      "hostname": "jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com",
+      "name": "s3_neutral_origin",
+      "override_host": "jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com",
+      "port": 443,
+      "shield": null,
+      "ssl_cert_hostname": "jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com",
+      "ssl_check_cert": true,
+      "ssl_sni_hostname": "jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com",
+      "use_ssl": true
+    },
+    "custom_vcl_count": 0,
+    "managed_tls_domain": "fastly.jumpserve.dev",
+    "service_id": "i9hnKYTkxIksRHg8fK0dx7",
+    "url": "https://fastly.jumpserve.dev",
+    "versioned_domain": "jumpserve-cache-study-20260827-01.global.ssl.fastly.net"
+  },
+  "origin": {
+    "bucket": "jumpserve-cdn-origin-395567831870-us-east-1",
+    "calibration_key": "objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "cache_control": "public, max-age=3600, immutable",
+    "content_length": 262144,
+    "content_type": "application/octet-stream",
+    "region": "us-east-1",
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580"
+  },
+  "protocol_id": "cdn-demand-confirmatory-v1",
+  "snapshot_at_utc": "2026-08-27T20:31:28Z"
+}

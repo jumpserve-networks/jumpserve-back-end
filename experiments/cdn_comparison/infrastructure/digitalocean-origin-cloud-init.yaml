@@ -1,0 +1,81 @@
+#cloud-config
+
+# Bootstrap for the independent origin used by the three-CDN successor study.
+# This file contains no credentials. The calibration payload is copied once at
+# provisioning time, verified by SHA-256, and then served from local disk.
+
+package_update: true
+package_upgrade: false
+
+write_files:
+  - path: /opt/jumpserve/Caddyfile
+    owner: root:root
+    permissions: "0644"
+    content: |
+      origin.jumpserve.dev {
+          root * /srv/jumpserve
+
+          respond /healthz "ok\n" 200
+
+          @objects path /objects/*
+          header @objects {
+              Cache-Control "public, max-age=3600, immutable"
+              Content-Type "application/octet-stream"
+              X-Content-Type-Options "nosniff"
+          }
+
+          file_server
+      }
+
+  - path: /opt/jumpserve/install-origin.sh
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        debian-archive-keyring \
+        debian-keyring \
+        gnupg
+
+      rm -f /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+      curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/gpg.key \
+        | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+      curl -1sLf https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt \
+        -o /etc/apt/sources.list.d/caddy-stable.list
+      chmod o+r \
+        /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
+        /etc/apt/sources.list.d/caddy-stable.list
+
+      apt-get update
+      apt-get install -y caddy
+
+      install -d -o root -g root -m 0755 \
+        /srv/jumpserve/objects/calibration \
+        /srv/jumpserve/objects/trials
+      curl --fail --silent --show-error --location \
+        --output /tmp/jumpserve-calibration.bin \
+        https://jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin
+      echo "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580  /tmp/jumpserve-calibration.bin" \
+        | sha256sum --check --strict
+      install -o root -g root -m 0444 \
+        /tmp/jumpserve-calibration.bin \
+        /srv/jumpserve/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin
+      rm -f /tmp/jumpserve-calibration.bin
+
+      install -o root -g root -m 0644 \
+        /opt/jumpserve/Caddyfile /etc/caddy/Caddyfile
+      caddy fmt --overwrite /etc/caddy/Caddyfile
+      caddy validate --config /etc/caddy/Caddyfile
+      systemctl enable caddy
+      systemctl restart caddy
+
+runcmd:
+  - [/opt/jumpserve/install-origin.sh]
+
+final_message: "Jumpserve neutral-origin bootstrap finished after $UPTIME seconds"

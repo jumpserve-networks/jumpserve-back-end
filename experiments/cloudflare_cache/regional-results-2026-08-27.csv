@@ -1,0 +1,15 @@
+configured_region,target_colo,hot_hits,cold_misses,headers_hit_median_ms,headers_miss_median_ms,headers_auc,first_body_hit_median_ms,first_body_miss_median_ms,first_body_auc,total_hit_median_ms,total_miss_median_ms,total_auc
+aws:us-east-1,IAD,20,20,7.0,33.5,1.000,8.0,36.0,1.000,8.5,42.0,1.000
+aws:us-west-2,SEA,20,20,12.0,28.5,1.000,12.0,29.0,1.000,12.5,39.5,1.000
+aws:eu-west-2,LHR,20,20,11.5,38.0,0.961,13.0,40.0,0.956,13.0,46.0,0.946
+aws:ap-northeast-2,ICN,20,20,5.5,55.0,0.998,6.0,55.5,1.000,6.5,64.0,0.995
+aws:ap-southeast-2,SYD,20,20,6.0,12.0,1.000,6.0,16.0,0.973,7.0,23.0,0.939
+aws:sa-east-1,GRU,20,20,11.0,34.0,0.998,11.0,35.0,0.998,12.0,37.5,0.899
+aws:ca-central-1,YUL,20,20,5.0,40.5,1.000,6.0,41.5,1.000,6.0,45.0,1.000
+aws:eu-central-1,FRA,20,20,14.0,18.0,0.871,14.0,20.5,0.859,14.5,20.5,0.829
+aws:eu-north-1,ARN,20,20,6.0,42.0,1.000,6.0,45.0,0.998,6.0,56.0,0.989
+aws:ap-south-1,BOM,20,20,11.0,16.0,0.974,11.0,16.0,0.986,11.0,16.5,0.986
+aws:ap-southeast-1,SIN,20,20,14.0,19.0,0.938,15.0,20.0,0.914,15.0,20.0,0.877
+aws:ap-northeast-1,NRT,20,20,7.0,35.5,0.960,7.5,36.5,0.949,8.0,39.5,0.919
+aws:me-central-1,BOM,20,20,8.0,13.0,0.907,8.0,13.0,0.907,8.0,13.0,0.910
+aws:af-south-1,CPT,20,20,5.0,186.5,1.000,5.5,187.5,1.000,6.0,192.0,1.000

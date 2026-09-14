@@ -1,0 +1,13 @@
+{
+  "batch_id": "20260827T022216Z",
+  "failures": [
+    "us-los-angeles: Command '['/Library/Frameworks/Python.framework/Versions/3.13/bin/python3', '/Users/Shared/allstar/jumpserve-back-end/experiments/cloudflare_cache/probe.py', '--manifest', '/Users/Shared/allstar/jumpserve-back-end/experiments/cloudflare_cache/results/vpn-pilot-20260827-r2/us-los-angeles.manifest.csv', '--output', '/Users/Shared/allstar/jumpserve-back-end/experiments/cloudflare_cache/results/vpn-pilot-20260827-r2/us-los-angeles.warmup.jsonl', '--vantage', 'us-los-angeles', '--phase', 'warmup', '--samples', '5', '--delay-ms', '50.0', '--timeout-seconds', '30', '--ip-version', '4', '--seed', '20260828', '--treatment', 'hot']' returned non-zero exit status 1."
+  ],
+  "locations": [
+    "us-los-angeles",
+    "de-frankfurt",
+    "sg-singapore"
+  ],
+  "objects_per_class": 20,
+  "warm_samples": 5
+}

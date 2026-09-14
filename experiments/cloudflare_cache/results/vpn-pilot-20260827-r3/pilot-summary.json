@@ -1,0 +1,11 @@
+{
+  "batch_id": "20260827T023155Z",
+  "failures": [],
+  "locations": [
+    "us-los-angeles",
+    "de-frankfurt",
+    "sg-singapore"
+  ],
+  "objects_per_class": 20,
+  "warm_samples": 5
+}

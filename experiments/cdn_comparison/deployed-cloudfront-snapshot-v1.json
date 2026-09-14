@@ -1,0 +1,61 @@
+{
+  "calibration": {
+    "body_bytes": 262144,
+    "first_cache_status": "MISS",
+    "first_hit_layer": null,
+    "object_path": "/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "observed_pop": "MSP50-P2",
+    "second_cache_status": "HIT",
+    "second_hit_layer": "REC",
+    "validated_at_utc": "2026-08-27T23:18:54Z"
+  },
+  "cache_policy": {
+    "accept_encoding_in_cache_key": false,
+    "compress": false,
+    "cookies": "none",
+    "default_ttl_seconds": 3600,
+    "headers": "none",
+    "id": "1bf78e76-9ec0-486e-a23a-8161de1c1a21",
+    "max_ttl_seconds": 3600,
+    "min_ttl_seconds": 0,
+    "query_strings": "none"
+  },
+  "certificate_arn": "arn:aws:acm:us-east-1:395567831870:certificate/2f22b6d9-3ebd-4b4e-97c3-729682a0d1a8",
+  "deployed_at_utc": "2026-08-27T23:18:54Z",
+  "distribution": {
+    "arn": "arn:aws:cloudfront::395567831870:distribution/E199P1KDME1VNX",
+    "domain_name": "d3d7d4uvuwqh3d.cloudfront.net",
+    "http_version": "http2and3",
+    "id": "E199P1KDME1VNX",
+    "ipv6_enabled": true,
+    "origin_shield_enabled": false,
+    "price_class": "PriceClass_All",
+    "status": "Deployed",
+    "viewer_protocol_policy": "https-only"
+  },
+  "origin": {
+    "domain_name": "jumpserve-cdn-origin-395567831870-us-east-1.s3.us-east-1.amazonaws.com",
+    "same_provider_confound": true,
+    "type": "public-s3-regional-endpoint"
+  },
+  "protocol": "exploratory-cloudfront-s3-origin-v1",
+  "public_url": "https://cloudfront.jumpserve.dev",
+  "response_headers_policy": {
+    "id": "49ef4678-b22d-4512-9f0b-7bf8051d5fe0",
+    "server_timing_enabled": true,
+    "server_timing_sampling_rate": 100
+  },
+  "stack": {
+    "name": "jumpserve-cloudfront-exploratory",
+    "region": "us-east-1",
+    "status": "CREATE_COMPLETE"
+  },
+  "tool_digests_sha256": {
+    "experiments/cdn_comparison/analyze_cloudfront_vpn_pilot.py": "d6a6a8051821d70eacc34d25790dfe222c65e23d278362307c189d3e5dd5602b",
+    "experiments/cdn_comparison/infrastructure/cloudfront-exploratory.yaml": "d69a7b2a39b2440b7941402110af474e3b97f1f2cda0fe5e1d4dcfdef3975984",
+    "experiments/cdn_comparison/probe_v2.py": "c94ee4c3983d0f238b81b4552d4d25e5ce6b41e748112eb4c408ee843a3a460c",
+    "experiments/cdn_comparison/resume_cloudfront_measurement.py": "7ccf122a7fa6f4b99d5cb8a7377554a1b663b0ab564f94d51325378c773307e8",
+    "experiments/cdn_comparison/run_cloudfront_vpn_pilot.py": "6ee94ed782d997884ae77ad5afe08ceb94666fda11c8b0a6a6d78fdd0ce00a41"
+  },
+  "v1_confirmatory_protocol_modified": false
+}

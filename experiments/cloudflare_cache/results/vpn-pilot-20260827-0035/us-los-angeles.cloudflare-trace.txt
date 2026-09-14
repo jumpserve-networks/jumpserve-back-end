@@ -1,0 +1,16 @@
+fl=447f185
+h=www.cloudflare.com
+ip=193.37.254.205
+ts=1787791108.000
+visit_scheme=https
+uag=curl/8.7.1
+colo=LAX
+sliver=none
+http=http/2
+loc=US
+tls=TLSv1.3
+sni=plaintext
+warp=off
+gateway=off
+rbi=off
+kex=X25519

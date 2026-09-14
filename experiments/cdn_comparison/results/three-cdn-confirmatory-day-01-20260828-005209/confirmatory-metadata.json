@@ -1,0 +1,32 @@
+{
+  "config_sha256": "913f8393ae89d3e399dff69607b62bd71cac65c1fa9048dfabdb6123aad7f2d6",
+  "day_number": 1,
+  "eligible_to_collect": true,
+  "finished_at_utc": "2026-08-28T01:13:31.774067Z",
+  "lock_sha256": "b747960973b255c10c1df65b8b2ef3eb7e9f9324af5d7271d35a62fd489b0c8e",
+  "minimum_collection_date_utc": "2026-08-28",
+  "output_dir": "/Users/Shared/allstar/jumpserve-back-end/experiments/cdn_comparison/results/three-cdn-confirmatory-day-01-20260828-005209",
+  "pinned_relays": [
+    "us-lax-wg-006",
+    "de-fra-wg-202",
+    "sg-sin-wg-102"
+  ],
+  "protocol_id": "cdn-demand-three-cdn-do-origin-v1",
+  "runner_exit_code": 0,
+  "started_at_utc": "2026-08-28T00:52:09.560282Z",
+  "utc_date": "2026-08-28",
+  "verified_lock_files": {
+    "experiments/cdn_comparison/analyze_three_cdn_confirmatory.py": "4b12027f46012f6cd4aad1ccf04b4e3e6caef599c63fd0d316e239b7f11eac3f",
+    "experiments/cdn_comparison/analyze_three_cdn_vpn_trials.py": "80053c7bc534d922da387a26633c6f3e70278e41fd778d676a7e11ed32a7c5d9",
+    "experiments/cdn_comparison/cloudflare_digitalocean_origin_worker.js": "9b452b862f1c40b933d3cd23147e61bb1841faa5fc60c954228da45e129d09ae",
+    "experiments/cdn_comparison/deployed-digitalocean-origin-snapshot-v1.json": "01da0452c4ee2a19387112e9c18ebd1cabcfe72395243f938b1969410c14a78a",
+    "experiments/cdn_comparison/deployed-three-cdn-do-origin-snapshot-v1.json": "dd32e6bd26e727ad0a9ff168f8021fe4fa00e9df813cfb20e738cf86a3fcba97",
+    "experiments/cdn_comparison/infrastructure/cloudfront-digitalocean-origin.yaml": "208673f68a45aa7345abeef1e779e508f004cbbfe290d80fc441df3ed73dc5a5",
+    "experiments/cdn_comparison/infrastructure/digitalocean-origin-cloud-init.yaml": "8564d376bb2d9cbefd64c9b0e377ab1e7a4936d8be28bc76a4cfd31d17bc3605",
+    "experiments/cdn_comparison/preregistration-three-cdn-do-origin-v1.md": "299031b579578529016550355e0ad86f4dacc3e84672ee2c3b5f0e478a9005ff",
+    "experiments/cdn_comparison/probe_v2.py": "c94ee4c3983d0f238b81b4552d4d25e5ce6b41e748112eb4c408ee843a3a460c",
+    "experiments/cdn_comparison/run_three_cdn_confirmatory_day.py": "ee3e43b53cbcfc0e365491353c6e8901c7eca84c3a0e6bfe693a0d2c7aceeb35",
+    "experiments/cdn_comparison/run_three_cdn_vpn_trials.py": "16aabab3a7a8e738556a2ee041f1ab64caa9ff45ec6581df6bec24e8a13f98fd",
+    "experiments/cdn_comparison/three-cdn-confirmatory-config-v1.json": "913f8393ae89d3e399dff69607b62bd71cac65c1fa9048dfabdb6123aad7f2d6"
+  }
+}

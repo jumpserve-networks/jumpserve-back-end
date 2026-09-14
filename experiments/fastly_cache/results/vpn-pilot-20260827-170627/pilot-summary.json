@@ -1,0 +1,14 @@
+{
+  "batch_id": "20260827T170914Z",
+  "client_protocol": "http/1.1",
+  "failures": [],
+  "fastly_service_id": "i9hnKYTkxIksRHg8fK0dx7",
+  "locations": [
+    "us-los-angeles",
+    "de-frankfurt",
+    "sg-singapore"
+  ],
+  "objects_per_class": 10,
+  "target_origin": "http://jumpserve-cache-study-20260827-01.global.ssl.fastly.net.global.prod.fastly.net",
+  "warm_samples": 3
+}

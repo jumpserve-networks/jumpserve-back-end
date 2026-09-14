@@ -1,0 +1,92 @@
+{
+  "amendment_history": [
+    {
+      "amended_at_utc": "2026-08-28T00:51:19Z",
+      "changed_field": "collection.minimum_collection_date_utc",
+      "new_value": "2026-08-28",
+      "no_trial_keys_or_observations_existed": true,
+      "previous_config_sha256": "ff7ffed5de1ebf6ca305d13a8e0dbcc7554bb1d0f5126d885e34faa59e5f4b0a",
+      "previous_lock_sha256": "2626b97311f1dc5bde1d1b35488d6ca051b51bd3ea6e0cdac72e978a364c5c8e",
+      "previous_value": "2026-08-29",
+      "reason": "Remove the optional one-UTC-day deployment buffer at the operator's request; no scientific parameter changed."
+    }
+  ],
+  "analysis": {
+    "bootstrap_iterations": 20000,
+    "bootstrap_seed": 20260830,
+    "eligible_body_bytes": 262144,
+    "lower_timing_is_hot": true,
+    "minimum_primary_cells_per_provider": 12,
+    "primary_metric": "request_ttfb_ms",
+    "primary_success_rule": "For each CDN separately, at least 12 of 15 day/exit cells must have defined within-POP AUC and the day-cluster bootstrap 95% confidence interval lower bound for the macro-average must exceed 0.5.",
+    "thresholds_ms": {
+      "cloudflare": {
+        "de-frankfurt": 429.23199999999997,
+        "sg-singapore": 837.2225,
+        "us-los-angeles": 259.93899999999996
+      },
+      "cloudfront": {
+        "de-frankfurt": 353.934,
+        "sg-singapore": 630.106,
+        "us-los-angeles": 252.151
+      },
+      "fastly": {
+        "de-frankfurt": 572.4075,
+        "sg-singapore": 1211.483,
+        "us-los-angeles": 474.772
+      }
+    }
+  },
+  "collection": {
+    "delay_ms": 50.0,
+    "minimum_collection_date_utc": "2026-08-28",
+    "objects_per_class": 20,
+    "planned_days": 5,
+    "restore_country": "us",
+    "seed_base": 2026082900,
+    "trials_per_day": 1,
+    "warm_samples": 3
+  },
+  "frozen_at_utc": "2026-08-28T00:41:26Z",
+  "locations": [
+    {
+      "city": "lax",
+      "country": "us",
+      "hostname": "us-lax-wg-006",
+      "label": "us-los-angeles"
+    },
+    {
+      "city": "fra",
+      "country": "de",
+      "hostname": "de-fra-wg-202",
+      "label": "de-frankfurt"
+    },
+    {
+      "city": "sin",
+      "country": "sg",
+      "hostname": "sg-sin-wg-102",
+      "label": "sg-singapore"
+    }
+  ],
+  "origin": {
+    "operator_population_channel": "SSH outside every CDN request path",
+    "public_base_url": "https://origin.jumpserve.dev",
+    "provider": "DigitalOcean Droplet local disk"
+  },
+  "prior_training": {
+    "cloudflare_fastly_batch": "experiments/cdn_comparison/results/neutral-vpn-20260827-184204",
+    "cloudfront_batch": "experiments/cdn_comparison/results/cloudfront-vpn-20260827-232700",
+    "origin_transfer_note": "All thresholds were selected on prior S3-origin pilots and are applied unchanged to the DigitalOcean-origin confirmatory data."
+  },
+  "protocol_id": "cdn-demand-three-cdn-do-origin-v1",
+  "public_target_preflight": {
+    "expected_sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+    "object_path": "/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "targets": {
+      "cloudflare": "https://cf-cache-do-origin-probe.jumpserve-cache-study-20260826.workers.dev",
+      "cloudfront": "https://cloudfront-do.jumpserve.dev",
+      "fastly": "https://fastly-do.jumpserve.dev"
+    }
+  },
+  "schema_version": 1
+}

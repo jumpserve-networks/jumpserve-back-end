@@ -1,0 +1,9 @@
+{
+  "batch_id": "20260827T024358Z",
+  "failures": [],
+  "locations": [
+    "us-los-angeles"
+  ],
+  "objects_per_class": 20,
+  "warm_samples": 5
+}

@@ -1,0 +1,31 @@
+{
+  "batch_slug": "neutral-vpn-20260827t184224z",
+  "delay_ms": 50.0,
+  "failures": [
+    "trial-03 de-frankfurt: Command '['/Library/Frameworks/Python.framework/Versions/3.13/bin/python3', '/Users/Shared/allstar/jumpserve-back-end/experiments/cloudflare_cache/probe.py', '--manifest', '/Users/Shared/allstar/jumpserve-back-end/experiments/cdn_comparison/results/neutral-vpn-20260827-184204/trial-03/de-frankfurt/cloudflare.manifest.csv', '--output', '/Users/Shared/allstar/jumpserve-back-end/experiments/cdn_comparison/results/neutral-vpn-20260827-184204/trial-03/de-frankfurt/cloudflare.measure.jsonl', '--vantage', 'de-frankfurt', '--phase', 'measure', '--samples', '1', '--delay-ms', '50.0', '--timeout-seconds', '30', '--ip-version', '4', '--seed', '20291029', '--shuffle']' returned non-zero exit status 1."
+  ],
+  "fresh_s3_keys": 360,
+  "locations": [
+    "us-los-angeles",
+    "de-frankfurt",
+    "sg-singapore"
+  ],
+  "objects_per_class": 20,
+  "provider_order_randomized": true,
+  "same_assignment_across_providers_within_trial_location": true,
+  "source_object": {
+    "bucket": "jumpserve-cdn-origin-395567831870-us-east-1",
+    "cache_control": "public, max-age=3600, immutable",
+    "content_length": 262144,
+    "content_type": "application/octet-stream",
+    "etag": "\"34b0d52309248727a1a3eead94144758\"",
+    "key": "objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580"
+  },
+  "targets": {
+    "cloudflare": "https://cf-cache-neutral-origin-probe.jumpserve-cache-study-20260826.workers.dev",
+    "fastly": "https://fastly.jumpserve.dev"
+  },
+  "trials": 3,
+  "warm_samples": 3
+}

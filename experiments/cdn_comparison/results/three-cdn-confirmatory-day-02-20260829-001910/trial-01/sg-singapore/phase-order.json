@@ -1,0 +1,12 @@
+{
+  "measure_order": [
+    "cloudfront",
+    "cloudflare",
+    "fastly"
+  ],
+  "warm_order": [
+    "cloudfront",
+    "fastly",
+    "cloudflare"
+  ]
+}

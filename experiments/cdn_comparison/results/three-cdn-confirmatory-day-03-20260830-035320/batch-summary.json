@@ -1,0 +1,28 @@
+{
+  "batch_slug": "three-cdn-vpn-20260830t035323z",
+  "delay_ms": 50.0,
+  "failures": [],
+  "fresh_digitalocean_origin_keys": 120,
+  "locations": [
+    "us-los-angeles",
+    "de-frankfurt",
+    "sg-singapore"
+  ],
+  "objects_per_class": 20,
+  "origin": {
+    "cache_control": "public, max-age=3600, immutable",
+    "content_length": 262144,
+    "content_type": "application/octet-stream",
+    "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+    "url": "https://origin.jumpserve.dev/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin"
+  },
+  "provider_order_randomized": true,
+  "same_assignment_across_providers_within_trial_location": true,
+  "targets": {
+    "cloudflare": "https://cf-cache-do-origin-probe.jumpserve-cache-study-20260826.workers.dev",
+    "cloudfront": "https://cloudfront-do.jumpserve.dev",
+    "fastly": "https://fastly-do.jumpserve.dev"
+  },
+  "trials": 1,
+  "warm_samples": 3
+}

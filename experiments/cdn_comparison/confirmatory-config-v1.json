@@ -1,0 +1,66 @@
+{
+  "analysis": {
+    "bootstrap_iterations": 20000,
+    "bootstrap_seed": 20260828,
+    "eligible_body_bytes": 262144,
+    "lower_timing_is_hot": true,
+    "minimum_primary_cells_per_provider": 12,
+    "primary_metric": "request_ttfb_ms",
+    "primary_success_rule": "For each CDN separately, at least 12 of 15 day/exit cells must have defined within-POP AUC and the day-cluster bootstrap 95% confidence interval lower bound for the macro-average must exceed 0.5.",
+    "thresholds_ms": {
+      "cloudflare": {
+        "de-frankfurt": 429.23199999999997,
+        "sg-singapore": 837.2225,
+        "us-los-angeles": 259.93899999999996
+      },
+      "fastly": {
+        "de-frankfurt": 572.4075,
+        "sg-singapore": 1211.483,
+        "us-los-angeles": 474.772
+      }
+    }
+  },
+  "collection": {
+    "delay_ms": 50.0,
+    "minimum_collection_date_utc": "2026-08-28",
+    "objects_per_class": 20,
+    "planned_days": 5,
+    "restore_country": "us",
+    "seed_base": 2026082800,
+    "trials_per_day": 1,
+    "warm_samples": 3
+  },
+  "frozen_at_utc": "2026-08-27T20:31:28Z",
+  "locations": [
+    {
+      "city": "lax",
+      "country": "us",
+      "hostname": "us-lax-wg-006",
+      "label": "us-los-angeles"
+    },
+    {
+      "city": "fra",
+      "country": "de",
+      "hostname": "de-fra-wg-202",
+      "label": "de-frankfurt"
+    },
+    {
+      "city": "sin",
+      "country": "sg",
+      "hostname": "sg-sin-wg-102",
+      "label": "sg-singapore"
+    }
+  ],
+  "public_target_preflight": {
+    "expected_sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+    "object_path": "/objects/calibration/2f4d7a9c7e034f8aa7d096a292beb386.bin",
+    "targets": {
+      "cloudflare": "https://cf-cache-neutral-origin-probe.jumpserve-cache-study-20260826.workers.dev",
+      "fastly": "https://fastly.jumpserve.dev"
+    }
+  },
+  "protocol_id": "cdn-demand-confirmatory-v1",
+  "schema_version": 1,
+  "training_batch": "experiments/cdn_comparison/results/neutral-vpn-20260827-184204",
+  "training_date_utc": "2026-08-27"
+}

@@ -1,0 +1,245 @@
+{
+  "assignment_seed": 2026093202,
+  "objects": [
+    {
+      "object_id": "obj-001",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-001.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-002",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-002.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-003",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-003.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-004",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-004.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-005",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-005.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-006",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-006.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-007",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-007.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-008",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-008.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-009",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-009.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-010",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-010.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-011",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-011.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-012",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-012.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-013",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-013.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-014",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-014.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-015",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-015.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-016",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-016.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-017",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-017.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-018",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-018.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-019",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-019.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-020",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-020.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-021",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-021.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-022",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-022.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-023",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-023.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-024",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-024.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-025",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-025.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-026",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-026.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-027",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-027.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-028",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-028.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-029",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-029.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-030",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-030.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-031",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-031.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-032",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-032.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-033",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-033.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-034",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-034.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-035",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-035.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-036",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-036.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-037",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-037.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-038",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-038.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    },
+    {
+      "object_id": "obj-039",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-039.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "cold"
+    },
+    {
+      "object_id": "obj-040",
+      "origin_relative_key": "trials/three-cdn-vpn-20260829t001912z/trial-01/sg-singapore/obj-040.bin",
+      "sha256": "a0f4fb786d29de3765726d8b0a2641608b533c1eba324157b95ede78feae0580",
+      "treatment": "hot"
+    }
+  ]
+}
