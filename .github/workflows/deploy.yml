@@ -1,21 +1,24 @@
-name: Deploy to EC2
+name: Deploy benchmark AMI
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'experiments/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: benchmark-ami-main
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pull latest code on EC2
-        run: |
-          aws ssm send-command \
-            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
-            --document-name "AWS-RunShellScript" \
-            --parameters 'commands=["cd /home/ubuntu/jumpserve-back-end && git pull origin main"]' \
-            --region us-east-1 \
-            --output text
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    if: github.ref == 'refs/heads/main'
+    uses: jumpserve-networks/jumpserve-infra/.github/workflows/benchmark-ami.yml@main
+    with:
+      backend_commit: ${{ github.sha }}

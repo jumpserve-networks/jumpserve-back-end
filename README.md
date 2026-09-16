@@ -149,3 +149,17 @@ These scripts are Linux-specific and expect:
 - `python3`
 
 On macOS, the benchmark scripts exit with guidance because `ip netns` and `tc netem` are Linux-only.
+
+## Benchmark deployment
+
+Pushes to `main` build a new benchmark AMI through the reusable workflow in
+[jumpserve-infra](https://github.com/jumpserve-networks/jumpserve-infra/blob/main/.github/workflows/benchmark-ami.yml).
+Changes confined to Markdown or `experiments/` do not trigger a rebuild. The
+`Deploy benchmark AMI` workflow can also be run manually on `main`.
+
+The workflow pins the backend commit, tests successful and failed runs plus
+automatic EC2 termination, selects the image only after verification, and checks
+the deployed API. A failed deployment check restores the previous image.
+Temporary builders and verification instances are cleaned up; AMIs and snapshots
+are retained for rollback. Credentials come from GitHub OIDC, so this deployment
+does not require a permanent EC2 server or backend AWS access-key secrets.
