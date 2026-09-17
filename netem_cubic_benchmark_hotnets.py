@@ -1091,15 +1091,19 @@ def sender_mode(args: argparse.Namespace) -> int:
             bytes_path = counter_paths.get(name)
             if bytes_path:
                 write_counter_file(bytes_path, value)
+        # TCP metrics must also be written when byte counters are disabled.
+        for name, value in rtt_snapshot.items():
             rtt_path = rtt_paths.get(name)
             if rtt_path:
-                write_float_file(rtt_path, rtt_snapshot.get(name, 0.0))
+                write_float_file(rtt_path, value)
+        for name, value in in_flight_snapshot.items():
             in_flight_path = in_flight_paths.get(name)
             if in_flight_path:
-                write_counter_file(in_flight_path, in_flight_snapshot.get(name, 0))
+                write_counter_file(in_flight_path, value)
+        for name, value in cwnd_snapshot.items():
             cwnd_path = cwnd_paths.get(name)
             if cwnd_path:
-                write_counter_file(cwnd_path, cwnd_snapshot.get(name, 0))
+                write_counter_file(cwnd_path, value)
 
     def writer_loop() -> None:
         while not stop_writer.wait(writer_interval):

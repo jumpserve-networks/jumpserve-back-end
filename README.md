@@ -121,6 +121,48 @@ python3 run_queue.py queues/nines/netem-nines-delay-10ms-vs-11-19ms.yaml --dry-r
 python3 run_queue.py --prefix delay --dry-run
 ```
 
+## Snapshot metric tests
+
+Run the sender regression suite on macOS or Linux without network access:
+
+```bash
+python3 -B -m unittest test_sender_metrics -v
+```
+
+It checks RTT, congestion-window, and packets-in-flight file output for both
+benchmark runners with byte counters disabled, enabled, or partially configured.
+The kernel snapshot path collects throughput from network interfaces, so sender
+TCP metric files must be written independently of optional sender byte counters.
+
+For real Linux TCP measurements, run the integration suite as root in a
+disposable environment with Python 3.10+, iproute2, ethtool, procps, and kernel
+support for Cubic, BBR, network namespaces, and netem:
+
+```bash
+python3 -B -m unittest test_kernel_metrics -v
+```
+
+The suite runs the Nines, HotNets, and two-flow wrapper runners with two 100 MB
+transfers, Cubic/BBR, 10/60 ms delays, a 100 Mbit/s bottleneck, a 125 KB queue, and
+10 ms kernel snapshots. Set `JUMPSERVE_TEST_CCAS=cubic,cubic` on kernels without
+BBR support. Unsupported algorithms fail before any receivers are started.
+It requires nonzero RTT, congestion-window, and
+packets-in-flight samples for each client and checks that both transfers finish.
+It disables Supabase persistence and cleans up its namespaces after each run.
+
+Docker Desktop can provide the Linux environment on macOS:
+
+```bash
+docker build -t jumpserve-kernel-metrics-test -f Dockerfile.metrics-test .
+docker run --rm --network none --cap-add NET_ADMIN --cap-add SYS_ADMIN \
+  -e JUMPSERVE_TEST_CCAS=cubic,cubic \
+  --mount "type=bind,source=$PWD,target=/work,readonly" \
+  jumpserve-kernel-metrics-test python3 -B -m unittest test_kernel_metrics -v
+```
+
+The namespace capabilities are required for this test. Use a disposable container;
+the test mounts the checkout read-only and requires no external network access.
+
 ## Queue Layout
 
 The current repo has a few different queue families:
