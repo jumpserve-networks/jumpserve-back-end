@@ -1,4 +1,23 @@
-# Network Emulation Benchmark
+# JumpServe Test Runners
+
+## Application modules
+
+JumpServe's frontend presents a module chooser after sign-in. The existing
+application's runners and stored emulation results belong to **Congestion Control
+Emulated Tests**, identified by `congestion-control-emulated`. Existing runner
+arguments, queue formats, and `emulated_*` result tables retain their meaning.
+
+**Congestion Control Real World Tests** (`congestion-control-real-world`) is the
+next planned application module; its frontend card is marked **Coming soon**.
+Implement its runner, result storage, and API integration separately before
+enabling it. A UI module selection does not change the existing runner or its
+measurement semantics.
+
+The CDN research experiments below are independent of the application's emulated
+test module. They are not yet exposed as a selectable frontend module. Preserve
+their protocols and result formats when adding future CDN application tools.
+
+## Network emulation benchmarks
 
 This repository currently centers on a small set of Python entrypoints for Linux network-emulation experiments plus a YAML queue runner. The older README content referred to `netem_cubic_benchmark.py`, but the files currently present in the repo are:
 
