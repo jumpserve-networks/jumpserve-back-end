@@ -23,7 +23,7 @@ def command(job, node, action):
     if action == "start":
         settings["start_epoch"] = job["start_epoch"]
         settings["upload_url"] = cloud.client("s3").generate_presigned_url("put_object", Params={
-            "Bucket": os.environ["RESULTS_BUCKET"], "Key": f'{job["job_id"]}/{node["name"]}.json'}, ExpiresIn=3600)
+            "Bucket": os.environ["RESULTS_BUCKET"], "Key": f'{job["job_id"]}/{node["name"]}.json', "ContentType": "application/json"}, ExpiresIn=3600)
     lines += ["echo '" + encoded(json.dumps(settings)) + f"' | base64 -d > /var/lib/jumpserve/{action}.json",
               f"chmod 600 /var/lib/jumpserve/{action}.json",
               f"python3 /var/lib/jumpserve/runtime.py {action} /var/lib/jumpserve/{action}.json"]

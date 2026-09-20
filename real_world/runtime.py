@@ -112,7 +112,8 @@ def upload(url, data):
     payload = json.dumps(data).encode()
     for attempt in range(5):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, data=payload, method="PUT"), timeout=30) as response:
+            with urllib.request.urlopen(urllib.request.Request(url, data=payload, method="PUT",
+                    headers={"Content-Type": "application/json"}), timeout=30) as response:
                 if response.status == 200:
                     return
         except Exception:

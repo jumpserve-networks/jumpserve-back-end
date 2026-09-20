@@ -7,7 +7,8 @@ PROJECT = "JumpServeRealWorld"
 def client(service, region=None):
     import boto3
     from botocore.config import Config
-    return boto3.client(service, region_name=region, config=Config(connect_timeout=3, read_timeout=10, retries={"max_attempts": 2}))
+    return boto3.client(service, region_name=region, config=Config(connect_timeout=3, read_timeout=10,
+        retries={"max_attempts": 2}, **({"signature_version": "s3v4"} if service == "s3" else {})))
 
 
 def regions():

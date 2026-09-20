@@ -64,6 +64,23 @@ class ContractTests(unittest.TestCase):
 
 
 class NetworkTests(unittest.TestCase):
+    def test_artifact_upload_uses_the_same_content_type_as_the_signed_url(self):
+        response = MagicMock()
+        response.__enter__.return_value.status = 200
+        with patch.object(runtime.urllib.request, "urlopen", return_value=response) as upload:
+            runtime.upload("https://example.test/report", {"success": True})
+        request = upload.call_args.args[0]
+        self.assertEqual(request.get_header("Content-type"), "application/json")
+        self.assertEqual(request.method, "PUT")
+        value = job()
+        value["start_epoch"] = 100
+        value["nodes"][0]["instance_id"] = "i-test"
+        with patch.object(cloud, "client") as aws, patch.dict(os.environ, RESULTS_BUCKET="results"):
+            aws.return_value.generate_presigned_url.return_value = "https://example.test/report"
+            aws.return_value.send_command.return_value = {"Command": {"CommandId": "command"}}
+            controller.command(value, value["nodes"][0], "start")
+        self.assertEqual(aws.return_value.generate_presigned_url.call_args.kwargs["Params"]["ContentType"], "application/json")
+
     def test_receivers_bind_overlay_and_server_is_sender(self):
         value = settings()
         value["node"] = config.nodes_for(value)[2]

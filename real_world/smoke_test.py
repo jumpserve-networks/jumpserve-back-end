@@ -6,6 +6,7 @@ Without --apply this only discovers resources/placements and prints the plan.
 import argparse
 import json
 import os
+import subprocess
 import time
 import uuid
 
@@ -33,6 +34,12 @@ def main():
     parser.add_argument("--cancel", action="store_true")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
+    # Support AWS CLI browser-login credentials even with an older local boto3.
+    # Credentials stay in memory and are never written to files or printed.
+    import boto3
+    credentials = json.loads(subprocess.check_output(["aws", "configure", "export-credentials", "--format", "process"], text=True))
+    boto3.setup_default_session(aws_access_key_id=credentials["AccessKeyId"], aws_secret_access_key=credentials["SecretAccessKey"],
+                               aws_session_token=credentials.get("SessionToken"))
     resources = cloud.client("cloudformation").describe_stack_resources(StackName=args.stack)["StackResources"]
     for kind, variable in [("AWS::DynamoDB::Table", "TABLE_NAME"), ("AWS::S3::Bucket", "RESULTS_BUCKET"), ("AWS::StepFunctions::StateMachine", "STATE_MACHINE_ARN")]:
         os.environ[variable] = next(r["PhysicalResourceId"] for r in resources if r["ResourceType"] == kind and r["LogicalResourceId"].startswith("RealWorldTests"))

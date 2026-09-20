@@ -97,6 +97,15 @@ check the retained stores, authenticated API configuration, workflow, scheduled
 reaper, and resource-tag restrictions. Live validation must verify successful
 transfer, cancellation, and removal of every tagged EC2/network resource.
 
+After deploying the infrastructure, `python3 -B real_world/smoke_test.py` previews
+a bounded three-machine, ten-second test using the current AWS CLI login.
+Add `--apply` to run it, or `--apply --cancel` to verify cancellation during
+provisioning. Select additional Regions with `--bottleneck-region` and repeat
+`--receiver-region` for multiple receivers. The command waits for teardown,
+checks stored results and shared-queue traffic, and requests cancellation if
+interrupted. It prints no credentials and uses an operator-only test owner;
+these validation runs are not research repetitions.
+
 Primary references: [WireGuard](https://www.wireguard.com/quickstart/),
 [iperf3](https://software.es.net/iperf/invoking.html),
 [AWS AZ IDs](https://docs.aws.amazon.com/global-infrastructure/latest/regions/az-ids.html),
