@@ -15,7 +15,7 @@ def encoded(value):
 
 
 def command(job, node, action):
-    settings = dict(job["config"], node=node, nodes=job["nodes"])
+    settings = dict(job["config"], node=node, nodes=job["nodes"], job_id=job["job_id"], runtime_revision=job.get("runtime_revision"))
     lines = ["set -eu", "install -d -m 700 /var/lib/jumpserve"]
     if action == "prepare":
         lines += ["timeout 900 sh -c 'until test -f /var/lib/jumpserve/bootstrap-ready; do sleep 3; done'",

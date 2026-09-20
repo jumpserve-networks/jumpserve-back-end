@@ -108,6 +108,31 @@ class NetworkTests(unittest.TestCase):
 
 
 class LifecycleTests(unittest.TestCase):
+    def test_provisioning_retry_adopts_instance_and_enforces_ephemeral_launch(self):
+        value = job()
+        ec2 = MagicMock()
+        ec2.describe_vpcs.return_value = {"Vpcs": [{"VpcId": "vpc-1", "State": "available"}]}
+        ec2.describe_internet_gateways.return_value = {"InternetGateways": [{"InternetGatewayId": "igw-1", "Attachments": [{"VpcId": "vpc-1"}]}]}
+        ec2.describe_route_tables.return_value = {"RouteTables": [{"RouteTableId": "rtb-1", "Routes": [{"DestinationCidrBlock": "0.0.0.0/0"}], "Associations": [{"SubnetId": "subnet-1"}]}]}
+        ec2.describe_subnets.return_value = {"Subnets": [{"SubnetId": "subnet-1"}]}
+        ec2.describe_security_groups.return_value = {"SecurityGroups": [{"GroupId": "sg-1"}]}
+        ec2.describe_instances.return_value = {"Reservations": []}
+        ec2.run_instances.return_value = {"Instances": [{"InstanceId": "i-1"}]}
+        ssm = MagicMock()
+        ssm.get_parameter.return_value = {"Parameter": {"Value": "ami-1"}}
+        with patch.object(cloud, "client", side_effect=lambda service, region: ec2 if service == "ec2" else ssm):
+            cloud.provision(value, value["nodes"][0], "profile")
+            ec2.describe_instances.return_value = {"Reservations": [{"Instances": [{"InstanceId": "i-1", "ImageId": "ami-1", "State": {"Name": "running"}}]}]}
+            cloud.provision(value, value["nodes"][0], "profile")
+        ec2.run_instances.assert_called_once()
+        params = ec2.run_instances.call_args.kwargs
+        self.assertEqual(params["ClientToken"], "job-1-server")
+        self.assertEqual(params["InstanceInitiatedShutdownBehavior"], "terminate")
+        self.assertEqual(params["MetadataOptions"]["HttpTokens"], "required")
+        self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["DeleteOnTermination"])
+        self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["Encrypted"])
+        self.assertEqual(value["nodes"][0]["instance_id"], "i-1")
+
     def test_cancellation_cleans_up_before_allocating_anything_else(self):
         value = job()
         value["cancel_requested"] = True

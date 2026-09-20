@@ -36,7 +36,8 @@ def main():
     resources = cloud.client("cloudformation").describe_stack_resources(StackName=args.stack)["StackResources"]
     for kind, variable in [("AWS::DynamoDB::Table", "TABLE_NAME"), ("AWS::S3::Bucket", "RESULTS_BUCKET"), ("AWS::StepFunctions::StateMachine", "STATE_MACHINE_ARN")]:
         os.environ[variable] = next(r["PhysicalResourceId"] for r in resources if r["ResourceType"] == kind and r["LogicalResourceId"].startswith("RealWorldTests"))
-    os.environ["RUNTIME_REVISION"] = "deployment-smoke-test"
+    api_function = next(r["PhysicalResourceId"] for r in resources if r["ResourceType"] == "AWS::Lambda::Function" and r["LogicalResourceId"].startswith("RealWorldTestsApi"))
+    os.environ["RUNTIME_REVISION"] = cloud.client("lambda").get_function_configuration(FunctionName=api_function)["Environment"]["Variables"]["RUNTIME_REVISION"]
     config = {"server": placement(args.server_region), "bottleneck": placement(args.bottleneck_region),
               "receivers": [placement(r) for r in (args.receiver_region or ["us-east-1"])], "cca": args.cca,
               "duration_seconds": 10, "rate_mbit": 10, "buffer_kbytes": 125, "notes": "Bounded deployment validation; exclude from research comparisons."}

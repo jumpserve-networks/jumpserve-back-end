@@ -125,6 +125,10 @@ def measure(config):
     node = config["node"]
     report = {"node": node["name"], "success": False, "kernel": platform.release(), "cca": config["cca"],
               "iperf_version": run("iperf3", "--version"), "planned_start_epoch": config["start_epoch"], "samples": []}
+    report["job_id"] = config["job_id"]
+    report["runtime_revision"] = config["runtime_revision"]
+    report["configuration"] = {key: config[key] for key in ("server", "bottleneck", "receivers", "cca", "duration_seconds", "rate_mbit", "buffer_kbytes", "notes")}
+    report["placement"] = {key: node.get(key) for key in ("name", "region", "zone_id", "instance_type", "instance_id", "image_id", "overlay_ip")}
     try:
         wait = config["start_epoch"] - time.time()
         if wait < -2:
@@ -156,6 +160,9 @@ def measure(config):
                     raise RuntimeError(report["iperf"].get("error", completed.stderr)[-1000:])
                 if report["iperf"].get("end", {}).get("sum_received", {}).get("bytes", 0) <= 0:
                     raise RuntimeError("No test bytes received.")
+                reported_cca = report["iperf"].get("end", {}).get("sender_tcp_congestion")
+                if reported_cca and reported_cca != config["cca"]:
+                    raise RuntimeError("iperf sender reported a different congestion control algorithm.")
         report["wireguard"] = run("wg", "show", "wg0", "transfer")
         report["forward_counters"] = run("iptables", "-nvx", "-L", "FORWARD")
         report["success"] = True
