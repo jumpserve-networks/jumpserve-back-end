@@ -51,8 +51,9 @@ regional Canonical Ubuntu 24.04 public SSM AMI parameter and records the image I
 
 The infrastructure adds `/real-world/*` to the existing benchmark API. The API
 checks the Supabase access token against `/auth/v1/user` and requires Google
-authentication. Status, cancellation, listing, and signed result downloads are
-owner-scoped. The browser never receives AWS credentials. Request IDs make launch
+authentication. Test management, cancellation, and the `/tests` history are
+owner-scoped. The separate `/reports` workspace shares measurement reports among
+all signed-in researchers. The browser never receives AWS credentials. Request IDs make launch
 retries idempotent; the workflow name is derived from the owner and request ID.
 
 Jobs/configurations live in a separate DynamoDB table with owner/history and
@@ -105,6 +106,43 @@ provisioning. Select additional Regions with `--bottleneck-region` and repeat
 checks stored results and shared-queue traffic, and requests cancellation if
 interrupted. It prints no credentials and uses an operator-only test owner;
 these validation runs are not research repetitions.
+
+## Research reporting API
+
+Install offline test dependencies with
+`python3 -m pip install -r real_world/requirements-test.txt` before running tests.
+
+- `GET /real-world/reports?cursor=...` returns newest-first shared test metadata,
+  50 records per page. The `reports-created` index uses existing `schema_version`
+  and `created_at` attributes, so existing records are backfilled by DynamoDB.
+- `GET /real-world/reports/{jobId}` returns normalized measurement traces,
+  summary metrics, eligibility checks, provenance, and source SHA-256/version IDs.
+  Add `?summary=1` to omit traces for bounded comparison requests.
+- `GET /real-world/reports/{jobId}/artifacts` signs only expected machine JSON
+  files for five minutes. It cannot sign arbitrary objects or internal commands.
+
+All routes validate the Supabase Google session before reading DynamoDB or S3.
+Reports omit owner IDs and internal command state. The `can_manage` flag enables
+the owner's management link; cancellation still independently checks ownership.
+No unauthenticated report endpoint or public S3 access is introduced. Signed
+download URLs are bearer capabilities until expiry, not permanent public links.
+
+`reports.py` defines `real-world-report-v1`. Receiver averages use bytes and actual
+duration; combined throughput sums flow averages and is not a synchronized rate.
+Jain fairness describes those averages, with one whole test as the replication
+unit. Sender RTT is read in milliseconds from the exact data socket's full tuple;
+control sockets and zero placeholders are excluded. Cwnd bytes are cwnd × MSS.
+Only shared BFIFO `10:` contributes queue data. Estimated drain time is backlog
+bytes × 8 / (rate Mbit/s × 1000), never RTT minus a presumed base delay.
+Summary RTT/queue statistics exclude the post-test tail while traces retain it.
+
+Comparison keys retain all non-CCA/non-notes configuration and per-machine
+AMI/kernel/iperf/runtime provenance. Failed, incomplete, inconsistent, and operator
+smoke tests receive explicit exclusions. Optional missing traces are warnings.
+Malformed artifacts are partial evidence and missing values remain null. Reads
+are capped at 32 MiB per object and 64 MiB total. Frontend comparisons preserve
+separate configuration blocks, independent whole-test replication counts and
+exploratory bootstrap intervals; see `jumpserve-front-end/docs/real-world-reports.md`.
 
 Primary references: [WireGuard](https://www.wireguard.com/quickstart/),
 [iperf3](https://software.es.net/iperf/invoking.html),
