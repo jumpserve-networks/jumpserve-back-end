@@ -6,6 +6,9 @@ on:
     paths-ignore:
       - '**/*.md'
       - 'experiments/**'
+      - 'real_world/**'
+      - '.github/workflows/real-world.yml'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:

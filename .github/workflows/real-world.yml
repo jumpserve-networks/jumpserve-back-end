@@ -1,0 +1,18 @@
+name: Test real-world EC2 runtime
+on:
+  push:
+    branches: [main]
+    paths: ['real_world/**', '.github/workflows/real-world.yml']
+  pull_request:
+    paths: ['real_world/**', '.github/workflows/real-world.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -B -m unittest discover -s real_world/tests -v

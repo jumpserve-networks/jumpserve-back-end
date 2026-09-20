@@ -7,11 +7,10 @@ application's runners and stored emulation results belong to **Congestion Contro
 Emulated Tests**, identified by `congestion-control-emulated`. Existing runner
 arguments, queue formats, and `emulated_*` result tables retain their meaning.
 
-**Congestion Control Real World Tests** (`congestion-control-real-world`) is the
-next planned application module; its frontend card is marked **Coming soon**.
-Implement its runner, result storage, and API integration separately before
-enabling it. A UI module selection does not change the existing runner or its
-measurement semantics.
+**Congestion Control Real World Tests** (`congestion-control-real-world`) uses
+[`real_world/`](real_world/README.md): fresh EC2 machines for one server, one shared
+bottleneck, and independently placed receivers. Its authenticated API, workflow,
+results, and cleanup are separate from emulated tests.
 
 The CDN research experiments below are independent of the application's emulated
 test module. They are not yet exposed as a selectable frontend module. Preserve
