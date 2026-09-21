@@ -1,13 +1,13 @@
-"""Versioned, authenticated analysis of EC2 artifacts. No inferred base RTT."""
+"""Versioned Supabase-backed analysis of EC2 artifacts. No inferred base RTT."""
 import hashlib
 import json
 import math
-import os
 import re
 from statistics import median
 
-import cloud
-from config import canonical_json, nodes_for, public_job
+import artifacts as evidence
+import database
+from config import TERMINAL, canonical_json, nodes_for, public_job
 
 ANALYSIS_VERSION = "real-world-report-v1"
 MAX_ARTIFACT_BYTES = 32 * 1024 * 1024
@@ -262,39 +262,48 @@ def build_report(job, artifacts, sources=None, load_issues=None, summary_only=Fa
     return result
 
 
-def load_report(job, summary_only=False):
-    client = cloud.client("s3")
+def read_evidence(job, summary_only=False):
     artifacts, sources, issues = {}, [], []
     total_bytes = 0
+    archived = evidence.records(job["job_id"])
     for node in nodes_for(job["config"]):
         name = node["name"]
-        key = f'{job["job_id"]}/{name}.json'
         try:
-            response = client.get_object(Bucket=os.environ["RESULTS_BUCKET"], Key=key)
-        except Exception as error:
-            if getattr(error, "response", {}).get("Error", {}).get("Code") in ("NoSuchKey", "404"):
+            result = evidence.read(job["job_id"], name, archived,
+                                   max_bytes=min(MAX_ARTIFACT_BYTES, MAX_TOTAL_BYTES - total_bytes))
+            if result is None:
                 issues.append(f"{name}: raw report has not been stored.")
                 continue
-            raise
-        stream = response["Body"]
-        try:
-            length = response["ContentLength"]
-            if length > MAX_ARTIFACT_BYTES or total_bytes + length > MAX_TOTAL_BYTES:
-                issues.append(f"{name}: artifact exceeds interactive analysis limits; use the raw download.")
-                continue
-            payload = stream.read(min(MAX_ARTIFACT_BYTES, MAX_TOTAL_BYTES - total_bytes) + 1)
+            payload, source = result
             total_bytes += len(payload)
-            if len(payload) != length:
-                issues.append(f"{name}: artifact length is inconsistent.")
-                continue
+            sources.append(source)
             raw = json.loads(payload, parse_constant=lambda value: None)
             if not isinstance(raw, dict):
-                raise ValueError("Expected an object")
+                raise ValueError("Artifact is not a valid JSON object.")
             artifacts[name] = raw
-            sources.append({"name": name + ".json", "sha256": hashlib.sha256(payload).hexdigest(),
-                            "version_id": response.get("VersionId"), "bytes": length})
-        except (ValueError, UnicodeDecodeError):
-            issues.append(f"{name}: artifact is not a valid JSON object.")
-        finally:
-            stream.close()
+        except (ValueError, UnicodeDecodeError) as error:
+            issues.append(f"{name}: {error}")
     return build_report(job, artifacts, sources, issues, summary_only)
+
+
+def persist_report(job):
+    report = read_evidence(job)
+    database.rest("real_world_reports", "POST", {"job_id": job["job_id"], "report": report},
+                  headers={"Prefer": "resolution=merge-duplicates"})
+    return report
+
+
+def load_report(job, summary_only=False):
+    if job["status"] in TERMINAL:
+        rows = database.rest("real_world_reports", params={"job_id": "eq." + job["job_id"], "select": "report",
+                                                          "analysis_version": "eq." + ANALYSIS_VERSION})
+        # A failed archive attempt is retryable without losing the original data.
+        if rows and rows[0]["report"]["job"].get("updated_at") == job.get("updated_at"):
+            report = rows[0]["report"]
+            if summary_only:
+                report.pop("queue", None)
+                for receiver in report["receivers"]:
+                    receiver.pop("throughput", None)
+                    receiver.pop("tcp", None)
+            return report
+    return read_evidence(job, summary_only)

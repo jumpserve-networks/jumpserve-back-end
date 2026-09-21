@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import api
+import artifacts
 import cloud
 import config
 import controller
@@ -104,11 +105,10 @@ class NetworkTests(unittest.TestCase):
         value = job()
         value["start_epoch"] = 100
         value["nodes"][0]["instance_id"] = "i-test"
-        with patch.object(cloud, "client") as aws, patch.dict(os.environ, RESULTS_BUCKET="results"):
-            aws.return_value.generate_presigned_url.return_value = "https://example.test/report"
+        with patch.object(cloud, "client") as aws, patch.object(artifacts, "signed_upload", return_value="https://example.test/report") as signed:
             aws.return_value.send_command.return_value = {"Command": {"CommandId": "command"}}
             controller.command(value, value["nodes"][0], "start")
-        self.assertEqual(aws.return_value.generate_presigned_url.call_args.kwargs["Params"]["ContentType"], "application/json")
+        signed.assert_called_once_with("job-1", "server")
 
     def test_receivers_bind_overlay_and_server_is_sender(self):
         value = settings()
@@ -243,7 +243,7 @@ class LifecycleTests(unittest.TestCase):
              patch.object(controller, "step", side_effect=RuntimeError("capacity exhausted")):
             self.assertFalse(controller.tick("job-1")["finished"])
         self.assertEqual(save.call_args.args[0]["status"], "cleaning")
-        release.assert_called_once_with("job-1")
+        release.assert_called_once_with("job-1", True)
 
     def test_duplicate_worker_does_not_touch_resources(self):
         with patch.object(controller.store, "claim", return_value=False), patch.object(controller, "step") as step:
@@ -251,8 +251,7 @@ class LifecycleTests(unittest.TestCase):
         step.assert_not_called()
 
     def test_missing_artifacts_are_pending_not_zero_measurements(self):
-        with patch.object(cloud, "client") as aws, patch.dict(os.environ, RESULTS_BUCKET="results"):
-            aws.return_value.get_object.side_effect = AwsError("NoSuchKey")
+        with patch.object(artifacts, "records", return_value=[]), patch.object(artifacts, "read", return_value=None):
             value = job("running")
             self.assertFalse(controller.collect(value))
         self.assertNotIn("results", value)
@@ -260,8 +259,7 @@ class LifecycleTests(unittest.TestCase):
     def test_collect_preserves_units_and_only_then_begins_cleanup(self):
         value = job("running")
         report = {"success": True, "started_at": 100, "iperf": {"end": {"sum_received": {"bits_per_second": 12_500_000, "bytes": 1000, "seconds": 30}}}}
-        with patch.object(cloud, "client") as aws, patch.dict(os.environ, RESULTS_BUCKET="results"):
-            aws.return_value.get_object.side_effect = lambda **kw: {"Body": io.BytesIO(json.dumps(report).encode())}
+        with patch.object(artifacts, "records", return_value=[]), patch.object(artifacts, "read", return_value=(json.dumps(report).encode(), {})):
             self.assertTrue(controller.collect(value))
         self.assertEqual(len(value["results"]), 2)
         self.assertEqual(value["results"][0]["received_mbit_per_second"], 12.5)
@@ -328,7 +326,7 @@ class ApiTests(unittest.TestCase):
     def test_retry_reuses_workflow_name_and_never_creates_second_job(self):
         value = job()
         body = {"config": value["config"], "request_id": "a1000000-0000-4000-a000-000000000001"}
-        with patch.object(api.store, "load", return_value=value), patch.object(api.store, "table") as table, \
+        with patch.object(api.store, "load", return_value=value), patch.object(api.store, "create") as table, \
              patch.object(cloud, "client") as aws, patch.dict(os.environ, STATE_MACHINE_ARN="machine"):
             api.launch(body, "user-1")
             api.launch(body, "user-1")
@@ -346,7 +344,7 @@ class ApiTests(unittest.TestCase):
 
     def test_live_availability_is_checked_before_persisting(self):
         body = {"config": settings(), "request_id": "a1000000-0000-4000-a000-000000000001"}
-        with patch.object(api.store, "load", return_value=None), patch.object(api.store, "table") as table, \
+        with patch.object(api.store, "load", return_value=None), patch.object(api.store, "create") as table, \
              patch.object(cloud, "locations", return_value=[]), self.assertRaises(ValueError):
             api.launch(body, "user-1")
         table.assert_not_called()

@@ -10,6 +10,9 @@ from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import api
+import artifacts
+import database
+import store
 import config
 import reports
 
@@ -153,25 +156,20 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(result['receivers'][0]['throughput_intervals'], 2)
         self.assertTrue(any('2 invalid' in warning for warning in result['warnings']))
 
-    def test_artifact_bounds_and_body_closure(self):
+    def test_artifact_bounds_and_summary_storage(self):
         job, raw = fixture()
-        streams = []
-        def read(**kwargs):
-            name = kwargs['Key'].split('/')[-1][:-5]
-            content = json.dumps(raw[name]).encode()
-            body = io.BytesIO(content)
-            streams.append(body)
-            return {'Body': body, 'ContentLength': len(content), 'VersionId': 'version-1'}
-        client = MagicMock()
-        client.get_object.side_effect = read
-        with patch.object(reports.cloud, 'client', return_value=client), patch.dict(os.environ, RESULTS_BUCKET='private-results'):
-            report = reports.load_report(job)
+        def read(job_id, name, sources, max_bytes):
+            payload = json.dumps(raw[name]).encode()
+            if len(payload) > max_bytes:
+                raise ValueError('Artifact exceeds interactive analysis limits')
+            return payload, {'name': name + '.json', 'sha256': 'digest', 'bytes': len(payload), 'version_id': None}
+        with patch.object(artifacts, 'records', return_value=[]), patch.object(artifacts, 'read', side_effect=read):
+            report = reports.read_evidence(job)
             self.assertEqual(len(report['sources']), 4)
-            self.assertTrue(all(body.closed for body in streams))
             with patch.object(reports, 'MAX_TOTAL_BYTES', 1):
-                report = reports.load_report(job)
+                report = reports.read_evidence(job)
                 self.assertFalse(report['comparison']['eligible'])
-                self.assertTrue(all(body.closed for body in streams))
+                self.assertTrue(any('limits' in issue for issue in report['warnings']))
 
     def test_signed_in_researchers_share_reports_but_only_owner_manages_test(self):
         job, _ = fixture()
@@ -198,31 +196,33 @@ class ReportTests(unittest.TestCase):
     def test_shared_catalog_paginates_without_exposing_owners_or_commands(self):
         job, _ = fixture()
         job['commands'] = {'private': 'internal-command'}
-        page_key = {'job_id': 'test-report', 'schema_version': 1, 'created_at': 1}
-        table = MagicMock()
-        table.query.return_value = {'Items': [job], 'LastEvaluatedKey': page_key}
+        job['job_id'] = '00000000-0000-4000-8000-000000000001'
+        rows = [{'record': job}] * 51
         event = {'rawPath': '/real-world/reports', 'requestContext': {'http': {'method': 'GET'}}}
-        with patch.object(api.store, 'table', return_value=table):
+        with patch.object(store.database, 'rest', return_value=rows) as query:
             first = api.dispatch(event, 'another-researcher')
             self.assertNotIn('owner', first['tests'][0])
             self.assertNotIn('commands', first['tests'][0])
             event['queryStringParameters'] = {'cursor': first['cursor']}
             api.dispatch(event, 'another-researcher')
-            self.assertEqual(table.query.call_args.kwargs['ExclusiveStartKey'], page_key)
-            self.assertEqual(table.query.call_args.kwargs['IndexName'], 'reports-created')
+            self.assertIn('job_id.lt.', query.call_args.kwargs['params']['or'])
+            self.assertEqual(query.call_args.args[0], 'real_world_runs')
             event['queryStringParameters'] = {'cursor': 'bad-cursor'}
             with self.assertRaises(ValueError):
                 api.dispatch(event, 'another-researcher')
 
     def test_shared_downloads_only_sign_expected_measurement_objects(self):
         job, _ = fixture()
-        client = MagicMock()
-        client.list_objects_v2.return_value = {'Contents': [{'Key': 'test-report/server.json'}, {'Key': 'test-report/internal.txt'}]}
-        client.generate_presigned_url.return_value = 'temporary-link'
         event = {'rawPath': '/real-world/reports/test-report/artifacts', 'requestContext': {'http': {'method': 'GET'}}}
-        with patch.object(api.store, 'load', return_value=job), patch.object(api.cloud, 'client', return_value=client), patch.dict(os.environ, RESULTS_BUCKET='private-results'):
-            self.assertEqual(api.dispatch(event, None), {'artifacts': [{'name': 'server.json', 'url': 'temporary-link'}]})
-            client.generate_presigned_url.assert_called_once()
+        with patch.object(api.store, 'load', return_value=job), patch.object(artifacts, 'records', return_value=[]), \
+                patch.object(database, 'base_url', return_value='https://example.supabase.co'), \
+                patch.object(database, 'request', side_effect=[
+                    [{'name': 'server.json', 'id': 'file'}, {'name': 'internal.txt', 'id': 'internal'}],
+                    {'signedURL': '/object/sign/temporary-link'}]) as request:
+            response = api.dispatch(event, None)
+            self.assertEqual([a['name'] for a in response['artifacts']], ['server.json'])
+            self.assertIn('/server.json', request.call_args.args[0])
+            self.assertEqual(request.call_args.args[2], {'expiresIn': 300})
 
 
 if __name__ == '__main__':

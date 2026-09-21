@@ -6,6 +6,7 @@ from pathlib import Path
 import time
 
 import cloud
+import artifacts
 from config import TERMINAL
 import store
 
@@ -22,8 +23,7 @@ def command(job, node, action):
                   "echo '" + encoded(Path(__file__).with_name("runtime.py").read_text()) + "' | base64 -d > /var/lib/jumpserve/runtime.py"]
     if action == "start":
         settings["start_epoch"] = job["start_epoch"]
-        settings["upload_url"] = cloud.client("s3").generate_presigned_url("put_object", Params={
-            "Bucket": os.environ["RESULTS_BUCKET"], "Key": f'{job["job_id"]}/{node["name"]}.json', "ContentType": "application/json"}, ExpiresIn=3600)
+        settings["upload_url"] = artifacts.signed_upload(job["job_id"], node["name"])
     lines += ["echo '" + encoded(json.dumps(settings)) + f"' | base64 -d > /var/lib/jumpserve/{action}.json",
               f"chmod 600 /var/lib/jumpserve/{action}.json",
               f"python3 /var/lib/jumpserve/runtime.py {action} /var/lib/jumpserve/{action}.json"]
@@ -72,16 +72,13 @@ def commands_complete(job, action):
 
 
 def collect(job):
-    s3 = cloud.client("s3")
     reports = []
+    sources = artifacts.records(job["job_id"])
     for node in job["nodes"]:
-        try:
-            response = s3.get_object(Bucket=os.environ["RESULTS_BUCKET"], Key=f'{job["job_id"]}/{node["name"]}.json')
-        except Exception as error:
-            if getattr(error, "response", {}).get("Error", {}).get("Code") == "NoSuchKey":
-                return False
-            raise
-        report = json.loads(response["Body"].read())
+        result = artifacts.read(job["job_id"], node["name"], sources)
+        if result is None:
+            return False
+        report = json.loads(result[0])
         if not report.get("success"):
             raise RuntimeError(f'{node["name"]}: ' + report.get("error", "Measurement failed."))
         reports.append((node, report))
@@ -150,11 +147,14 @@ def step(job):
 
 
 def tick(job_id, force_cleanup=False):
-    if not store.claim(job_id):
+    token = store.claim(job_id)
+    if not token:
         return {"job_id": job_id, "finished": False}
     try:
         job = store.load(job_id)
+        job["_lease_token"] = token
         if job["status"] in TERMINAL:
+            finalize(job)
             return {"job_id": job_id, "finished": True}
         if force_cleanup:
             job.update(status="cleaning", outcome=job.get("outcome", "failed"), error=job.get("error", "Workflow interrupted or resource deadline reached."))
@@ -163,9 +163,11 @@ def tick(job_id, force_cleanup=False):
         except Exception as error:
             job.update(status="cleaning", outcome="failed", error=str(error)[-1500:])
         store.save(job)
+        if job["status"] in TERMINAL:
+            finalize(job)
         return {"job_id": job_id, "finished": job["status"] in TERMINAL}
     finally:
-        store.release(job_id)
+        store.release(job_id, token)
 
 
 def handler(event, context):
@@ -173,16 +175,14 @@ def handler(event, context):
 
 
 def reap(event, context):
-    # Query the durable active index, including jobs whose workflow never started.
-    from boto3.dynamodb.conditions import Key
-    args = {"IndexName": "active-deadline", "KeyConditionExpression": Key("active").eq("yes") & Key("deadline").lte(int(time.time()))}
-    while True:
-        page = store.table().query(**args)
-        for job in page["Items"]:
-            try:
-                tick(job["job_id"], force_cleanup=True)
-            except Exception as error:
-                print(json.dumps({"job_id": job["job_id"], "cleanup_error": str(error)}))
-        if "LastEvaluatedKey" not in page:
-            break
-        args["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+    for job_id in store.expired():
+        try:
+            tick(job_id, force_cleanup=True)
+        except Exception as error:
+            print(json.dumps({"job_id": job_id, "cleanup_error": str(error)}))
+
+
+def finalize(job):
+    from reports import persist_report
+    artifacts.freeze(job)
+    persist_report(job)

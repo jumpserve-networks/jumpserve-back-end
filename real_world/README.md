@@ -64,9 +64,26 @@ and the owner-scoped `/tests` history. Catalogs, test status, measurement report
 and measurement downloads are public. Cancellation independently checks ownership. The browser never receives AWS credentials. Request IDs make launch
 retries idempotent; the workflow name is derived from the owner and request ID.
 
-Jobs/configurations live in a separate DynamoDB table with owner/history and
-active/deadline indexes. Raw per-machine JSON lives in a private, versioned S3
-bucket. Both stores are retained on stack deletion. Reports contain iperf JSON,
+Both congestion-control modules persist their data in **Supabase**. Emulated
+measurements remain in the existing `emulated_*` tables. Real-world data uses:
+
+- `real_world_jobs`: private configuration, owner, controller checkpoints,
+  atomic cancellation, and fenced leases. Indexed owner history and deadlines.
+- `real_world_runs`: public read-only job projections and indexed catalog.
+- `real_world_reports`: public read-only normalized reports, receiver summaries,
+  per-second throughput/TCP/queue traces, comparison keys, and provenance.
+- `real_world_artifacts`: private manifests with SHA-256 digests, byte counts,
+  object paths, and preserved legacy S3 version IDs.
+- Private Storage bucket `real-world-results`: original per-machine JSON and
+  immutable content-addressed archives. Upload capabilities are scoped to one
+  staging object; completed evidence is archived outside that capability.
+
+RLS is enabled on all tables. Only backend Lambdas can mutate these records,
+using the existing Secrets Manager service key. No service key reaches EC2 or
+browsers. Original DynamoDB/S3 stores remain as migration backups, without runtime
+access. Supabase data is independent of CloudFormation stack deletion.
+
+ Reports contain iperf JSON,
 per-second `ss` samples, queue counters, routing preflights, kernel/software
 versions, load, and actual start timestamps. Partial artifacts remain available
 on failures. Receiver results use Mbit/s, decimal MB, and seconds. These are
@@ -74,12 +91,16 @@ duration-based transfers; they are not emulated file-completion-time samples.
 
 Step Functions advances the resumable controller through provisioning, bootstrap,
 configuration, connectivity checks, the common start barrier, measurement, and
-cleanup. DynamoDB leases prevent simultaneous workflow/reaper mutation.
+cleanup. Postgres leases prevent simultaneous workflow/reaper mutation; expired
+workers cannot overwrite records or release a successor’s lease. Cancellation
+updates independently, so a concurrent checkpoint cannot erase it.
 Resources are tagged at creation with project, job ID, and expiry; discovery
 by tags recovers from interrupted calls before a resource ID was persisted.
 Instances are idempotently launched and have encrypted, delete-on-termination
 root volumes, IMDSv2, and no SSH ingress. Their only role is SSM management.
-Short-lived, object-specific signed PUT URLs upload results.
+Object-specific signed PUT URLs upload results directly to Supabase Storage.
+They expire after two hours and permit retrying the same object. Completed
+reports use archived hashes, not mutable staging uploads.
 
 Cancellation and errors converge on cleanup. `completed`, `failed`, and
 `cancelled` are written **only after** all instances are terminated and the
@@ -102,7 +123,7 @@ python3 -B -m unittest discover -s real_world/tests -v
 ```
 
 These tests do not allocate AWS resources. Infrastructure tests additionally
-check the retained stores, authenticated API configuration, workflow, scheduled
+check the retained legacy backups, Supabase credentials, API configuration, workflow, scheduled
 reaper, and resource-tag restrictions. Live validation must verify successful
 transfer, cancellation, and removal of every tagged EC2/network resource.
 
@@ -121,8 +142,8 @@ Install offline test dependencies with
 `python3 -m pip install -r real_world/requirements-test.txt` before running tests.
 
 - `GET /real-world/reports?cursor=...` returns newest-first shared test metadata,
-  50 records per page. The `reports-created` index uses existing `schema_version`
-  and `created_at` attributes, so existing records are backfilled by DynamoDB.
+  50 records per page. Postgres keyset pagination uses `(created_at, job_id)` so
+  tests created in the same second are neither skipped nor duplicated.
 - `GET /real-world/reports/{jobId}` returns normalized measurement traces,
   summary metrics, eligibility checks, provenance, and source SHA-256/version IDs.
   Add `?summary=1` to omit traces for bounded comparison requests.
@@ -133,7 +154,7 @@ Public GET routes omit owner IDs and internal command state. An optional verifie
 session sets `can_manage` for the owner; anonymous readers cannot manage tests.
 POST routes reject missing or invalid sessions before privileged access. Both
 `/tests/{jobId}/artifacts` and `/reports/{jobId}/artifacts` sign only expected
-measurement files. S3 stays private; signed download URLs expire after five minutes.
+measurement files. Supabase Storage stays private; signed download URLs expire after five minutes.
 
 `reports.py` defines `real-world-report-v1`. Receiver averages use bytes and actual
 duration; combined throughput sums flow averages and is not a synchronized rate.
@@ -156,3 +177,27 @@ Primary references: [WireGuard](https://www.wireguard.com/quickstart/),
 [iperf3](https://software.es.net/iperf/invoking.html),
 [AWS AZ IDs](https://docs.aws.amazon.com/global-infrastructure/latest/regions/az-ids.html),
 [Ubuntu AMIs](https://documentation.ubuntu.com/aws/aws-how-to/instances/find-ubuntu-images/).
+
+## Storage migration and verification
+
+Apply `jumpserve-infra/database/202609200004_real_world_supabase.sql` before
+updating the pinned runtime. It creates the tables, private bucket, backend-only
+RPCs, and RLS policies. `npm run test:database:rls` in infra verifies actual SQL
+lease/cancellation behavior and public/private permissions in a rolled-back
+Postgres transaction. The reaper retries final report persistence independently
+of resource cleanup; failed storage calls do not strand EC2 resources.
+
+With operator AWS credentials, `python3 -B real_world/migrate_supabase.py` inventories
+legacy jobs without writing. `--apply` imports only terminal jobs, never overwrites
+existing job records, copies original bytes, preserves source version IDs, and
+verifies hashes and analysis outputs. `--verify` rechecks the import without
+writing. `--check-storage` checks direct signed upload, retry, and signed download
+using one temporary object and removes only that object. None starts EC2.
+
+For the initial cutover, briefly quiesce the legacy API, wait for in-flight API
+requests to drain, and verify no legacy jobs remain active. Re-run the import,
+deploy all three real-world Lambdas together, then restore API concurrency and
+verify public catalog/detail/downloads and authenticated mutation rejection.
+Do not switch stores while an old worker owns a running test. Keep legacy stores
+until the import and deployed paths have been verified; this migration does not
+delete them. Future deployments need no legacy import or API quiescence.

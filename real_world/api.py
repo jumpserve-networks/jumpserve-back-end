@@ -8,6 +8,7 @@ import urllib.request
 import uuid
 
 import cloud
+import artifacts
 from config import SCHEMA_VERSION, TERMINAL, canonical_json, nodes_for, public_job, validate_config
 import store
 
@@ -67,11 +68,7 @@ def launch(body, owner):
         job = {"job_id": job_id, "owner": owner, "config": config, "nodes": nodes, "status": "provisioning",
                "created_at": now, "updated_at": now, "deadline": now + 2700, "active": "yes",
                "schema_version": SCHEMA_VERSION, "runtime_revision": os.environ["RUNTIME_REVISION"]}
-        try:
-            store.table().put_item(Item=job, ConditionExpression="attribute_not_exists(job_id)")
-        except Exception as error:
-            if getattr(error, "response", {}).get("Error", {}).get("Code") != "ConditionalCheckFailedException":
-                raise
+        if not store.create(job):
             job = owned(job_id, owner)
             if canonical_json(job["config"]) != canonical_json(config):
                 raise HttpError(409, "This request ID was already used for a different configuration.")
@@ -106,41 +103,10 @@ def dispatch(event, owner):
             raise ValueError("Send a JSON object.")
         return launch(body, owner)
     if path == "/real-world/tests" and method == "GET":
-        from boto3.dynamodb.conditions import Key
-        args = {"IndexName": "owner-created", "KeyConditionExpression": Key("owner").eq(owner), "ScanIndexForward": False, "Limit": 50}
-        if query.get("cursor"):
-            import base64
-            try:
-                cursor = json.loads(base64.urlsafe_b64decode(query["cursor"]).decode())
-                if cursor.get("owner") != owner:
-                    raise ValueError()
-                args["ExclusiveStartKey"] = cursor
-            except Exception as error:
-                raise ValueError("Invalid pagination cursor.") from error
-        page = store.table().query(**args)
-        import base64
-        cursor = base64.urlsafe_b64encode(json.dumps(store.native(page["LastEvaluatedKey"])).encode()).decode() if "LastEvaluatedKey" in page else None
-        return {"tests": [public_job(store.native(job)) for job in page["Items"]], "cursor": cursor}
+        return store.page(query.get("cursor"), owner)
     parts = path.split("/")
     if path == "/real-world/reports" and method == "GET":
-        from boto3.dynamodb.conditions import Key
-        import base64
-        args = {"IndexName": "reports-created", "KeyConditionExpression": Key("schema_version").eq(SCHEMA_VERSION),
-                "ScanIndexForward": False, "Limit": 50}
-        if query.get("cursor"):
-            try:
-                cursor = json.loads(base64.urlsafe_b64decode(query["cursor"]).decode())
-                if (set(cursor) != {"job_id", "schema_version", "created_at"}
-                        or cursor["schema_version"] != SCHEMA_VERSION
-                        or not isinstance(cursor["job_id"], str)
-                        or type(cursor["created_at"]) is not int):
-                    raise ValueError()
-                args["ExclusiveStartKey"] = cursor
-            except Exception as error:
-                raise ValueError("Invalid report pagination cursor.") from error
-        page = store.table().query(**args)
-        cursor = base64.urlsafe_b64encode(json.dumps(store.native(page["LastEvaluatedKey"])).encode()).decode() if "LastEvaluatedKey" in page else None
-        return {"tests": [public_job(store.native(job)) for job in page["Items"]], "cursor": cursor}
+        return store.page(query.get("cursor"))
     if len(parts) in (4, 5) and parts[1:3] == ["real-world", "reports"] and method == "GET":
         job = store.load(parts[3])
         if not job or job.get("schema_version") != SCHEMA_VERSION:
@@ -162,7 +128,7 @@ def dispatch(event, owner):
             if job["owner"] != owner:
                 raise HttpError(404, "Test not found.")
             if job["status"] not in TERMINAL:
-                store.table().update_item(Key={"job_id": job["job_id"]}, UpdateExpression="SET cancel_requested = :yes", ExpressionAttributeValues={":yes": True})
+                store.cancel(job["job_id"])
                 job["cancel_requested"] = True
             return public_job(job)
         if len(parts) == 5 and parts[4] == "artifacts" and method == "GET":
@@ -171,13 +137,7 @@ def dispatch(event, owner):
 
 
 def measurement_artifacts(job):
-    # Public downloads contain only measurement reports, never internal objects.
-    s3 = cloud.client("s3")
-    response = s3.list_objects_v2(Bucket=os.environ["RESULTS_BUCKET"], Prefix=job["job_id"] + "/")
-    allowed = {job["job_id"] + "/" + node["name"] + ".json" for node in nodes_for(job["config"])}
-    return {"artifacts": [{"name": item["Key"].split("/")[-1], "url": s3.generate_presigned_url("get_object",
-        Params={"Bucket": os.environ["RESULTS_BUCKET"], "Key": item["Key"]}, ExpiresIn=300)}
-        for item in response.get("Contents", []) if item["Key"] in allowed]}
+    return artifacts.downloads(job)
 
 
 def handler(event, context):

@@ -12,6 +12,7 @@ import uuid
 
 import api
 import cloud
+import artifacts
 from config import INSTANCE_TYPE, TERMINAL
 import store
 
@@ -42,10 +43,12 @@ def main():
     boto3.setup_default_session(aws_access_key_id=credentials["AccessKeyId"], aws_secret_access_key=credentials["SecretAccessKey"],
                                aws_session_token=credentials.get("SessionToken"))
     resources = cloud.client("cloudformation").describe_stack_resources(StackName=args.stack)["StackResources"]
-    for kind, variable in [("AWS::DynamoDB::Table", "TABLE_NAME"), ("AWS::S3::Bucket", "RESULTS_BUCKET"), ("AWS::StepFunctions::StateMachine", "STATE_MACHINE_ARN")]:
+    for kind, variable in [("AWS::StepFunctions::StateMachine", "STATE_MACHINE_ARN")]:
         os.environ[variable] = next(r["PhysicalResourceId"] for r in resources if r["ResourceType"] == kind and r["LogicalResourceId"].startswith("RealWorldTests"))
     api_function = next(r["PhysicalResourceId"] for r in resources if r["ResourceType"] == "AWS::Lambda::Function" and r["LogicalResourceId"].startswith("RealWorldTestsApi"))
-    os.environ["RUNTIME_REVISION"] = cloud.client("lambda").get_function_configuration(FunctionName=api_function)["Environment"]["Variables"]["RUNTIME_REVISION"]
+    environment = cloud.client("lambda").get_function_configuration(FunctionName=api_function)["Environment"]["Variables"]
+    for key in ("RUNTIME_REVISION", "SUPABASE_URL", "SUPABASE_SECRET_ARN"):
+        os.environ[key] = environment[key]
     config = {"server": placement(args.server_region), "bottleneck": placement(args.bottleneck_region),
               "receivers": [placement(r) for r in (args.receiver_region or ["us-east-1"])], "cca": args.cca,
               "duration_seconds": 10, "rate_mbit": 10, "buffer_kbytes": 125, "notes": "Bounded deployment validation; exclude from research comparisons."}
@@ -65,7 +68,7 @@ def main():
                 print(json.dumps({"job_id": job_id, "status": job["status"], "error": job.get("error"), "cleanup_error": job.get("cleanup_error")}), flush=True)
                 last_status = job["status"]
             if args.cancel and not cancelled and any(n.get("instance_id") for n in job["nodes"]):
-                store.table().update_item(Key={"job_id": job_id}, UpdateExpression="SET cancel_requested = :yes", ExpressionAttributeValues={":yes": True})
+                store.cancel(job_id)
                 cancelled = True
             if job["status"] in TERMINAL:
                 expected = "cancelled" if args.cancel else "completed"
@@ -78,8 +81,8 @@ def main():
                         raise RuntimeError("Residual test resources in " + region)
                 if not args.cancel:
                     for node in job["nodes"]:
-                        response = cloud.client("s3").get_object(Bucket=os.environ["RESULTS_BUCKET"], Key=f'{job_id}/{node["name"]}.json')
-                        report = json.loads(response["Body"].read())
+                        response = artifacts.read(job_id, node["name"])
+                        report = json.loads(response[0])
                         if not report["success"] or report["effective_cca"] != args.cca:
                             raise RuntimeError("Missing success/CCA evidence for " + node["name"])
                         if node["role"] == "bottleneck" and not any(q.get("kind") == "bfifo" and q.get("bytes", 0) > 0 for s in report["samples"] for q in s["qdisc"]):
@@ -91,7 +94,7 @@ def main():
     finally:
         latest = store.load(job_id)
         if latest and latest["status"] not in TERMINAL:
-            store.table().update_item(Key={"job_id": job_id}, UpdateExpression="SET cancel_requested = :yes", ExpressionAttributeValues={":yes": True})
+            store.cancel(job_id)
             print(json.dumps({"job_id": job_id, "cancel_requested": True, "deadline": latest["deadline"]}), flush=True)
 
 
