@@ -19,6 +19,7 @@ macOS mode:
 from __future__ import annotations
 
 import argparse
+from benchmark_ingest import IngestBuffer, ingest_settings, require_persistence
 import datetime
 import json
 import os
@@ -701,6 +702,7 @@ def to_positive_smallint_milliseconds(value: Any, field_name: str) -> int:
 
 class SupabaseRestClient:
     def __init__(self, project_id: str, service_role_key: str, timeout_seconds: float = 15.0):
+        self.ingest = IngestBuffer() if ingest_settings() else None
         self.project_id = project_id
         self.service_role_key = service_role_key
         self.timeout_seconds = timeout_seconds
@@ -715,13 +717,14 @@ class SupabaseRestClient:
         payload: Any = None,
         prefer: str = "",
     ) -> Any:
+        if self.ingest:
+            return self.ingest.request(method, table, query, payload)
         url = f"{self.base_url}/{table}"
         if query:
             url = f"{url}?{query}"
 
         headers = {
             "apikey": self.service_role_key,
-            "Authorization": f"Bearer {self.service_role_key}",
             "Content-Type": "application/json",
         }
         if prefer:
@@ -838,8 +841,7 @@ def persist_to_supabase(
     ended_at_utc: datetime.datetime,
     client_configs: List[ClientRunConfig],
 ) -> Dict[str, Any]:
-    if not args.supabase_project_id or not args.supabase_service_role_key:
-        raise ValueError("Both Supabase project id and service role key are required for persistence.")
+    require_persistence(args)
 
     client = SupabaseRestClient(
         project_id=args.supabase_project_id,
@@ -995,6 +997,14 @@ def persist_to_supabase(
         "emulated_runs": emulated_runs,
         "emulated_snapshot_stats_rows": len(emulated_snapshot_rows),
     }
+    if client.ingest:
+        stored = client.ingest.commit()
+        summary["emulated_parent_run_id"] = stored["parent_run_id"]
+        for run in emulated_runs:
+            run["id"] = stored["run_ids"][str(run["id"])]
+            run["emulated_parent_run_id"] = stored["parent_run_id"]
+        summary["algorithm_ids"] = stored["algorithm_ids"]
+        summary["run_id"] = stored["raw_run_id"]
     print(json.dumps({"mode": "supabase_store", **summary}, indent=2), flush=True)
     return summary
 
@@ -1768,6 +1778,7 @@ class NetnsBench:
 
 
 def orchestrator_mode(args: argparse.Namespace) -> int:
+    require_persistence(args)
     client_configs = resolve_client_run_configs(args)
 
     require_linux()
@@ -1793,14 +1804,8 @@ def orchestrator_mode(args: argparse.Namespace) -> int:
             print_banner("Post Test Cleanup")
             bench.cleanup()
 
-    if args.supabase_project_id and args.supabase_service_role_key:
-        ended_at_utc = datetime.datetime.now(datetime.timezone.utc)
-        persist_to_supabase(args, result, started_at_utc, ended_at_utc, client_configs)
-    elif args.supabase_project_id or args.supabase_service_role_key:
-        print(
-            "Supabase persistence skipped: provide both --supabase-project-id and --supabase-service-role-key.",
-            file=sys.stderr,
-        )
+    ended_at_utc = datetime.datetime.now(datetime.timezone.utc)
+    persist_to_supabase(args, result, started_at_utc, ended_at_utc, client_configs)
 
     return 0
 
@@ -1929,14 +1934,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=os.environ.get("SUPABASE_PROJECT_ID", "regphejnlvfpyokpniny"),
         help="Supabase project id. Defaults to SUPABASE_PROJECT_ID env var.",
     )
-    p.add_argument(
-        "--supabase-service-role-key",
-        default=os.environ.get(
-            "SUPABASE_SERVICE_ROLE_KEY",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlZ3BoZWpubHZmcHlva3BuaW55Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDEwMzYyMCwiZXhwIjoyMDc5Njc5NjIwfQ.875_8XmyO48jk1aozUbYEB8ys8YhcGApCJ1P4uiMXFY",
-        ),
-        help="Supabase service role key. Uses hardcoded default when env var is unset.",
-    )
+    # Secrets must never be accepted on the command line or embedded in source.
+    p.set_defaults(supabase_service_role_key=os.environ.get("SUPABASE_SERVICE_ROLE_KEY", ""))
     p.add_argument(
         "--supabase-timeout-seconds",
         type=float,

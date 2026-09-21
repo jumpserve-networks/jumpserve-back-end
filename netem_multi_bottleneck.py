@@ -33,6 +33,7 @@ Usage:
 """
 
 import argparse
+from benchmark_ingest import IngestBuffer, ingest_settings, require_persistence
 import json
 import math
 import os
@@ -119,16 +120,19 @@ class BottleneckLink:
 
 class SupabaseClient:
     def __init__(self, project_id: str, service_key: str, timeout: float = 15.0):
+        self.ingest = IngestBuffer() if ingest_settings() else None
         self.base_url = f"https://{project_id}.supabase.co"
         self.key = service_key
         self.timeout = timeout
         self._algo_cache: Dict[str, int] = {}
 
     def _request(self, method: str, path: str, data: Any = None) -> Any:
+        if self.ingest:
+            table, _, query = path.partition("?")
+            return self.ingest.request(method, table, query, data)
         url = f"{self.base_url}/rest/v1/{path}"
         headers = {
             "apikey": self.key,
-            "Authorization": f"Bearer {self.key}",
             "Content-Type": "application/json",
             "Prefer": "return=representation",
         }
@@ -752,6 +756,8 @@ print(json.dumps({{"bytes_sent": sent, "duration_ms": int((end-start)*1000), "rt
             if rows:
                 sb.insert_snapshot_stats(rows)
 
+        if sb.ingest:
+            parent_id = sb.ingest.commit()["parent_run_id"]
         print(json.dumps({"parent_run_id": parent_id, "topology": args.topology}))
 
 
@@ -788,8 +794,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p.add_argument("--supabase-project-id", type=str,
                    default=os.environ.get("SUPABASE_PROJECT_ID", "regphejnlvfpyokpniny"))
-    p.add_argument("--supabase-service-role-key", type=str,
-                   default=os.environ.get("SUPABASE_SERVICE_ROLE_KEY", ""))
+    p.set_defaults(supabase_service_role_key=os.environ.get("SUPABASE_SERVICE_ROLE_KEY", ""))
     p.add_argument("--supabase-timeout-seconds", type=float, default=15.0)
 
     return p
@@ -818,6 +823,7 @@ def main():
 
     parser = build_parser()
     args = parser.parse_args()
+    require_persistence(args)
 
     n = args.num_clients
     names = parse_csv_str(args.client_names, n, "") if args.client_names else [f"client{i}" for i in range(n)]
@@ -865,12 +871,8 @@ def main():
 
     result = bench.run()
 
-    # Persist to Supabase if key is available
-    if args.supabase_service_role_key:
-        print("Persisting results to Supabase...", file=sys.stderr)
-        bench.persist_to_supabase(result)
-    else:
-        print(json.dumps(result, indent=2))
+    print("Persisting results to Supabase...", file=sys.stderr)
+    bench.persist_to_supabase(result)
 
 
 if __name__ == "__main__":

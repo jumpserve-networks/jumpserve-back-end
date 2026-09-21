@@ -57,7 +57,7 @@ def run_benchmark(runner):
         "--bottleneck-buffer-kbytes", "125",
         "--snapshot-metrics-source", "kernel",
         "--snapshot-interval-ms", "10",
-        "--supabase-project-id", "", "--supabase-service-role-key", "",
+        "--supabase-project-id", "",
     ])
     configs = module.resolve_client_run_configs(args)
     # Fail before creating namespaces or receivers if the kernel lacks a CCA.

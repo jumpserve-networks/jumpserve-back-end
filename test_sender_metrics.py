@@ -52,7 +52,7 @@ class SenderMetricsTests(unittest.TestCase):
                 "--targets", "client1:127.0.0.1:9001:cubic:0.002,client2:127.0.0.1:9002:cubic:0.003",
                 "--chunk-size", "128",
                 # Keep this offline even if credentials are configured locally.
-                "--supabase-project-id", "", "--supabase-service-role-key", "",
+                "--supabase-project-id", "",
             ]
             for metric in metric_names:
                 argv.extend([OUTPUTS[metric], ",".join(

@@ -18,6 +18,23 @@ their protocols and result formats when adding future CDN application tools.
 
 ## Network emulation benchmarks
 
+Measurements belong in Supabase. EC2 launches use `benchmark_ingest.py` with
+`JUMPSERVE_INGEST_URL`, `JUMPSERVE_JOB_ID`, and `JUMPSERVE_JOB_TOKEN` supplied by
+the launcher. This short-lived capability can update that job and submit its
+report; it cannot read or change other tests. Reports are inserted atomically,
+and identical retries return the original IDs. The current upload limit is
+32 MiB uncompressed / 3 MiB compressed; exceeding it fails the job explicitly.
+
+For trusted local execution only, set `SUPABASE_SERVICE_ROLE_KEY` in the
+environment (a modern Supabase secret key is supported). Preserve that variable
+explicitly when using sudo. Secrets are never accepted as command-line arguments
+and have no built-in default. Orchestrators fail before networking setup if
+neither complete job ingestion settings nor the environment credential exists.
+Sender and receiver subprocesses do not require persistence credentials.
+
+Run `python3 -B -m unittest test_benchmark_ingest test_kernel_metrics test_sender_metrics`
+to check persistence configuration and metric behavior without cloud access.
+
 This repository currently centers on a small set of Python entrypoints for Linux network-emulation experiments plus a YAML queue runner. The older README content referred to `netem_cubic_benchmark.py`, but the files currently present in the repo are:
 
 - `netem_cubic_benchmark_nines.py`

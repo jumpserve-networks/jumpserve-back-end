@@ -639,6 +639,7 @@ class ProxyDelayTwoFlowBench:
 
 
 def orchestrator_mode(args: argparse.Namespace) -> int:
+    base.require_persistence(args)
     client_configs = resolve_client_run_configs(args)
 
     base.require_linux()
@@ -664,14 +665,8 @@ def orchestrator_mode(args: argparse.Namespace) -> int:
             base.print_banner("Post Test Cleanup")
             bench.cleanup()
 
-    if args.supabase_project_id and args.supabase_service_role_key:
-        ended_at_utc = datetime.datetime.now(datetime.timezone.utc)
-        base.persist_to_supabase(args, result, started_at_utc, ended_at_utc, client_configs)
-    elif args.supabase_project_id or args.supabase_service_role_key:
-        print(
-            "Supabase persistence skipped: provide both --supabase-project-id and --supabase-service-role-key.",
-            file=__import__("sys").stderr,
-        )
+    ended_at_utc = datetime.datetime.now(datetime.timezone.utc)
+    base.persist_to_supabase(args, result, started_at_utc, ended_at_utc, client_configs)
 
     return 0
 
