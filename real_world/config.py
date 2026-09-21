@@ -60,7 +60,7 @@ def nodes_for(config):
 def public_job(job):
     """Never expose command details, signed URLs, or internal lease state."""
     fields = ("job_id", "status", "created_at", "updated_at", "config", "error", "cleanup_error",
-              "outcome", "results", "deadline", "cancel_requested", "schema_version", "runtime_revision")
+              "outcome", "results", "deadline", "cancel_requested", "schema_version", "runtime_revision", "start_epoch")
     result = {key: job[key] for key in fields if key in job}
     result["nodes"] = [{key: node[key] for key in ("name", "role", "region", "zone_id", "instance_type",
                        "instance_id", "image_id", "overlay_ip", "state") if key in node} for node in job.get("nodes", [])]

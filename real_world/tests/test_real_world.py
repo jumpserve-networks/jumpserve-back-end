@@ -62,6 +62,14 @@ class ContractTests(unittest.TestCase):
         for forbidden in ["lease_until", "upload_url", "secret-command", "1.2.3.4"]:
             self.assertNotIn(forbidden, result)
 
+    def test_public_job_includes_recorded_transfer_schedule_only_when_available(self):
+        value = job()
+        self.assertNotIn("start_epoch", config.public_job(value))
+        value.update(status="starting", start_epoch=1900000000)
+        public = config.public_job(value)
+        self.assertEqual(public["start_epoch"], 1900000000)
+        self.assertEqual(public["config"]["duration_seconds"], 30)
+
 
 class CatalogTests(unittest.TestCase):
     def test_only_t3_medium_offerings_enable_zones(self):

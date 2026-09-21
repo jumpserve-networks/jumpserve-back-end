@@ -53,6 +53,13 @@ regional Canonical Ubuntu 24.04 public SSM AMI parameter and records the image I
 ## Durable lifecycle and evidence
 
 The infrastructure adds `/real-world/*` to the existing benchmark API. The API
+exposes the recorded `start_epoch` once the common transfer barrier is scheduled.
+Together with `duration_seconds`, this supports schematic traffic animation in
+the test map. Transfers occur inside the controller's `starting` phase while SSM
+commands run; `running` can include waiting for measurement artifacts. This
+schedule is not a live packet or throughput feed.
+
+The API
 checks the Supabase access token against `/auth/v1/user` and requires Google
 authentication. Test management, cancellation, and the `/tests` history are
 owner-scoped. The separate `/reports` workspace shares measurement reports among
