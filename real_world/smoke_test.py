@@ -13,17 +13,17 @@ import uuid
 import api
 import cloud
 import artifacts
-from config import INSTANCE_TYPE, TERMINAL
+from config import DEFAULT_INSTANCE_TYPE, INSTANCE_TYPES, TERMINAL
 import store
 
 
-def placement(region):
+def placement(region, instance_type=DEFAULT_INSTANCE_TYPE):
     zones = [z for z in cloud.locations(region) if z["available"] and z["type"] == "availability-zone"
-             and INSTANCE_TYPE in z["instance_types"]]
+             and instance_type in z["instance_types"]]
     if not zones:
         raise RuntimeError("No eligible zones in " + region)
     zone = zones[0]
-    return {"region": region, "zone_id": zone["zone_id"], "instance_type": INSTANCE_TYPE}
+    return {"region": region, "zone_id": zone["zone_id"], "instance_type": instance_type}
 
 
 def main():
@@ -32,6 +32,7 @@ def main():
     parser.add_argument("--server-region", default="us-east-1")
     parser.add_argument("--bottleneck-region", default="us-east-1")
     parser.add_argument("--receiver-region", action="append")
+    parser.add_argument("--instance-type", choices=INSTANCE_TYPES, default=DEFAULT_INSTANCE_TYPE)
     parser.add_argument("--cca", choices=["cubic", "bbr", "reno"], default="bbr")
     parser.add_argument("--cancel", action="store_true")
     parser.add_argument("--apply", action="store_true")
@@ -49,8 +50,8 @@ def main():
     environment = cloud.client("lambda").get_function_configuration(FunctionName=api_function)["Environment"]["Variables"]
     for key in ("RUNTIME_REVISION", "SUPABASE_URL", "SUPABASE_SECRET_ARN"):
         os.environ[key] = environment[key]
-    config = {"server": placement(args.server_region), "bottleneck": placement(args.bottleneck_region),
-              "receivers": [placement(r) for r in (args.receiver_region or ["us-east-1"])], "cca": args.cca,
+    config = {"server": placement(args.server_region, args.instance_type), "bottleneck": placement(args.bottleneck_region, args.instance_type),
+              "receivers": [placement(r, args.instance_type) for r in (args.receiver_region or ["us-east-1"])], "cca": args.cca,
               "duration_seconds": 10, "rate_mbit": 10, "buffer_kbytes": 125, "notes": "Bounded deployment validation; exclude from research comparisons."}
     print(json.dumps({"config": config, "machines": len(config["receivers"]) + 2, "apply": args.apply}), flush=True)
     if not args.apply:

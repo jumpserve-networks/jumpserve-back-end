@@ -1,5 +1,5 @@
 """AWS discovery and tagged, per-test network/instance lifecycle."""
-from config import AMI_PARAMETER, INSTANCE_TYPE, INSTANCE_TYPES
+from config import AMI_PARAMETER, INSTANCE_TYPES
 
 PROJECT = "JumpServeRealWorld"
 
@@ -25,7 +25,8 @@ def locations(region):
     for page in ec2.get_paginator("describe_instance_type_offerings").paginate(
             LocationType="availability-zone-id", Filters=[{"Name": "instance-type", "Values": list(INSTANCE_TYPES)}]):
         for item in page["InstanceTypeOfferings"]:
-            offerings.setdefault(item["Location"], []).append(item["InstanceType"])
+            if item["InstanceType"] in INSTANCE_TYPES:
+                offerings.setdefault(item["Location"], []).append(item["InstanceType"])
     zones = []
     for zone in ec2.describe_availability_zones(AllAvailabilityZones=True)["AvailabilityZones"]:
         reason = None
@@ -36,7 +37,7 @@ def locations(region):
         elif zone["State"] != "available":
             reason = "AWS currently reports this zone as unavailable."
         elif not offerings.get(zone["ZoneId"]):
-            reason = "t3.medium is not offered in this zone."
+            reason = "None of t3.small, t3.medium, or t3.large is offered in this zone."
         zones.append({"zone_id": zone["ZoneId"], "name": zone["ZoneName"], "type": zone.get("ZoneType", "availability-zone"),
                       "available": reason is None, "reason": reason, "instance_types": sorted(offerings.get(zone["ZoneId"], []))})
     return sorted(zones, key=lambda z: z["name"])
@@ -71,8 +72,8 @@ touch /var/lib/jumpserve/bootstrap-ready
 
 
 def provision(job, node, profile):
-    if node.get("instance_type") != INSTANCE_TYPE:
-        raise ValueError("Every machine must use t3.medium.")
+    if node.get("instance_type") not in INSTANCE_TYPES:
+        raise ValueError("Every machine must use t3.small, t3.medium, or t3.large.")
     ec2 = client("ec2", node["region"])
     # Discover by tags on every retry: interrupted calls cannot orphan unrecorded resources.
     vpcs = ec2.describe_vpcs(Filters=filters(job))["Vpcs"]
@@ -107,10 +108,12 @@ def provision(job, node, profile):
         instance = existing[0]
         if instance["State"]["Name"] in ("terminated", "shutting-down"):
             raise RuntimeError("A provisioned instance terminated before launch completed.")
+        if instance["InstanceType"] != node["instance_type"]:
+            raise RuntimeError("Existing instance type differs from the recorded configuration.")
         node.update(instance_id=instance["InstanceId"], image_id=instance["ImageId"], security_group=sg, state=instance["State"]["Name"])
         return
     image = node.get("image_id") or client("ssm", node["region"]).get_parameter(Name=AMI_PARAMETER)["Parameter"]["Value"]
-    instance = ec2.run_instances(ImageId=image, MinCount=1, MaxCount=1, InstanceType=INSTANCE_TYPE,
+    instance = ec2.run_instances(ImageId=image, MinCount=1, MaxCount=1, InstanceType=node["instance_type"],
         ClientToken=f'{job["job_id"]}-{node["name"]}', IamInstanceProfile={"Arn": profile},
         InstanceInitiatedShutdownBehavior="terminate", MetadataOptions={"HttpTokens": "required", "HttpPutResponseHopLimit": 1},
         BlockDeviceMappings=[{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 12, "VolumeType": "gp3", "Encrypted": True, "DeleteOnTermination": True}}],

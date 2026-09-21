@@ -4,8 +4,8 @@ import re
 
 SCHEMA_VERSION = 1
 CCAS = ("cubic", "bbr", "reno")
-INSTANCE_TYPE = "t3.medium"
-INSTANCE_TYPES = (INSTANCE_TYPE,)
+DEFAULT_INSTANCE_TYPE = "t3.medium"
+INSTANCE_TYPES = ("t3.small", "t3.medium", "t3.large")
 TERMINAL = ("completed", "failed", "cancelled")
 AMI_PARAMETER = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 
@@ -24,7 +24,7 @@ def placement(value):
     if not isinstance(value["zone_id"], str) or not re.fullmatch(r"[a-z0-9-]+-az\d+", value["zone_id"]):
         raise ValueError("Invalid Availability Zone ID.")
     if value["instance_type"] not in INSTANCE_TYPES:
-        raise ValueError("Every machine must use t3.medium.")
+        raise ValueError("Every machine must use t3.small, t3.medium, or t3.large.")
     return dict(value)
 
 

@@ -34,10 +34,11 @@ of achieved throughput.
 
 The public catalog uses `DescribeRegions(AllRegions=True)` and live zone
 and instance-type offerings. Each machine has independent Region and zone ID
-selection and always uses **t3.medium**. The catalog checks only that instance
-type; zones without it are unavailable. The API rejects other types and the
-provisioner checks again before allocating resources. EC2 launch permissions
-also restrict the worker to t3.medium. AZ IDs identify the physical zone
+selection and supports **t3.small**, **t3.medium**, and **t3.large** independently.
+The default is t3.medium. The catalog lists the supported types offered in each
+zone; the API verifies the requested type is available there. The provisioner
+launches that exact type and rejects unsupported sizes before allocating resources.
+EC2 launch permissions enforce the same three-type allowlist. AZ IDs identify the physical zone
 consistently across accounts. AWS does not expose individual building selection.
 Catalog entries explain Region/zone opt-in requirements and unsupported capacity.
 Standard AZs and enabled Local Zones with supported offerings are usable.
@@ -49,6 +50,27 @@ The launcher validates placements again before accepting a test. Offering
 availability does not guarantee capacity or quota; AWS allocation failures are
 recorded and any partial resources are cleaned up. The runtime resolves the
 regional Canonical Ubuntu 24.04 public SSM AMI parameter and records the image ID.
+
+## Instance sizing
+
+Small instances are a reasonable starting point for short, modest-rate tests,
+but suitability must be verified against the requested workload. All three sizes
+have two vCPUs. Memory is 2, 4, and 8 GiB for small, medium, and large respectively;
+AWS lists baseline network bandwidths of 128, 256, and 512 Mbit/s and burst
+bandwidth up to 5 Gbit/s. Burst bandwidth is best effort, not a sustained-rate
+guarantee. The bottleneck also decrypts, forwards, shapes, and re-encrypts traffic
+for every receiver, so CPU or underlay limits can dominate the intended queue.
+
+Keep machine sizes identical across matched algorithm comparisons; instance type
+already participates in the comparison key and is recorded in Supabase and raw
+measurement provenance. T3 CPU credits and network I/O credits are separate.
+The launch preserves the account’s existing CPU-credit mode; Unlimited mode can
+incur surplus CPU charges, while Standard mode can throttle to baseline.
+
+Sources: [AWS T3 specifications](https://aws.amazon.com/ec2/instance-types/t3/),
+[network baselines](https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html),
+[network burst behavior](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html),
+[CPU-credit modes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode.html).
 
 ## Durable lifecycle and evidence
 
@@ -130,7 +152,8 @@ transfer, cancellation, and removal of every tagged EC2/network resource.
 After deploying the infrastructure, `python3 -B real_world/smoke_test.py` previews
 a bounded three-machine, ten-second test using the current AWS CLI login.
 Add `--apply` to run it, or `--apply --cancel` to verify cancellation during
-provisioning. Select additional Regions with `--bottleneck-region` and repeat
+provisioning. Use `--instance-type t3.small` or `--instance-type t3.large` to
+select another supported size for all machines (default: t3.medium). Select additional Regions with `--bottleneck-region` and repeat
 `--receiver-region` for multiple receivers. The command waits for teardown,
 checks stored results and shared-queue traffic, and requests cancellation if
 interrupted. It prints no credentials and uses an operator-only test owner;

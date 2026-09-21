@@ -42,6 +42,14 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(len({node["overlay_ip"] for node in nodes}), 4)
         self.assertEqual([n["port"] for n in nodes if n["role"] == "receiver"], [5201, 5202])
 
+    def test_all_supported_sizes_are_accepted_independently_for_every_machine(self):
+        for index in range(4):
+            for instance_type in config.INSTANCE_TYPES:
+                value = settings()
+                [value["server"], value["bottleneck"], *value["receivers"]][index]["instance_type"] = instance_type
+                with self.subTest(node=index, instance_type=instance_type):
+                    self.assertEqual(config.validate_config(value), value)
+
     def test_reject_untrusted_and_unbounded_input(self):
         for key, value in [("cca", "bbr;shutdown"), ("cca", "bbr3"), ("duration_seconds", True),
                            ("duration_seconds", 601), ("rate_mbit", 0), ("rate_mbit", 1.5),
@@ -73,23 +81,26 @@ class ContractTests(unittest.TestCase):
 
 
 class CatalogTests(unittest.TestCase):
-    def test_only_t3_medium_offerings_enable_zones(self):
+    def test_only_supported_t3_offerings_enable_zones(self):
         ec2 = MagicMock()
         ec2.get_paginator.return_value.paginate.return_value = [{"InstanceTypeOfferings": [
             {"Location": "use1-az1", "InstanceType": "t3.medium"},
-            {"Location": "use1-az3", "InstanceType": "t3.medium"}]}]
+            {"Location": "use1-az3", "InstanceType": "t3.small"},
+            {"Location": "use1-az2", "InstanceType": "c6i.large"},
+            {"Location": "use1-az4", "InstanceType": "t3.large"}]}]
         ec2.describe_availability_zones.return_value = {"AvailabilityZones": [
             {"ZoneId": f"use1-az{i}", "ZoneName": f"us-east-1{letter}", "State": "available",
              "OptInStatus": "not-opted-in" if i == 3 else "opt-in-not-required"}
-            for i, letter in enumerate("abc", 1)]}
+            for i, letter in enumerate("abcd", 1)]}
         with patch.object(cloud, "regions", return_value=[{"region": "us-east-1", "enabled": True}]), \
                 patch.object(cloud, "client", return_value=ec2):
             zones = cloud.locations("us-east-1")
         ec2.get_paginator.return_value.paginate.assert_called_once_with(
-            LocationType="availability-zone-id", Filters=[{"Name": "instance-type", "Values": ["t3.medium"]}])
-        self.assertEqual([z["available"] for z in zones], [True, False, False])
+            LocationType="availability-zone-id", Filters=[{"Name": "instance-type", "Values": ["t3.small", "t3.medium", "t3.large"]}])
+        self.assertEqual([z["available"] for z in zones], [True, False, False, True])
         self.assertEqual(zones[0]["instance_types"], ["t3.medium"])
-        self.assertEqual(zones[1]["reason"], "t3.medium is not offered in this zone.")
+        self.assertEqual(zones[3]["instance_types"], ["t3.large"])
+        self.assertEqual(zones[1]["reason"], "None of t3.small, t3.medium, or t3.large is offered in this zone.")
         self.assertIn("Enable this zone", zones[2]["reason"])
 
 
@@ -155,37 +166,47 @@ class NetworkTests(unittest.TestCase):
 
 class LifecycleTests(unittest.TestCase):
     def test_provisioning_retry_adopts_instance_and_enforces_ephemeral_launch(self):
-        value = job()
-        ec2 = MagicMock()
-        ec2.describe_vpcs.return_value = {"Vpcs": [{"VpcId": "vpc-1", "State": "available"}]}
-        ec2.describe_internet_gateways.return_value = {"InternetGateways": [{"InternetGatewayId": "igw-1", "Attachments": [{"VpcId": "vpc-1"}]}]}
-        ec2.describe_route_tables.return_value = {"RouteTables": [{"RouteTableId": "rtb-1", "Routes": [{"DestinationCidrBlock": "0.0.0.0/0"}], "Associations": [{"SubnetId": "subnet-1"}]}]}
-        ec2.describe_subnets.return_value = {"Subnets": [{"SubnetId": "subnet-1"}]}
-        ec2.describe_security_groups.return_value = {"SecurityGroups": [{"GroupId": "sg-1"}]}
-        ec2.describe_instances.return_value = {"Reservations": []}
-        ec2.run_instances.return_value = {"Instances": [{"InstanceId": "i-1"}]}
-        ssm = MagicMock()
-        ssm.get_parameter.return_value = {"Parameter": {"Value": "ami-1"}}
-        with patch.object(cloud, "client", side_effect=lambda service, region: ec2 if service == "ec2" else ssm):
-            cloud.provision(value, value["nodes"][0], "profile")
-            ec2.describe_instances.return_value = {"Reservations": [{"Instances": [{"InstanceId": "i-1", "ImageId": "ami-1", "State": {"Name": "running"}}]}]}
-            cloud.provision(value, value["nodes"][0], "profile")
-        ec2.run_instances.assert_called_once()
-        params = ec2.run_instances.call_args.kwargs
-        self.assertEqual(params["InstanceType"], "t3.medium")
-        self.assertEqual(params["ClientToken"], "job-1-server")
-        self.assertEqual(params["InstanceInitiatedShutdownBehavior"], "terminate")
-        self.assertEqual(params["MetadataOptions"]["HttpTokens"], "required")
-        self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["DeleteOnTermination"])
-        self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["Encrypted"])
-        self.assertEqual(value["nodes"][0]["instance_id"], "i-1")
+        for index in range(4):
+            for instance_type in config.INSTANCE_TYPES:
+                with self.subTest(node=index, instance_type=instance_type):
+                    value = job()
+                    [value["config"]["server"], value["config"]["bottleneck"], *value["config"]["receivers"]][index]["instance_type"] = instance_type
+                    value["nodes"] = config.nodes_for(value["config"])
+                    node = value["nodes"][index]
+                    ec2 = MagicMock()
+                    ec2.describe_vpcs.return_value = {"Vpcs": [{"VpcId": "vpc-1", "State": "available"}]}
+                    ec2.describe_internet_gateways.return_value = {"InternetGateways": [{"InternetGatewayId": "igw-1", "Attachments": [{"VpcId": "vpc-1"}]}]}
+                    ec2.describe_route_tables.return_value = {"RouteTables": [{"RouteTableId": "rtb-1", "Routes": [{"DestinationCidrBlock": "0.0.0.0/0"}], "Associations": [{"SubnetId": "subnet-1"}]}]}
+                    ec2.describe_subnets.return_value = {"Subnets": [{"SubnetId": "subnet-1"}]}
+                    ec2.describe_security_groups.return_value = {"SecurityGroups": [{"GroupId": "sg-1"}]}
+                    ec2.describe_instances.return_value = {"Reservations": []}
+                    ec2.run_instances.return_value = {"Instances": [{"InstanceId": "i-1"}]}
+                    ssm = MagicMock()
+                    ssm.get_parameter.return_value = {"Parameter": {"Value": "ami-1"}}
+                    with patch.object(cloud, "client", side_effect=lambda service, region: ec2 if service == "ec2" else ssm):
+                        cloud.provision(value, node, "profile")
+                        ec2.describe_instances.return_value = {"Reservations": [{"Instances": [{"InstanceId": "i-1", "ImageId": "ami-1", "InstanceType": instance_type, "State": {"Name": "running"}}]}]}
+                        cloud.provision(value, node, "profile")
+                    ec2.run_instances.assert_called_once()
+                    params = ec2.run_instances.call_args.kwargs
+                    self.assertEqual(params["InstanceType"], instance_type)
+                    self.assertEqual(params["ClientToken"], "job-1-" + node["name"])
+                    self.assertEqual(params["InstanceInitiatedShutdownBehavior"], "terminate")
+                    self.assertEqual(params["MetadataOptions"]["HttpTokens"], "required")
+                    self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["DeleteOnTermination"])
+                    self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["Encrypted"])
+                    self.assertEqual(node["instance_id"], "i-1")
+                    ec2.describe_instances.return_value["Reservations"][0]["Instances"][0]["InstanceType"] = "t3.xlarge"
+                    with patch.object(cloud, "client", return_value=ec2), self.assertRaisesRegex(RuntimeError, "instance type differs"):
+                        cloud.provision(value, node, "profile")
+                    ec2.run_instances.assert_called_once()
 
     def test_provisioner_rejects_older_or_tampered_types_before_any_aws_call(self):
         for index in range(4):
             value = job()
             value["nodes"][index]["instance_type"] = "c6i.large"
             with self.subTest(node=index), patch.object(cloud, "client") as aws, \
-                    self.assertRaisesRegex(ValueError, "must use t3.medium"):
+                    self.assertRaisesRegex(ValueError, "must use t3.small, t3.medium, or t3.large"):
                 cloud.provision(value, value["nodes"][index], "profile")
             aws.assert_not_called()
 
@@ -269,7 +290,7 @@ class LifecycleTests(unittest.TestCase):
 class ApiTests(unittest.TestCase):
     def test_launch_rejects_other_types_for_every_machine_before_storage_or_aws(self):
         for index in range(4):
-            for instance_type in ["c7i.large", "c6i.large", "c5.large", "m7i.large", "m6i.large", "m5.large", "t3.large"]:
+            for instance_type in ["c7i.large", "c6i.large", "c5.large", "m7i.large", "m6i.large", "m5.large", "t3.micro", "t3.xlarge"]:
                 value = settings()
                 [value["server"], value["bottleneck"], *value["receivers"]][index]["instance_type"] = instance_type
                 event = {"rawPath": "/real-world/tests", "requestContext": {"http": {"method": "POST"}},
@@ -278,7 +299,7 @@ class ApiTests(unittest.TestCase):
                         patch.object(api.store, "load") as load, patch.object(cloud, "client") as aws:
                     response = api.handler(event, None)
                 self.assertEqual(response["statusCode"], 400)
-                self.assertIn("Every machine must use t3.medium.", response["body"])
+                self.assertIn("Every machine must use t3.small, t3.medium, or t3.large.", response["body"])
                 load.assert_not_called()
                 aws.assert_not_called()
 
@@ -341,6 +362,27 @@ class ApiTests(unittest.TestCase):
         with patch.object(api.store, "load", return_value=value), self.assertRaises(api.HttpError) as error:
             api.launch({"config": changed, "request_id": "a1000000-0000-4000-a000-000000000001"}, "user-1")
         self.assertEqual(error.exception.status, 409)
+
+    def test_launch_preserves_mixed_supported_sizes_and_verifies_exact_offerings(self):
+        value = settings()
+        value["server"]["instance_type"] = "t3.small"
+        value["bottleneck"]["instance_type"] = "t3.large"
+        value["receivers"][1]["instance_type"] = "t3.small"
+        body = {"config": value, "request_id": "a1000000-0000-4000-a000-000000000001"}
+        zone = {"zone_id": "use1-az1", "available": True, "instance_types": list(config.INSTANCE_TYPES)}
+        with patch.object(api.store, "load", return_value=None), patch.object(api.store, "create", return_value=True) as create, \
+                patch.object(cloud, "locations", return_value=[zone]), patch.object(cloud, "client") as aws, \
+                patch.dict(os.environ, STATE_MACHINE_ARN="machine", RUNTIME_REVISION="test-runtime"):
+            result = api.launch(body, "user-1")
+        self.assertEqual(result["config"], value)
+        self.assertEqual([node["instance_type"] for node in create.call_args.args[0]["nodes"]],
+                         ["t3.small", "t3.large", "t3.medium", "t3.small"])
+        aws.return_value.start_execution.assert_called_once()
+        zone["instance_types"] = ["t3.medium"]
+        with patch.object(api.store, "load", return_value=None), patch.object(api.store, "create") as create, \
+                patch.object(cloud, "locations", return_value=[zone]), self.assertRaisesRegex(ValueError, "server:.*unavailable"):
+            api.launch(body, "user-1")
+        create.assert_not_called()
 
     def test_live_availability_is_checked_before_persisting(self):
         body = {"config": settings(), "request_id": "a1000000-0000-4000-a000-000000000001"}
