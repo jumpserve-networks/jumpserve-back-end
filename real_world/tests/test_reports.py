@@ -186,13 +186,14 @@ class ReportTests(unittest.TestCase):
                 api.dispatch(event, 'someone-else')
             self.assertEqual(error.exception.status, 404)
 
-    def test_anonymous_report_access_is_denied_before_database_or_s3_reads(self):
-        with patch.object(api.store, 'load') as load, patch.object(reports, 'load_report') as read:
-            for path in ['/real-world/reports', '/real-world/reports/test-report', '/real-world/reports/test-report/artifacts']:
-                result = api.handler({'rawPath': path, 'requestContext': {'http': {'method': 'GET'}}}, None)
-                self.assertEqual(result['statusCode'], 401)
-            load.assert_not_called()
-            read.assert_not_called()
+    def test_anonymous_report_reads_do_not_require_authentication(self):
+        job, _ = fixture()
+        with patch.object(api.store, 'load', return_value=job), patch.object(reports, 'load_report', return_value={}), \
+                patch.object(api, 'authenticate') as authenticate:
+            result = api.handler({'rawPath': '/real-world/reports/test-report', 'requestContext': {'http': {'method': 'GET'}}}, None)
+            self.assertEqual(result['statusCode'], 200)
+            self.assertFalse(json.loads(result['body'])['can_manage'])
+            authenticate.assert_not_called()
 
     def test_shared_catalog_paginates_without_exposing_owners_or_commands(self):
         job, _ = fixture()
@@ -220,7 +221,7 @@ class ReportTests(unittest.TestCase):
         client.generate_presigned_url.return_value = 'temporary-link'
         event = {'rawPath': '/real-world/reports/test-report/artifacts', 'requestContext': {'http': {'method': 'GET'}}}
         with patch.object(api.store, 'load', return_value=job), patch.object(api.cloud, 'client', return_value=client), patch.dict(os.environ, RESULTS_BUCKET='private-results'):
-            self.assertEqual(api.dispatch(event, 'another-researcher'), {'artifacts': [{'name': 'server.json', 'url': 'temporary-link'}]})
+            self.assertEqual(api.dispatch(event, None), {'artifacts': [{'name': 'server.json', 'url': 'temporary-link'}]})
             client.generate_presigned_url.assert_called_once()
 
 

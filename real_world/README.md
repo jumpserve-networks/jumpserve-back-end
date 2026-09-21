@@ -32,7 +32,7 @@ of achieved throughput.
 
 ## Placement
 
-The authenticated catalog uses `DescribeRegions(AllRegions=True)` and live zone
+The public catalog uses `DescribeRegions(AllRegions=True)` and live zone
 and instance-type offerings. Each machine has independent Region and zone ID
 selection and always uses **t3.medium**. The catalog checks only that instance
 type; zones without it are unavailable. The API rejects other types and the
@@ -59,11 +59,9 @@ the test map. Transfers occur inside the controller's `starting` phase while SSM
 commands run; `running` can include waiting for measurement artifacts. This
 schedule is not a live packet or throughput feed.
 
-The API
-checks the Supabase access token against `/auth/v1/user` and requires Google
-authentication. Test management, cancellation, and the `/tests` history are
-owner-scoped. The separate `/reports` workspace shares measurement reports among
-all signed-in researchers. The browser never receives AWS credentials. Request IDs make launch
+The API requires a verified Supabase Google session for launching, cancellation,
+and the owner-scoped `/tests` history. Catalogs, test status, measurement reports,
+and measurement downloads are public. Cancellation independently checks ownership. The browser never receives AWS credentials. Request IDs make launch
 retries idempotent; the workflow name is derived from the owner and request ID.
 
 Jobs/configurations live in a separate DynamoDB table with owner/history and
@@ -131,11 +129,11 @@ Install offline test dependencies with
 - `GET /real-world/reports/{jobId}/artifacts` signs only expected machine JSON
   files for five minutes. It cannot sign arbitrary objects or internal commands.
 
-All routes validate the Supabase Google session before reading DynamoDB or S3.
-Reports omit owner IDs and internal command state. The `can_manage` flag enables
-the owner's management link; cancellation still independently checks ownership.
-No unauthenticated report endpoint or public S3 access is introduced. Signed
-download URLs are bearer capabilities until expiry, not permanent public links.
+Public GET routes omit owner IDs and internal command state. An optional verified
+session sets `can_manage` for the owner; anonymous readers cannot manage tests.
+POST routes reject missing or invalid sessions before privileged access. Both
+`/tests/{jobId}/artifacts` and `/reports/{jobId}/artifacts` sign only expected
+measurement files. S3 stays private; signed download URLs expire after five minutes.
 
 `reports.py` defines `real-world-report-v1`. Receiver averages use bytes and actual
 duration; combined throughput sums flow averages and is not a synchronized rate.

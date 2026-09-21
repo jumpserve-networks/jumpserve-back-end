@@ -1,4 +1,4 @@
-"""Authenticated HTTP API for real-world tests, separate from emulated records."""
+"""Public result reads and authenticated test execution, separate from emulated records."""
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
@@ -31,7 +31,7 @@ def authenticate(event):
         if error.code in (401, 403):
             raise HttpError(401, "Your session has expired. Sign in again.") from error
         raise
-    if not user.get("id") or not any(identity.get("provider") == "google" for identity in user.get("identities", [])):
+    if user.get("is_anonymous") or not user.get("id") or not any(identity.get("provider") == "google" for identity in user.get("identities", [])):
         raise HttpError(403, "Google authentication is required.")
     return user["id"]
 
@@ -89,6 +89,8 @@ def dispatch(event, owner):
     path = event["rawPath"].rstrip("/")
     method = event["requestContext"]["http"]["method"]
     query = event.get("queryStringParameters") or {}
+    if (method != "GET" or path == "/real-world/tests") and not owner:
+        raise HttpError(401, "Sign in to run or manage tests.")
     if method == "GET" and path == "/real-world/regions":
         return {"regions": cloud.regions()}
     if method == "GET" and path == "/real-world/locations":
@@ -149,32 +151,42 @@ def dispatch(event, owner):
             report["can_manage"] = job["owner"] == owner
             return report
         if parts[4] == "artifacts":
-            # Only measurement reports are shared; never sign arbitrary keys.
-            s3 = cloud.client("s3")
-            response = s3.list_objects_v2(Bucket=os.environ["RESULTS_BUCKET"], Prefix=job["job_id"] + "/")
-            allowed = {job["job_id"] + "/" + node["name"] + ".json" for node in nodes_for(job["config"])}
-            return {"artifacts": [{"name": item["Key"].split("/")[-1], "url": s3.generate_presigned_url("get_object",
-                Params={"Bucket": os.environ["RESULTS_BUCKET"], "Key": item["Key"]}, ExpiresIn=300)}
-                for item in response.get("Contents", []) if item["Key"] in allowed]}
+            return measurement_artifacts(job)
     if len(parts) in (4, 5) and parts[1:3] == ["real-world", "tests"]:
-        job = owned(parts[3], owner)
+        job = store.load(parts[3])
+        if not job or job.get("schema_version") != SCHEMA_VERSION:
+            raise HttpError(404, "Test not found.")
         if len(parts) == 4 and method == "GET":
-            return public_job(job)
+            return {**public_job(job), "can_manage": bool(owner and job["owner"] == owner)}
         if len(parts) == 5 and parts[4] == "cancel" and method == "POST":
+            if job["owner"] != owner:
+                raise HttpError(404, "Test not found.")
             if job["status"] not in TERMINAL:
                 store.table().update_item(Key={"job_id": job["job_id"]}, UpdateExpression="SET cancel_requested = :yes", ExpressionAttributeValues={":yes": True})
                 job["cancel_requested"] = True
             return public_job(job)
         if len(parts) == 5 and parts[4] == "artifacts" and method == "GET":
-            response = cloud.client("s3").list_objects_v2(Bucket=os.environ["RESULTS_BUCKET"], Prefix=job["job_id"] + "/")
-            return {"artifacts": [{"name": item["Key"].split("/")[-1], "url": cloud.client("s3").generate_presigned_url("get_object",
-                Params={"Bucket": os.environ["RESULTS_BUCKET"], "Key": item["Key"]}, ExpiresIn=300)} for item in response.get("Contents", [])]}
+            return measurement_artifacts(job)
     raise HttpError(404, "Endpoint not found.")
+
+
+def measurement_artifacts(job):
+    # Public downloads contain only measurement reports, never internal objects.
+    s3 = cloud.client("s3")
+    response = s3.list_objects_v2(Bucket=os.environ["RESULTS_BUCKET"], Prefix=job["job_id"] + "/")
+    allowed = {job["job_id"] + "/" + node["name"] + ".json" for node in nodes_for(job["config"])}
+    return {"artifacts": [{"name": item["Key"].split("/")[-1], "url": s3.generate_presigned_url("get_object",
+        Params={"Bucket": os.environ["RESULTS_BUCKET"], "Key": item["Key"]}, ExpiresIn=300)}
+        for item in response.get("Contents", []) if item["Key"] in allowed]}
 
 
 def handler(event, context):
     try:
-        result, status = dispatch(event, authenticate(event)), 200
+        method = event.get("requestContext", {}).get("http", {}).get("method")
+        headers = {key.lower(): value for key, value in (event.get("headers") or {}).items()}
+        requires_login = method != "GET" or event.get("rawPath", "").rstrip("/") == "/real-world/tests"
+        owner = authenticate(event) if requires_login or headers.get("authorization") else None
+        result, status = dispatch(event, owner), 200
     except HttpError as error:
         result, status = {"error": error.message}, error.status
     except (ValueError, KeyError, TypeError) as error:

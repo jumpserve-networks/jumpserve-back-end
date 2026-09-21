@@ -290,12 +290,40 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response["statusCode"], 401)
         dispatch.assert_not_called()
 
-    def test_other_users_cannot_read_cancel_or_download(self):
-        with patch.object(api.store, "load", return_value=job()):
-            for suffix in ["", "/cancel", "/artifacts"]:
-                with self.assertRaises(api.HttpError) as error:
-                    api.dispatch({"rawPath": "/real-world/tests/job-1" + suffix, "requestContext": {"http": {"method": "GET"}}}, "other-user")
-                self.assertEqual(error.exception.status, 404)
+    def test_forged_sessions_are_denied_before_privileged_access(self):
+        import urllib.error
+        event = {"headers": {"Authorization": "Bearer forged"}, "rawPath": "/real-world/tests",
+                 "requestContext": {"http": {"method": "POST"}}}
+        error = urllib.error.HTTPError("https://auth.example", 401, "Unauthorized", {}, None)
+        with patch.dict(os.environ, SUPABASE_URL="https://auth.example", SUPABASE_ANON_KEY="public-key"), \
+                patch.object(api.urllib.request, "urlopen", side_effect=error), patch.object(api, "dispatch") as dispatch:
+            response = api.handler(event, None)
+        self.assertEqual(response["statusCode"], 401)
+        dispatch.assert_not_called()
+
+    def test_other_users_can_read_but_cannot_cancel(self):
+        value = job()
+        value["schema_version"] = config.SCHEMA_VERSION
+        with patch.object(api.store, "load", return_value=value):
+            event = {"rawPath": "/real-world/tests/job-1", "requestContext": {"http": {"method": "GET"}}}
+            response = api.handler(event, None)
+            self.assertEqual(response["statusCode"], 200)
+            self.assertFalse(json.loads(response["body"])["can_manage"])
+            self.assertNotIn("owner", json.loads(response["body"]))
+            self.assertTrue(api.dispatch(event, "user-1")["can_manage"])
+            event["rawPath"] += "/cancel"
+            event["requestContext"]["http"]["method"] = "POST"
+            with self.assertRaises(api.HttpError) as error:
+                api.dispatch(event, "other-user")
+            self.assertEqual(error.exception.status, 404)
+
+    def test_anonymous_mutations_are_denied_before_storage(self):
+        for path in ["/real-world/tests", "/real-world/tests/job-1/cancel"]:
+            with patch.object(api.store, "load") as load, patch.object(api.cloud, "client") as aws:
+                response = api.handler({"rawPath": path, "requestContext": {"http": {"method": "POST"}}}, None)
+                self.assertEqual(response["statusCode"], 401)
+                load.assert_not_called()
+                aws.assert_not_called()
 
     def test_retry_reuses_workflow_name_and_never_creates_second_job(self):
         value = job()
