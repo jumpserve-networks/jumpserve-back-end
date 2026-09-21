@@ -123,14 +123,14 @@ def dispatch(event, owner):
         if not job or job.get("schema_version") != SCHEMA_VERSION:
             raise HttpError(404, "Test not found.")
         if len(parts) == 4 and method == "GET":
-            return {**public_job(job), "can_manage": bool(owner and job["owner"] == owner)}
+            return {**store.detail(job["job_id"]), "can_manage": bool(owner and job["owner"] == owner)}
         if len(parts) == 5 and parts[4] == "cancel" and method == "POST":
             if job["owner"] != owner:
                 raise HttpError(404, "Test not found.")
             if job["status"] not in TERMINAL:
                 store.cancel(job["job_id"])
                 job["cancel_requested"] = True
-            return public_job(job)
+            return {**store.detail(job["job_id"]), "can_manage": True}
         if len(parts) == 5 and parts[4] == "artifacts" and method == "GET":
             return measurement_artifacts(job)
     raise HttpError(404, "Endpoint not found.")

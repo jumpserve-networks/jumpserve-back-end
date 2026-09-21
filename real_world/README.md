@@ -74,6 +74,19 @@ Sources: [AWS T3 specifications](https://aws.amazon.com/ec2/instance-types/t3/),
 
 ## Durable lifecycle and evidence
 
+Each status transition is recorded in Supabase `real_world_status_history` in the
+same transaction as the public checkpoint. Rows contain the stage, start and end
+timestamps, and completion/interruption outcome; no owner or command data is
+exposed. The public detail API embeds the ordered history with the current record
+in one database snapshot. Timings reflect when the controller records a transition,
+not packet-level events or browser polling. Cancellation, deadlines, and forced
+cleanup persist entry into cleanup before it can finish in the same invocation.
+Old tests retain unknown timestamps instead of inferred completion times.
+
+Apply infra migration `202609200005_real_world_status_history.sql` before deploying
+this runtime. The infra `bin/real-world-database.py --apply` command applies both
+real-world schema migrations and verifies their access controls.
+
 The infrastructure adds `/real-world/*` to the existing benchmark API. The API
 exposes the recorded `start_epoch` once the common transfer barrier is scheduled.
 Together with `duration_seconds`, this supports schematic traffic animation in
@@ -92,6 +105,7 @@ measurements remain in the existing `emulated_*` tables. Real-world data uses:
 - `real_world_jobs`: private configuration, owner, controller checkpoints,
   atomic cancellation, and fenced leases. Indexed owner history and deadlines.
 - `real_world_runs`: public read-only job projections and indexed catalog.
+- `real_world_status_history`: public read-only lifecycle stages and timings.
 - `real_world_reports`: public read-only normalized reports, receiver summaries,
   per-second throughput/TCP/queue traces, comparison keys, and provenance.
 - `real_world_artifacts`: private manifests with SHA-256 digests, byte counts,

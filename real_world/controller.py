@@ -110,10 +110,14 @@ def cleanup(job):
 
 
 def step(job):
+    previous_status = job["status"]
     if job.get("cancel_requested") and job["status"] != "cleaning":
         job.update(status="cleaning", outcome="cancelled")
     if int(time.time()) >= job["deadline"] and job["status"] != "cleaning":
         job.update(status="cleaning", outcome="failed", error="Test exceeded its 45-minute resource deadline.")
+    if job["status"] == "cleaning" and previous_status != "cleaning":
+        # Persist entry before cleanup can finish in this same invocation.
+        store.save(job)
     state = job["status"]
     if state == "provisioning":
         node = next((node for node in job["nodes"] if not node.get("instance_id")), None)
@@ -157,7 +161,10 @@ def tick(job_id, force_cleanup=False):
             finalize(job)
             return {"job_id": job_id, "finished": True}
         if force_cleanup:
+            previous_status = job["status"]
             job.update(status="cleaning", outcome=job.get("outcome", "failed"), error=job.get("error", "Workflow interrupted or resource deadline reached."))
+            if previous_status != "cleaning":
+                store.save(job)
         try:
             step(job)
         except Exception as error:

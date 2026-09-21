@@ -26,6 +26,17 @@ def create(job):
     return database.rpc("real_world_put_job", {"payload": job, "visible": public_job(job), "create_only": True})
 
 
+def detail(job_id):
+    # PostgREST embeds the relational history in the same database snapshot as
+    # the current status, even if a controller transitions during this read.
+    rows = database.rest("real_world_runs", params={"job_id": "eq." + str(uuid.UUID(job_id)),
+        "select": "record,status_history:real_world_status_history(id,status,started_at,completed_at,outcome)",
+        "status_history.order": "id.asc"})
+    if not rows:
+        return None
+    return {**public_job(rows[0]["record"]), "status_history": rows[0]["status_history"]}
+
+
 def save(job):
     job["updated_at"] = int(time.time())
     payload = {key: value for key, value in job.items() if key not in ("_lease_token", "lease_until", "cancel_requested")}

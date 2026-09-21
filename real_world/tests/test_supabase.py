@@ -17,6 +17,7 @@ import database
 import migrate_supabase
 import reports
 import store
+from config import public_job
 from test_real_world import job
 from test_reports import fixture
 
@@ -24,6 +25,30 @@ ID = '00000000-0000-4000-8000-000000000001'
 
 
 class SupabaseTests(unittest.TestCase):
+    def test_detail_returns_status_and_ordered_history_from_one_snapshot(self):
+        history = [{'id': 1, 'status': 'provisioning', 'started_at': '2026-09-20T12:00:00Z',
+                    'completed_at': None, 'outcome': None}]
+        value = dict(job(), job_id=ID, owner='private-owner', _lease_token='private-token')
+        with patch.object(database, 'rest', return_value=[{'record': value, 'status_history': history}]) as request:
+            result = store.detail(ID)
+        self.assertEqual(result, {**public_job(value), 'status_history': history})
+        self.assertNotIn('owner', result)
+        self.assertNotIn('_lease_token', result)
+        self.assertEqual(request.call_count, 1)
+        self.assertEqual(request.call_args.kwargs['params']['status_history.order'], 'id.asc')
+        self.assertIn('status_history:real_world_status_history(', request.call_args.kwargs['params']['select'])
+
+    def test_cleanup_is_persisted_even_when_it_finishes_in_one_tick(self):
+        for forced in (False, True):
+            value = dict(job(), cancel_requested=not forced)
+            statuses = []
+            with patch.object(store, 'claim', return_value=ID), patch.object(store, 'load', return_value=value), \
+                    patch.object(store, 'save', side_effect=lambda current: statuses.append(current['status'])), \
+                    patch.object(store, 'release'), patch.object(controller.cloud, 'cleanup_region', return_value=True), \
+                    patch.object(controller, 'finalize'):
+                self.assertTrue(controller.tick(ID, force_cleanup=forced)['finished'])
+            self.assertEqual(statuses, ['cleaning', 'failed' if forced else 'cancelled'])
+
     def test_corrupt_cursor_and_cross_owner_cursor_never_query(self):
         cursors = ['bad', {'job_id': ID, 'created_at': 1, 'owner': 'other'},
                    {'job_id': ID + ',owner.eq.secret', 'created_at': 1, 'owner': 'me'},

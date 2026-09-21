@@ -213,8 +213,10 @@ class LifecycleTests(unittest.TestCase):
     def test_cancellation_cleans_up_before_allocating_anything_else(self):
         value = job()
         value["cancel_requested"] = True
-        with patch.object(controller, "cleanup") as cleanup, patch.object(cloud, "provision") as provision:
+        with patch.object(controller, "cleanup") as cleanup, patch.object(cloud, "provision") as provision, \
+                patch.object(controller.store, "save") as save:
             controller.step(value)
+        save.assert_called_once()
         cleanup.assert_called_once()
         provision.assert_not_called()
         self.assertEqual(value["outcome"], "cancelled")
@@ -222,8 +224,9 @@ class LifecycleTests(unittest.TestCase):
     def test_deadline_independently_forces_cleanup(self):
         value = job("running")
         value["deadline"] = 1
-        with patch.object(controller, "cleanup") as cleanup:
+        with patch.object(controller, "cleanup") as cleanup, patch.object(controller.store, "save") as save:
             controller.step(value)
+        save.assert_called_once()
         self.assertEqual(value["outcome"], "failed")
         cleanup.assert_called_once()
 
@@ -288,6 +291,24 @@ class LifecycleTests(unittest.TestCase):
 
 
 class ApiTests(unittest.TestCase):
+    def test_public_detail_and_owner_cancellation_retain_timeline(self):
+        value = dict(job(), schema_version=config.SCHEMA_VERSION)
+        history = [{"id": 1, "status": "provisioning", "started_at": "2026-09-20T12:00:00Z",
+                    "completed_at": None, "outcome": None}]
+        detail = {**config.public_job(value), "status_history": history}
+        event = {"rawPath": "/real-world/tests/job-1", "requestContext": {"http": {"method": "GET"}}}
+        with patch.object(api.store, "load", return_value=value), patch.object(api.store, "detail", return_value=detail), \
+                patch.object(api.store, "cancel") as cancel:
+            response = api.dispatch(event, None)
+            self.assertEqual(response["status_history"], history)
+            self.assertFalse(response["can_manage"])
+            event["rawPath"] += "/cancel"
+            event["requestContext"]["http"]["method"] = "POST"
+            response = api.dispatch(event, "user-1")
+            self.assertEqual(response["status_history"], history)
+            self.assertTrue(response["can_manage"])
+            cancel.assert_called_once_with("job-1")
+
     def test_launch_rejects_other_types_for_every_machine_before_storage_or_aws(self):
         for index in range(4):
             for instance_type in ["c7i.large", "c6i.large", "c5.large", "m7i.large", "m6i.large", "m5.large", "t3.micro", "t3.xlarge"]:
@@ -323,7 +344,7 @@ class ApiTests(unittest.TestCase):
     def test_other_users_can_read_but_cannot_cancel(self):
         value = job()
         value["schema_version"] = config.SCHEMA_VERSION
-        with patch.object(api.store, "load", return_value=value):
+        with patch.object(api.store, "load", return_value=value), patch.object(api.store, "detail", return_value=config.public_job(value)):
             event = {"rawPath": "/real-world/tests/job-1", "requestContext": {"http": {"method": "GET"}}}
             response = api.handler(event, None)
             self.assertEqual(response["statusCode"], 200)
