@@ -12,16 +12,17 @@ import uuid
 
 import api
 import cloud
-from config import TERMINAL
+from config import INSTANCE_TYPE, TERMINAL
 import store
 
 
 def placement(region):
-    zones = [z for z in cloud.locations(region) if z["available"] and z["type"] == "availability-zone"]
+    zones = [z for z in cloud.locations(region) if z["available"] and z["type"] == "availability-zone"
+             and INSTANCE_TYPE in z["instance_types"]]
     if not zones:
         raise RuntimeError("No eligible zones in " + region)
     zone = zones[0]
-    return {"region": region, "zone_id": zone["zone_id"], "instance_type": "c6i.large" if "c6i.large" in zone["instance_types"] else zone["instance_types"][0]}
+    return {"region": region, "zone_id": zone["zone_id"], "instance_type": INSTANCE_TYPE}
 
 
 def main():

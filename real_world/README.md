@@ -33,8 +33,11 @@ of achieved throughput.
 ## Placement
 
 The authenticated catalog uses `DescribeRegions(AllRegions=True)` and live zone
-and instance-type offerings. Each machine has independent Region, zone ID, and
-non-burstable x86 instance-type selection. AZ IDs identify the physical zone
+and instance-type offerings. Each machine has independent Region and zone ID
+selection and always uses **t3.medium**. The catalog checks only that instance
+type; zones without it are unavailable. The API rejects other types and the
+provisioner checks again before allocating resources. EC2 launch permissions
+also restrict the worker to t3.medium. AZ IDs identify the physical zone
 consistently across accounts. AWS does not expose individual building selection.
 Catalog entries explain Region/zone opt-in requirements and unsupported capacity.
 Standard AZs and enabled Local Zones with supported offerings are usable.

@@ -17,7 +17,7 @@ import runtime
 
 
 def settings():
-    placement = {"region": "us-east-1", "zone_id": "use1-az1", "instance_type": "c6i.large"}
+    placement = {"region": "us-east-1", "zone_id": "use1-az1", "instance_type": "t3.medium"}
     return {"server": dict(placement), "bottleneck": dict(placement), "receivers": [dict(placement), dict(placement)],
             "cca": "bbr", "duration_seconds": 30, "rate_mbit": 10, "buffer_kbytes": 125, "notes": "A hypothesis"}
 
@@ -61,6 +61,27 @@ class ContractTests(unittest.TestCase):
         result = json.dumps(config.public_job(value))
         for forbidden in ["lease_until", "upload_url", "secret-command", "1.2.3.4"]:
             self.assertNotIn(forbidden, result)
+
+
+class CatalogTests(unittest.TestCase):
+    def test_only_t3_medium_offerings_enable_zones(self):
+        ec2 = MagicMock()
+        ec2.get_paginator.return_value.paginate.return_value = [{"InstanceTypeOfferings": [
+            {"Location": "use1-az1", "InstanceType": "t3.medium"},
+            {"Location": "use1-az3", "InstanceType": "t3.medium"}]}]
+        ec2.describe_availability_zones.return_value = {"AvailabilityZones": [
+            {"ZoneId": f"use1-az{i}", "ZoneName": f"us-east-1{letter}", "State": "available",
+             "OptInStatus": "not-opted-in" if i == 3 else "opt-in-not-required"}
+            for i, letter in enumerate("abc", 1)]}
+        with patch.object(cloud, "regions", return_value=[{"region": "us-east-1", "enabled": True}]), \
+                patch.object(cloud, "client", return_value=ec2):
+            zones = cloud.locations("us-east-1")
+        ec2.get_paginator.return_value.paginate.assert_called_once_with(
+            LocationType="availability-zone-id", Filters=[{"Name": "instance-type", "Values": ["t3.medium"]}])
+        self.assertEqual([z["available"] for z in zones], [True, False, False])
+        self.assertEqual(zones[0]["instance_types"], ["t3.medium"])
+        self.assertEqual(zones[1]["reason"], "t3.medium is not offered in this zone.")
+        self.assertIn("Enable this zone", zones[2]["reason"])
 
 
 class NetworkTests(unittest.TestCase):
@@ -143,12 +164,22 @@ class LifecycleTests(unittest.TestCase):
             cloud.provision(value, value["nodes"][0], "profile")
         ec2.run_instances.assert_called_once()
         params = ec2.run_instances.call_args.kwargs
+        self.assertEqual(params["InstanceType"], "t3.medium")
         self.assertEqual(params["ClientToken"], "job-1-server")
         self.assertEqual(params["InstanceInitiatedShutdownBehavior"], "terminate")
         self.assertEqual(params["MetadataOptions"]["HttpTokens"], "required")
         self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["DeleteOnTermination"])
         self.assertTrue(params["BlockDeviceMappings"][0]["Ebs"]["Encrypted"])
         self.assertEqual(value["nodes"][0]["instance_id"], "i-1")
+
+    def test_provisioner_rejects_older_or_tampered_types_before_any_aws_call(self):
+        for index in range(4):
+            value = job()
+            value["nodes"][index]["instance_type"] = "c6i.large"
+            with self.subTest(node=index), patch.object(cloud, "client") as aws, \
+                    self.assertRaisesRegex(ValueError, "must use t3.medium"):
+                cloud.provision(value, value["nodes"][index], "profile")
+            aws.assert_not_called()
 
     def test_cancellation_cleans_up_before_allocating_anything_else(self):
         value = job()
@@ -230,6 +261,21 @@ class LifecycleTests(unittest.TestCase):
 
 
 class ApiTests(unittest.TestCase):
+    def test_launch_rejects_other_types_for_every_machine_before_storage_or_aws(self):
+        for index in range(4):
+            for instance_type in ["c7i.large", "c6i.large", "c5.large", "m7i.large", "m6i.large", "m5.large", "t3.large"]:
+                value = settings()
+                [value["server"], value["bottleneck"], *value["receivers"]][index]["instance_type"] = instance_type
+                event = {"rawPath": "/real-world/tests", "requestContext": {"http": {"method": "POST"}},
+                         "body": json.dumps({"config": value, "request_id": "a1000000-0000-4000-a000-000000000001"})}
+                with self.subTest(node=index, instance_type=instance_type), patch.object(api, "authenticate", return_value="user-1"), \
+                        patch.object(api.store, "load") as load, patch.object(cloud, "client") as aws:
+                    response = api.handler(event, None)
+                self.assertEqual(response["statusCode"], 400)
+                self.assertIn("Every machine must use t3.medium.", response["body"])
+                load.assert_not_called()
+                aws.assert_not_called()
+
     def test_unauthenticated_call_does_not_access_aws(self):
         with patch.object(api, "dispatch") as dispatch:
             response = api.handler({"headers": {}}, None)
