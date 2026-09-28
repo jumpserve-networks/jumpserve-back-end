@@ -1,0 +1,416 @@
+{
+  "id": "nines2026-pilot-v1",
+  "seed": 20260927,
+  "purpose": "preflight",
+  "kernel_commit": "90210de4b779d40496dee0b89081780eeddf2a60",
+  "trials": [
+    {
+      "id": "a32b12ba-71e7-5ce9-998f-35394c03d253",
+      "block_index": 0,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          6,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "31c73123-663d-5660-8995-59d7a8472c8c",
+      "block_index": 0,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          6,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "41724441-5f4a-555f-b9b5-529397c483f2",
+      "block_index": 1,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          6,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "d0b8d159-4170-53fb-9868-2348950eaf43",
+      "block_index": 1,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          6,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "81a73bd7-b77b-5b8d-bcaf-782e5dc34785",
+      "block_index": 2,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          54,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "517169be-b46a-51e4-be88-99a1c3590d20",
+      "block_index": 2,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          54,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "8e93b3c7-af04-583c-872e-dcd2421d4839",
+      "block_index": 3,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          6,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "1b3a4719-d1e5-522d-b932-7bcc92fae34b",
+      "block_index": 3,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          6,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "207af5f2-6feb-5ba2-9218-69d108472d27",
+      "block_index": 4,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          6,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "3cf3dc6a-5f6f-5e1d-8331-6ecbc69838de",
+      "block_index": 4,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          6,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "a6341faf-808b-5733-9fe1-910f4d1a2d96",
+      "block_index": 5,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          54,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "8f45ebef-f7c1-5b1d-b392-44b1176d0465",
+      "block_index": 5,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          54,
+          6
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "d659e5b3-e2bb-537b-94ec-fd7ba6612ab7",
+      "block_index": 6,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          54,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "46513b9f-7817-58b2-b357-267d6263b658",
+      "block_index": 6,
+      "replicate": 1,
+      "start_order": [
+        1,
+        2
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr",
+          "bbr"
+        ],
+        "delays_ms": [
+          54,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    },
+    {
+      "id": "8c25b52d-9c57-56d6-8531-0dcc5c70dd98",
+      "block_index": 7,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "baseline",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          54,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4
+      }
+    },
+    {
+      "id": "1098fdf6-1924-5362-86ed-f617dd68bb70",
+      "block_index": 7,
+      "replicate": 1,
+      "start_order": [
+        2,
+        1
+      ],
+      "config": {
+        "family": "homogeneous_bbr",
+        "treatment": "ack_equalized",
+        "ccas": [
+          "bbr1",
+          "bbr1"
+        ],
+        "delays_ms": [
+          54,
+          54
+        ],
+        "capacity_mbps": 200,
+        "queue_packets": 8256,
+        "duration_seconds": 12,
+        "warmup_seconds": 4,
+        "target_rtt_ms": 100
+      }
+    }
+  ]
+}

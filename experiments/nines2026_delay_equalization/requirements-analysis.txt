@@ -1,0 +1,3 @@
+# Local evidence review and export only; EC2 traffic generation uses stdlib+boto3.
+matplotlib==3.11.2
+PyMuPDF==1.28.2
