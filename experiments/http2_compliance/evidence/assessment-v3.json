@@ -1,0 +1,164 @@
+{
+  "status": "pass",
+  "runs": 57,
+  "measurements": 7176,
+  "table5_rows": 15,
+  "figure5_configurations": 10,
+  "figure6_configurations": 10,
+  "unknown": 443,
+  "recoded": 446,
+  "historical_and_translation": [
+    {
+      "figure": 7,
+      "proxy": "Envoy",
+      "category": "goaway",
+      "published": 31,
+      "reproduced": 31,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "H2O",
+      "category": "goaway",
+      "published": 16,
+      "reproduced": 16,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "Lighttpd",
+      "category": "goaway",
+      "published": 30,
+      "reproduced": 30,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "Lighttpd",
+      "category": "dropped",
+      "published": -34,
+      "reproduced": -34,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "HAproxy",
+      "category": "dropped",
+      "published": -29,
+      "reproduced": -29,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "H2O",
+      "category": "dropped",
+      "published": -24,
+      "reproduced": -24,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "Varnish",
+      "category": "dropped",
+      "published": -12,
+      "reproduced": -12,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "Envoy",
+      "category": "dropped",
+      "published": -11,
+      "reproduced": -11,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "Node",
+      "category": "dropped",
+      "published": -6,
+      "reproduced": -6,
+      "agrees": true
+    },
+    {
+      "figure": 7,
+      "proxy": "Traefik",
+      "category": "dropped",
+      "published": 12,
+      "reproduced": 90,
+      "agrees": false
+    },
+    {
+      "figure": 8,
+      "proxy": "Envoy",
+      "category": "accepted",
+      "published": 8,
+      "reproduced": 6,
+      "agrees": false
+    },
+    {
+      "figure": 8,
+      "proxy": "HAproxy",
+      "category": "accepted",
+      "published": 5,
+      "reproduced": -1,
+      "agrees": false
+    },
+    {
+      "figure": 8,
+      "proxy": "Nghttpx",
+      "category": "accepted",
+      "published": 5,
+      "reproduced": 1,
+      "agrees": false
+    },
+    {
+      "figure": 8,
+      "proxy": "H2O",
+      "category": "accepted",
+      "published": 2,
+      "reproduced": 1,
+      "agrees": false
+    }
+  ],
+  "limitations": [
+    "Independent arithmetic checks reuse the archived worker evidence; they are not independent physical proxy measurements.",
+    "Figures 7\u20138 checks cover numerical statements transcribed from prose, not every raster bar.",
+    "No inferential confidence intervals: the designed suite is a census, not a probability sample."
+  ],
+  "plotting_control": {
+    "same_accepted_outcome": {
+      "released_bar_delta": 1,
+      "corrected_delta": 0
+    },
+    "mechanism": "summarize_outputs.py create_dual_scope_difference_bar_graph assigns primary accepted outcomes to counts_full[\"Dropped\"]. The line generator and stored differences must be audited separately.",
+    "followup_protocol_sha256": "ea22b69322ef588617243017c50a56d09c69954efdd87e772c6171e6839d6eec"
+  },
+  "primary_unknown": 129,
+  "primary_recoded": 129,
+  "main_scope": "57 archived configuration datasets, 7176 designed measurements; paper Table5 subset 15 datasets/1950 cases",
+  "loopback": [
+    {
+      "id": "http2-loopback-pilot-v2",
+      "planned": 12,
+      "summary": {
+        "agreement": 7,
+        "disagreement": 5,
+        "unknown_or_failed": 0
+      },
+      "units": "error codes dimensionless; bytes; elapsed seconds",
+      "limitations": "Endpoint control is not a middlebox measurement or physical cloud replication. Same-host trials are correlated. Freeze a separate main follow-up protocol after pilot."
+    },
+    {
+      "id": "http2-loopback-main-v1",
+      "planned": 72,
+      "summary": {
+        "agreement": 42,
+        "disagreement": 30,
+        "unknown_or_failed": 0
+      },
+      "units": "error codes dimensionless; bytes; elapsed seconds",
+      "limitations": "Endpoint control is not a middlebox measurement or physical cloud replication. Same-host trials are correlated. Freeze a separate main follow-up protocol after pilot."
+    }
+  ]
+}

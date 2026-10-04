@@ -1,0 +1,613 @@
+{
+  "id": "http2-loopback-pilot-v2",
+  "stage": "exploratory feasibility pilot, excluded from main archive campaign",
+  "protocol": {
+    "id": "http2-loopback-pilot-v2",
+    "version": 2,
+    "stage": "exploratory feasibility pilot, excluded from main archive campaign",
+    "question": "Can independently constructed raw frames elicit inspectable HTTP/2 control responses on an owned local endpoint?",
+    "environment": "Installed Node v24.4.1 native HTTP/2 endpoint on macOS arm64, loopback 127.0.0.1, no TLS, no proxy, no external traffic",
+    "algorithm": "Raw TCP with manual nine-octet frame encoder/parser; validate framing against hyperframe; HPACK encoder only for valid request",
+    "seed": 3764447,
+    "replications": 1,
+    "observation_windows_seconds": [
+      0.25
+    ],
+    "metrics": "frame type and error code dimensionless; sent/received bytes; observation duration seconds",
+    "case_selection": "12 controls/boundary cases defined in loopback.py; validity, settings, ping, window, reset and unknown-frame behavior",
+    "exclusions": "Startup/socket failures persist as failed; absent response remains unknown; no silent-drop or compliance inference from timeouts",
+    "statistics": "Descriptive outcomes only; no confidence interval, population inference, historical-version reproduction or simulator validation",
+    "limitations": "Endpoint control is not a middlebox measurement or physical cloud replication. Same-host trials are correlated. Freeze a separate main follow-up protocol after pilot.",
+    "amendment": "Preserve failed v1: sandbox EPERM on listener; elevated retry stopped before measurements because independent hyperframe validator rejected intentionally invalid stream IDs. v2 permits only the explicitly planned malformed stream controls. No v1 measurements produced."
+  },
+  "provenance": {
+    "protocol_sha256": "5a28eb298b1739ab3d14a31442e29bd12cbab32979c09c1d72e968f7cf3e7bcc",
+    "runner_sha256": "64859d47ad6ebd2c82bbbdda5ed84482f3e0ad34a985cd729a9fea268ff94107",
+    "server_sha256": "e260d5ef936e09ec2915b070d6ffcea036415e2edd28c25118566b87040cbfc1",
+    "node_sha256": "8fd5615147de90362897b08108b58801d7b5b07f0d1dc9e719759e448bad3182",
+    "frozen_at": "2026-10-04T21:34:44.760554+00:00",
+    "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "processes": [
+    {
+      "replication": 0,
+      "versions": {
+        "node": "24.4.1",
+        "acorn": "8.15.0",
+        "ada": "3.2.4",
+        "amaro": "1.1.0",
+        "ares": "1.34.5",
+        "brotli": "1.1.0",
+        "cjs_module_lexer": "2.1.0",
+        "cldr": "47.0",
+        "icu": "77.1",
+        "llhttp": "9.3.0",
+        "modules": "137",
+        "napi": "10",
+        "nbytes": "0.1.1",
+        "ncrypto": "0.0.1",
+        "nghttp2": "1.66.0",
+        "openssl": "3.6.2",
+        "simdjson": "3.13.0",
+        "simdutf": "6.4.0",
+        "sqlite": "3.50.2",
+        "tz": "2025a",
+        "undici": "7.11.0",
+        "unicode": "16.0",
+        "uv": "1.51.0",
+        "uvwasi": "0.0.21",
+        "v8": "13.6.233.10-node.17",
+        "zlib": "1.2.12",
+        "zstd": "1.5.7"
+      },
+      "requested_processes": 1,
+      "actual_processes": 1
+    }
+  ],
+  "measurements": [
+    {
+      "id": "pilot-v2-0-reset-on-stream-zero-0.25",
+      "replication": 0,
+      "case": "reset-on-stream-zero",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 1,
+      "rfc_section": "RFC9113 6.4",
+      "started_at": "2026-10-04T21:34:44.809305+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a00000004000000000000000403000000000000000000",
+      "received_hex": "0000000400000000000000080700000000000000000000000002",
+      "sent_bytes": 46,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000002",
+          "error_code": 2
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 2,
+      "ended": "peer closed",
+      "elapsed_seconds": 0.0048403330001747236,
+      "status": "recorded",
+      "agrees": false,
+      "ended_at": "2026-10-04T21:34:44.814173+00:00",
+      "raw_sha256": "0e62debb6028b416ecb0bd7aa7938a402ca0dc50d085c06989f9022e003062af"
+    },
+    {
+      "id": "pilot-v2-0-settings-invalid-length-0.25",
+      "replication": 0,
+      "case": "settings-invalid-length",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 6,
+      "rfc_section": "RFC9113 6.5",
+      "started_at": "2026-10-04T21:34:44.814219+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a00000004000000000000000104000000000000",
+      "received_hex": "0000000400000000000000080700000000000000000000000006",
+      "sent_bytes": 43,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000006",
+          "error_code": 6
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 6,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.25109229200461414,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:45.065331+00:00",
+      "raw_sha256": "12ad09b84515c9d8d50906e759f11fd5c06d02e8bc6a2eff9ced506b63c6082d"
+    },
+    {
+      "id": "pilot-v2-0-ping-invalid-length-0.25",
+      "replication": 0,
+      "case": "ping-invalid-length",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 6,
+      "rfc_section": "RFC9113 6.7",
+      "started_at": "2026-10-04T21:34:45.065417+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a00000004000000000000000706000000000031323334353637",
+      "received_hex": "0000000400000000000000080700000000000000000000000006",
+      "sent_bytes": 49,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000006",
+          "error_code": 6
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 6,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.2525964170054067,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:45.318051+00:00",
+      "raw_sha256": "515be2bf5732cbaf9dc96a1f648fb95305b7dd92b46bb9dbea4adc7815e9760c"
+    },
+    {
+      "id": "pilot-v2-0-window-zero-connection-0.25",
+      "replication": 0,
+      "case": "window-zero-connection",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 1,
+      "rfc_section": "RFC9113 6.9",
+      "started_at": "2026-10-04T21:34:45.318354+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a00000004000000000000000408000000000000000000",
+      "received_hex": "0000000400000000000000080700000000000000000000000002",
+      "sent_bytes": 46,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000002",
+          "error_code": 2
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 2,
+      "ended": "peer closed",
+      "elapsed_seconds": 0.004158625000854954,
+      "status": "recorded",
+      "agrees": false,
+      "ended_at": "2026-10-04T21:34:45.322541+00:00",
+      "raw_sha256": "19c256d4f9fc86002b3edbec1db2690cf47eb061cb9df19407fb045e18588e97"
+    },
+    {
+      "id": "pilot-v2-0-max-frame-size-too-small-0.25",
+      "replication": 0,
+      "case": "max-frame-size-too-small",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 1,
+      "rfc_section": "RFC9113 6.5.2",
+      "started_at": "2026-10-04T21:34:45.322788+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a000000040000000000000006040000000000000500003fff",
+      "received_hex": "0000000400000000000000080700000000000000000000000002",
+      "sent_bytes": 48,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000002",
+          "error_code": 2
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 2,
+      "ended": "peer closed",
+      "elapsed_seconds": 0.0017850419972091913,
+      "status": "recorded",
+      "agrees": false,
+      "ended_at": "2026-10-04T21:34:45.324600+00:00",
+      "raw_sha256": "03d0576f41e19dad98049be38744ec0f9d61050b3eaa6791bb72f747d65b1458"
+    },
+    {
+      "id": "pilot-v2-0-ping-on-stream-0.25",
+      "replication": 0,
+      "case": "ping-on-stream",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 1,
+      "rfc_section": "RFC9113 6.7",
+      "started_at": "2026-10-04T21:34:45.324765+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a0000000400000000000000080600000000013132333435363738",
+      "received_hex": "0000000400000000000000080700000000000000000000000002",
+      "sent_bytes": 50,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000002",
+          "error_code": 2
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 2,
+      "ended": "peer closed",
+      "elapsed_seconds": 0.0010750410001492128,
+      "status": "recorded",
+      "agrees": false,
+      "ended_at": "2026-10-04T21:34:45.325861+00:00",
+      "raw_sha256": "c1dc9c49af290443ae5393e207867b130f3ae82c790e727fab28f56c2d9c6b9e"
+    },
+    {
+      "id": "pilot-v2-0-valid-ping-0.25",
+      "replication": 0,
+      "case": "valid-ping",
+      "window_seconds": 0.25,
+      "expected": "ping-ack",
+      "expected_error_code": null,
+      "rfc_section": "RFC9113 6.7",
+      "started_at": "2026-10-04T21:34:45.325963+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a0000000400000000000000080600000000003132333435363738",
+      "received_hex": "0000000400000000000000000401000000000000080601000000003132333435363738",
+      "sent_bytes": 50,
+      "received_bytes": 35,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 4,
+          "flags": 1,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 6,
+          "flags": 1,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "3132333435363738",
+          "error_code": null
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "ping-ack",
+      "error_code": null,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.25218362500163494,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:45.578178+00:00",
+      "raw_sha256": "c4084f286da90ef39d52e813e8a7a50f0204a4ef34a3e84d981d69c732d9f8ae"
+    },
+    {
+      "id": "pilot-v2-0-initial-window-overflow-0.25",
+      "replication": 0,
+      "case": "initial-window-overflow",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 3,
+      "rfc_section": "RFC9113 6.5.2",
+      "started_at": "2026-10-04T21:34:45.578324+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a000000040000000000000006040000000000000480000000",
+      "received_hex": "000000040000000000000038070000000000000000000000000353455454494e47533a20746f6f206c617267652053455454494e47535f494e495449414c5f57494e444f575f53495a45",
+      "sent_bytes": 48,
+      "received_bytes": 74,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 56,
+          "payload_hex": "000000000000000353455454494e47533a20746f6f206c617267652053455454494e47535f494e495449414c5f57494e444f575f53495a45",
+          "error_code": 3
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 3,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.2520268330044928,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:45.830394+00:00",
+      "raw_sha256": "5d33faad051aebf9a9007c6a2653374162a429d502f8d766dbc547beeef539ce"
+    },
+    {
+      "id": "pilot-v2-0-settings-ack-payload-0.25",
+      "replication": 0,
+      "case": "settings-ack-payload",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 6,
+      "rfc_section": "RFC9113 6.5",
+      "started_at": "2026-10-04T21:34:45.830643+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a000000040000000000000006040100000000000000000000",
+      "received_hex": "0000000400000000000000080700000000000000000000000006",
+      "sent_bytes": 48,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000006",
+          "error_code": 6
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 6,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.25224566699762363,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:46.082925+00:00",
+      "raw_sha256": "79f6d0287b46ddb76121230423f11f71ac7eb67cd0b4e55ea5c06226179eb7ce"
+    },
+    {
+      "id": "pilot-v2-0-unknown-frame-ignore-0.25",
+      "replication": 0,
+      "case": "unknown-frame-ignore",
+      "window_seconds": 0.25,
+      "expected": "response",
+      "expected_error_code": null,
+      "rfc_section": "RFC9113 4.1",
+      "started_at": "2026-10-04T21:34:46.083048+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a000000040000000000000000ff000000000000000b01050000000182864186a0e41d139d0984",
+      "received_hex": "000000040000000000000000040100000000000019010400000001886196dd6d5f4a01a535112a0802714106e32d5c69c53168df0000100001000000016c6f6f706261636b2d636f6e74726f6c",
+      "sent_bytes": 62,
+      "received_bytes": 77,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 4,
+          "flags": 1,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 1,
+          "flags": 4,
+          "stream": 1,
+          "length": 25,
+          "payload_hex": "886196dd6d5f4a01a535112a0802714106e32d5c69c53168df",
+          "error_code": null
+        },
+        {
+          "type": 0,
+          "flags": 1,
+          "stream": 1,
+          "length": 16,
+          "payload_hex": "6c6f6f706261636b2d636f6e74726f6c",
+          "error_code": null
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "response",
+      "error_code": null,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.25203108400455676,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:46.335122+00:00",
+      "raw_sha256": "fe9662c3b5a364f5e4957077120c3983ad2992f19bb0a1b6fec9282c835c1f3e"
+    },
+    {
+      "id": "pilot-v2-0-settings-on-stream-0.25",
+      "replication": 0,
+      "case": "settings-on-stream",
+      "window_seconds": 0.25,
+      "expected": "goaway",
+      "expected_error_code": 1,
+      "rfc_section": "RFC9113 6.5",
+      "started_at": "2026-10-04T21:34:46.335436+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a000000040000000000000000040000000001",
+      "received_hex": "0000000400000000000000080700000000000000000000000002",
+      "sent_bytes": 42,
+      "received_bytes": 26,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 7,
+          "flags": 0,
+          "stream": 0,
+          "length": 8,
+          "payload_hex": "0000000000000002",
+          "error_code": 2
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "goaway",
+      "error_code": 2,
+      "ended": "peer closed",
+      "elapsed_seconds": 0.002864207999664359,
+      "status": "recorded",
+      "agrees": false,
+      "ended_at": "2026-10-04T21:34:46.338342+00:00",
+      "raw_sha256": "e489b454ec23e82b92ffddc1cc5c373073226bc0d9ad0a3453bc81872417a7f9"
+    },
+    {
+      "id": "pilot-v2-0-valid-get-0.25",
+      "replication": 0,
+      "case": "valid-get",
+      "window_seconds": 0.25,
+      "expected": "response",
+      "expected_error_code": null,
+      "rfc_section": "RFC9113 4.1/8",
+      "started_at": "2026-10-04T21:34:46.338534+00:00",
+      "sent_hex": "505249202a20485454502f322e300d0a0d0a534d0d0a0d0a00000004000000000000000b01050000000182864186a0e41d139d0984",
+      "received_hex": "000000040000000000000000040100000000000019010400000001886196dd6d5f4a01a535112a0802714106e32d5c69c53168df0000100001000000016c6f6f706261636b2d636f6e74726f6c",
+      "sent_bytes": 53,
+      "received_bytes": 77,
+      "frames": [
+        {
+          "type": 4,
+          "flags": 0,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 4,
+          "flags": 1,
+          "stream": 0,
+          "length": 0,
+          "payload_hex": "",
+          "error_code": null
+        },
+        {
+          "type": 1,
+          "flags": 4,
+          "stream": 1,
+          "length": 25,
+          "payload_hex": "886196dd6d5f4a01a535112a0802714106e32d5c69c53168df",
+          "error_code": null
+        },
+        {
+          "type": 0,
+          "flags": 1,
+          "stream": 1,
+          "length": 16,
+          "payload_hex": "6c6f6f706261636b2d636f6e74726f6c",
+          "error_code": null
+        }
+      ],
+      "trailing_hex": "",
+      "outcome": "response",
+      "error_code": null,
+      "ended": "observation deadline",
+      "elapsed_seconds": 0.2524764999980107,
+      "status": "recorded",
+      "agrees": true,
+      "ended_at": "2026-10-04T21:34:46.591051+00:00",
+      "raw_sha256": "4f840d796d2ea0e146e5e0d9ae0ca22b5efdb7fb0cb76ffe6f2abcd5735ea9c5"
+    }
+  ],
+  "planned": 12,
+  "recorded": 12,
+  "costs": {
+    "incremental_purchased_compute_usd": 0,
+    "workstation_allocation_cost_usd": null
+  },
+  "summary": {
+    "agreement": 7,
+    "disagreement": 5,
+    "unknown_or_failed": 0
+  }
+}

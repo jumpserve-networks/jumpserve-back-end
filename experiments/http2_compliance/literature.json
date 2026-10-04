@@ -1,0 +1,2381 @@
+[
+  {
+    "reference_number": 0,
+    "citation": "Mahmoud Attia, Ilies Benhabbour, Marc Dacier. 2025. The Developer, the RFC, and the Middlebox: An HTTP/2 Compliance Story. IMC 2025, 258\u2013273.",
+    "doi": "10.1145/3730567.3764447",
+    "kind": "main paper",
+    "source_url": "https://dl.acm.org/doi/10.1145/3730567.3764447",
+    "download_status": "downloaded",
+    "review_status": "complete",
+    "retrieved_version": "Supplied ACM version of record: 16 pages, proceedings pages 258\u2013273, CC BY 4.0",
+    "sha256": "0624b02908d973efd875b908995107a9fee78cbf4320a31dcd14b15e33c5fa35",
+    "findings": "Read all text, Figures 1\u20138, Tables 1\u20139 and Appendices A\u2013B. Table 5 reports 1950 cases, 1745 rejected and 205 accepted. Paper compliance requires E/G/R rather than D; finite designed suite and convenience-selected proxies.",
+    "limitations": "No random server sampling, inferential CIs, exploit validation, cloud geographic sensitivity or full TLS compliance. Section 2 states a 12-byte header, while RFC9113 uses 9. TCP sequence agreement excludes only specific TCP-splitting behavior, not every intermediary.",
+    "retrieval_audit": [
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3730567.3764447",
+        "status": "403/security challenge",
+        "at": "2026-10-04T20:44:55.412564+00:00"
+      },
+      {
+        "url": "https://repository.kaust.edu.sa/bitstreams/c6d78bf8-ee56-458c-a858-a8d611b51a5d/download",
+        "status": "200 HTML security challenge, rejected",
+        "at": "2026-10-04T20:44:55.412646+00:00"
+      }
+    ],
+    "retrieved_url": "user-supplied workspace pdfs/3730567.3764447.pdf",
+    "pages": 16
+  },
+  {
+    "reference_number": 1,
+    "citation": "Paul Adamczyk Munawar Hafiz and Ralph E Johnson. 2008. Non-compliant and proud: A case study of HTTP compliance. https://www.ideals.illinois.edu/items/11454. [Accessed: 26-Sep-2024].",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.ideals.illinois.edu/items/11454.",
+    "download_status": "unavailable",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://www.ideals.illinois.edu/items/11454",
+        "at": "2026-10-04T20:51:40.799305+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://citeseerx.ist.psu.edu/document?doi=5da017aa0a768b0ba31a6921f36185b5c47a7d61&repid=rep1&type=pdf",
+        "at": "2026-10-04T21:02:37.484594+00:00",
+        "status": "failed",
+        "reason": "<urlopen error timed out>"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete.",
+    "candidate_urls": [
+      "https://citeseerx.ist.psu.edu/document?doi=5da017aa0a768b0ba31a6921f36185b5c47a7d61&repid=rep1&type=pdf"
+    ]
+  },
+  {
+    "reference_number": 2,
+    "citation": "Mike Belshe Roberto Peon and Martin Thomson. 2015. Hypertext Transfer Protocol Version 2 (HTTP/2). RFC 7540. doi:10.17487/RFC7540",
+    "doi": "10.17487/RFC7540",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC7540",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "6a67e8d7fdfa7b5272fc55f8fba62b266f932031c7f39e29c52f83e129bc2967",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC7540",
+        "at": "2026-10-04T20:44:55.422131+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc7540.txt",
+        "at": "2026-10-04T20:44:55.423497+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc7540.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc7540.txt",
+        "at": "2026-10-04T20:46:00.935284+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "6a67e8d7fdfa7b5272fc55f8fba62b266f932031c7f39e29c52f83e129bc2967",
+        "bytes": 209580,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "Hypertext Transfer Protocol Version 2 (HTTP/2)",
+    "metadata_resolved": true,
+    "metadata_sha256": "ec404a0593e9c8c948b55dce7d8b2a5a04846cfa248260c75d2af0811d8c2edf",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc7540.txt"
+  },
+  {
+    "reference_number": 3,
+    "citation": "Mike Belshe Roberto Peon Martin Thomson and Alexey Melnikov. 2012. SPDY Protocol. Internet-Draft draft-ietf-httpbis-http2-00. Internet Engineering Task Force. https://datatracker.ietf.org/doc/draft-ietf-httpbis-http2/00/ Work in Progress.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://datatracker.ietf.org/doc/draft-ietf-httpbis-http2/00/",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "c5be3efab2a6e70123ee3829f2c5da16339ceb45999f784544cdfe8c14955954",
+    "retrieval_audit": [
+      {
+        "url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt",
+        "final_url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt",
+        "at": "2026-10-04T20:51:40.784919+00:00",
+        "http_status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "sha256": "c5be3efab2a6e70123ee3829f2c5da16339ceb45999f784544cdfe8c14955954",
+        "bytes": 110207,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt",
+        "final_url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt",
+        "at": "2026-10-04T21:02:02.685063+00:00",
+        "http_status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "sha256": "c5be3efab2a6e70123ee3829f2c5da16339ceb45999f784544cdfe8c14955954",
+        "bytes": 110207,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt",
+        "status": "downloaded and identity checked",
+        "sha256": "c5be3efab2a6e70123ee3829f2c5da16339ceb45999f784544cdfe8c14955954",
+        "bytes": 110207,
+        "at": "2026-10-04T21:38:47.703939+00:00"
+      }
+    ],
+    "retrieved_version": "IETF Internet-Draft00 (2012), historical non-final standard",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "candidate_urls": [
+      "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt"
+    ],
+    "retrieved_url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-http2-00.txt"
+  },
+  {
+    "reference_number": 4,
+    "citation": "Cory Benfield. 2025. GitHub - python-hyper/h2: Pure-Python HTTP/2 protocol implementation -- github.com. https://github.com/python-hyper/h2. [Accessed 04-05-2025].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://github.com/python-hyper/h2.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "af3b27024f0939a8e4c03921e6df6a615c87cd103a2f5f0431e8420e68dd3e06",
+    "retrieval_audit": [
+      {
+        "url": "https://raw.githubusercontent.com/python-hyper/h2/master/README.rst",
+        "at": "2026-10-04T20:55:09.552159+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/python-hyper/h2/master/README.rst",
+        "at": "2026-10-04T21:01:46.350603+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "af3b27024f0939a8e4c03921e6df6a615c87cd103a2f5f0431e8420e68dd3e06",
+        "bytes": 2549,
+        "final_url": "https://raw.githubusercontent.com/python-hyper/h2/master/README.rst"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "README describes a pure in-memory Python HTTP/2 stack, distinct from network and concurrency layers.",
+    "limitations": "README only; current revision is not the authors modified h2 worker or a full source-code review.",
+    "retrieved_url": "https://raw.githubusercontent.com/python-hyper/h2/master/README.rst",
+    "text_characters": 2549
+  },
+  {
+    "reference_number": 5,
+    "citation": "Ilies Benhabbour, Mahmoud Attia, and Marc Dacier. 2025. HTTP Conformance vs. Middleboxes: Identifying Where the Rules Actually Break Down. In International Conference on Passive and Active Network Measurement. Springer-Verlag, Berlin, Heidelberg, 155\u2013181.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "download_status": "unavailable",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://repository.kaust.edu.sa/bitstreams/4a5eda74-03c5-4b77-87a9-2001e78b7b66/download",
+        "final_url": "https://repository.kaust.edu.sa/bitstreams/4a5eda74-03c5-4b77-87a9-2001e78b7b66/download",
+        "at": "2026-10-04T20:51:40.711687+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "d02032286070b4dd9d8fbd985a7bdca8af8edf52b89ff177db3bfcb2c8a9c43d",
+        "bytes": 212,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://repository.kaust.edu.sa/bitstreams/4a5eda74-03c5-4b77-87a9-2001e78b7b66/download",
+        "final_url": "https://repository.kaust.edu.sa/bitstreams/4a5eda74-03c5-4b77-87a9-2001e78b7b66/download",
+        "at": "2026-10-04T21:02:02.562543+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "f01c8a21a2157ef216591ca65d5a07bc9bee3afdbc5c796a1081edd77ed609fd",
+        "bytes": 842,
+        "status": "not full text: non-PDF response"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete.",
+    "candidate_urls": [
+      "https://repository.kaust.edu.sa/bitstreams/4a5eda74-03c5-4b77-87a9-2001e78b7b66/download"
+    ]
+  },
+  {
+    "reference_number": 6,
+    "citation": "Ilies Benhabbour and Marc Dacier. 2022. NoPASARAN: a Novel Platform for Analysing Semi-Active elements in Routes Across a Network. Applied Cybersecurity & Internet Governance 1(1), 1\u201325. DOI: 10.5604/01.3001.0016.1461",
+    "doi": "10.5604/01.3001.0016.1461",
+    "kind": "research",
+    "source_url": "https://doi.org/10.5604/01.3001.0016.1461",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "9270b007d63a3ece77ad94ba3f33ced4e7c730a8ad122d37e94c284a7337e2f5",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.5604/01.3001.0016.1461",
+        "at": "2026-10-04T20:44:55.422067+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.5604/01.3001.0016.1461",
+        "at": "2026-10-04T20:46:00.497095+00:00",
+        "status": "metadata failed",
+        "reason": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "url": "https://www.acigjournal.com/pdf-184294-105437?filename=NoPASARAN__a_Novel.pdf",
+        "final_url": "https://www.acigjournal.com/pdf-184294-105437?filename=NoPASARAN__a_Novel.pdf",
+        "at": "2026-10-04T20:51:41.778034+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.acigjournal.com/pdf-184294-105052",
+        "final_url": "https://www.acigjournal.com/pdf-184294-105052",
+        "at": "2026-10-04T20:51:43.746921+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "9270b007d63a3ece77ad94ba3f33ced4e7c730a8ad122d37e94c284a7337e2f5",
+        "bytes": 1037140,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Architecture and introductory specification describe distributed end-to-end worker tests for semi-active components, with two illustrative use cases.",
+    "limitations": "Partial review of introduction/architecture motivation; all implementation and use-case results not independently validated.",
+    "candidate_urls": [
+      "https://www.acigjournal.com/pdf-184294-105437?filename=NoPASARAN__a_Novel.pdf",
+      "https://www.acigjournal.com/pdf-184294-105052",
+      "https://www.acigjournal.com/pdf-184294-105052"
+    ],
+    "title": "NoPASARAN: a Novel Platform for Analysing Semi-Active elements in Routes Across a Network",
+    "metadata_resolved": true,
+    "metadata_sha256": "e14cd1bfc8c7cede0d6898f6e4322ce2141f99ee3517a0c274dc098f4b3f2185",
+    "publisher_links": [
+      {
+        "URL": "https://www.acigjournal.com/pdf-184294-105052",
+        "content-type": "application/pdf",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://www.acigjournal.com/pdf-184294-105052",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "retrieved_url": "https://www.acigjournal.com/pdf-184294-105052",
+    "pages": 25,
+    "text_characters": 65830
+  },
+  {
+    "reference_number": 7,
+    "citation": "Ilies Benhabbour; Marc Dacier. 2025. ENDEMIC: End-to-End Network Disruptions \u2013 Examining Middleboxes, Issues, and Countermeasures \u2013 A Survey. DOI: 10.1145/3716372",
+    "doi": "10.1145/3716372",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3716372",
+    "download_status": "unavailable",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3716372",
+        "at": "2026-10-04T20:44:55.422021+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3716372",
+        "at": "2026-10-04T20:46:00.839240+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://repository.kaust.edu.sa/bitstreams/b3fc953c-ed6d-4061-8a03-b54d3906769a/download",
+        "final_url": "https://repository.kaust.edu.sa/bitstreams/b3fc953c-ed6d-4061-8a03-b54d3906769a/download",
+        "at": "2026-10-04T20:51:40.839860+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "d02032286070b4dd9d8fbd985a7bdca8af8edf52b89ff177db3bfcb2c8a9c43d",
+        "bytes": 212,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3716372",
+        "at": "2026-10-04T20:51:41.124987+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://repository.kaust.edu.sa/bitstreams/b3fc953c-ed6d-4061-8a03-b54d3906769a/download",
+        "final_url": "https://repository.kaust.edu.sa/bitstreams/b3fc953c-ed6d-4061-8a03-b54d3906769a/download",
+        "at": "2026-10-04T21:02:02.556240+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "38a05ff7b14501c339d70f041a54ec74895090f0623dd7e78e2cb6780df4a832",
+        "bytes": 955,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3716372",
+        "at": "2026-10-04T21:02:02.748250+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete.",
+    "title": "ENDEMIC: End-to-End Network Disruptions \u2013 Examining Middleboxes, Issues, and Countermeasures \u2013 A Survey",
+    "metadata_resolved": true,
+    "metadata_sha256": "132fcd9a4cc73fffa082cde055469ac8d8ff058dabdfd460b51a8a1b542d8ed8",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3716372",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3716372",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://repository.kaust.edu.sa/bitstreams/b3fc953c-ed6d-4061-8a03-b54d3906769a/download",
+      "https://dl.acm.org/doi/pdf/10.1145/3716372"
+    ]
+  },
+  {
+    "reference_number": 8,
+    "citation": "Mike Bishop. 2022. HTTP/3. RFC 9114. doi:10.17487/RFC9114",
+    "doi": "10.17487/RFC9114",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC9114",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "6b84555c88eeebcf5d2b2e1d9d7b58630abc97ab877b2cf62dee4cd635db34e4",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC9114",
+        "at": "2026-10-04T20:44:55.422309+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "at": "2026-10-04T20:44:55.423702+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "at": "2026-10-04T20:46:01.004096+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "6b84555c88eeebcf5d2b2e1d9d7b58630abc97ab877b2cf62dee4cd635db34e4",
+        "bytes": 155206,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9114.txt",
+        "at": "2026-10-04T20:51:41.182262+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "6b84555c88eeebcf5d2b2e1d9d7b58630abc97ab877b2cf62dee4cd635db34e4",
+        "bytes": 155206,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "HTTP/3",
+    "metadata_resolved": true,
+    "metadata_sha256": "b57eac42a5a53ecbe732b28d57dd9131b00826d6ba68f11faecb8a3bdd73a571",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc9114.txt"
+  },
+  {
+    "reference_number": 9,
+    "citation": "Kevin Bock, Abdulrahman Alaraj, Yair Fax, Kyle Hurley, Eric Wustrow, and Dave Levin. 2021. Weaponizing Middleboxes for TCP Reflected Amplification. In 30th USENIX Security Symposium (USENIX Security 21). USENIX Association, Vancouver, B.C., Canada, 3345-3361. https://www.usenix.org/conference/usenixsecurity21/presentation/bock",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.usenix.org/conference/usenixsecurity21/presentation/bock",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "eb627ed25147d0bce7c42e7e5d27e130ee1461ea9640d8e8b45b365c6839c420",
+    "retrieval_audit": [
+      {
+        "url": "https://www.usenix.org/system/files/sec21-bock.pdf",
+        "at": "2026-10-04T20:44:55.422100+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.usenix.org/system/files/sec21-bock.pdf",
+        "final_url": "https://www.usenix.org/system/files/sec21-bock.pdf",
+        "at": "2026-10-04T20:46:01.368754+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "eb627ed25147d0bce7c42e7e5d27e130ee1461ea9640d8e8b45b365c6839c420",
+        "bytes": 679957,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "TCP noncompliance in middleboxes can enable reflected amplification; the study uses packet-sequence exploration and Internet measurements.",
+    "limitations": "Abstract/introduction reviewed; TCP amplification findings do not establish exploitability of the HTTP/2 cases here.",
+    "retrieved_url": "https://www.usenix.org/system/files/sec21-bock.pdf",
+    "pages": 18,
+    "text_characters": 82983
+  },
+  {
+    "reference_number": 10,
+    "citation": "Scott O. Bradner. 1997. Key words for use in RFCs to Indicate Requirement Levels. RFC 2119. doi:10.17487/RFC2119",
+    "doi": "10.17487/RFC2119",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC2119",
+    "download_status": "downloaded",
+    "review_status": "complete",
+    "sha256": "3c2ceb7bfc84cd34720f4a5271338ab9d8280d34bdd1eb250c64306202f2ed8b",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC2119",
+        "at": "2026-10-04T20:44:55.423024+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc2119.txt",
+        "at": "2026-10-04T20:44:55.424122+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc2119.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc2119.txt",
+        "at": "2026-10-04T20:46:00.948044+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "3c2ceb7bfc84cd34720f4a5271338ab9d8280d34bdd1eb250c64306202f2ed8b",
+        "bytes": 4723,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "MUST is mandatory; SHOULD permits justified exceptions; MAY defines an optional behavior. Imperatives should be reserved for interoperability or harm prevention.",
+    "limitations": "Normative terminology alone does not map every HTTP/2 test to a correct oracle.",
+    "title": "Key words for use in RFCs to Indicate Requirement Levels",
+    "metadata_resolved": true,
+    "metadata_sha256": "d6b2c81a3a63788019d1e63a6a4e9c7548f1d5c81aa4f71018b86550555545f3",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc2119.txt"
+  },
+  {
+    "reference_number": 11,
+    "citation": "B. Carpenter; S. Brim. 2002. Middleboxes: Taxonomy and Issues. DOI: 10.17487/RFC3234",
+    "doi": "10.17487/RFC3234",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC3234",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "bd20d7e62e2afe4dfe7c9297e5529cd3472980cb5d9f1e5297483c219f2eee44",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC3234",
+        "at": "2026-10-04T20:44:55.422994+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc3234.txt",
+        "at": "2026-10-04T20:44:55.424376+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc3234.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc3234.txt",
+        "at": "2026-10-04T20:46:01.229972+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "bd20d7e62e2afe4dfe7c9297e5529cd3472980cb5d9f1e5297483c219f2eee44",
+        "bytes": 62329,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "Middleboxes: Taxonomy and Issues",
+    "metadata_resolved": true,
+    "metadata_sha256": "aa0d007dc96fd400d277aa3b465f7d01c95a4593dbc0667bc617ccf8f52c3539",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc3234.txt"
+  },
+  {
+    "reference_number": 12,
+    "citation": "Jianjun Chen; Jian Jiang; Haixin Duan; Nicholas Weaver; Tao Wan; Vern Paxson. 2016. Host of Troubles. DOI: 10.1145/2976749.2978394",
+    "doi": "10.1145/2976749.2978394",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/2976749.2978394",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "ef4eef5eabca766e3166f45159f5d843b636829235b41db499869781b47da4fa",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/2976749.2978394",
+        "at": "2026-10-04T20:44:55.423395+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/2976749.2978394",
+        "at": "2026-10-04T20:46:01.454715+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://www.icir.org/vern/papers/host-of-troubles.ccs16.pdf",
+        "final_url": "https://www.icir.org/vern/papers/host-of-troubles.ccs16.pdf",
+        "at": "2026-10-04T20:51:42.116342+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "ef4eef5eabca766e3166f45159f5d843b636829235b41db499869781b47da4fa",
+        "bytes": 1302308,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Ambiguous host fields can be interpreted inconsistently across sequential HTTP processors, enabling cache poisoning or policy bypass.",
+    "limitations": "Abstract/introduction reviewed; specific exploits, tables and target versions not re-executed.",
+    "title": "Host of Troubles",
+    "metadata_resolved": true,
+    "metadata_sha256": "25c564e7777fcbb885504e58772e90223d7fe20fa41abbe7800f170ac20e9a98",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/2976749.2978394",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/2976749.2978394",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://www.icir.org/vern/papers/host-of-troubles.ccs16.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/2976749.2978394"
+    ],
+    "retrieved_url": "https://www.icir.org/vern/papers/host-of-troubles.ccs16.pdf",
+    "pages": 12,
+    "text_characters": 71225
+  },
+  {
+    "reference_number": 13,
+    "citation": "Akamai Cloud. 2021. Acceptable Use Policy -- linode.com. https://www.linode.com/legal-aup/. [Accessed 30-04-2025].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://www.linode.com/legal-aup/.",
+    "download_status": "citation only",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://www.linode.com/legal-aup/",
+        "at": "2026-10-04T20:55:09.576263+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.linode.com/legal-aup/",
+        "at": "2026-10-04T21:01:46.626628+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete."
+  },
+  {
+    "reference_number": 14,
+    "citation": "Piotr Duszynski. 2019. GitHub - drk1wi/Modlishka: Modlishka. Reverse Proxy. -- github.com. https://github.com/drk1wi/Modlishka.",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://github.com/drk1wi/Modlishka.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "6aa0c35698b15fe99e75bf86f615f339d40ea301a975f4c063298c520b38b667",
+    "retrieval_audit": [
+      {
+        "url": "https://raw.githubusercontent.com/drk1wi/Modlishka/master/README.md",
+        "at": "2026-10-04T20:55:09.587524+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/drk1wi/Modlishka/master/README.md",
+        "at": "2026-10-04T21:01:47.150702+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "6aa0c35698b15fe99e75bf86f615f339d40ea301a975f4c063298c520b38b667",
+        "bytes": 6940,
+        "final_url": "https://raw.githubusercontent.com/drk1wi/Modlishka/master/README.md"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "Project README describes a reverse proxy that handles TLS and non-TLS browser traffic and supports multi-domain mirroring.",
+    "limitations": "Partial README review; no deployment, attack execution or binary/source audit; current revision differs from cited date.",
+    "retrieved_url": "https://raw.githubusercontent.com/drk1wi/Modlishka/master/README.md",
+    "text_characters": 6935
+  },
+  {
+    "reference_number": 15,
+    "citation": "Roy T. Fielding Mark Nottingham and Julian Reschke. 2014. Hypertext Transfer Protocol (HTTP/1.1): Caching. RFC 7234. doi:10.17487/RFC7234",
+    "doi": "10.17487/RFC7234",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC7234",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "1d084238ae6692d1e3322fa0850dbb9596812332d92b76d9a815c5ed9b600dea",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC7234",
+        "at": "2026-10-04T20:44:55.424486+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc7234.txt",
+        "at": "2026-10-04T20:44:55.425558+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc7234.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc7234.txt",
+        "at": "2026-10-04T20:46:01.608909+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "1d084238ae6692d1e3322fa0850dbb9596812332d92b76d9a815c5ed9b600dea",
+        "bytes": 90647,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "Hypertext Transfer Protocol (HTTP/1.1): Caching",
+    "metadata_resolved": true,
+    "metadata_sha256": "e377844fdc325576bedf1991ed7c699fe797784002da4203f8c086deb9583f20",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc7234.txt"
+  },
+  {
+    "reference_number": 16,
+    "citation": "Roy T. Fielding Mark Nottingham and Julian Reschke. 2022. HTTP Semantics. RFC 9110. doi:10.17487/RFC9110",
+    "doi": "10.17487/RFC9110",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC9110",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC9110",
+        "at": "2026-10-04T20:44:55.424446+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "at": "2026-10-04T20:44:55.425391+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC9110",
+        "at": "2026-10-04T20:46:01.174612+00:00",
+        "status": "metadata failed",
+        "reason": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "at": "2026-10-04T20:46:01.716840+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+        "bytes": 502941,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+        "at": "2026-10-04T20:51:41.752021+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+        "bytes": 502941,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "HTTP Semantics",
+    "metadata_resolved": true,
+    "metadata_sha256": "7a96254f064ee630d92aac2646668a3cec86045df7a831c65591922d4a0f821a",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc9110.txt"
+  },
+  {
+    "reference_number": 17,
+    "citation": "Thiago Garrett; Ligia E. Setenareski; Leticia M. Peres; Luis C. E. Bona; Elias P. Duarte. 2018. Monitoring Network Neutrality: A Survey on Traffic Differentiation Detection. DOI: 10.1109/COMST.2018.2812641",
+    "doi": "10.1109/COMST.2018.2812641",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1109/COMST.2018.2812641",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "b0df254ddd697c0cacf7d6aaac26e640097db107728f8e56ebdfdd50da7eb572",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/COMST.2018.2812641",
+        "at": "2026-10-04T20:44:55.424808+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9739/8443345/08306867.pdf?arnumber=8306867",
+        "final_url": "https://xplorestaging.ieee.org/document/8306867/;jsessionid=D1363C51156AE19C69499BE933B79E64",
+        "at": "2026-10-04T20:46:03.062796+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "471090b4d77880768c2307f0597a53b737d44af7ce459fd64d361cb346f4c88e",
+        "bytes": 51667,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9739/8443345/08306867.pdf?arnumber=8306867",
+        "final_url": "https://xplorestaging.ieee.org/document/8306867/;jsessionid=E116D0E1298CE010C68D827D9F0CE538",
+        "at": "2026-10-04T20:51:42.726990+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "d00490cc851debeb1b93580206f1e88d8f970017b37433d7f147ca3f0b265acb",
+        "bytes": 51666,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9739/8443345/08306867.pdf?arnumber=8306867",
+        "final_url": "https://xplorestaging.ieee.org/document/8306867/;jsessionid=138631D4154303A18005DD64787E3192",
+        "at": "2026-10-04T21:02:04.196489+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "b8457391a16b18b9d6253d1f79a4c9ab5bc950fa05bf8fe4bd9a696d19782fab",
+        "bytes": 51903,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.inf.ufpr.br/elias/papers/2018/SurveyNetNeutrality.pdf",
+        "status": "downloaded and identity checked",
+        "sha256": "b0df254ddd697c0cacf7d6aaac26e640097db107728f8e56ebdfdd50da7eb572",
+        "bytes": 1547093,
+        "at": "2026-10-04T21:38:47.726045+00:00"
+      }
+    ],
+    "retrieved_version": "Author-hosted manuscript; title/authors verified from front matter",
+    "findings": "Survey distinguishes differentiation detection methods by network measurement, generated traffic, metrics and statistical assumptions. Congestion and load balancing can confound end-to-end inference.",
+    "limitations": "Author manuscript abstract/introduction reviewed; 30-page survey not completely reviewed; no secondary bibliographies retrieved.",
+    "title": "Monitoring Network Neutrality: A Survey on Traffic Differentiation Detection",
+    "metadata_resolved": true,
+    "metadata_sha256": "03ff95907bc29315d7101c4c4a67f128afee292a357ad90cc76cf19eb41374cc",
+    "publisher_links": [
+      {
+        "URL": "http://xplorestaging.ieee.org/ielx7/9739/8443345/08306867.pdf?arnumber=8306867",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "pages": 30,
+    "retrieved_url": "https://www.inf.ufpr.br/elias/papers/2018/SurveyNetNeutrality.pdf"
+  },
+  {
+    "reference_number": 18,
+    "citation": "Omer Gil. 2017. Web cache deception attack. https://www.blackhat.com/docs/us-17/wednesday/us-17-Gil-Web-Cache-Deception-Attack-wp.pdf [Accessed: 26-Sep-2024].",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.blackhat.com/docs/us-17/wednesday/us-17-Gil-Web-Cache-Deception-Attack-wp.pdf",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "b7efcb3cc5821c5fe19adb01656d99eafba0a9688e8292cb894a00e081397966",
+    "retrieval_audit": [
+      {
+        "url": "https://www.blackhat.com/docs/us-17/wednesday/us-17-Gil-Web-Cache-Deception-Attack-wp.pdf",
+        "at": "2026-10-04T20:44:55.424874+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.blackhat.com/docs/us-17/wednesday/us-17-Gil-Web-Cache-Deception-Attack-wp.pdf",
+        "final_url": "https://blackhat.com/docs/us-17/wednesday/us-17-Gil-Web-Cache-Deception-Attack-wp.pdf",
+        "at": "2026-10-04T20:46:02.411900+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "b7efcb3cc5821c5fe19adb01656d99eafba0a9688e8292cb894a00e081397966",
+        "bytes": 1118476,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "2017 whitepaper introduces web cache deception through disagreement between cache classification and application routing.",
+    "limitations": "Title/introductory material reviewed; all attack demonstrations and mitigations not reviewed or tested.",
+    "retrieved_url": "https://blackhat.com/docs/us-17/wednesday/us-17-Gil-Web-Cache-Deception-Attack-wp.pdf",
+    "pages": 16,
+    "text_characters": 19268
+  },
+  {
+    "reference_number": 19,
+    "citation": "Kuba Gretzky. 2024. GitHub - kgretzky/evilginx2: Standalone man-in-the-middle attack framework used for phishing login credentials along with session cookies allowing for the bypass of 2-factor authentication -- github.com. https://github.com/kgretzky/evilginx2.",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://github.com/kgretzky/evilginx2.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "1415d08961ee80ba4870a792a361c318724adc226d62646f298cf111cee3eb5a",
+    "retrieval_audit": [
+      {
+        "url": "https://raw.githubusercontent.com/kgretzky/evilginx2/master/README.md",
+        "at": "2026-10-04T20:55:09.599974+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/kgretzky/evilginx2/master/README.md",
+        "at": "2026-10-04T21:01:47.379236+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "1415d08961ee80ba4870a792a361c318724adc226d62646f298cf111cee3eb5a",
+        "bytes": 5410,
+        "final_url": "https://raw.githubusercontent.com/kgretzky/evilginx2/master/README.md"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "Current README describes a standalone Go reverse proxy used to mirror authenticated sessions.",
+    "limitations": "Partial README review; cited 2024 revision not retrieved; no code audit or phishing execution.",
+    "retrieved_url": "https://raw.githubusercontent.com/kgretzky/evilginx2/master/README.md",
+    "text_characters": 5410
+  },
+  {
+    "reference_number": 20,
+    "citation": "Ilya Grigorik. 2013. Making the web faster with HTTP 2.0. DOI: 10.1145/2534706.2534721",
+    "doi": "10.1145/2534706.2534721",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/2534706.2534721",
+    "download_status": "unavailable",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/2534706.2534721",
+        "at": "2026-10-04T20:44:55.425085+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/2534706.2534721",
+        "at": "2026-10-04T20:46:02.129259+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://hpbn.co/assets/misc/http2.pdf",
+        "at": "2026-10-04T20:51:41.740601+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/2534706.2534721",
+        "at": "2026-10-04T20:51:41.878284+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://queue.acm.org/detail.cfm?id=2555617",
+        "at": "2026-10-04T20:55:09.611054+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://queue.acm.org/detail.cfm?id=2555617",
+        "at": "2026-10-04T21:01:47.584170+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://hpbn.co/assets/misc/http2.pdf",
+        "at": "2026-10-04T21:02:03.816113+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/2534706.2534721",
+        "at": "2026-10-04T21:02:04.081199+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete.",
+    "title": "Making the web faster with HTTP 2.0",
+    "metadata_resolved": true,
+    "metadata_sha256": "5630d404dd3424c0463db9d03403ea0d166696d9008724421ea263d91b1b17bc",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/2534706.2534721",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/2534706.2534721",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://hpbn.co/assets/misc/http2.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/2534706.2534721"
+    ]
+  },
+  {
+    "reference_number": 21,
+    "citation": "Ronen Heled. 2005. HTTP REQUEST SMUGGLING. https://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf [Accessed: 26-Sep-2024].",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "32eee447b9b8aa36bda0a6b7c6c26048d0103b260650f5fe294da60c6b8ff299",
+    "retrieval_audit": [
+      {
+        "url": "https://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf",
+        "at": "2026-10-04T20:44:55.425925+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf",
+        "final_url": "https://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf",
+        "at": "2026-10-04T20:46:02.151124+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "32eee447b9b8aa36bda0a6b7c6c26048d0103b260650f5fe294da60c6b8ff299",
+        "bytes": 174009,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Watchfire whitepaper attributes request smuggling to HTTP message-boundary disagreement and discusses cache poisoning, firewall evasion and request hijacking.",
+    "limitations": "Front matter and selected introductory material reviewed. Paper citation lists Heled alone but full text lists Linhart, Klein, Heled and Orrin. Text extraction has doubled glyphs/font warnings; no exploit validation.",
+    "retrieved_url": "https://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf",
+    "pages": 23,
+    "text_characters": 58162
+  },
+  {
+    "reference_number": 22,
+    "citation": "Michio Honda; Yoshifumi Nishida; Costin Raiciu; Adam Greenhalgh; Mark Handley; Hideyuki Tokuda. 2011. Is it still possible to extend TCP?. DOI: 10.1145/2068816.2068834",
+    "doi": "10.1145/2068816.2068834",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/2068816.2068834",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "633cdade2f58ba72cd5696b6bcdfdbdfe1f3fc59015064e52c403e61d307ee15",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/2068816.2068834",
+        "at": "2026-10-04T20:44:55.425424+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/2068816.2068834",
+        "at": "2026-10-04T20:46:02.233495+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://www.cl.cam.ac.uk/teaching/2021/CompNet/files/honda2011still.pdf",
+        "final_url": "https://www.cl.cam.ac.uk/teaching/2021/CompNet/files/honda2011still.pdf",
+        "at": "2026-10-04T20:51:43.422362+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "633cdade2f58ba72cd5696b6bcdfdbdfe1f3fc59015064e52c403e61d307ee15",
+        "bytes": 1189458,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "TCP-extension measurements show that middleboxes can rewrite initial sequence numbers and enforce contiguous sequence behavior; extension deployment is constrained.",
+    "limitations": "Abstract/introduction reviewed; matching TCP sequence numbers does not exclude every intermediary. Original paths not re-measured.",
+    "title": "Is it still possible to extend TCP?",
+    "metadata_resolved": true,
+    "metadata_sha256": "c3338ee095e6dde399b0ee91f787140cb3a368edee82c3f37db310c0daa222cb",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/2068816.2068834",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/2068816.2068834",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://www.cl.cam.ac.uk/teaching/2021/CompNet/files/honda2011still.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/2068816.2068834"
+    ],
+    "retrieved_url": "https://www.cl.cam.ac.uk/teaching/2021/CompNet/files/honda2011still.pdf",
+    "pages": 14,
+    "text_characters": 83749
+  },
+  {
+    "reference_number": 23,
+    "citation": "Moto Ishizawa. 2020. GitHub - summerwind/h2spec: A conformance testing tool for HTTP/2 implementation. -- github.com. https://github.com/summerwind/h2spec. [Accessed 15-09-2024].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://github.com/summerwind/h2spec.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "833aaf33817492c4e2139faecf3e6d2a7bf92b174cf0182db3f0d39745573471",
+    "retrieval_audit": [
+      {
+        "url": "https://raw.githubusercontent.com/summerwind/h2spec/master/README.md",
+        "at": "2026-10-04T20:55:09.621935+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/summerwind/h2spec/master/README.md",
+        "at": "2026-10-04T21:01:47.869723+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "833aaf33817492c4e2139faecf3e6d2a7bf92b174cf0182db3f0d39745573471",
+        "bytes": 3426,
+        "final_url": "https://raw.githubusercontent.com/summerwind/h2spec/master/README.md"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "h2spec README targets RFC7540/RFC7541, expects a working 200 response with body, and exposes timeout and strict-test settings.",
+    "limitations": "README partially reviewed; not an exhaustive RFC9113 suite and not executed in this campaign.",
+    "retrieved_url": "https://raw.githubusercontent.com/summerwind/h2spec/master/README.md",
+    "text_characters": 3426
+  },
+  {
+    "reference_number": 24,
+    "citation": "Bahruz Jabiyev; Anthony Gavazzi; Kaan Onarlioglu; Engin Kirda. 2024. Gudifu: Guided Differential Fuzzing for HTTP Request Parsing Discrepancies. DOI: 10.1145/3678890.3678904",
+    "doi": "10.1145/3678890.3678904",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3678890.3678904",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "bc0f5605866244bc2a26c7537081c0e486b37a8a8739cec38fc8035f6d07b0c1",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3678890.3678904",
+        "at": "2026-10-04T20:44:55.426001+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3678890.3678904",
+        "at": "2026-10-04T20:46:02.630551+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://bahruz.me/publications/35108.pdf",
+        "at": "2026-10-04T20:51:42.358592+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3678890.3678904",
+        "at": "2026-10-04T20:51:42.520757+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://www.onarlioglu.com/publications/raid2024gudifu.pdf",
+        "final_url": "https://www.onarlioglu.com/publications/raid2024gudifu.pdf",
+        "at": "2026-10-04T21:02:05.060435+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "bc0f5605866244bc2a26c7537081c0e486b37a8a8739cec38fc8035f6d07b0c1",
+        "bytes": 671440,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Gudifu combines coverage-guided differential fuzzing with full-request discrepancy search for HTTP processors.",
+    "limitations": "Abstract/introduction reviewed; full evaluation tables and vulnerabilities not independently validated; open-source constraints differ from cloud proxies.",
+    "title": "Gudifu: Guided Differential Fuzzing for HTTP Request Parsing Discrepancies",
+    "metadata_resolved": true,
+    "metadata_sha256": "79114d338e24194458bb439e177527e84c713e00d1355652d061df88cf6204fa",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3678890.3678904",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/abs/10.1145/3678890.3678904",
+        "content-type": "text/html",
+        "content-version": "vor",
+        "intended-application": "syndication"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3678890.3678904",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://www.onarlioglu.com/publications/raid2024gudifu.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/3678890.3678904"
+    ],
+    "retrieved_url": "https://www.onarlioglu.com/publications/raid2024gudifu.pdf",
+    "pages": 12,
+    "text_characters": 67865
+  },
+  {
+    "reference_number": 25,
+    "citation": "Bahruz Jabiyev, Steven Sprecher, Anthony Gavazzi, Tommaso Innocenti, Kaan Onarlioglu, and Engin Kirda. 2022. FRAMESHIFTER: Security Implications of HTTP/2-to-HTTP/1 Conversion Anomalies. In 31st USENIX Security Symposium (USENIX Security 22). USENIX Association, Boston, MA, 1061-1075. https://www.usenix.org/conference/usenixsecurity22/presentation/jabiyev",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.usenix.org/conference/usenixsecurity22/presentation/jabiyev",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "137d122a9c5b86415e3691628f62c69ab43f0ac40285f5b27c0d219e8f2ff583",
+    "retrieval_audit": [
+      {
+        "url": "https://www.usenix.org/system/files/sec22-jabiyev.pdf",
+        "at": "2026-10-04T20:44:55.426659+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.usenix.org/system/files/sec22-jabiyev.pdf",
+        "final_url": "https://www.usenix.org/system/files/sec22-jabiyev.pdf",
+        "at": "2026-10-04T20:46:03.097731+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "137d122a9c5b86415e3691628f62c69ab43f0ac40285f5b27c0d219e8f2ff583",
+        "bytes": 983278,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "FRAMESHIFTER explores HTTP/2-to-HTTP/1 conversion anomalies across reverse proxies/CDNs using grammar-based frame manipulation.",
+    "limitations": "Abstract/introduction reviewed; conversion anomalies require endpoint semantics beyond a generic rejection score. Exploits not reproduced.",
+    "retrieved_url": "https://www.usenix.org/system/files/sec22-jabiyev.pdf",
+    "pages": 16,
+    "text_characters": 66250
+  },
+  {
+    "reference_number": 26,
+    "citation": "Bahruz Jabiyev; Steven Sprecher; Kaan Onarlioglu; Engin Kirda. 2021. T-Reqs: HTTP Request Smuggling with Differential Fuzzing. DOI: 10.1145/3460120.3485384",
+    "doi": "10.1145/3460120.3485384",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3460120.3485384",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "093372154d479b74abe1046f447e8db0c1fcd2861f0c5bf56da352e0b80ca745",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3460120.3485384",
+        "at": "2026-10-04T20:44:55.426292+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+        "at": "2026-10-04T20:46:02.759081+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+        "at": "2026-10-04T20:46:02.969928+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://bahruz.me/publications/29848.pdf",
+        "at": "2026-10-04T20:51:42.840668+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+        "at": "2026-10-04T20:51:43.015187+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+        "at": "2026-10-04T20:51:43.253165+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://swsprec.com/papers/treqs.pdf",
+        "final_url": "https://swsprec.com/papers/treqs.pdf",
+        "at": "2026-10-04T21:02:04.788531+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "093372154d479b74abe1046f447e8db0c1fcd2861f0c5bf56da352e0b80ca745",
+        "bytes": 1584851,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "T-Reqs uses grammar-based differential fuzzing and explicit proxy-origin combinations to identify request parsing discrepancies.",
+    "limitations": "Abstract/introduction reviewed; HTTP/1 parsing and exploit tests are not equivalent to this fixed HTTP/2 compliance suite.",
+    "title": "T-Reqs: HTTP Request Smuggling with Differential Fuzzing",
+    "metadata_resolved": true,
+    "metadata_sha256": "eaa6ec1ae68ea2d0822dc5e6b5413b8bc973c4edb0b9fa8766c13c8ef6ad638e",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3460120.3485384",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+        "content-type": "application/pdf",
+        "content-version": "vor",
+        "intended-application": "syndication"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://swsprec.com/papers/treqs.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384",
+      "https://dl.acm.org/doi/pdf/10.1145/3460120.3485384"
+    ],
+    "retrieved_url": "https://swsprec.com/papers/treqs.pdf",
+    "pages": 16,
+    "text_characters": 94687
+  },
+  {
+    "reference_number": 27,
+    "citation": "Ben Kallus Prashant Anantharaman Michael Locasto and Sean Smith. 2024. The HTTP Garden: Discovering Parsing Vulnerabilities in HTTP/1.1 Implementations by Differential Fuzzing of Request Streams. doi:10.48550/arXiv.2405.17737",
+    "doi": "10.48550/arXiv.2405.17737",
+    "kind": "research",
+    "source_url": "https://doi.org/10.48550/arXiv.2405.17737",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "52bbdff460e654816b7e8e6fab9382195c46d49652c48a991757e0624f024489",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.48550/arXiv.2405.17737",
+        "at": "2026-10-04T20:44:55.426571+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://arxiv.org/pdf/2405.17737",
+        "at": "2026-10-04T20:44:55.427374+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.48550/arXiv.2405.17737",
+        "at": "2026-10-04T20:46:02.697434+00:00",
+        "status": "metadata failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://arxiv.org/pdf/2405.17737",
+        "final_url": "https://arxiv.org/pdf/2405.17737",
+        "at": "2026-10-04T20:46:03.129934+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "52bbdff460e654816b7e8e6fab9382195c46d49652c48a991757e0624f024489",
+        "bytes": 380795,
+        "status": "downloaded PDF, pending identity review"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.48550/arXiv.2405.17737",
+        "at": "2026-10-04T20:51:42.934834+00:00",
+        "status": "metadata failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.48550/arXiv.2405.17737",
+        "at": "2026-10-04T21:02:04.579102+00:00",
+        "status": "metadata failed",
+        "reason": "HTTP Error 404: Not Found"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "HTTP Garden examines origin interpretation as well as gateway transformation and uses coverage-guided fuzzing; it separates reported parsing bugs from exploitable findings.",
+    "limitations": "Abstract/introduction reviewed; retrieved arXiv manuscript rather than a verified camera-ready version. Original corpus not re-executed.",
+    "retrieved_url": "https://arxiv.org/pdf/2405.17737",
+    "pages": 13,
+    "text_characters": 55218
+  },
+  {
+    "reference_number": 28,
+    "citation": "James Kettle. 2019. HTTP Desync Attacks: Request Smuggling Reborn -- portswigger.net. https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn. [Accessed 10-03-2024].",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "ed54a5549612825ad57162febe65f8cb32d4a0f39605497f70579c838eef9a1a",
+    "retrieval_audit": [
+      {
+        "url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+        "final_url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+        "at": "2026-10-04T20:51:43.697164+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "sha256": "cb593368c84b7174295a2f0b602b770504e91cd354524e563333e36820b8c6a2",
+        "bytes": 73882,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+        "at": "2026-10-04T20:55:09.633807+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+        "at": "2026-10-04T21:01:48.091539+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "ed54a5549612825ad57162febe65f8cb32d4a0f39605497f70579c838eef9a1a",
+        "bytes": 73882,
+        "final_url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn"
+      },
+      {
+        "url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+        "final_url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+        "at": "2026-10-04T21:02:05.131300+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "sha256": "398fa6772eb6b1a8d61fb738b7526f106be98355bffbf9526a0307f44f2289d5",
+        "bytes": 73887,
+        "status": "not full text: non-PDF response"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "HTTP desynchronization depends on disagreement over message boundaries within pooled front-end/back-end connections; case studies demonstrate consequences.",
+    "limitations": "Abstract/core-concepts sections reviewed; all case studies not reviewed. Live article updated September2025 rather than cited2024 snapshot; no exploit replication.",
+    "candidate_urls": [
+      "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn"
+    ],
+    "retrieved_url": "https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn",
+    "text_characters": 37095
+  },
+  {
+    "reference_number": 29,
+    "citation": "James Kettle. 2021. HTTP/2: The Sequel is Always Worse -- portswigger.net. https://portswigger.net/research/http2. [Accessed 25-07-2024].",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://portswigger.net/research/http2.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "b40e6bf42f9eb6640021509763fbb984679c393cf9597bd65658f4c30e3ab887",
+    "retrieval_audit": [
+      {
+        "url": "https://portswigger.net/research/http2",
+        "final_url": "https://portswigger.net/research/http2",
+        "at": "2026-10-04T20:51:43.999882+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "sha256": "ae41dbfcb9fc9bc6243a97f7207fca4ebbb2d4b1fa92f4822f892ce6bc4e996c",
+        "bytes": 85618,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://portswigger.net/research/http2",
+        "at": "2026-10-04T20:55:09.644606+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://portswigger.net/research/http2",
+        "at": "2026-10-04T21:01:49.069798+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "b40e6bf42f9eb6640021509763fbb984679c393cf9597bd65658f4c30e3ab887",
+        "bytes": 85623,
+        "final_url": "https://portswigger.net/research/http2"
+      },
+      {
+        "url": "https://portswigger.net/research/http2",
+        "final_url": "https://portswigger.net/research/http2",
+        "at": "2026-10-04T21:02:05.587357+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "sha256": "54b59f86f120017b1c8e4a9c5353347ce173fea825f8ae1e0a5ca6401c781e78",
+        "bytes": 85623,
+        "status": "not full text: non-PDF response"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "HTTP/2 downgrade and implementation inconsistencies create desynchronization and request-tunnelling opportunities in specific deployment chains.",
+    "limitations": "Introductory sections reviewed; all payload examples and cases not reviewed. Live updated article is not the original2021 snapshot.",
+    "candidate_urls": [
+      "https://portswigger.net/research/http2"
+    ],
+    "retrieved_url": "https://portswigger.net/research/http2",
+    "text_characters": 40946
+  },
+  {
+    "reference_number": 30,
+    "citation": "Brian Kondracki; Babak Amin Azad; Oleksii Starov; Nick Nikiforakis. 2021. Catching Transparent Phish: Analyzing and Detecting MITM Phishing Toolkits. DOI: 10.1145/3460120.3484765",
+    "doi": "10.1145/3460120.3484765",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3460120.3484765",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "8098c86d1f1394c34b07fd0946d4243c3c44da4d7dfc82e22df809d14f4752b6",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3460120.3484765",
+        "at": "2026-10-04T20:44:55.426768+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3460120.3484765",
+        "at": "2026-10-04T20:46:03.000481+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3460120.3484765",
+        "at": "2026-10-04T20:46:03.136753+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://catching-transparent-phish.github.io/catching_transparent_phish.pdf",
+        "final_url": "https://catching-transparent-phish.github.io/catching_transparent_phish.pdf",
+        "at": "2026-10-04T20:51:45.409327+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "8098c86d1f1394c34b07fd0946d4243c3c44da4d7dfc82e22df809d14f4752b6",
+        "bytes": 4489519,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher/author PDF; exact version requires identity review",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "Catching Transparent Phish: Analyzing and Detecting MITM Phishing Toolkits",
+    "metadata_resolved": true,
+    "metadata_sha256": "65a29895821ada914d4dd9cfe74bf57d3ebe448edaef9fcf5429ad1f780ba1cd",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3460120.3484765",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3460120.3484765",
+        "content-type": "application/pdf",
+        "content-version": "vor",
+        "intended-application": "syndication"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3460120.3484765",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://catching-transparent-phish.github.io/catching_transparent_phish.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/3460120.3484765",
+      "https://dl.acm.org/doi/pdf/10.1145/3460120.3484765"
+    ],
+    "retrieved_url": "https://catching-transparent-phish.github.io/catching_transparent_phish.pdf",
+    "pages": 15,
+    "text_characters": 88977
+  },
+  {
+    "reference_number": 31,
+    "citation": "Vlad Krasnov. 2016. HPACK: the silent killer (feature) of HTTP/2 -- blog.cloudflare.com. https://blog.cloudflare.com/hpack-the-silent-killer-feature-of-http-2/. [Accessed 02-05-2025].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://blog.cloudflare.com/hpack-the-silent-killer-feature-of-http-2/.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "f57a76fdb3114be9bf47314172abdb3f9a59153607fab113497e5934baa9aeed",
+    "retrieval_audit": [
+      {
+        "url": "https://blog.cloudflare.com/hpack-the-silent-killer-feature-of-http-2/",
+        "at": "2026-10-04T20:55:09.655372+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://blog.cloudflare.com/hpack-the-silent-killer-feature-of-http-2/",
+        "at": "2026-10-04T21:01:49.943189+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "f57a76fdb3114be9bf47314172abdb3f9a59153607fab113497e5934baa9aeed",
+        "bytes": 298863,
+        "final_url": "https://blog.cloudflare.com/hpack-the-silent-killer-feature-of-http-2/"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "Cloudflare article discusses HPACK as an HTTP/2 compression feature; retrieved page identity checked.",
+    "limitations": "Partial title/page review only; large navigation extraction obscures content. No performance or security claim adopted from this source.",
+    "retrieved_url": "https://blog.cloudflare.com/hpack-the-silent-killer-feature-of-http-2/",
+    "text_characters": 22773
+  },
+  {
+    "reference_number": 32,
+    "citation": "Balachander Krishnamurthy and Martin Arlitt. 2001. PRO-COW: Protocol compliance on the web-a longitudinal study. In Proceedings of the 3rd Conference on USENIX Symposium on Internet Technologies and Systems - Volume 3 (San Francisco, California) (USITS'01). USENIX Association, USA, 10.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "8a2ce3925438bb90c62d6576081e4a947aa1aebc73e113de942d17e6df2d6cb5",
+    "retrieval_audit": [
+      {
+        "url": "https://www.usenix.org/legacy/events/usits01/full_papers/krishnamurthy/krishnamurthy.pdf",
+        "at": "2026-10-04T20:44:55.427426+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.usenix.org/legacy/events/usits01/full_papers/krishnamurthy/krishnamurthy.pdf",
+        "final_url": "https://www.usenix.org/legacy/events/usits01/full_papers/krishnamurthy/krishnamurthy.pdf",
+        "at": "2026-10-04T20:46:03.576400+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "8a2ce3925438bb90c62d6576081e4a947aa1aebc73e113de942d17e6df2d6cb5",
+        "bytes": 412310,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "PRO-COW conducts repeated HTTP/1.1 compliance measurements over16months; version banners alone are insufficient evidence of compliance.",
+    "limitations": "Abstract/introduction and concluding excerpts reviewed; severe extraction encoding artifacts. Full tables/figures not visually reviewed.",
+    "retrieved_url": "https://www.usenix.org/legacy/events/usits01/full_papers/krishnamurthy/krishnamurthy.pdf",
+    "pages": 14,
+    "text_characters": 64636
+  },
+  {
+    "reference_number": 33,
+    "citation": "Seyed Ali Mirheidari, Sajjad Arshad, Kaan Onarlioglu, Bruno Crispo, Engin Kirda, and William Robertson. 2020. Cached and Confused: Web Cache Deception in the Wild. In 29th USENIX Security Symposium (USENIX Security 20). USENIX Association, Boston, MA, USA, 665-682. https://www.usenix.org/conference/usenixsecurity20/presentation/mirheidari",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.usenix.org/conference/usenixsecurity20/presentation/mirheidari",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "b99406811e3e0f71865af5bf80bf3aba44aa927d91b4d07985761b8f9d8b6d1a",
+    "retrieval_audit": [
+      {
+        "url": "https://www.usenix.org/system/files/sec20-mirheidari.pdf",
+        "at": "2026-10-04T20:44:55.427449+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.usenix.org/system/files/sec20-mirheidari.pdf",
+        "final_url": "https://www.usenix.org/system/files/sec20-mirheidari.pdf",
+        "at": "2026-10-04T20:46:03.514692+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "b99406811e3e0f71865af5bf80bf3aba44aa927d91b4d07985761b8f9d8b6d1a",
+        "bytes": 504746,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Web cache deception study evaluates high-profile websites and leakage through proxy caching; marker-based detection targets a particular observable behavior.",
+    "limitations": "Abstract/introduction reviewed; selective website sample and application/cache configurations differ from this HTTP/2 campaign.",
+    "retrieved_url": "https://www.usenix.org/system/files/sec20-mirheidari.pdf",
+    "pages": 19,
+    "text_characters": 88185
+  },
+  {
+    "reference_number": 34,
+    "citation": "Seyed Ali Mirheidari, Matteo Golinelli, Kaan Onarlioglu, Engin Kirda, and Bruno Crispo. 2022. Web Cache Deception Escalates!. In 31st USENIX Security Symposium (USENIX Security 22). USENIX Association, Boston, MA, 179-196. https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.usenix.org/conference/usenixsecurity22/presentation/mirheidari",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "4f909aa14278ef9dd39cca3ae6d9cf3e195d78e41d646d51778a08839b9081cb",
+    "retrieval_audit": [
+      {
+        "url": "https://www.usenix.org/system/files/sec22-mirheidari.pdf",
+        "at": "2026-10-04T20:44:55.427884+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.usenix.org/system/files/sec22-mirheidari.pdf",
+        "final_url": "https://www.usenix.org/system/files/sec22-mirheidari.pdf",
+        "at": "2026-10-04T20:46:04.105516+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "4f909aa14278ef9dd39cca3ae6d9cf3e195d78e41d646d51778a08839b9081cb",
+        "bytes": 555749,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Follow-up web cache deception work explains limitations of marker injection/reflection and explores additional path-confusion methods.",
+    "limitations": "Abstract and appendix excerpts reviewed; all measurements and tables not reviewed or reproduced.",
+    "retrieved_url": "https://www.usenix.org/system/files/sec22-mirheidari.pdf",
+    "pages": 18,
+    "text_characters": 82006
+  },
+  {
+    "reference_number": 35,
+    "citation": "mitmproxy. 2025. mitmproxy - an interactive HTTPS proxy -- mitmproxy.org. https://mitmproxy.org/. [Accessed 02-05-2025].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://mitmproxy.org/.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "713da2cc08731fa203db9ce0993f0dcf3149a7e74c9a2aec9dbda1930b152d06",
+    "retrieval_audit": [
+      {
+        "url": "https://mitmproxy.org/",
+        "at": "2026-10-04T20:55:09.666546+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://mitmproxy.org/",
+        "at": "2026-10-04T21:01:50.382135+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "713da2cc08731fa203db9ce0993f0dcf3149a7e74c9a2aec9dbda1930b152d06",
+        "bytes": 22634,
+        "final_url": "https://www.mitmproxy.org/"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "Project landing page describes interception, modification and replay features and current HTTP protocol support.",
+    "limitations": "Landing-page introductory feature review; current v12.2 page does not describe tested v11.1.0 exactly, and does not prove compliance.",
+    "retrieved_url": "https://www.mitmproxy.org/",
+    "text_characters": 3297
+  },
+  {
+    "reference_number": 36,
+    "citation": "Hoai Viet Nguyen; Luigi Lo Iacono; Hannes Federrath. 2019. Mind the cache. DOI: 10.1145/3297280.3297526",
+    "doi": "10.1145/3297280.3297526",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3297280.3297526",
+    "download_status": "unavailable",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3297280.3297526",
+        "at": "2026-10-04T20:44:55.427919+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3297280.3297526",
+        "at": "2026-10-04T20:46:04.078765+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3297280.3297526",
+        "at": "2026-10-04T20:51:44.553985+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3297280.3297526",
+        "at": "2026-10-04T21:02:06.131408+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete.",
+    "title": "Mind the cache",
+    "metadata_resolved": true,
+    "metadata_sha256": "41f5f9251dc0d0280298386b1f341b4141728cb64dd1ebe8a8820a17743c5558",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3297280.3297526",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3297280.3297526",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ]
+  },
+  {
+    "reference_number": 37,
+    "citation": "Hoai Viet Nguyen; Luigi Lo Iacono; Hannes Federrath. 2018. Systematic Analysis of Web Browser Caches. DOI: 10.1145/3240431.3240443",
+    "doi": "10.1145/3240431.3240443",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3240431.3240443",
+    "download_status": "unavailable",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3240431.3240443",
+        "at": "2026-10-04T20:44:55.427750+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3240431.3240443",
+        "at": "2026-10-04T20:46:04.098529+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3240431.3240443",
+        "at": "2026-10-04T20:51:44.934318+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3240431.3240443",
+        "at": "2026-10-04T21:02:06.411805+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete.",
+    "title": "Systematic Analysis of Web Browser Caches",
+    "metadata_resolved": true,
+    "metadata_sha256": "8c459a03f088210e9fb216c3634ac86c5b41a4fb065c1e6508dd4e8eae6f1141",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3240431.3240443",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3240431.3240443",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ]
+  },
+  {
+    "reference_number": 38,
+    "citation": "R. Peon; H. Ruellan. 2015. HPACK: Header Compression for HTTP/2. DOI: 10.17487/RFC7541",
+    "doi": "10.17487/RFC7541",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC7541",
+    "download_status": "downloaded",
+    "review_status": "unreviewed",
+    "sha256": "2239d7f8fb839b69ae2e928e685559b11376888269f131512197a0e3bacf7f7a",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC7541",
+        "at": "2026-10-04T20:44:55.428262+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc7541.txt",
+        "at": "2026-10-04T20:44:55.429025+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc7541.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc7541.txt",
+        "at": "2026-10-04T20:46:04.577995+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "2239d7f8fb839b69ae2e928e685559b11376888269f131512197a0e3bacf7f7a",
+        "bytes": 117827,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Full text retrieved; no substantive source review completed.",
+    "limitations": "Download does not imply review. No findings from this source used beyond citation identity.",
+    "title": "HPACK: Header Compression for HTTP/2",
+    "metadata_resolved": true,
+    "metadata_sha256": "5281ac5d653022daa4e6cfcc737f3508b876ac74f0a06a598c983f13023b91c7",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc7541.txt"
+  },
+  {
+    "reference_number": 39,
+    "citation": "Cloudflare Radar. 2024a. Adoption & Usage. https://radar.cloudflare.com/adoption-and-usage. [Accessed 19-11-2024].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://radar.cloudflare.com/adoption-and-usage.",
+    "download_status": "citation only",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://radar.cloudflare.com/adoption-and-usage",
+        "at": "2026-10-04T20:55:09.677400+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://radar.cloudflare.com/adoption-and-usage",
+        "at": "2026-10-04T21:01:51.078228+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete."
+  },
+  {
+    "reference_number": 40,
+    "citation": "Cloudflare Radar. 2024b. Overview. https://radar.cloudflare.com/. [Accessed 19-11-2024].",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://radar.cloudflare.com/.",
+    "download_status": "citation only",
+    "review_status": "unavailable",
+    "sha256": null,
+    "retrieval_audit": [
+      {
+        "url": "https://radar.cloudflare.com/",
+        "at": "2026-10-04T20:55:09.689589+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://radar.cloudflare.com/",
+        "at": "2026-10-04T21:01:51.343093+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "retrieved_version": null,
+    "findings": "Bibliographic metadata only; no full-text findings adopted.",
+    "limitations": "Full text unavailable after documented public retrieval attempts. Supporting coverage remains incomplete."
+  },
+  {
+    "reference_number": 41,
+    "citation": "Jannis Rautenstrauch; Ben Stock. 2024. Who's Breaking the Rules? Studying Conformance to the HTTP Specifications and its Security Impact. DOI: 10.1145/3634737.3637678",
+    "doi": "10.1145/3634737.3637678",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3634737.3637678",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "5f96fe555e093a5742002071f2f01a808c9cb6806a3173cb9b051f455304eec0",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3634737.3637678",
+        "at": "2026-10-04T20:44:55.428519+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://notify.cispa.uni-saarland.de/papers/rautenstrauch2024conformance.pdf",
+        "final_url": "https://notify.cispa.uni-saarland.de/papers/rautenstrauch2024conformance.pdf",
+        "at": "2026-10-04T21:02:08.644516+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "5f96fe555e093a5742002071f2f01a808c9cb6806a3173cb9b051f455304eec0",
+        "bytes": 574319,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher/author PDF; exact version requires identity review",
+    "findings": "Conformance study extracts106falsifiable rules and tests nine local servers and9990live hosts; explicit error behavior and conformance testing are recommended.",
+    "limitations": "Author manuscript abstract/introduction reviewed, with DOI/ISBN placeholder in front matter; response conformance and web-scale sampling differ from middlebox frame tests.",
+    "title": "Who's Breaking the Rules? Studying Conformance to the HTTP Specifications and its Security Impact",
+    "metadata_resolved": true,
+    "metadata_sha256": "178b078bd7b58d48bc2a77230f4fac694cf9e1b50f3dc35681b66a352660c7c5",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3634737.3637678",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      }
+    ],
+    "candidate_urls": [
+      "https://notify.cispa.uni-saarland.de/papers/rautenstrauch2024conformance.pdf"
+    ],
+    "retrieved_url": "https://notify.cispa.uni-saarland.de/papers/rautenstrauch2024conformance.pdf",
+    "pages": 13,
+    "text_characters": 85655
+  },
+  {
+    "reference_number": 42,
+    "citation": "J. H. Saltzer; D. P. Reed; D. D. Clark. 1984. End-to-end arguments in system design. DOI: 10.1145/357401.357402",
+    "doi": "10.1145/357401.357402",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/357401.357402",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "3204a1a562d9d3b72ba112f20caddfd34991d6e1e39939ace6a3e7c016519768",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/357401.357402",
+        "at": "2026-10-04T20:44:55.428552+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://web.mit.edu/Saltzer/www/publications/endtoend/endtoend.pdf",
+        "at": "2026-10-04T20:44:55.429243+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://web.mit.edu/Saltzer/www/publications/endtoend/endtoend.pdf",
+        "final_url": "https://web.mit.edu/Saltzer/www/publications/endtoend/endtoend.pdf",
+        "at": "2026-10-04T20:46:04.761263+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "3204a1a562d9d3b72ba112f20caddfd34991d6e1e39939ace6a3e7c016519768",
+        "bytes": 37816,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "End-to-end argument places application correctness at endpoints; lower-layer functions may offer performance enhancements but cannot generally supply full application assurance.",
+    "limitations": "Introductory and concluding argument reviewed; not a prohibition on every intermediary or empirical proof of Internet path transparency.",
+    "title": "End-to-end arguments in system design",
+    "metadata_resolved": true,
+    "metadata_sha256": "614571cfc4720cfea923de3bd70e60fb8b43124bd4cf4121e5cf0ab2d0e8d1b9",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/357401.357402",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/357401.357402",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "retrieved_url": "https://web.mit.edu/Saltzer/www/publications/endtoend/endtoend.pdf",
+    "pages": 10,
+    "text_characters": 39151
+  },
+  {
+    "reference_number": 43,
+    "citation": "Kaiwen Shen; Jianyu Lu; Yaru Yang; Jianjun Chen; Mingming Zhang; Haixin Duan; Jia Zhang; Xiaofeng Zheng. 2022. HDiff: A Semi-automatic Framework for Discovering Semantic Gap Attack in HTTP Implementations. DOI: 10.1109/DSN53405.2022.00014",
+    "doi": "10.1109/DSN53405.2022.00014",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1109/DSN53405.2022.00014",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "c23933b702e12acdcbbac3d3435603e7bd8f171919576e0b55c8c7101d1a7d02",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/DSN53405.2022.00014",
+        "at": "2026-10-04T20:44:55.428780+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9833551/9833474/09833690.pdf?arnumber=9833690",
+        "final_url": "https://xplorestaging.ieee.org/document/9833690/;jsessionid=51BD43745F682D91526B446C3588B801",
+        "at": "2026-10-04T20:46:05.403806+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "7701a6b660192ac383041b78e0419ba02ae8a475c64c4f5aef7dfbcdab12c675",
+        "bytes": 48566,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://shenkaiwen.com/files/papers/HDiff_DSN2022.pdf",
+        "at": "2026-10-04T20:51:46.138843+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9833551/9833474/09833690.pdf?arnumber=9833690",
+        "final_url": "https://xplorestaging.ieee.org/document/9833690/;jsessionid=087D70559E124297A77DA3953AD18143",
+        "at": "2026-10-04T20:51:47.150365+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "fa33bc5f1239989c29aad97840e74747a19510cf5e563a31d8e2dd64f0d66169",
+        "bytes": 48569,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://shenkaiwen.com/files/papers/HDiff_DSN2022.pdf",
+        "at": "2026-10-04T21:02:07.463035+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9833551/9833474/09833690.pdf?arnumber=9833690",
+        "final_url": "https://xplorestaging.ieee.org/document/9833690/;jsessionid=894AFF59CD7D0051684BA2A17672D44F",
+        "at": "2026-10-04T21:02:08.645530+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "e0a8aee8f21e050cfff8463406763cabb801b1b83062469d9f5dd871ad03d8db",
+        "bytes": 48803,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://shenkaiwen.com/files/papers/DSN22_HDiff.pdf",
+        "status": "downloaded and identity checked",
+        "sha256": "c23933b702e12acdcbbac3d3435603e7bd8f171919576e0b55c8c7101d1a7d02",
+        "bytes": 1700448,
+        "at": "2026-10-04T21:38:47.838356+00:00"
+      }
+    ],
+    "retrieved_version": "Author-hosted manuscript; title/authors verified from front matter",
+    "findings": "HDiff combines specification extraction and differential testing to investigate semantic gaps among HTTP implementations.",
+    "limitations": "Author manuscript abstract/introduction reviewed; generated test coverage and all vulnerability findings not independently validated.",
+    "title": "HDiff: A Semi-automatic Framework for Discovering Semantic Gap Attack in HTTP Implementations",
+    "metadata_resolved": true,
+    "metadata_sha256": "56f6800dbb13ce750bbd3ae5004bfbbf20f94bf3b89f21915c793fd8c384ae90",
+    "publisher_links": [
+      {
+        "URL": "http://xplorestaging.ieee.org/ielx7/9833551/9833474/09833690.pdf?arnumber=9833690",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://shenkaiwen.com/files/papers/DSN22_HDiff.pdf"
+    ],
+    "pages": 13,
+    "retrieved_url": "https://shenkaiwen.com/files/papers/DSN22_HDiff.pdf"
+  },
+  {
+    "reference_number": 44,
+    "citation": "Ram Sundara Raman; Prerana Shenoy; Katharina Kohls; Roya Ensafi. 2020. Censored Planet: An Internet-wide, Longitudinal Censorship Observatory. DOI: 10.1145/3372297.3417883",
+    "doi": "10.1145/3372297.3417883",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3372297.3417883",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "2e8a0b4ed83685eaa6c021bfb70f9cc0dc68d7c975c81ee09c79659d7489f2ef",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3372297.3417883",
+        "at": "2026-10-04T20:44:55.428599+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3372297.3417883",
+        "at": "2026-10-04T20:46:04.786488+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3372297.3417883",
+        "at": "2026-10-04T20:46:04.990167+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://censoredplanet.org/assets/censoredplanet.pdf",
+        "final_url": "https://censoredplanet.org/assets/censoredplanet.pdf",
+        "at": "2026-10-04T20:51:46.191008+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "2e8a0b4ed83685eaa6c021bfb70f9cc0dc68d7c975c81ee09c79659d7489f2ef",
+        "bytes": 2766397,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Censored Planet combines several remote-measurement techniques and longitudinal baselines; observations depend on protocol, vantage and inference method.",
+    "limitations": "Abstract and appendix excerpts reviewed; event/time-series methods not independently reproduced and cannot automatically diagnose an isolated HTTP/2 timeout.",
+    "title": "Censored Planet: An Internet-wide, Longitudinal Censorship Observatory",
+    "metadata_resolved": true,
+    "metadata_sha256": "ce2dedee40a39337b6939d5ccd6f66af719756ccd4abf32434a05ecd02ba2ca4",
+    "publisher_links": [
+      {
+        "URL": "https://dl.acm.org/doi/10.1145/3372297.3417883",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3372297.3417883",
+        "content-type": "application/pdf",
+        "content-version": "vor",
+        "intended-application": "syndication"
+      },
+      {
+        "URL": "https://dl.acm.org/doi/pdf/10.1145/3372297.3417883",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://censoredplanet.org/assets/censoredplanet.pdf",
+      "https://dl.acm.org/doi/pdf/10.1145/3372297.3417883",
+      "https://dl.acm.org/doi/pdf/10.1145/3372297.3417883"
+    ],
+    "retrieved_url": "https://censoredplanet.org/assets/censoredplanet.pdf",
+    "pages": 18,
+    "text_characters": 106960
+  },
+  {
+    "reference_number": 45,
+    "citation": "Martin Thomson and Cory Benfield. 2022. HTTP/2. RFC 9113. doi:10.17487/RFC9113",
+    "doi": "10.17487/RFC9113",
+    "kind": "standard",
+    "source_url": "https://doi.org/10.17487/RFC9113",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "a00ef91b64e111a282e77ec66980f5242e77c0bb5e33e0927e3b6757080506de",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.17487/RFC9113",
+        "at": "2026-10-04T20:44:55.429087+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "at": "2026-10-04T20:44:55.429513+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "at": "2026-10-04T20:46:04.990227+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "a00ef91b64e111a282e77ec66980f5242e77c0bb5e33e0927e3b6757080506de",
+        "bytes": 191811,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "final_url": "https://www.rfc-editor.org/rfc/rfc9113.txt",
+        "at": "2026-10-04T20:51:45.318700+00:00",
+        "http_status": 200,
+        "content_type": "text/plain;charset=utf-8",
+        "sha256": "a00ef91b64e111a282e77ec66980f5242e77c0bb5e33e0927e3b6757080506de",
+        "bytes": 191811,
+        "status": "downloaded standard"
+      }
+    ],
+    "retrieved_version": "RFC Editor text",
+    "findings": "Sections4.1/4.2 specify9octet headers,24-bit payload lengths and frame bounds. Section5.4 permits stream errors to escalate to connection errors. These constrain framing and scope checks.",
+    "limitations": "Relevant framing/error sections reviewed; complete105-page standard and all errata not exhaustively reviewed. Generic rejection is not a complete conformance oracle.",
+    "title": "HTTP/2",
+    "metadata_resolved": true,
+    "metadata_sha256": "5919adeb65f6c0b8e048c463a587cf8f01d89edd61a9aebc74fa0cde2bd356ac",
+    "publisher_links": [],
+    "retrieved_url": "https://www.rfc-editor.org/rfc/rfc9113.txt"
+  },
+  {
+    "reference_number": 46,
+    "citation": "Giuseppe Trotta. 2024. GitHub - muraenateam/muraena: Muraena is an almost-transparent reverse proxy aimed at automating phishing and post-phishing activities. -- github.com. https://github.com/muraenateam/muraena.",
+    "doi": null,
+    "kind": "software or web source",
+    "source_url": "https://github.com/muraenateam/muraena.",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "3a1f58aabb035236326474f7beb361ae32c02a83e7f581345f81989c02187f61",
+    "retrieval_audit": [
+      {
+        "url": "https://raw.githubusercontent.com/muraenateam/muraena/master/README.md",
+        "at": "2026-10-04T20:55:09.701062+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/muraenateam/muraena/master/README.md",
+        "at": "2026-10-04T21:01:51.489119+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "3a1f58aabb035236326474f7beb361ae32c02a83e7f581345f81989c02187f61",
+        "bytes": 1774,
+        "final_url": "https://raw.githubusercontent.com/muraenateam/muraena/master/README.md"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "README describes an almost-transparent reverse proxy based on dynamic origin interaction rather than static phishing pages.",
+    "limitations": "README reviewed, not implementation/deployment. No phishing execution or credentials collected.",
+    "retrieved_url": "https://raw.githubusercontent.com/muraenateam/muraena/master/README.md",
+    "text_characters": 1767
+  },
+  {
+    "reference_number": 47,
+    "citation": "Cong Wang, Xingliang Yuan, Yong Cui, and Kui Ren. 2017. Toward secure outsourced middlebox services: Practices, challenges, and beyond. IEEE Network, Vol. 32, 1 (2017), 166-171.",
+    "doi": "10.1109/MNET.2017.1700060",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1109/MNET.2017.1700060",
+    "download_status": "downloaded",
+    "review_status": "partial",
+    "sha256": "5bc39c361bdea0b553bcf804533da739e8331a28723991d7f17ca93cee19bfc4",
+    "retrieval_audit": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/MNET.2017.1700060",
+        "at": "2026-10-04T20:44:55.429395+00:00",
+        "status": "metadata failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/65/8270616/08010761.pdf?arnumber=8010761",
+        "final_url": "https://xplorestaging.ieee.org/document/8010761/;jsessionid=7E417608A27CEF97B1C60404695CD6D2",
+        "at": "2026-10-04T20:46:05.854426+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "056911f7774f41076f0c0e82edacd5ffeedfc6d995f11edc1dbbc2912682736e",
+        "bytes": 47340,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.cuiyong.net/lunwen/2018/Toward_Secure_Outsourced_Middlebox_Services_Practices_Challenges_and_Beyond.pdf",
+        "final_url": "https://www.cuiyong.net/lunwen/2018/Toward_Secure_Outsourced_Middlebox_Services_Practices_Challenges_and_Beyond.pdf",
+        "at": "2026-10-04T20:51:49.452019+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "5bc39c361bdea0b553bcf804533da739e8331a28723991d7f17ca93cee19bfc4",
+        "bytes": 151455,
+        "status": "downloaded PDF, pending identity review"
+      }
+    ],
+    "retrieved_version": "Publisher or author PDF; title and authors checked; exact publication revision not independently established",
+    "findings": "Survey discusses privacy and execution-assurance risks when middlebox processing is outsourced to an untrusted provider.",
+    "limitations": "Abstract/introduction reviewed. Cited year2017 conflicts with downloaded issue labelled January/February2018; preserve cited and retrieved versions separately.",
+    "title": "Toward Secure Outsourced Middlebox Services: Practices, Challenges, and Beyond",
+    "metadata_resolved": true,
+    "metadata_sha256": "71897457f5253ecea0983fc4dc89be38666d43493e3b9cdb7cf81d5fbd78b1ab",
+    "publisher_links": [
+      {
+        "URL": "http://xplorestaging.ieee.org/ielx7/65/8270616/08010761.pdf?arnumber=8010761",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "candidate_urls": [
+      "https://www.cuiyong.net/lunwen/2018/Toward_Secure_Outsourced_Middlebox_Services_Practices_Challenges_and_Beyond.pdf",
+      "http://xplorestaging.ieee.org/ielx7/65/8270616/08010761.pdf?arnumber=8010761"
+    ],
+    "retrieved_url": "https://www.cuiyong.net/lunwen/2018/Toward_Secure_Outsourced_Middlebox_Services_Practices_Challenges_and_Beyond.pdf",
+    "pages": 6,
+    "text_characters": 39192
+  },
+  {
+    "reference_number": 48,
+    "citation": "World Wide Web Consortium (W3C). 2001. Factory: HTTP Compliance and W3C QA. https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact. [Accessed: 24-Jul-2024].",
+    "doi": null,
+    "kind": "research",
+    "source_url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact.",
+    "download_status": "downloaded",
+    "review_status": "complete",
+    "sha256": "7885d878ea01dcbad5ba99f9ef7060de17fa821241495686126af8dbd4861edd",
+    "retrieval_audit": [
+      {
+        "url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+        "final_url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+        "at": "2026-10-04T20:51:45.598462+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=iso-8859-1",
+        "sha256": "7885d878ea01dcbad5ba99f9ef7060de17fa821241495686126af8dbd4861edd",
+        "bytes": 11275,
+        "status": "not full text: non-PDF response"
+      },
+      {
+        "url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+        "at": "2026-10-04T20:55:09.711601+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+        "at": "2026-10-04T21:01:51.725002+00:00",
+        "status": "downloaded web original; identity review required",
+        "sha256": "7885d878ea01dcbad5ba99f9ef7060de17fa821241495686126af8dbd4861edd",
+        "bytes": 11275,
+        "final_url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact"
+      },
+      {
+        "url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+        "final_url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+        "at": "2026-10-04T21:02:07.409206+00:00",
+        "http_status": 200,
+        "content_type": "text/html; charset=iso-8859-1",
+        "sha256": "7885d878ea01dcbad5ba99f9ef7060de17fa821241495686126af8dbd4861edd",
+        "bytes": 11275,
+        "status": "not full text: non-PDF response"
+      }
+    ],
+    "retrieved_version": "Current public web/README original bytes, retrieved2026-10-04; not cited-date snapshot",
+    "findings": "2001 position paper separates protocol compliance, compatibility and vendor-specific tests. Its256-case prototype has aborted cases and warns that many failures arise from compatibility or tool bugs.",
+    "limitations": "Position paper and prototype counts are not a modern HTTP/2 evaluation or proof of all implementations' compliance.",
+    "candidate_urls": [
+      "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact"
+    ],
+    "retrieved_url": "https://www.w3.org/2001/01/qa-ws/pp/alex-rousskov-measfact",
+    "text_characters": 9291
+  }
+]

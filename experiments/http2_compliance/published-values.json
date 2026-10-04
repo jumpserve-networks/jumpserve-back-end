@@ -1,0 +1,29 @@
+{
+  "source": "Supplied ACM version of record, pages 264–267; PDF SHA-256 0624b02908d973efd875b908995107a9fee78cbf4320a31dcd14b15e33c5fa35",
+  "table5": {
+    "Apache-2.4.63": {"dropped":48,"500":40,"goaway":67,"reset":0,"unmodified":1,"modified":0},
+    "Caddy-2.9.1": {"dropped":50,"500":65,"goaway":29,"reset":0,"unmodified":6,"modified":6},
+    "Traefik-3.3.5": {"dropped":127,"500":0,"goaway":29,"reset":0,"unmodified":0,"modified":0},
+    "Envoy-1.34.1": {"dropped":52,"500":31,"goaway":63,"reset":4,"unmodified":4,"modified":2},
+    "H2O-26b116e95": {"dropped":89,"500":7,"goaway":59,"reset":0,"unmodified":0,"modified":1},
+    "HAproxy-3.2.0": {"dropped":40,"500":24,"goaway":81,"reset":1,"unmodified":5,"modified":5},
+    "Mitmproxy-11.1.0": {"dropped":21,"500":0,"goaway":0,"reset":4,"unmodified":131,"modified":0},
+    "Nghttpx-1.62.1": {"dropped":55,"500":0,"goaway":61,"reset":34,"unmodified":5,"modified":1},
+    "Node-20.16.0": {"dropped":70,"500":14,"goaway":61,"reset":0,"unmodified":3,"modified":8},
+    "Cloudflare": {"dropped":73,"500":63,"goaway":6,"reset":5,"unmodified":2,"modified":7},
+    "Varnish-7.7.0": {"dropped":36,"500":0,"goaway":31,"reset":0,"received":11},
+    "Nginx-1.28.0": {"dropped":49,"500":0,"goaway":27,"reset":0,"received":2},
+    "Lighttpd-1.4.76": {"dropped":44,"500":0,"goaway":30,"reset":1,"received":3},
+    "Azure-AG": {"dropped":76,"500":0,"goaway":0,"reset":0,"received":2},
+    "Fastly": {"dropped":26,"500":0,"goaway":43,"reset":9,"received":0}
+  },
+  "table5_totals": {"planned":1950,"rejected":1745,"accepted":205,"dropped":856},
+  "figure5_percent": {"Nghttpx-1.62.1":[56.4,14.1],"HAproxy-3.2.0":[48.7,15.4],"Apache-2.4.63":[50.0,10.3],"Caddy-2.9.1":[52.6,28.2],"Node-20.16.0":[55.1,39.7],"Envoy-1.34.1":[53.8,19.2],"H2O-26b116e95":[39.7,70.5],"Mitmproxy-11.1.0":[97.4,94.9],"Traefik-3.3.5":[56.4,94.9],"Cloudflare":[83.3,19.2]},
+  "figure6_percent": {"Mitmproxy-11.1.0":3.3,"Traefik-3.3.5":41.0,"HAproxy-3.2.0":41.0,"Node-20.16.0":44.3,"Nghttpx-1.62.1":44.3,"H2O-26b116e95":45.9,"Apache-2.4.63":49.2,"Envoy-1.34.1":52.5,"Caddy-2.9.1":91.8,"Cloudflare":98.4},
+  "figure7_prose_changes": {
+    "goaway":{"Envoy":31,"H2O":16,"Lighttpd":30},
+    "dropped":{"Lighttpd":-34,"HAproxy":-29,"H2O":-24,"Varnish":-12,"Envoy":-11,"Node":-6,"Traefik":12}
+  },
+  "figure8_prose_accepted_changes":{"Envoy":8,"HAproxy":5,"Nghttpx":5,"H2O":2},
+  "old_versions":{"Apache":"2.4.43","Traefik":"2.2.8","Envoy":"1.15.0","H2O":"0a9ddbd","HAproxy":"2.2.0","Nghttpx":"1.41.0","Node":"14.7.0","Varnish":"6.4.0","Nginx":"1.18.0","Lighttpd":"1.4.55"}
+}

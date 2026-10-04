@@ -1,0 +1,19 @@
+{
+  "id": "http2-loopback-pilot-v2",
+  "version": 2,
+  "stage": "exploratory feasibility pilot, excluded from main archive campaign",
+  "question": "Can independently constructed raw frames elicit inspectable HTTP/2 control responses on an owned local endpoint?",
+  "environment": "Installed Node v24.4.1 native HTTP/2 endpoint on macOS arm64, loopback 127.0.0.1, no TLS, no proxy, no external traffic",
+  "algorithm": "Raw TCP with manual nine-octet frame encoder/parser; validate framing against hyperframe; HPACK encoder only for valid request",
+  "seed": 3764447,
+  "replications": 1,
+  "observation_windows_seconds": [
+    0.25
+  ],
+  "metrics": "frame type and error code dimensionless; sent/received bytes; observation duration seconds",
+  "case_selection": "12 controls/boundary cases defined in loopback.py; validity, settings, ping, window, reset and unknown-frame behavior",
+  "exclusions": "Startup/socket failures persist as failed; absent response remains unknown; no silent-drop or compliance inference from timeouts",
+  "statistics": "Descriptive outcomes only; no confidence interval, population inference, historical-version reproduction or simulator validation",
+  "limitations": "Endpoint control is not a middlebox measurement or physical cloud replication. Same-host trials are correlated. Freeze a separate main follow-up protocol after pilot.",
+  "amendment": "Preserve failed v1: sandbox EPERM on listener; elevated retry stopped before measurements because independent hyperframe validator rejected intentionally invalid stream IDs. v2 permits only the explicitly planned malformed stream controls. No v1 measurements produced."
+}

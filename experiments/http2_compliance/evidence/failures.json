@@ -1,0 +1,25 @@
+[
+  {
+    "id": "analysis-v1-failed",
+    "stage": "exploratory implementation check before main data processing",
+    "status": "failed",
+    "reason": "NameError: json missing in isolated author-classifier namespace; zero datasets processed",
+    "recorded_at": "2026-10-04T20:49:15.547252+00:00",
+    "protocol_sha256": "9b5ee2cc2c669145e17c6b59fca90891a057d4763604063f4acd22a1d4c1ea4c",
+    "analysis_sha256": "a9c5f83433a58166089ed885beaff8852483cc774cf643e2bf50ee977cb2ad63"
+  },
+  {
+    "id": "loopback-pilot-v1-sandbox",
+    "status": "failed",
+    "stage": "exploratory pilot",
+    "reason": "Local listener denied EPERM; zero measurements",
+    "protocol_sha256": "7fa5a575ea56d15cb6dff994b6622378ae53e86ab9e6af149d84a15e6630ead0"
+  },
+  {
+    "id": "loopback-pilot-v1-validator",
+    "status": "failed",
+    "stage": "exploratory pilot",
+    "reason": "Hyperframe rejected deliberately invalid stream control before network measurements; zero measurements",
+    "analysis_sha256": "3aa39bd3862639d748d887a971b692c34c084e38f14462679994c9b83201c179"
+  }
+]

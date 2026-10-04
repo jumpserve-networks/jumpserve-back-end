@@ -1,0 +1,9 @@
+{
+  "protocol_sha256": "4f71a417e3ebdf36f3c57851f04d449fb581eeabbda6567cf9736abd8e217f5e",
+  "runner_sha256": "64859d47ad6ebd2c82bbbdda5ed84482f3e0ad34a985cd729a9fea268ff94107",
+  "server_sha256": "e260d5ef936e09ec2915b070d6ffcea036415e2edd28c25118566b87040cbfc1",
+  "node_sha256": "8fd5615147de90362897b08108b58801d7b5b07f0d1dc9e719759e448bad3182",
+  "frozen_at": "2026-10-04T21:35:29.875703+00:00",
+  "os": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "machine": "arm64"
+}

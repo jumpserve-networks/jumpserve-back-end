@@ -1,0 +1,20 @@
+{
+  "id": "http2-loopback-main-v1",
+  "version": 1,
+  "stage": "predeclared local endpoint validation follow-up after pilot; separate from archive",
+  "question": "Can independently constructed raw frames elicit inspectable HTTP/2 control responses on an owned local endpoint?",
+  "environment": "Installed Node v24.4.1 native HTTP/2 endpoint on macOS arm64, loopback 127.0.0.1, no TLS, no proxy, no external traffic",
+  "algorithm": "Raw TCP with manual nine-octet frame encoder/parser; validate framing against hyperframe; HPACK encoder only for valid request",
+  "seed": 3764447,
+  "replications": 3,
+  "observation_windows_seconds": [
+    0.25,
+    1.0
+  ],
+  "metrics": "frame type and error code dimensionless; sent/received bytes; observation duration seconds",
+  "case_selection": "12 controls/boundary cases defined in loopback.py; validity, settings, ping, window, reset and unknown-frame behavior",
+  "exclusions": "Startup/socket failures persist as failed; absent response remains unknown; no silent-drop or compliance inference from timeouts",
+  "statistics": "Descriptive outcomes only; no confidence interval, population inference, historical-version reproduction or simulator validation",
+  "limitations": "Endpoint control is not a middlebox measurement or physical cloud replication. Same-host trials are correlated. Freeze a separate main follow-up protocol after pilot.",
+  "amendment": "Pilot v2 produced 12 outcomes: all three positive controls succeeded; five protocol error responses used code2 rather than planned code1. Preserve this finding and original expected codes. Main follows unchanged cases, three process restarts and two observation windows. Restarts verify repeatability on one host, not independent network replications."
+}

@@ -1,0 +1,5 @@
+h2==4.3.0
+hpack==4.1.0
+hyperframe==6.1.0
+pypdf==6.19.0
+pypdfium2==5.14.0

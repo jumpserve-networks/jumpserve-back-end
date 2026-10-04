@@ -1,0 +1,34 @@
+{
+  "id": "http2-compliance-artifact-v1",
+  "version": 1,
+  "stage": "main artifact reanalysis; fresh network pilots are separate",
+  "paper_doi": "10.1145/3730567.3764447",
+  "paper_full_text_status_at_freeze": "unavailable: ACM security challenge; KAUST security challenge. Indexed excerpts and author artifacts available. Figure/table mapping remains provisional until full text is inspected.",
+  "questions": [
+    "Does the released test universe contain the reported 156 unique tests?",
+    "Can the released aggregate outcome table be recovered from archived worker records under the authors' classifier?",
+    "How do preserving missing data and requiring RFC error scope change the apparent classification?",
+    "Are client/server, historical-version and translation comparisons based on matched test identities?"
+  ],
+  "hypotheses": [
+    {"id": "H1", "criterion": "Exactly 156 distinct test IDs 1 through 156, partitioned into 78 client-side and 78 server-side tests."},
+    {"id": "H2", "criterion": "Exact integer agreement with all 15 rows in the released analysis/tables/result_counts.md. This is artifact numerical reproduction; paper figure agreement is inconclusive until full text review."},
+    {"id": "H3", "criterion": "Report all classification changes from preserving missing/ambiguous data and error scope; no prespecified direction."}
+  ],
+  "artifact": {"repository": "https://github.com/attia-mahmoud/HTTP2-Compliance-Tests", "commit": "03bcd5d88c98cb82fac0c2afb626bb16ec2fa402", "selection": "Every archived results/**/*.json, sorted by path. No ctime-based selection; all datasets retained, primary aggregate row uses sole dataset per proxy where available."},
+  "metrics": {"outcome_count": "test cases", "noncompliance_fraction": "percent of classified valid test cases; report unknown and denominator separately", "dataset_coverage": "recorded/planned test cases", "paired_behavior_difference": "counts and percent of common valid test identities; versions/configuration changes are not causally isolated", "error_code": "HTTP/2 integer code; do not conflate status 500 with code 5", "duration": "seconds"},
+  "algorithms": ["Unmodified upstream analyze_results loaded by AST without executing the plotting campaign", "Independent evidence-preserving classifier with explicit unknown state", "Broad author conformance rule and strict RFC-scope sensitivity reported separately"],
+  "configurations": "Preserve proxy name, version/commit, TLS and H2EE/H2H1 as separate fields. Missing deployment details, architecture, resource counts and dates remain null. Archived file names are labels, not trustworthy UTC timestamps.",
+  "orbital_epochs": "not applicable: HTTP/2 empirical protocol compliance study, no satellite simulator",
+  "random_seed": 3764447,
+  "controls": ["Positive valid request and malformed-frame controls for later network pilots", "Independent count conservation and exact ID coverage", "Parse all input JSON independently; retain empty, failed and excluded records", "Compare against committed table rather than regenerating/overwriting upstream output"],
+  "sensitivities": ["Missing/empty/string worker results classified unknown versus authors' dropped", "Unrecognized worker states classified unknown versus fallback dropped or mitmproxy unmodified", "RST_STREAM versus GOAWAY versus generic HTTP 500 rejection", "Separate TLS/non-TLS and H2EE/H2H1", "All archived versions retained rather than latest ctime"],
+  "replication_unit": "Archived dataset for one proxy/configuration; protocol cases and old/new versions are correlated designed cases, not independent random research replicates.",
+  "sample_size_rationale": "Census of all 57 released JSON datasets and all 156 designed cases. No population-power calculation or confidence intervals justified by this deterministic convenience test suite.",
+  "exclusions": ["Metadata and ID 0 are not experimental test cases; preserve in private raw artifact", "Unknown IDs or malformed JSON mark dataset invalid with reason rather than silently discard", "Absent expected IDs produce explicit missing measurements", "Client-only H2H1 configurations plan only IDs 1-78; never call the server half missing"],
+  "statistics": "Exact counts, proportions and paired identity differences only. No t-test, binomial CI over protocol cases, bootstrap of adjacent observations, or significance-based compliance claim. Sensitivity is a descriptive recoding comparison, not a confidence interval.",
+  "comparison_criteria": "Equivalent named configuration and identical test IDs. Archived numerical counts can be reproduced; RFC conformance requires response semantics and scope. Nonconformance does not prove exploitability. Full compliance is never established by this finite suite.",
+  "out_of_scope": ["Independent physical multi-network/cloud measurements and cloud geolocation", "Internet-wide prevalence", "DoS effectiveness, traffic performance and exploitable vulnerabilities", "Historical deployment reconstruction where configs/binaries are absent", "Simulator verification (no simulator in this study)"],
+  "costs": "Record wall time and incremental local execution cost (zero additional purchased compute); actual allocated workstation cost unavailable. AWS/model-call bills tracked separately when used. No compute/model budget invented.",
+  "followup_rule": "Later fresh network experiments get their own frozen protocol and campaign identity; never replace the archived main reanalysis. Scope amendments are versioned and retain this file."
+}

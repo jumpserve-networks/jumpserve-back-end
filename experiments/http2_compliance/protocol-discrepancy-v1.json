@@ -1,0 +1,11 @@
+{
+  "id": "http2-discrepancy-v1", "version": 1, "stage": "exploratory follow-up after main archive reanalysis",
+  "questions": ["Does the Figure 8 bar generator assign accepted H2EE outcomes to the wrong category?", "Do stored historical aggregate outputs match the currently released raw Traefik 2.2.8 records?"],
+  "controls": "Synthetic one-case accepted-to-accepted and dropped-to-dropped pairs, then identical 78 client case IDs across archived H2EE/H2H1; exact old version specified in Table 6",
+  "metrics": "Signed category count changes in cases; integer error codes; unknown evidence count",
+  "comparison": "Exact counts. Paper values kept separate. Corrected H2EE accepted count is modified+unmodified+received, never dropped.",
+  "seed": 3764447, "replication": "Census of explicitly matched archived identities. No additional independent physical replication.",
+  "missing": "Unknowns remain unknown; stored summaries are not substituted for missing raw evidence",
+  "statistics": "Descriptive paired counts only; no confidence intervals or hypothesis-test p-values",
+  "limitations": "Diagnoses a released plotting implementation. Does not establish which code generated the original camera-ready plots or why a historical output differs. Stale outputs/configuration drift are untested hypotheses."
+}

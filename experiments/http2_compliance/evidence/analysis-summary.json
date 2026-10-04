@@ -1,0 +1,2977 @@
+{
+  "campaign": {
+    "id": "http2-compliance-artifact-v2",
+    "title": "HTTP/2 Compliance Story: archived evidence assessment",
+    "status": "partial",
+    "protocol_sha256": "51615859d2aed01015e2cbb08bf5012fd7a736aad31a027da7fb9a71b4082c00",
+    "artifact_commit": "03bcd5d88c98cb82fac0c2afb626bb16ec2fa402",
+    "analysis_sha256": "f7af958a204cdb7c55fc972b4b61e22f19b50fcb153c0474b48d0f3d72159d1f",
+    "planned_runs": 57,
+    "recorded_runs": 57,
+    "planned_measurements": 7176,
+    "limitations": [
+      "Main paper completely reviewed; supporting literature review and independent full-fleet replication have explicit gaps.",
+      "Counts reproduce archived artifacts, not an independent live proxy campaign.",
+      "Missing/ambiguous worker evidence is retained; a timeout does not establish why a packet was not forwarded.",
+      "Designed protocol cases, versions and configurations are correlated; no inferential confidence intervals are justified.",
+      "Historical worker resources and exact UTC execution timestamps are missing; no substitutes are invented."
+    ],
+    "costs": {
+      "incremental_purchased_compute_usd": 0,
+      "local_workstation_total_usd": null,
+      "model_calls": 0,
+      "model_cost_usd": 0
+    }
+  },
+  "summaries": [
+    {
+      "run_id": "archive-000",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Apache-2.4.43",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 2,
+      "recoded": 2,
+      "author_counts": {
+        "dropped": 46,
+        "goaway": 70,
+        "unmodified": 2,
+        "500": 38
+      },
+      "preserved_counts": {
+        "dropped": 44,
+        "goaway": 70,
+        "unmodified": 2,
+        "500": 38,
+        "unknown": 2
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 70,
+      "scope_mismatches": 0,
+      "scope_compatible": 70,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 33,
+        "author_pair_percent": 54.09836065573771,
+        "known_pairs": 60,
+        "preserved_pair_differences": 33,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          48.717948717948715,
+          12.82051282051282
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-001",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Apache-2.4.53",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 123,
+        "goaway": 33
+      },
+      "preserved_counts": {
+        "dropped": 123,
+        "goaway": 33
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 33,
+      "scope_mismatches": 0,
+      "scope_compatible": 33,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 29,
+        "author_pair_percent": 47.540983606557376,
+        "known_pairs": 61,
+        "preserved_pair_differences": 29,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          51.28205128205128,
+          94.87179487179486
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-002",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Apache-2.4.62",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 46,
+        "goaway": 67,
+        "unmodified": 1,
+        "500": 42
+      },
+      "preserved_counts": {
+        "dropped": 46,
+        "goaway": 67,
+        "unmodified": 1,
+        "500": 42
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 67,
+      "scope_mismatches": 0,
+      "scope_compatible": 67,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 30,
+        "author_pair_percent": 49.18032786885246,
+        "known_pairs": 61,
+        "preserved_pair_differences": 30,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          50.0,
+          10.256410256410255
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-003",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Apache-2.4.63",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 48,
+        "goaway": 67,
+        "unmodified": 1,
+        "500": 40
+      },
+      "preserved_counts": {
+        "dropped": 48,
+        "goaway": 67,
+        "unmodified": 1,
+        "500": 40
+      },
+      "published_counts": {
+        "dropped": 48,
+        "500": 40,
+        "goaway": 67,
+        "reset": 0,
+        "unmodified": 1,
+        "modified": 0
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 67,
+      "scope_mismatches": 0,
+      "scope_compatible": 67,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 30,
+        "author_pair_percent": 49.18032786885246,
+        "known_pairs": 61,
+        "preserved_pair_differences": 30,
+        "published_pair_percent": 49.2,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          50.0,
+          10.256410256410255
+        ],
+        "published_side_percent": [
+          50.0,
+          10.3
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "Apache-2.4.43",
+          "new_configuration": "Apache-2.4.63",
+          "author_count_changes": {
+            "dropped": 2,
+            "500": 2,
+            "goaway": -3,
+            "reset": 0,
+            "received": 0,
+            "modified": 0,
+            "unmodified": -1,
+            "unknown": 0
+          },
+          "published_prose_changes": {}
+        },
+        "translation": {
+          "h2h1_configuration": "Apache-2.4.63-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": 6,
+            "500": -3,
+            "goaway": -2,
+            "reset": 0,
+            "accepted": -1
+          },
+          "published_accepted_change": null
+        }
+      }
+    },
+    {
+      "run_id": "archive-004",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Apache-2.4.63-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 48,
+        "goaway": 30
+      },
+      "preserved_counts": {
+        "dropped": 48,
+        "goaway": 30
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 30,
+      "scope_mismatches": 0,
+      "scope_compatible": 30,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-005",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Azure-AG",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 76,
+        "received": 2
+      },
+      "preserved_counts": {
+        "dropped": 76,
+        "received": 2
+      },
+      "published_counts": {
+        "dropped": 76,
+        "500": 0,
+        "goaway": 0,
+        "reset": 0,
+        "received": 2
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 0,
+      "scope_mismatches": 0,
+      "scope_compatible": 0,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-006",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Caddy-2.9.1",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 50,
+        "500": 65,
+        "unmodified": 6,
+        "goaway": 29,
+        "modified": 6
+      },
+      "preserved_counts": {
+        "dropped": 50,
+        "500": 65,
+        "unmodified": 6,
+        "goaway": 29,
+        "modified": 6
+      },
+      "published_counts": {
+        "dropped": 50,
+        "500": 65,
+        "goaway": 29,
+        "reset": 0,
+        "unmodified": 6,
+        "modified": 6
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 29,
+      "scope_mismatches": 0,
+      "scope_compatible": 29,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 56,
+        "author_pair_percent": 91.80327868852459,
+        "known_pairs": 61,
+        "preserved_pair_differences": 56,
+        "published_pair_percent": 91.8,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          52.56410256410257,
+          28.205128205128204
+        ],
+        "published_side_percent": [
+          52.6,
+          28.2
+        ],
+        "figure5_agreement": true
+      }
+    },
+    {
+      "run_id": "archive-007",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Cloudflare",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 73,
+        "modified": 7,
+        "reset": 5,
+        "goaway": 6,
+        "500": 63,
+        "unmodified": 2
+      },
+      "preserved_counts": {
+        "dropped": 73,
+        "modified": 7,
+        "reset": 5,
+        "goaway": 6,
+        "500": 63,
+        "unmodified": 2
+      },
+      "published_counts": {
+        "dropped": 73,
+        "500": 63,
+        "goaway": 6,
+        "reset": 5,
+        "unmodified": 2,
+        "modified": 7
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 11,
+      "scope_mismatches": 4,
+      "scope_compatible": 7,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 60,
+        "author_pair_percent": 98.36065573770492,
+        "known_pairs": 61,
+        "preserved_pair_differences": 60,
+        "published_pair_percent": 98.4,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          83.33333333333334,
+          19.230769230769234
+        ],
+        "published_side_percent": [
+          83.3,
+          19.2
+        ],
+        "figure5_agreement": true,
+        "translation": {
+          "h2h1_configuration": "Cloudflare-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": 9,
+            "500": 0,
+            "goaway": -6,
+            "reset": -2,
+            "accepted": -1
+          },
+          "published_accepted_change": null
+        }
+      }
+    },
+    {
+      "run_id": "archive-008",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Cloudflare-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 78
+      },
+      "preserved_counts": {
+        "dropped": 78
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 0,
+      "scope_mismatches": 0,
+      "scope_compatible": 0,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-009",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Envoy-1.15.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 63,
+        "goaway": 32,
+        "unmodified": 7,
+        "modified": 1,
+        "500": 53
+      },
+      "preserved_counts": {
+        "dropped": 63,
+        "goaway": 32,
+        "unmodified": 7,
+        "modified": 1,
+        "500": 53
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 32,
+      "scope_mismatches": 0,
+      "scope_compatible": 32,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 39,
+        "author_pair_percent": 63.934426229508205,
+        "known_pairs": 61,
+        "preserved_pair_differences": 39,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          73.07692307692307,
+          16.666666666666664
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-010",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Envoy-1.21.2",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 63,
+        "goaway": 32,
+        "unmodified": 4,
+        "reset": 4,
+        "500": 53
+      },
+      "preserved_counts": {
+        "dropped": 63,
+        "goaway": 32,
+        "unmodified": 4,
+        "reset": 4,
+        "500": 53
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 36,
+      "scope_mismatches": 0,
+      "scope_compatible": 36,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 41,
+        "author_pair_percent": 67.21311475409836,
+        "known_pairs": 61,
+        "preserved_pair_differences": 41,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          67.94871794871796,
+          16.666666666666664
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-011",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Envoy-1.32.2",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 67,
+        "goaway": 28,
+        "unmodified": 7,
+        "500": 54
+      },
+      "preserved_counts": {
+        "dropped": 67,
+        "goaway": 28,
+        "unmodified": 7,
+        "500": 54
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 28,
+      "scope_mismatches": 0,
+      "scope_compatible": 28,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 42,
+        "author_pair_percent": 68.85245901639344,
+        "known_pairs": 61,
+        "preserved_pair_differences": 42,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          70.51282051282051,
+          23.076923076923077
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null,
+        "translation": {
+          "h2h1_configuration": "Envoy-1.32.2-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": -1,
+            "500": -2,
+            "goaway": 0,
+            "reset": 0,
+            "accepted": 3
+          },
+          "published_accepted_change": 8
+        }
+      }
+    },
+    {
+      "run_id": "archive-012",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Envoy-1.32.2-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 55,
+        "goaway": 17,
+        "received": 6
+      },
+      "preserved_counts": {
+        "dropped": 55,
+        "goaway": 17,
+        "received": 6
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 17,
+      "scope_mismatches": 0,
+      "scope_compatible": 17,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-013",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Envoy-1.34.1",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 52,
+        "modified": 2,
+        "goaway": 63,
+        "unmodified": 4,
+        "reset": 4,
+        "500": 31
+      },
+      "preserved_counts": {
+        "dropped": 52,
+        "modified": 2,
+        "goaway": 63,
+        "unmodified": 4,
+        "reset": 4,
+        "500": 31
+      },
+      "published_counts": {
+        "dropped": 52,
+        "500": 31,
+        "goaway": 63,
+        "reset": 4,
+        "unmodified": 4,
+        "modified": 2
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 67,
+      "scope_mismatches": 0,
+      "scope_compatible": 67,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 32,
+        "author_pair_percent": 52.459016393442624,
+        "known_pairs": 61,
+        "preserved_pair_differences": 32,
+        "published_pair_percent": 52.5,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          53.84615384615385,
+          19.230769230769234
+        ],
+        "published_side_percent": [
+          53.8,
+          19.2
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "Envoy-1.15.0",
+          "new_configuration": "Envoy-1.34.1",
+          "author_count_changes": {
+            "dropped": -11,
+            "500": -22,
+            "goaway": 31,
+            "reset": 4,
+            "received": 0,
+            "modified": 1,
+            "unmodified": -3,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "goaway": 31,
+            "dropped": -11
+          }
+        },
+        "translation": {
+          "h2h1_configuration": "Envoy-1.34.1-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": -2,
+            "500": 0,
+            "goaway": 0,
+            "reset": -4,
+            "accepted": 6
+          },
+          "published_accepted_change": 8
+        }
+      }
+    },
+    {
+      "run_id": "archive-014",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Envoy-1.34.1-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 42,
+        "received": 8,
+        "goaway": 28
+      },
+      "preserved_counts": {
+        "dropped": 42,
+        "received": 8,
+        "goaway": 28
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 28,
+      "scope_mismatches": 0,
+      "scope_compatible": 28,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-015",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Fastly",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 26,
+        "goaway": 43,
+        "reset": 9
+      },
+      "preserved_counts": {
+        "dropped": 26,
+        "goaway": 43,
+        "reset": 9
+      },
+      "published_counts": {
+        "dropped": 26,
+        "500": 0,
+        "goaway": 43,
+        "reset": 9,
+        "received": 0
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 52,
+      "scope_mismatches": 0,
+      "scope_compatible": 52,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-016",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "H2O-0a9ddbd",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 113,
+        "goaway": 43
+      },
+      "preserved_counts": {
+        "dropped": 113,
+        "goaway": 43
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 43,
+      "scope_mismatches": 0,
+      "scope_compatible": 43,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 38,
+        "author_pair_percent": 62.295081967213115,
+        "known_pairs": 61,
+        "preserved_pair_differences": 38,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          38.46153846153847,
+          94.87179487179486
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-017",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "H2O-26b116e95",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 89,
+        "goaway": 59,
+        "modified": 1,
+        "500": 7
+      },
+      "preserved_counts": {
+        "dropped": 89,
+        "goaway": 59,
+        "modified": 1,
+        "500": 7
+      },
+      "published_counts": {
+        "dropped": 89,
+        "500": 7,
+        "goaway": 59,
+        "reset": 0,
+        "unmodified": 0,
+        "modified": 1
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 59,
+      "scope_mismatches": 0,
+      "scope_compatible": 59,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 28,
+        "author_pair_percent": 45.90163934426229,
+        "known_pairs": 61,
+        "preserved_pair_differences": 28,
+        "published_pair_percent": 45.9,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          39.743589743589745,
+          70.51282051282051
+        ],
+        "published_side_percent": [
+          39.7,
+          70.5
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "H2O-0a9ddbd",
+          "new_configuration": "H2O-26b116e95",
+          "author_count_changes": {
+            "dropped": -24,
+            "500": 7,
+            "goaway": 16,
+            "reset": 0,
+            "received": 0,
+            "modified": 1,
+            "unmodified": 0,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "goaway": 16,
+            "dropped": -24
+          }
+        },
+        "translation": {
+          "h2h1_configuration": "H2O-26b116e95-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": -1,
+            "500": 0,
+            "goaway": 0,
+            "reset": 0,
+            "accepted": 1
+          },
+          "published_accepted_change": 2
+        }
+      }
+    },
+    {
+      "run_id": "archive-018",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "H2O-26b116e95-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 33,
+        "received": 2,
+        "goaway": 43
+      },
+      "preserved_counts": {
+        "dropped": 33,
+        "received": 2,
+        "goaway": 43
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 43,
+      "scope_mismatches": 0,
+      "scope_compatible": 43,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-019",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "H2O-cf59e67c3",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 113,
+        "goaway": 43
+      },
+      "preserved_counts": {
+        "dropped": 113,
+        "goaway": 43
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 43,
+      "scope_mismatches": 0,
+      "scope_compatible": 43,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 38,
+        "author_pair_percent": 62.295081967213115,
+        "known_pairs": 61,
+        "preserved_pair_differences": 38,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          38.46153846153847,
+          94.87179487179486
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-020",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "HAproxy-2.2.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 28,
+      "recoded": 28,
+      "author_counts": {
+        "dropped": 69,
+        "goaway": 80,
+        "modified": 1,
+        "unmodified": 6
+      },
+      "preserved_counts": {
+        "dropped": 41,
+        "unknown": 28,
+        "goaway": 80,
+        "modified": 1,
+        "unmodified": 6
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 80,
+      "scope_mismatches": 0,
+      "scope_compatible": 80,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 8,
+        "author_pair_percent": 13.114754098360656,
+        "known_pairs": 36,
+        "preserved_pair_differences": 4,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          47.43589743589743,
+          39.743589743589745
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-021",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "HAproxy-2.6.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 1,
+      "author_counts": {
+        "dropped": 47,
+        "goaway": 81,
+        "unmodified": 8,
+        "modified": 2,
+        "500": 18
+      },
+      "preserved_counts": {
+        "dropped": 46,
+        "goaway": 81,
+        "unmodified": 9,
+        "modified": 2,
+        "500": 18
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 81,
+      "scope_mismatches": 0,
+      "scope_compatible": 81,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 21,
+        "author_pair_percent": 34.42622950819672,
+        "known_pairs": 61,
+        "preserved_pair_differences": 20,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          47.43589743589743,
+          16.666666666666664
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-022",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "HAproxy-2.9.10",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 38,
+        "goaway": 82,
+        "unmodified": 9,
+        "modified": 2,
+        "500": 25
+      },
+      "preserved_counts": {
+        "dropped": 38,
+        "goaway": 82,
+        "unmodified": 9,
+        "modified": 2,
+        "500": 25
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 82,
+      "scope_mismatches": 0,
+      "scope_compatible": 82,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 25,
+        "author_pair_percent": 40.98360655737705,
+        "known_pairs": 61,
+        "preserved_pair_differences": 25,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          47.43589743589743,
+          16.666666666666664
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null,
+        "translation": {
+          "h2h1_configuration": "HAproxy-2.9.10-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": 1,
+            "500": -1,
+            "goaway": -1,
+            "reset": 0,
+            "accepted": 1
+          },
+          "published_accepted_change": 5
+        }
+      }
+    },
+    {
+      "run_id": "archive-023",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "HAproxy-2.9.10-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 35,
+        "goaway": 37,
+        "received": 6
+      },
+      "preserved_counts": {
+        "dropped": 35,
+        "goaway": 37,
+        "received": 6
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 37,
+      "scope_mismatches": 0,
+      "scope_compatible": 37,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-024",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "HAproxy-3.2.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 40,
+        "goaway": 81,
+        "unmodified": 5,
+        "modified": 5,
+        "500": 24,
+        "reset": 1
+      },
+      "preserved_counts": {
+        "dropped": 40,
+        "goaway": 81,
+        "unmodified": 5,
+        "modified": 5,
+        "500": 24,
+        "reset": 1
+      },
+      "published_counts": {
+        "dropped": 40,
+        "500": 24,
+        "goaway": 81,
+        "reset": 1,
+        "unmodified": 5,
+        "modified": 5
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 82,
+      "scope_mismatches": 0,
+      "scope_compatible": 82,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 25,
+        "author_pair_percent": 40.98360655737705,
+        "known_pairs": 61,
+        "preserved_pair_differences": 25,
+        "published_pair_percent": 41.0,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          48.717948717948715,
+          15.384615384615385
+        ],
+        "published_side_percent": [
+          48.7,
+          15.4
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "HAproxy-2.2.0",
+          "new_configuration": "HAproxy-3.2.0",
+          "author_count_changes": {
+            "dropped": -29,
+            "500": 24,
+            "goaway": 1,
+            "reset": 1,
+            "received": 0,
+            "modified": 4,
+            "unmodified": -1,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "dropped": -29
+          }
+        },
+        "translation": {
+          "h2h1_configuration": "HAproxy-3.2.0-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": 1,
+            "500": 0,
+            "goaway": 0,
+            "reset": 0,
+            "accepted": -1
+          },
+          "published_accepted_change": 5
+        }
+      }
+    },
+    {
+      "run_id": "archive-025",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "HAproxy-3.2.0-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 36,
+        "goaway": 37,
+        "received": 5
+      },
+      "preserved_counts": {
+        "dropped": 36,
+        "goaway": 37,
+        "received": 5
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 37,
+      "scope_mismatches": 0,
+      "scope_compatible": 37,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-026",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Lighttpd-1.4.55",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 77,
+      "recoded": 77,
+      "author_counts": {
+        "dropped": 78
+      },
+      "preserved_counts": {
+        "dropped": 1,
+        "unknown": 77
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 0,
+      "scope_mismatches": 0,
+      "scope_compatible": 0,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-027",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Lighttpd-1.4.64",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 49,
+        "goaway": 29
+      },
+      "preserved_counts": {
+        "dropped": 49,
+        "goaway": 29
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 29,
+      "scope_mismatches": 0,
+      "scope_compatible": 29,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-028",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Lighttpd-1.4.76",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 30,
+        "received": 3,
+        "reset": 1,
+        "dropped": 44
+      },
+      "preserved_counts": {
+        "goaway": 30,
+        "received": 3,
+        "reset": 1,
+        "dropped": 44
+      },
+      "published_counts": {
+        "dropped": 44,
+        "500": 0,
+        "goaway": 30,
+        "reset": 1,
+        "received": 3
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 31,
+      "scope_mismatches": 1,
+      "scope_compatible": 30,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null,
+        "historical": {
+          "old_configuration": "Lighttpd-1.4.55",
+          "new_configuration": "Lighttpd-1.4.76",
+          "author_count_changes": {
+            "dropped": -34,
+            "500": 0,
+            "goaway": 30,
+            "reset": 1,
+            "received": 3,
+            "modified": 0,
+            "unmodified": 0,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "goaway": 30,
+            "dropped": -34
+          }
+        }
+      }
+    },
+    {
+      "run_id": "archive-029",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Mitmproxy-11.1.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 129,
+      "recoded": 129,
+      "author_counts": {
+        "dropped": 21,
+        "unmodified": 131,
+        "reset": 4
+      },
+      "preserved_counts": {
+        "dropped": 21,
+        "unknown": 129,
+        "reset": 4,
+        "unmodified": 2
+      },
+      "published_counts": {
+        "dropped": 21,
+        "500": 0,
+        "goaway": 0,
+        "reset": 4,
+        "unmodified": 131,
+        "modified": 0
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 4,
+      "scope_mismatches": 4,
+      "scope_compatible": 0,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 2,
+        "author_pair_percent": 3.278688524590164,
+        "known_pairs": 11,
+        "preserved_pair_differences": 2,
+        "published_pair_percent": 3.3,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          97.43589743589743,
+          94.87179487179486
+        ],
+        "published_side_percent": [
+          97.4,
+          94.9
+        ],
+        "figure5_agreement": true
+      }
+    },
+    {
+      "run_id": "archive-030",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nghttpx-1.41.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 50,
+        "goaway": 64,
+        "unmodified": 8,
+        "modified": 1,
+        "reset": 33
+      },
+      "preserved_counts": {
+        "dropped": 50,
+        "goaway": 64,
+        "unmodified": 8,
+        "modified": 1,
+        "reset": 33
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 97,
+      "scope_mismatches": 6,
+      "scope_compatible": 91,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 26,
+        "author_pair_percent": 42.62295081967213,
+        "known_pairs": 61,
+        "preserved_pair_differences": 26,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          53.84615384615385,
+          14.102564102564102
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-031",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nghttpx-1.47.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 1,
+      "author_counts": {
+        "dropped": 51,
+        "goaway": 64,
+        "unmodified": 7,
+        "modified": 1,
+        "reset": 33
+      },
+      "preserved_counts": {
+        "dropped": 50,
+        "goaway": 64,
+        "unmodified": 8,
+        "modified": 1,
+        "reset": 33
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 97,
+      "scope_mismatches": 6,
+      "scope_compatible": 91,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 27,
+        "author_pair_percent": 44.26229508196721,
+        "known_pairs": 61,
+        "preserved_pair_differences": 26,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          52.56410256410257,
+          14.102564102564102
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-032",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nghttpx-1.62.1",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 55,
+        "goaway": 61,
+        "unmodified": 5,
+        "modified": 1,
+        "reset": 34
+      },
+      "preserved_counts": {
+        "dropped": 55,
+        "goaway": 61,
+        "unmodified": 5,
+        "modified": 1,
+        "reset": 34
+      },
+      "published_counts": {
+        "dropped": 55,
+        "500": 0,
+        "goaway": 61,
+        "reset": 34,
+        "unmodified": 5,
+        "modified": 1
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 95,
+      "scope_mismatches": 6,
+      "scope_compatible": 89,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 27,
+        "author_pair_percent": 44.26229508196721,
+        "known_pairs": 61,
+        "preserved_pair_differences": 27,
+        "published_pair_percent": 44.3,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          56.41025641025641,
+          14.102564102564102
+        ],
+        "published_side_percent": [
+          56.4,
+          14.1
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "Nghttpx-1.41.0",
+          "new_configuration": "Nghttpx-1.62.1",
+          "author_count_changes": {
+            "dropped": 5,
+            "500": 0,
+            "goaway": -3,
+            "reset": 1,
+            "received": 0,
+            "modified": 0,
+            "unmodified": -3,
+            "unknown": 0
+          },
+          "published_prose_changes": {}
+        },
+        "translation": {
+          "h2h1_configuration": "Nghttpx-1.62.1-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": -1,
+            "500": 0,
+            "goaway": 0,
+            "reset": 0,
+            "accepted": 1
+          },
+          "published_accepted_change": 5
+        }
+      }
+    },
+    {
+      "run_id": "archive-033",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nghttpx-1.62.1-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 42,
+        "goaway": 31,
+        "received": 5
+      },
+      "preserved_counts": {
+        "dropped": 42,
+        "goaway": 31,
+        "received": 5
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 31,
+      "scope_mismatches": 0,
+      "scope_compatible": 31,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-034",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nginx-1.18.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 53,
+      "recoded": 53,
+      "author_counts": {
+        "goaway": 25,
+        "dropped": 53
+      },
+      "preserved_counts": {
+        "goaway": 25,
+        "unknown": 53
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 25,
+      "scope_mismatches": 0,
+      "scope_compatible": 25,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-035",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nginx-1.22.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 28,
+        "received": 2,
+        "dropped": 48
+      },
+      "preserved_counts": {
+        "goaway": 28,
+        "received": 2,
+        "dropped": 48
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 28,
+      "scope_mismatches": 0,
+      "scope_compatible": 28,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-036",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nginx-1.26.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 28,
+        "received": 2,
+        "dropped": 48
+      },
+      "preserved_counts": {
+        "goaway": 28,
+        "received": 2,
+        "dropped": 48
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 28,
+      "scope_mismatches": 0,
+      "scope_compatible": 28,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-037",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Nginx-1.28.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 27,
+        "received": 2,
+        "dropped": 49
+      },
+      "preserved_counts": {
+        "goaway": 27,
+        "received": 2,
+        "dropped": 49
+      },
+      "published_counts": {
+        "dropped": 49,
+        "500": 0,
+        "goaway": 27,
+        "reset": 0,
+        "received": 2
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 27,
+      "scope_mismatches": 0,
+      "scope_compatible": 27,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null,
+        "historical": {
+          "old_configuration": "Nginx-1.18.0",
+          "new_configuration": "Nginx-1.28.0",
+          "author_count_changes": {
+            "dropped": -4,
+            "500": 0,
+            "goaway": 2,
+            "reset": 0,
+            "received": 2,
+            "modified": 0,
+            "unmodified": 0,
+            "unknown": 0
+          },
+          "published_prose_changes": {}
+        }
+      }
+    },
+    {
+      "run_id": "archive-038",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Node-14.19.3",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 1,
+      "recoded": 1,
+      "author_counts": {
+        "goaway": 66,
+        "dropped": 63,
+        "modified": 9,
+        "unmodified": 4,
+        "500": 13,
+        "reset": 1
+      },
+      "preserved_counts": {
+        "goaway": 66,
+        "dropped": 62,
+        "unknown": 1,
+        "modified": 9,
+        "unmodified": 4,
+        "500": 13,
+        "reset": 1
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 67,
+      "scope_mismatches": 0,
+      "scope_compatible": 67,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 27,
+        "author_pair_percent": 44.26229508196721,
+        "known_pairs": 60,
+        "preserved_pair_differences": 26,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          51.28205128205128,
+          35.8974358974359
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-039",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Node-14.7.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 39,
+      "recoded": 40,
+      "author_counts": {
+        "goaway": 65,
+        "dropped": 76,
+        "unmodified": 2,
+        "modified": 1,
+        "500": 11,
+        "reset": 1
+      },
+      "preserved_counts": {
+        "goaway": 65,
+        "dropped": 36,
+        "unmodified": 3,
+        "unknown": 39,
+        "modified": 1,
+        "500": 11,
+        "reset": 1
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 66,
+      "scope_mismatches": 0,
+      "scope_compatible": 66,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 18,
+        "author_pair_percent": 29.508196721311474,
+        "known_pairs": 39,
+        "preserved_pair_differences": 12,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          52.56410256410257,
+          39.743589743589745
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-040",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Node-20.16.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 61,
+        "dropped": 70,
+        "unmodified": 3,
+        "500": 14,
+        "modified": 8
+      },
+      "preserved_counts": {
+        "goaway": 61,
+        "dropped": 70,
+        "unmodified": 3,
+        "500": 14,
+        "modified": 8
+      },
+      "published_counts": {
+        "dropped": 70,
+        "500": 14,
+        "goaway": 61,
+        "reset": 0,
+        "unmodified": 3,
+        "modified": 8
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 61,
+      "scope_mismatches": 0,
+      "scope_compatible": 61,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 27,
+        "author_pair_percent": 44.26229508196721,
+        "known_pairs": 61,
+        "preserved_pair_differences": 27,
+        "published_pair_percent": 44.3,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          55.12820512820513,
+          39.743589743589745
+        ],
+        "published_side_percent": [
+          55.1,
+          39.7
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "Node-14.7.0",
+          "new_configuration": "Node-20.16.0",
+          "author_count_changes": {
+            "dropped": -6,
+            "500": 3,
+            "goaway": -4,
+            "reset": -1,
+            "received": 0,
+            "modified": 7,
+            "unmodified": 1,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "dropped": -6
+          }
+        },
+        "translation": {
+          "h2h1_configuration": "Node-20.16.0-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": 0,
+            "500": 0,
+            "goaway": 1,
+            "reset": 0,
+            "accepted": -1
+          },
+          "published_accepted_change": null
+        }
+      }
+    },
+    {
+      "run_id": "archive-041",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Node-20.16.0-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 32,
+        "dropped": 46
+      },
+      "preserved_counts": {
+        "goaway": 32,
+        "dropped": 46
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 32,
+      "scope_mismatches": 0,
+      "scope_compatible": 32,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-042",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Retest-Traefik-3.3.5",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 129,
+        "goaway": 27
+      },
+      "preserved_counts": {
+        "dropped": 129,
+        "goaway": 27
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 27,
+      "scope_mismatches": 0,
+      "scope_compatible": 27,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 23,
+        "author_pair_percent": 37.704918032786885,
+        "known_pairs": 61,
+        "preserved_pair_differences": 23,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          58.97435897435898,
+          94.87179487179486
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-043",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-Apache-2.4.63",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "goaway": 38,
+        "dropped": 45,
+        "unmodified": 1,
+        "500": 72
+      },
+      "preserved_counts": {
+        "goaway": 38,
+        "dropped": 45,
+        "unmodified": 1,
+        "500": 72
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 38,
+      "scope_mismatches": 0,
+      "scope_compatible": 38,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 54,
+        "author_pair_percent": 88.52459016393442,
+        "known_pairs": 61,
+        "preserved_pair_differences": 54,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          47.43589743589743,
+          11.538461538461538
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-044",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-Caddy-2.9.1",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 1,
+      "recoded": 1,
+      "author_counts": {
+        "dropped": 76,
+        "modified": 8,
+        "unmodified": 5,
+        "goaway": 11,
+        "500": 56
+      },
+      "preserved_counts": {
+        "dropped": 75,
+        "modified": 8,
+        "unmodified": 5,
+        "goaway": 11,
+        "unknown": 1,
+        "500": 56
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 11,
+      "scope_mismatches": 0,
+      "scope_compatible": 11,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 54,
+        "author_pair_percent": 88.52459016393442,
+        "known_pairs": 60,
+        "preserved_pair_differences": 54,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          80.76923076923077,
+          29.48717948717949
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-045",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-Envoy-1.34.1",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 2,
+      "recoded": 2,
+      "author_counts": {
+        "dropped": 52,
+        "modified": 4,
+        "goaway": 63,
+        "unmodified": 6,
+        "500": 31
+      },
+      "preserved_counts": {
+        "dropped": 50,
+        "modified": 4,
+        "goaway": 63,
+        "unmodified": 6,
+        "unknown": 2,
+        "500": 31
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 63,
+      "scope_mismatches": 0,
+      "scope_compatible": 63,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 29,
+        "author_pair_percent": 47.540983606557376,
+        "known_pairs": 59,
+        "preserved_pair_differences": 29,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          58.97435897435898,
+          19.230769230769234
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-046",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-HAproxy-3.2.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 1,
+      "recoded": 1,
+      "author_counts": {
+        "dropped": 42,
+        "goaway": 81,
+        "unmodified": 4,
+        "modified": 5,
+        "500": 23,
+        "reset": 1
+      },
+      "preserved_counts": {
+        "dropped": 41,
+        "goaway": 81,
+        "unmodified": 4,
+        "modified": 5,
+        "unknown": 1,
+        "500": 23,
+        "reset": 1
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 82,
+      "scope_mismatches": 0,
+      "scope_compatible": 82,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 24,
+        "author_pair_percent": 39.34426229508197,
+        "known_pairs": 60,
+        "preserved_pair_differences": 24,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          48.717948717948715,
+          14.102564102564102
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-047",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-Nghttpx-1.62.1",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 85,
+        "goaway": 64,
+        "unmodified": 4,
+        "modified": 1,
+        "reset": 2
+      },
+      "preserved_counts": {
+        "dropped": 85,
+        "goaway": 64,
+        "unmodified": 4,
+        "modified": 1,
+        "reset": 2
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 66,
+      "scope_mismatches": 1,
+      "scope_compatible": 65,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 2,
+        "author_pair_percent": 3.278688524590164,
+        "known_pairs": 61,
+        "preserved_pair_differences": 2,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          56.41025641025641,
+          51.28205128205128
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-048",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-Node-20.16.0",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 59,
+      "recoded": 59,
+      "author_counts": {
+        "goaway": 43,
+        "dropped": 111,
+        "unmodified": 2
+      },
+      "preserved_counts": {
+        "goaway": 43,
+        "dropped": 52,
+        "unknown": 59,
+        "unmodified": 2
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 43,
+      "scope_mismatches": 0,
+      "scope_compatible": 43,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 22,
+        "author_pair_percent": 36.0655737704918,
+        "known_pairs": 26,
+        "preserved_pair_differences": 15,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          50.0,
+          84.61538461538461
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-049",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "TLS-Traefik-3.3.5",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 4,
+      "recoded": 4,
+      "author_counts": {
+        "dropped": 77,
+        "goaway": 11,
+        "500": 58,
+        "unmodified": 4,
+        "modified": 6
+      },
+      "preserved_counts": {
+        "dropped": 73,
+        "unknown": 4,
+        "goaway": 11,
+        "500": 58,
+        "unmodified": 4,
+        "modified": 6
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 11,
+      "scope_mismatches": 0,
+      "scope_compatible": 11,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 56,
+        "author_pair_percent": 91.80327868852459,
+        "known_pairs": 58,
+        "preserved_pair_differences": 54,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          79.48717948717949,
+          26.923076923076923
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-050",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Traefik-2.2.8",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 37,
+        "500": 79,
+        "modified": 1,
+        "unmodified": 1,
+        "goaway": 29,
+        "reset": 9
+      },
+      "preserved_counts": {
+        "dropped": 37,
+        "500": 79,
+        "modified": 1,
+        "unmodified": 1,
+        "goaway": 29,
+        "reset": 9
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 38,
+      "scope_mismatches": 5,
+      "scope_compatible": 33,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 59,
+        "author_pair_percent": 96.72131147540983,
+        "known_pairs": 61,
+        "preserved_pair_differences": 59,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          44.871794871794876,
+          5.128205128205128
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-051",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Traefik-2.6.2",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 126,
+        "reset": 1,
+        "goaway": 29
+      },
+      "preserved_counts": {
+        "dropped": 126,
+        "reset": 1,
+        "goaway": 29
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 30,
+      "scope_mismatches": 1,
+      "scope_compatible": 29,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 26,
+        "author_pair_percent": 42.62295081967213,
+        "known_pairs": 61,
+        "preserved_pair_differences": 26,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": [
+          55.12820512820513,
+          94.87179487179486
+        ],
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-052",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Traefik-3.3.5",
+      "planned": 156,
+      "recorded": 156,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 127,
+        "goaway": 29
+      },
+      "preserved_counts": {
+        "dropped": 127,
+        "goaway": 29
+      },
+      "published_counts": {
+        "dropped": 127,
+        "500": 0,
+        "goaway": 29,
+        "reset": 0,
+        "unmodified": 0,
+        "modified": 0
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 29,
+      "scope_mismatches": 0,
+      "scope_compatible": 29,
+      "comparisons": {
+        "paired_cases": 61,
+        "author_pair_differences": 25,
+        "author_pair_percent": 40.98360655737705,
+        "known_pairs": 61,
+        "preserved_pair_differences": 25,
+        "published_pair_percent": 41.0,
+        "figure6_agreement": true,
+        "author_side_percent": [
+          56.41025641025641,
+          94.87179487179486
+        ],
+        "published_side_percent": [
+          56.4,
+          94.9
+        ],
+        "figure5_agreement": true,
+        "historical": {
+          "old_configuration": "Traefik-2.2.8",
+          "new_configuration": "Traefik-3.3.5",
+          "author_count_changes": {
+            "dropped": 90,
+            "500": -79,
+            "goaway": 0,
+            "reset": -9,
+            "received": 0,
+            "modified": -1,
+            "unmodified": -1,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "dropped": 12
+          }
+        },
+        "translation": {
+          "h2h1_configuration": "Traefik-3.3.5-H2H1",
+          "common_cases": 78,
+          "author_count_changes": {
+            "dropped": 0,
+            "500": 0,
+            "goaway": 0,
+            "reset": 0,
+            "accepted": 0
+          },
+          "published_accepted_change": null
+        }
+      }
+    },
+    {
+      "run_id": "archive-053",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Traefik-3.3.5-H2H1",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 49,
+        "goaway": 29
+      },
+      "preserved_counts": {
+        "dropped": 49,
+        "goaway": 29
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 29,
+      "scope_mismatches": 0,
+      "scope_compatible": 29,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-054",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Varnish-6.4.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 47,
+      "recoded": 47,
+      "author_counts": {
+        "dropped": 48,
+        "goaway": 30
+      },
+      "preserved_counts": {
+        "dropped": 1,
+        "unknown": 47,
+        "goaway": 30
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 30,
+      "scope_mismatches": 0,
+      "scope_compatible": 30,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-055",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Varnish-7.1.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 29,
+        "received": 19,
+        "goaway": 30
+      },
+      "preserved_counts": {
+        "dropped": 29,
+        "received": 19,
+        "goaway": 30
+      },
+      "published_counts": null,
+      "published_source": null,
+      "assessment": "untested",
+      "differences": {},
+      "scope_observed": 30,
+      "scope_mismatches": 0,
+      "scope_compatible": 30,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null
+      }
+    },
+    {
+      "run_id": "archive-056",
+      "campaign_id": "http2-compliance-artifact-v2",
+      "configuration_id": "Varnish-7.7.0",
+      "planned": 78,
+      "recorded": 78,
+      "missing": 0,
+      "unknown": 0,
+      "recoded": 0,
+      "author_counts": {
+        "dropped": 36,
+        "received": 11,
+        "goaway": 31
+      },
+      "preserved_counts": {
+        "dropped": 36,
+        "received": 11,
+        "goaway": 31
+      },
+      "published_counts": {
+        "dropped": 36,
+        "500": 0,
+        "goaway": 31,
+        "reset": 0,
+        "received": 11
+      },
+      "published_source": "Paper Table 5, supplied ACM PDF page 264",
+      "assessment": "reproduced",
+      "differences": {},
+      "scope_observed": 31,
+      "scope_mismatches": 0,
+      "scope_compatible": 31,
+      "comparisons": {
+        "paired_cases": null,
+        "author_pair_differences": null,
+        "author_pair_percent": null,
+        "known_pairs": 0,
+        "preserved_pair_differences": null,
+        "published_pair_percent": null,
+        "figure6_agreement": null,
+        "author_side_percent": null,
+        "published_side_percent": null,
+        "figure5_agreement": null,
+        "historical": {
+          "old_configuration": "Varnish-6.4.0",
+          "new_configuration": "Varnish-7.7.0",
+          "author_count_changes": {
+            "dropped": -12,
+            "500": 0,
+            "goaway": 1,
+            "reset": 0,
+            "received": 11,
+            "modified": 0,
+            "unmodified": 0,
+            "unknown": 0
+          },
+          "published_prose_changes": {
+            "dropped": -12
+          }
+        }
+      }
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "test-universe",
+      "location": "Section 3.1; Tables 8\u20139; Appendix B",
+      "description": "156 test cases, 78 client and 78 server, including 61 mirrored pairs",
+      "assessment": "reproduced",
+      "evidence": "Test definitions and pair mapping have exactly 156 IDs and 61 disjoint mirrored pairs.",
+      "limitation": "Census verifies the artifact, not every excluded MUST, SHOULD or TLS rule."
+    },
+    {
+      "claim_id": "table5",
+      "location": "Table 5; Section 6.1",
+      "description": "1950 cases, 1745 rejected, 205 accepted, including 856 drops",
+      "assessment": "reproduced",
+      "evidence": "15 published proxy rows compared with exact counts under the authors classifier.",
+      "limitation": "Reanalysis of archived author measurements; counts are not independent fresh physical replication. Rejection is not equivalent to RFC compliance."
+    },
+    {
+      "claim_id": "figure4",
+      "location": "Figure 4; Section 6.2",
+      "description": "Vectorized behavior differs by proxy and test identity",
+      "assessment": "reproduced",
+      "evidence": "All archived per-test author outcome vectors retained; aggregate counts checked against Table 5.",
+      "limitation": "Individual plotted raster cells not automatically verified against the PDF. Evidence-preserving recoding shown separately."
+    },
+    {
+      "claim_id": "figure5",
+      "location": "Figure 5; Section 6.3",
+      "description": "Client/server broad-rule noncompliance ratios",
+      "assessment": "reproduced",
+      "evidence": "Ten published client/server ratios independently transcribed from Figure 5; comparisons retain 78-case denominators.",
+      "limitation": "Paper broad E/G/R rule and ignore-to-drop rule reproduced; response scope/code and timeout causes need separate evidence."
+    },
+    {
+      "claim_id": "figure6",
+      "location": "Figure 6; Section 6.3",
+      "description": "Behavior discrepancy over 61 explicitly paired test identities",
+      "assessment": "reproduced",
+      "evidence": "Published percentages compared within 0.05 percentage points for one-decimal rounding. Unknown pairs reported separately.",
+      "limitation": "Behavior discrepancy is descriptive, not evidence that code paths are redundant or a causal diagnosis."
+    },
+    {
+      "claim_id": "figure7",
+      "location": "Figure 7; Table 6; Section 6.4",
+      "description": "Historical versions change the distribution of protocol behaviors",
+      "assessment": "inconclusive",
+      "evidence": "Explicit old-version pairs from Table 6 and all category changes preserved; prose changes tested in independent verifier.",
+      "limitation": "Version comparison is descriptive. No controlled experiment establishes that the new RFC caused the changes."
+    },
+    {
+      "claim_id": "figure8",
+      "location": "Figure 8; Section 6.5",
+      "description": "H2H1 downgrade changes client-side behavior relative to H2EE",
+      "assessment": "inconclusive",
+      "evidence": "Matched 78 client IDs; accepted means received in H2H1 and modified+unmodified in H2EE. Prose deltas preserved.",
+      "limitation": "No comparison of server-half tests to H2H1. Full deployment configuration is not reconstructed."
+    },
+    {
+      "claim_id": "tls",
+      "location": "Section 6.1",
+      "description": "No TLS versus plaintext behavioral differences",
+      "assessment": "inconclusive",
+      "evidence": "Released TLS datasets are available for exact identity comparison.",
+      "limitation": "Unlabeled cleartext/TLS configurations cannot be assumed equivalent; observation from one deployment is not a universal layering guarantee."
+    },
+    {
+      "claim_id": "none-fully-compliant",
+      "location": "Abstract; Section 3.3; Conclusion",
+      "description": "None of the studied proxies is fully compliant",
+      "assessment": "inconclusive",
+      "evidence": "Broad author scores and evidence-preserving outcomes retained; acceptance and dropped categories require case-level semantics.",
+      "limitation": "Finite suite cannot establish full compliance. Error scope/code, modified messages and legitimate ignore rules require RFC interpretation."
+    },
+    {
+      "claim_id": "h2-improvement",
+      "location": "Section 6.1; Appendix A, Table 7",
+      "description": "HTTP/2 proxies are stricter than prior HTTP/1.1 tests",
+      "assessment": "inconclusive",
+      "evidence": "Published comparison is 1745/1950 rejected versus 128/564 HTTP/1.1. Appendix A maps eight prior case IDs into 23 current IDs.",
+      "limitation": "Different case universe, roles and versions prevent a matched causal improvement estimate; rejection includes silent drops."
+    },
+    {
+      "claim_id": "frame-header",
+      "location": "Section 2.1; Table 1; Figures 1\u20132",
+      "description": "HTTP/2 frames have a 12-byte header",
+      "assessment": "discrepant",
+      "evidence": "Section 2.1 says 12 bytes. Table 1 depicts 72 header bits; RFC9113 4.1 specifies nine octets. Independent raw-frame control planned.",
+      "limitation": "Expository unit/count error does not by itself invalidate the measurement campaign."
+    },
+    {
+      "claim_id": "physical-network",
+      "location": "Table 3; Table 4; Section 4",
+      "description": "Independent physical replication of all local and cloud proxy deployments",
+      "assessment": "untested",
+      "evidence": "Published local setup is Ubuntu 24.10 VMs on one hypervisor; cloud workers are Frankfurt and Melbourne Linode nodes on 2025-05-07.",
+      "limitation": "Those historical deployments, cloud internal versions and geographic paths cannot be recreated exactly. Fresh loopback pilot will be separate."
+    },
+    {
+      "claim_id": "transparency",
+      "location": "Section 4",
+      "description": "TCP sequence matching confirms absence of transparent proxies",
+      "assessment": "inconclusive",
+      "evidence": "Matching numbers exclude some TCP-splitting implementations.",
+      "limitation": "Does not exclude passive devices, non-splitting intermediaries, all path variants or TLS-layer intervention."
+    },
+    {
+      "claim_id": "recommendation",
+      "location": "Section 7.1",
+      "description": "Normative formal RFC compliance suites improve clarity/security",
+      "assessment": "untested",
+      "evidence": "Recommendation motivated by observed diversity and directly cited security literature.",
+      "limitation": "No randomized developer study, intervention, exploit reproduction or measured interoperability benefit."
+    }
+  ]
+}
