@@ -10,6 +10,7 @@ This is an archived measurement reanalysis plus a separate owned-loopback endpoi
 - `published-values.json` contains independently transcribed paper values, kept separate from measurements.
 - `literature.json` inventories the main paper and all 48 directly cited sources, including version, original-byte hash, download audit, review status, findings and limitations. No recursive bibliography expansion. Complete review: 3 entries, including main. Partial: 29. Unreviewed: 8. Unavailable: 9. Six unavailable research sources are references 1, 5, 7, 20, 36 and 37; unavailable web sources are 13, 39 and 40. Downloaded does not imply reviewed. Extracted texts are working copies; hashes identify originals.
 - `review-notes.json` records the actual scope of supporting-source reviews. The main paper's text, Figures 1–8, Tables 1–9 and Appendices A–B were examined, including visual review of all pages. Figure 4's individual raster cells were not all independently checked.
+- `verify_sources.py` independently checks all 40 retained original-file hashes; nine sources remain unavailable. `evidence/source-hash-validation.json` records each checked path and the review counts. Matching bytes do not establish a complete literature review.
 - `evidence/analysis-summary.json`, `evidence/validation.json` and `evidence/assessment-v3.json` provide arithmetic checks and discrepancy evidence. Figures 7–8 checks cover transcribed numerical statements rather than every raster bar.
 - `protocol-discrepancy-v1.json` preserves the separately declared exploratory plotting diagnosis. `assemble.py` leaves original author code and main analysis untouched.
 - Loopback pilot v1 failed before measurement. Pilot v2 (12 observations) and main v1 (72 observations) have separate protocols, locks and `evidence/loopback-*.json` traces. Main uses 3 process restarts × 12 cases × two observation windows (0.25 and 1 second). Restarts on one host are correlated; no inferential confidence intervals.
@@ -33,6 +34,7 @@ git -C experiments/http2_compliance/sources/HTTP2-Compliance-Tests checkout 03bc
 cp /path/to/legally-obtained/3730567.3764447.pdf experiments/http2_compliance/sources/main-paper.pdf
 experiments/http2_compliance/.venv/bin/python -B experiments/http2_compliance/analyze_v2.py
 experiments/http2_compliance/.venv/bin/python -B experiments/http2_compliance/check.py
+experiments/http2_compliance/.venv/bin/python -B experiments/http2_compliance/verify_sources.py
 ```
 
 Supporting artifact revisions audited, without executing remote workers:
@@ -63,9 +65,9 @@ experiments/http2_compliance/.venv/bin/python -B experiments/http2_compliance/as
 
 ## Persistence and release
 
-Use `jumpserve-infra/bin/http2-study-database.py` to import the assembled bundle. It verifies project `regphejnlvfpyokpniny` and frozen main provenance before mutation. Migrations `202610040003`–`006` create relational research storage, guarded prompt publication, unsigned 32-bit error-code storage and authenticated answer provenance. The original import stopped on an archived error code above signed integer range; migration 005 widened storage without clipping or discarding it, then the deterministic importer resumed. This was a persistence failure, not a new experimental observation.
+Use `jumpserve-infra/bin/http2-study-database.py` to import the assembled bundle. It verifies project `regphejnlvfpyokpniny` and frozen main provenance before mutation. Migrations `202610040003`–`008` create relational research storage, guarded prompt publication, unsigned 32-bit error-code storage, authenticated answer provenance, required manual answer review and per-answer model usage/cost estimates. The original import stopped on an archived error code above signed integer range; migration 005 widened storage without clipping or discarding it, then the deterministic importer resumed. This was a persistence failure, not a new experimental observation.
 
-Ten research relations are public SELECT-only with RLS. The eleventh, author raw/evaluation artifacts, is backend-only. Browser writes to research relations are denied. Prompt drafts, active selection, evaluated publication and chat answers reuse existing prompt/session tables. Chat is authenticated, user/module scoped, and restricted to this study's read-only tools. Failed evaluations are retained separately; prompts publish only after all eight required evaluations pass.
+Ten research relations are public SELECT-only with RLS. The eleventh, author raw/evaluation artifacts, is backend-only. Browser writes to research relations are denied. Prompt drafts, active selection, evaluated publication and chat answers reuse existing prompt/session tables. Chat is authenticated, user/module scoped, and restricted to this study's read-only tools. Failed evaluations are retained separately; prompts publish only after all eight required evaluations and a recorded review of their actual answers pass. An earlier automatic-only passing prompt was disabled when manual review found a factual error, before this module's backend was deployed.
 
 Local experiments bought no compute and provisioned no AWS instances. Workstation allocation cost and Codex orchestration costs are unavailable. Live prompt evaluations record input/output tokens and estimated Bedrock cost using published list pricing; estimates are not reconciled billing. Public campaign costs include failed and successful evaluations. Existing hosting and build charges remain unallocated.
 

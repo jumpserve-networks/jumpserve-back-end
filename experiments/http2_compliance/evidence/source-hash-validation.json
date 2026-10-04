@@ -1,0 +1,300 @@
+{
+  "status": "pass",
+  "inventory_sha256": "b3c2bf16f2dea2861be2d56cb1112f611efba6e4268cb28623807cd57f1e2362",
+  "hash_verified": 40,
+  "unavailable": 9,
+  "reviews": {
+    "complete": 3,
+    "unavailable": 9,
+    "unreviewed": 8,
+    "partial": 29
+  },
+  "checks": [
+    {
+      "reference_number": 0,
+      "status": "hash verified",
+      "sha256": "0624b02908d973efd875b908995107a9fee78cbf4320a31dcd14b15e33c5fa35",
+      "original_path": "sources/main-paper.pdf"
+    },
+    {
+      "reference_number": 1,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 2,
+      "status": "hash verified",
+      "sha256": "6a67e8d7fdfa7b5272fc55f8fba62b266f932031c7f39e29c52f83e129bc2967",
+      "original_path": "sources/ref-02.txt"
+    },
+    {
+      "reference_number": 3,
+      "status": "hash verified",
+      "sha256": "c5be3efab2a6e70123ee3829f2c5da16339ceb45999f784544cdfe8c14955954",
+      "original_path": "sources/ref-03.txt"
+    },
+    {
+      "reference_number": 4,
+      "status": "hash verified",
+      "sha256": "af3b27024f0939a8e4c03921e6df6a615c87cd103a2f5f0431e8420e68dd3e06",
+      "original_path": "sources/ref-04.web"
+    },
+    {
+      "reference_number": 5,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 6,
+      "status": "hash verified",
+      "sha256": "9270b007d63a3ece77ad94ba3f33ced4e7c730a8ad122d37e94c284a7337e2f5",
+      "original_path": "sources/ref-06.pdf"
+    },
+    {
+      "reference_number": 7,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 8,
+      "status": "hash verified",
+      "sha256": "6b84555c88eeebcf5d2b2e1d9d7b58630abc97ab877b2cf62dee4cd635db34e4",
+      "original_path": "sources/ref-08.txt"
+    },
+    {
+      "reference_number": 9,
+      "status": "hash verified",
+      "sha256": "eb627ed25147d0bce7c42e7e5d27e130ee1461ea9640d8e8b45b365c6839c420",
+      "original_path": "sources/ref-09.pdf"
+    },
+    {
+      "reference_number": 10,
+      "status": "hash verified",
+      "sha256": "3c2ceb7bfc84cd34720f4a5271338ab9d8280d34bdd1eb250c64306202f2ed8b",
+      "original_path": "sources/ref-10.txt"
+    },
+    {
+      "reference_number": 11,
+      "status": "hash verified",
+      "sha256": "bd20d7e62e2afe4dfe7c9297e5529cd3472980cb5d9f1e5297483c219f2eee44",
+      "original_path": "sources/ref-11.txt"
+    },
+    {
+      "reference_number": 12,
+      "status": "hash verified",
+      "sha256": "ef4eef5eabca766e3166f45159f5d843b636829235b41db499869781b47da4fa",
+      "original_path": "sources/ref-12.pdf"
+    },
+    {
+      "reference_number": 13,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 14,
+      "status": "hash verified",
+      "sha256": "6aa0c35698b15fe99e75bf86f615f339d40ea301a975f4c063298c520b38b667",
+      "original_path": "sources/ref-14.web"
+    },
+    {
+      "reference_number": 15,
+      "status": "hash verified",
+      "sha256": "1d084238ae6692d1e3322fa0850dbb9596812332d92b76d9a815c5ed9b600dea",
+      "original_path": "sources/ref-15.txt"
+    },
+    {
+      "reference_number": 16,
+      "status": "hash verified",
+      "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+      "original_path": "sources/ref-16.txt"
+    },
+    {
+      "reference_number": 17,
+      "status": "hash verified",
+      "sha256": "b0df254ddd697c0cacf7d6aaac26e640097db107728f8e56ebdfdd50da7eb572",
+      "original_path": "sources/ref-17.pdf"
+    },
+    {
+      "reference_number": 18,
+      "status": "hash verified",
+      "sha256": "b7efcb3cc5821c5fe19adb01656d99eafba0a9688e8292cb894a00e081397966",
+      "original_path": "sources/ref-18.pdf"
+    },
+    {
+      "reference_number": 19,
+      "status": "hash verified",
+      "sha256": "1415d08961ee80ba4870a792a361c318724adc226d62646f298cf111cee3eb5a",
+      "original_path": "sources/ref-19.web"
+    },
+    {
+      "reference_number": 20,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 21,
+      "status": "hash verified",
+      "sha256": "32eee447b9b8aa36bda0a6b7c6c26048d0103b260650f5fe294da60c6b8ff299",
+      "original_path": "sources/ref-21.pdf"
+    },
+    {
+      "reference_number": 22,
+      "status": "hash verified",
+      "sha256": "633cdade2f58ba72cd5696b6bcdfdbdfe1f3fc59015064e52c403e61d307ee15",
+      "original_path": "sources/ref-22.pdf"
+    },
+    {
+      "reference_number": 23,
+      "status": "hash verified",
+      "sha256": "833aaf33817492c4e2139faecf3e6d2a7bf92b174cf0182db3f0d39745573471",
+      "original_path": "sources/ref-23.web"
+    },
+    {
+      "reference_number": 24,
+      "status": "hash verified",
+      "sha256": "bc0f5605866244bc2a26c7537081c0e486b37a8a8739cec38fc8035f6d07b0c1",
+      "original_path": "sources/ref-24.pdf"
+    },
+    {
+      "reference_number": 25,
+      "status": "hash verified",
+      "sha256": "137d122a9c5b86415e3691628f62c69ab43f0ac40285f5b27c0d219e8f2ff583",
+      "original_path": "sources/ref-25.pdf"
+    },
+    {
+      "reference_number": 26,
+      "status": "hash verified",
+      "sha256": "093372154d479b74abe1046f447e8db0c1fcd2861f0c5bf56da352e0b80ca745",
+      "original_path": "sources/ref-26.pdf"
+    },
+    {
+      "reference_number": 27,
+      "status": "hash verified",
+      "sha256": "52bbdff460e654816b7e8e6fab9382195c46d49652c48a991757e0624f024489",
+      "original_path": "sources/ref-27.pdf"
+    },
+    {
+      "reference_number": 28,
+      "status": "hash verified",
+      "sha256": "ed54a5549612825ad57162febe65f8cb32d4a0f39605497f70579c838eef9a1a",
+      "original_path": "sources/ref-28.web"
+    },
+    {
+      "reference_number": 29,
+      "status": "hash verified",
+      "sha256": "b40e6bf42f9eb6640021509763fbb984679c393cf9597bd65658f4c30e3ab887",
+      "original_path": "sources/ref-29.web"
+    },
+    {
+      "reference_number": 30,
+      "status": "hash verified",
+      "sha256": "8098c86d1f1394c34b07fd0946d4243c3c44da4d7dfc82e22df809d14f4752b6",
+      "original_path": "sources/ref-30.pdf"
+    },
+    {
+      "reference_number": 31,
+      "status": "hash verified",
+      "sha256": "f57a76fdb3114be9bf47314172abdb3f9a59153607fab113497e5934baa9aeed",
+      "original_path": "sources/ref-31.web"
+    },
+    {
+      "reference_number": 32,
+      "status": "hash verified",
+      "sha256": "8a2ce3925438bb90c62d6576081e4a947aa1aebc73e113de942d17e6df2d6cb5",
+      "original_path": "sources/ref-32.pdf"
+    },
+    {
+      "reference_number": 33,
+      "status": "hash verified",
+      "sha256": "b99406811e3e0f71865af5bf80bf3aba44aa927d91b4d07985761b8f9d8b6d1a",
+      "original_path": "sources/ref-33.pdf"
+    },
+    {
+      "reference_number": 34,
+      "status": "hash verified",
+      "sha256": "4f909aa14278ef9dd39cca3ae6d9cf3e195d78e41d646d51778a08839b9081cb",
+      "original_path": "sources/ref-34.pdf"
+    },
+    {
+      "reference_number": 35,
+      "status": "hash verified",
+      "sha256": "713da2cc08731fa203db9ce0993f0dcf3149a7e74c9a2aec9dbda1930b152d06",
+      "original_path": "sources/ref-35.web"
+    },
+    {
+      "reference_number": 36,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 37,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 38,
+      "status": "hash verified",
+      "sha256": "2239d7f8fb839b69ae2e928e685559b11376888269f131512197a0e3bacf7f7a",
+      "original_path": "sources/ref-38.txt"
+    },
+    {
+      "reference_number": 39,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 40,
+      "status": "unavailable",
+      "sha256": null
+    },
+    {
+      "reference_number": 41,
+      "status": "hash verified",
+      "sha256": "5f96fe555e093a5742002071f2f01a808c9cb6806a3173cb9b051f455304eec0",
+      "original_path": "sources/ref-41.pdf"
+    },
+    {
+      "reference_number": 42,
+      "status": "hash verified",
+      "sha256": "3204a1a562d9d3b72ba112f20caddfd34991d6e1e39939ace6a3e7c016519768",
+      "original_path": "sources/ref-42.pdf"
+    },
+    {
+      "reference_number": 43,
+      "status": "hash verified",
+      "sha256": "c23933b702e12acdcbbac3d3435603e7bd8f171919576e0b55c8c7101d1a7d02",
+      "original_path": "sources/ref-43.pdf"
+    },
+    {
+      "reference_number": 44,
+      "status": "hash verified",
+      "sha256": "2e8a0b4ed83685eaa6c021bfb70f9cc0dc68d7c975c81ee09c79659d7489f2ef",
+      "original_path": "sources/ref-44.pdf"
+    },
+    {
+      "reference_number": 45,
+      "status": "hash verified",
+      "sha256": "a00ef91b64e111a282e77ec66980f5242e77c0bb5e33e0927e3b6757080506de",
+      "original_path": "sources/ref-45.txt"
+    },
+    {
+      "reference_number": 46,
+      "status": "hash verified",
+      "sha256": "3a1f58aabb035236326474f7beb361ae32c02a83e7f581345f81989c02187f61",
+      "original_path": "sources/ref-46.web"
+    },
+    {
+      "reference_number": 47,
+      "status": "hash verified",
+      "sha256": "5bc39c361bdea0b553bcf804533da739e8331a28723991d7f17ca93cee19bfc4",
+      "original_path": "sources/ref-47.pdf"
+    },
+    {
+      "reference_number": 48,
+      "status": "hash verified",
+      "sha256": "7885d878ea01dcbad5ba99f9ef7060de17fa821241495686126af8dbd4861edd",
+      "original_path": "sources/ref-48.web"
+    }
+  ],
+  "limitation": "Hash checks do not turn partial/unreviewed sources into complete reviews or prove document identity."
+}
