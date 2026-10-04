@@ -1,0 +1,68 @@
+[
+  {
+    "country": "tonga",
+    "published_gbps": 41,
+    "mean_gbps": 40.96,
+    "min_gbps": 40.96,
+    "max_gbps": 40.96,
+    "relative_difference_percent": -0.09756097560975618,
+    "failover_percent": 12.8,
+    "snapshots": 15,
+    "assessment": "within 5%"
+  },
+  {
+    "country": "haiti",
+    "published_gbps": 1389,
+    "mean_gbps": 1201.216,
+    "min_gbps": 1191.04,
+    "max_gbps": 1238.08,
+    "relative_difference_percent": -13.519366450683956,
+    "failover_percent": 375.38,
+    "snapshots": 15,
+    "assessment": "outside 5%"
+  },
+  {
+    "country": "lithuania",
+    "published_gbps": 2005,
+    "mean_gbps": 1946.2826666666667,
+    "min_gbps": 1877.76,
+    "max_gbps": 2000.96,
+    "relative_difference_percent": -2.9285453034081477,
+    "failover_percent": 1927.0125412541254,
+    "snapshots": 15,
+    "assessment": "within 5%"
+  },
+  {
+    "country": "ghana",
+    "published_gbps": 2163,
+    "mean_gbps": 2016.6399999999999,
+    "min_gbps": 1968.96,
+    "max_gbps": 2083.2,
+    "relative_difference_percent": -6.766527970411474,
+    "failover_percent": 2.4093667861409798,
+    "snapshots": 15,
+    "assessment": "outside 5%"
+  },
+  {
+    "country": "britain",
+    "published_gbps": 3530,
+    "mean_gbps": 3090.3893333333335,
+    "min_gbps": 3009.92,
+    "max_gbps": 3135.36,
+    "relative_difference_percent": -12.45355996222851,
+    "failover_percent": 0.7725973333333334,
+    "snapshots": 15,
+    "assessment": "outside 5%"
+  },
+  {
+    "country": "southafrica",
+    "published_gbps": 4653,
+    "mean_gbps": 4851.477333333333,
+    "min_gbps": 4767.04,
+    "max_gbps": 4905.6,
+    "relative_difference_percent": 4.265577763450112,
+    "failover_percent": 15.304344900105153,
+    "snapshots": 15,
+    "assessment": "within 5%"
+  }
+]

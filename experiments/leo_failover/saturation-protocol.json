@@ -1,0 +1,14 @@
+{
+  "id": "leo-failover-imc2025-saturation-v1",
+  "title": "LEO Failover Saturation Follow-up",
+  "frozen_before_primary_execution": true,
+  "paper_doi": "10.1145/3730567.3764482",
+  "artifact_commit": "57af374432fbde4cd7b1f2dade64095f87296e05",
+  "primary_claim": "Distinguish the Table 1 capacity ceiling from the initial 200000-terminal result",
+  "primary_configuration": "Config A, uncapped GCB, coordinated beams, no incumbents; 2000000 requested terminals for temporal summary",
+  "sampling": "Four terminal budgets (500000, 1000000, 2000000, 4000000) at t=0, 2000000 terminals at all 15 adjacent seconds; artifact GCB variant at 4000000, t=0",
+  "comparison_rule": "Signed relative difference from Table 1 and the original predeclared ±5% numerical threshold. Report terminal-budget convergence separately; do not infer a ceiling unless the largest tested budgets agree.",
+  "uncertainty": "Deterministic time-state ranges, no inferential intervals or independent replications",
+  "corrections": ["Reuse the exact original runner, graph corrections, beam mapping and gateway provisioning. Allocation variants retain their declared differences."],
+  "limitations": ["This follow-up was designed after inspecting the initial campaign; it is exploratory and does not replace the original frozen design.", "A plateau across tested budgets is evidence of numerical saturation at tested epochs, not a global optimum proof.", "Capacity remains an optimistic simulated downlink bound, not observed operational satellite traffic."]
+}

@@ -1,0 +1,12 @@
+pypdf==6.19.0
+numpy==2.5.3
+scipy==1.18.1
+networkx==3.7
+astropy==8.0.1
+ephem==4.2.1
+sgp4==2.27
+geopy==2.5.0
+pandas==3.0.6
+h3==4.5.0
+PyYAML==6.0.3
+exputil @ git+https://github.com/snkas/exputilpy.git@v1.6

@@ -1,0 +1,36 @@
+{
+  "id": "leo-failover-imc2025-v1",
+  "title": "LEO National Emergency Failover Study",
+  "frozen_before_primary_execution": true,
+  "paper_doi": "10.1145/3730567.3764482",
+  "artifact_commit": "57af374432fbde4cd7b1f2dade64095f87296e05",
+  "primary_claim": "Table 1 six-country optimistic downlink capacity and fraction of lost cable capacity",
+  "primary_configuration": "Released five-shell idealized TLEs, 198 gateways, Config A, 200000 requested terminals, uncapped paper GCB, coordinated RF, maximum flow, no incumbent demand",
+  "sampling": "15 consecutive one-second snapshots from the artifact TLE epoch, plus sensitivity at 6/12/18 hours. These are deterministic model states, not independent replications.",
+  "comparison_rule": "Report signed relative difference from Table 1; within 5% is numerical agreement under this protocol, not statistical proof. Outside 5% is a discrepancy in this implementation, not disproof of real satellite capacity.",
+  "uncertainty": "Report time-state minimum, maximum and mean. Do not bootstrap seconds or report inferential confidence intervals; input/model uncertainty is not quantified by deterministic repeat execution.",
+  "ablations": "Population placement; GCB cap 0/1000/10000/100000; demand/fairness beam policies; released-vs-paper GCB semantics; Config B Ku sensitivity; 2.5-Gbps Ku sensitivity; idealized constellation growth under uniform deployment.",
+  "corrections": [
+    "Use correct shell cumulative offsets for range thresholds; released graph generator does not advance its cumulative offset after shell 1.",
+    "Use second*1e9 graph timestamps consistently; released flow generator uses second*1e10.",
+    "Paper variant uses Algorithm 1 batch of 200 and redistributes residual terminals among eligible cells, including empty cells with cap zero.",
+    "Artifact variant retains batch floor(80*Ku), excludes empty cells, and leaves surplus terminals unallocated for positive caps. Density placement uses exact-budget Hamilton apportionment to avoid released rounding overshoot.",
+    "Spatial pruning uses a 100-km margin and exact upstream PyEphem ranges; first/last country cells are exhaustively audited at every epoch.",
+    "Omit global incumbent cell nodes only for no-incumbent experiments; those nodes do not affect routing or country beam mapping.",
+    "Use maximum flow for aggregate capacity. Cost minimization affects routing/utilization and is not used to infer published ISL utilization.",
+    "Remap beams for each orbital snapshot rather than silently using stale t=0 demands. This is a documented deviation from the released 15-second routing loop."
+  ],
+  "not_reproduced_by_primary_design": [
+    "Live Starlink measurements or physical emergency deployment",
+    "Original Calypso/RIPE Atlas cable rankings or proprietary TeleGeography capacity derivation",
+    "Incumbent-traffic maps, hot-potato routing, gateway sovereignty restrictions and ISL/gateway utilization figures",
+    "Joint Config C constellation and link upgrade: 2.5 Gbps here changes Ku on the baseline constellation only"
+  ],
+  "limitations": [
+    "Upper-bound model assumes maximum link rates, clear line of sight, fully utilized terminals, functioning gateways and no competing traffic.",
+    "Released beam heuristic is reused; it does not prove optimal spectrum allocation.",
+    "Cable design/lit capacity is not observed national traffic lost; Lithuania uses an older per-user-bandwidth proxy.",
+    "Short orbital window and three sensitivity epochs do not establish long-term availability.",
+    "Artifact reproduction is not independent empirical validation. No weather, terrain, inter-satellite/constellation RF interference or deployment logistics are modeled."
+  ]
+}

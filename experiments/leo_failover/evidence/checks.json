@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-10-04T18:45:34.466462+00:00",
+  "checker_sha256": "2e6bb28b67563899db83cfe198492ddab2f23f3faa0d2d59729698ec47da8d5a",
+  "command": "experiments/leo_failover/.venv/bin/python -B experiments/leo_failover/check.py",
+  "tests": 3,
+  "passed": true,
+  "failures": 0,
+  "errors": 0,
+  "archived_states": 562,
+  "random_flow_networks": 40,
+  "checks": [
+    "allocation budget and eligibility edge cases",
+    "aggregate max-flow versus min-cost equivalence",
+    "flow conservation",
+    "visible directed links",
+    "ISL and gateway/satellite feeder bounds",
+    "RF demand and terminal accounting",
+    "graph/demand/terminal input hashes"
+  ]
+}

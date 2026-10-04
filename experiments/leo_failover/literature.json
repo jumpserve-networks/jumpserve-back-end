@@ -1,0 +1,1072 @@
+[
+  {
+    "reference_number": 1,
+    "citation": "2005. fibralink. Available at https://www.semanticnet.net/subseacable/ IZc1wMFSsrEyWcbwhaj1/fibralink. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.semanticnet.net/subseacable/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 2,
+    "citation": "2019. FCC Publich Notice re: Satellite Radio Applications Accepted For Filing. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 3,
+    "citation": "2024. RIPE Built-in Measurement 5051. Available at https://atlas.ripe.net/ measurements/5051. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://atlas.ripe.net/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 4,
+    "citation": "2024. RIPE Built-in Measurement 5151. Available at https://atlas.ripe.net/ measurements/5151. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://atlas.ripe.net/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 5,
+    "citation": "2024. SpaceX seeks to modify its existing authorization to change the orbital configuration and certain radio frequency characteristics of the authorized shells of the Gen2 system. Available at https://licensing.fcc.gov/cgibin/ws.exe/ prod/ib/forms/reports/swr031b.hts?q_set=V_SITE_ANTENNA_FREQ.file_ numberC/File+Number/%3D/SATMOD2024101100224&prepare=&column=V_ SITE_ANTENNA_FREQ.file_numberC/File+Number. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://licensing.fcc.gov/cgibin/ws.exe/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 6,
+    "citation": "2024. Submarine Cable Map. Available at https://www.submarinecablemap.com/ country/united-kingdom. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.submarinecablemap.com/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 7,
+    "citation": "2025. Hybrid Space-Submarine Architecture Ensuring Infosec of Telecomunications (HEIST) - A NATO Project. Available at https://natoheist.org/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://natoheist.org/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 8,
+    "citation": "2025. max_flow_min_cost \u2014 NetworkX 3.4.2 documentation. Available at https:// networkx.org/documentation/stable/reference/algorithms/generated/networkx. algorithms.flow.max_flow_min_cost.html. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 9,
+    "citation": "2025. Starlink - Technology. Available at https://www.starlink.com/am/ technology. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.starlink.com/am/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 10,
+    "citation": "2025. Telegeography. Available at https://www2.telegeography.com/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www2.telegeography.com/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 11,
+    "citation": "Alexis I Aravanis, Bhavani Shankar MR, Pantelis-Daniel Arapoglou, Gregoire Danoy, Panayotis G Cottis, and Bj\u00f6rn Ottersten. 2015. Power Allocation in Multibeam Satellite Systems: A Two-Stage Multi-Objective Optimization. IEEE Transactions on Wireless Communications 14, 6 (2015), 3171\u20133182.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1109/twc.2015.2402682",
+        "outcome": "HTML/other content; not a PDF"
+      }
+    ],
+    "reading_notes": "Full text unavailable. Publisher access and the University of Luxembourg ORBilu record were checked; the repository offers request access rather than an accessible full manuscript. No findings are inferred from metadata.",
+    "metadata_error": "URLError",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 12,
+    "citation": "Suvam Basak, Amitangshu Pal, and Debopam Bhattacherjee. 2025.{LEOCraft}: Towards Designing Performant{LEO} Networks. In 2025 USENIX Annual Technical Conference (USENIX ATC 25) . 789\u2013813.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://www.usenix.org/system/files/atc25-basak.pdf",
+    "attempts": [],
+    "reading_notes": "Full twenty-six-page proceedings PDF, including cover, appendices, code listings and artifact instructions, reviewed. LEOCraft uses process-parallel orbital geometry and flow models to optimize trajectories/topologies. Throughput is a multi-commodity linear program restricted to twenty shortest candidate paths, with gravity-model demand, equal feeder bandwidth sharing, free-space/Shannon rates and fifty-Gbps four-ISL connectivity. These differ from CosmoSim national downlink maximum flow and its three-ISL graph. Domain-informed variable-neighborhood search accelerates tested designs but establishes heuristic improvements rather than global optimality; optimization comparisons use empirically chosen iteration budgets. Hypatia agreement validates selected propagation RTTs, not total capacity. Inter-shell handovers, obstruction and interference remain qualified limitations. Code and artifact instructions aid reproducibility, while traffic/gateway and PHY assumptions prevent direct empirical emergency-service claims.",
+    "download_status": "downloaded",
+    "sha256": "b086803f370e81b568bb83c90329d8e24ebca00bc3c2fe0c91e8982813b15dc9",
+    "pages": 26,
+    "text_characters": 104725
+  },
+  {
+    "reference_number": 13,
+    "citation": "David Belson. 2024. Resilient Internet connectivity in Europe mitigates impact from multiple cable cuts. Available at https://blog.cloudflare.com/fr-fr/resilientinternet-connectivity-baltic-cable-cuts/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://blog.cloudflare.com/fr-fr/resilientinternet-connectivity-baltic-cable-cuts/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 14,
+    "citation": "Ari Bertenthal. 2024. Ontario Awards $100 Million Internet Contract to Starlink. Available at https://broadbandbreakfast.com/ontario-awards-100-millioninternet-contract-to-starlink/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://broadbandbreakfast.com/ontario-awards-100-millioninternet-contract-to-starlink/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 15,
+    "citation": "Vaibhav Bhosale, Ketan Bhardwaj, and Ahmed Saeed. 2023. Astrolabe: modeling RTT variability in Leo networks. In Proceedings of the 1st ACM Workshop on LEO Networking and Communication. 7\u201312.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://vaibhavb007.github.io/papers/astrolabe.pdf",
+    "attempts": [],
+    "reading_notes": "Full six-page text reviewed. Astrolabe estimates propagation RTT bounds for shortest-path ISL networks using orbital geometry; validation uses Hypatia simulations of city pairs rather than physical national capacity measurements. Lower bounds use chords to avoid arc overestimation, and upper bounds deliberately overestimate routes across planes. The model is conditional on routing/topology and omits operational delay sources. Supports orbital-state sensitivity and the need to distinguish geometric bounds from measured service performance.",
+    "download_status": "downloaded",
+    "sha256": "3e131bf6426c2bfc55b332157f358319789affac27e96197f921922202e043da",
+    "pages": 6,
+    "text_characters": 31072
+  },
+  {
+    "reference_number": 16,
+    "citation": "Vaibhav Bhosale, Ahmed Saeed, Ketan Bhardwaj, and Ada Gavrilovska. 2023. A characterization of route variability in leo satellite networks. In International Conference on Passive and Active Network Measurement . Springer, 313\u2013342.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://par.nsf.gov/servlets/purl/10438180",
+    "attempts": [],
+    "reading_notes": "Full twenty-nine-page author paper and references reviewed. Hypatia geometry at one-second updates characterizes shortest-path lifetimes, usage and RTTs over complete 100\u2013110-minute orbits; Mahimahi/Pantheon separately emulate selected delay/bandwidth traces. Greedy routing can abandon usable paths for small RTT gains and concentrate many city pairs onto one path. Congestion-control results use one selected sixty-second route and deliberately alternating bandwidth levels, so they illustrate sensitivity rather than measure national deployment performance. ISL geometry is relatively stable; variable GSL availability and route composition create spatially structured RTT changes. Four-ISL phased grids, independent shells and no ground relays differ from our model. Additional satellite shells help variability only for certain inclinations/altitudes. Supports future service-continuity and application tests beyond static capacity snapshots.",
+    "download_status": "downloaded",
+    "sha256": "d2f56560807fcfa805ab1d201734d8e5e5ad400c63420fb113e20847c4388187",
+    "pages": 29,
+    "text_characters": 80094
+  },
+  {
+    "reference_number": 17,
+    "citation": "Vaibhav Bhosale, Ying Zhang, Sameer Kapoor, Robin Kim, Miguel Schlicht, Muskaan Gupta, Ekaterina Tumanova, Zachary Bischof, Fabian Bustamante, Alberto Dainotti, and Ahmed Saeed. 2025. Are LEO Networks the Future of National Emergency Failover? \u2013 A Quantitative Study and Policy Blueprint. SSRN Electronic Journal (July 2025). https://doi.org/10.2139/ssrn.5337566 Available at SSRN: https://ssrn.com/abstract=5337566.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": "https://papers.ssrn.com/sol3/Delivery.cfm/5337566.pdf?abstractid=5337566",
+    "attempts": [
+      {
+        "url": "https://papers.ssrn.com/sol3/Delivery.cfm/5337566.pdf?abstractid=5337566",
+        "outcome": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.2139/ssrn.5337566",
+        "outcome": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://ssrn.com/abstract=5337566.",
+        "outcome": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://papers.ssrn.com/sol3/Delivery.cfm/5337566.pdf?abstractid=5337566",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://doi.org/10.2139/ssrn.5337566",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://ssrn.com/abstract=5337566.",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://papers.ssrn.com/sol3/Delivery.cfm/5337566.pdf?abstractid=5337566",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://doi.org/10.2139/ssrn.5337566",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://ssrn.com/abstract=5337566.",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      }
+    ],
+    "reading_notes": "Full SSRN companion text unavailable: abstract and delivery endpoints return HTTP 403. The reviewed IMC paper is not silently substituted for this policy companion.",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 18,
+    "citation": "Kristin Carlson. 2022. A Volcanic Eruption Cut Tonga\u2019s Only Undersea Cable Connection. Available at https://web.archive.org/web/20250212014745/https: //blog.telegeography.com/telecom-headlines-january-2022. Accessed Web Archive link on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://web.archive.org/web/20250212014745/https:",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 19,
+    "citation": "Eric Cheung. 2024. Developing Taiwan\u2019s own \u2018Starlink\u2019 crucial for island-wide emergency, space agency says. (Accessed on September 29th, 2025).",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 20,
+    "citation": "Christopher S. Allen and Martina Giraudo and Claudio Moratto and Nobuyasu Yamaguchi. 2018. Chapter 4 - Spaceflight environment. In Space Safety and Human Performance, Tommaso Sgobba and Barbara Kanki and Jean-Fran\u00e7ois Clervoy and Gro Mjeldheim Sandal (Ed.). 87\u2013138.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1016/b978-0-08-101869-9.00004-2",
+        "outcome": "HTML/other content; not a PDF"
+      }
+    ],
+    "reading_notes": "Full fifty-two-page book chapter unavailable from the publisher. Partial NASA material does not establish that the entire cited chapter was read.",
+    "metadata_error": "URLError",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 21,
+    "citation": "Kevin Collier. 2022. Starlink internet becomes a lifeline for Ukrainians. Available at https://www.nbcnews.com/tech/security/elon-musks-starlink-internetbecomes-lifeline-ukrainians-rcna25360. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.nbcnews.com/tech/security/elon-musks-starlink-internetbecomes-lifeline-ukrainians-rcna25360.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 22,
+    "citation": "Federal Communications Commission. 2020. Further Streamlining Part 25 Rules Governing Satellite Services (IB Docket No. 18-314).",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 23,
+    "citation": "Matthew Davies. 2024. Britain\u2019s Undersea Cables Vulnerable in the Face of Security Threats, Report Warns. Available at https://subtelforum.com/britainsundersea-cables-vulnerable/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://subtelforum.com/britainsundersea-cables-vulnerable/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 24,
+    "citation": "Inigo Del Portillo, Bruce G Cameron, and Edward F Crawley. 2019. A technical comparison of three low earth orbit satellite constellation systems to provide global broadband. Acta astronautica 159 (2019), 123\u2013135.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://bpb-us-e1.wpmucdn.com/sites.mit.edu/dist/e/1448/files/2025/02/delportillo19a.pdf",
+    "attempts": [],
+    "version_note": "Retrieved sixteen-page IAC-18-B2.1.7 conference text describing September 2018 filings; the citation names the 2019 Acta Astronautica journal article. This precursor is not asserted identical to the cited final version.",
+    "reading_notes": "Full available text reviewed. Historical SpaceX/OneWeb/Telesat comparison combines demand, ITU atmospheric attenuation, DVB-S2X link budgets, genetic ground-site selection and minimum-cost maximum flow. Daily 60-second orbital states and independent weather draws model capacity distributions; ISL analysis subsamples feeder-capacity quantiles. Demand assumes 10% market capture and 300 kbps per user, with no obstruction, power shortfall, competing-constellation interference or landing-right restrictions. Ground sites and gateway antennas have different roles and counts. Shows why rate, demand and gateway assumptions materially affect bounds, but historical global sellable capacity is not empirical national emergency capacity.",
+    "download_status": "downloaded",
+    "sha256": "85c43293c8ca3c9a559be24fa66f15ca6e517213cee9f8e2878a22994aa6d322",
+    "pages": 16,
+    "text_characters": 78269
+  },
+  {
+    "reference_number": 25,
+    "citation": "Birkan Denizer, Nils Dohse, and Olaf Landsiedel. 2025. FjordLink: Comparison of Starlink and 5G Networks for Teleoperated Vessel Control. InProceedings of the 2025 3rd Workshop on LEO Networking and Communication . 8\u201314.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://tore.tuhh.de/dspace-cris-server/api/core/bitstreams/965ce507-394e-4ff8-8ee9-a47e4d38986d/content",
+    "attempts": [],
+    "reading_notes": "Full seven-page article and repository cover reviewed. Four-month Kiel-Fjord vessel campaign combines Starlink FHP and two 5G networks using TWAMP and fixed-target UDP throughput. The 50-Mbps downlink target censors achievable capacity; an uplink shortfall is distinct from national downlink failover. Measurement rates, moving/docked sample counts and terrestrial PoP delays differ. Trace emulation shows BBR throughput/retransmission tradeoffs, not a change to satellite aggregate capacity. Priority traffic, local cellular coverage, mounting and geographic selection limit generalization.",
+    "download_status": "downloaded",
+    "sha256": "1259c90993f75144bf0f709cdda503794b0ef75212612b2e6db1fdc05f8e161e",
+    "pages": 8,
+    "text_characters": 30292
+  },
+  {
+    "reference_number": 26,
+    "citation": "John S Downs, Bruce Barbour, Alexander Kedrowitsch, Deven Mhadgut, Suryansh Aryan, and Samantha P Kenyon. 2025. Space Network (SpaceNet) TestbedDevelopment of a Multi-Functional Testbed for Simulating Space Communication Networks. In AIAA SCITECH 2025 Forum . 2716.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.2514/6.2025-2716",
+        "outcome": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "version_note": "Eighteen-page Virginia Tech accepted manuscript of the cited AIAA SCITECH 2025 article; final typeset equivalence is not asserted.",
+    "reading_notes": "Full eighteen-page text and references reviewed. SpaceNet precomputes Skyfield states, four-neighbor PlusGrid links and shortest-latency routes, then runs Mininet on the paths relevant to selected ground-station pairs. Twelve scenarios compare ideal and actual 1,584-satellite shells at two epochs, with twelve ten-second states and one trial each. Network transitions are paused out of ping measurements. Actual TLE irregularity can create more than four bidirectional ISLs per satellite; latency outliers may reflect emulator artifacts rather than orbital effects. SDR/Raspberry Pi hardware integration demonstrates connectivity at about two Mbps, not national capacity. Weather-dependent ground links and hardware integration are capabilities, while higher-fidelity ground links and resiliency remain future work. Supports reporting emulation overhead, routing assumptions and transition exclusions separately; path pruning cannot preserve national maximum flow without additional validation.",
+    "download_status": "downloaded",
+    "sha256": "af9938cf9cc31c9f9c04659885333e56754805f7bf95bb86e32ce41eafdb2dcb",
+    "pages": 18,
+    "text_characters": 55502
+  },
+  {
+    "reference_number": 27,
+    "citation": "Ramakrishnan Durairajan, Paul Barford, Joel Sommers, and Walter Willinger. 2015. InterTubes: A Study of the US Long-haul Fiber-optic Infrastructure. In Proceedings of the 2015 ACM Conference on Special Interest Group on Data Communication (London, United Kingdom) (SIGCOMM \u201915). Association for Computing Machinery, New York, NY, USA, 565\u2013578. https://doi.org/10.1145/2785956.2787499",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://www.cs.colgate.edu/~jsommers/pubs/intertubes.pdf",
+    "attempts": [],
+    "reading_notes": "Full fourteen-page paper reviewed. Constructs an incomplete US long-haul conduit map from operator maps, rights-of-way and public records, then overlays traceroutes to examine shared infrastructure. Logical provider diversity can conceal common physical conduits. Risk rankings use sharing and route-frequency proxies, not failure probabilities or observed byte-volume loss; hidden MPLS paths and geolocation errors remain limits. Suggested backup paths/new conduits improve modeled sharing metrics, but physical rights-of-way and deployment costs constrain feasibility. Historical legal discussion is not current policy guidance. Supports explicit shared-failure dependencies and separate cable capacity versus traffic-loss measures; it does not independently validate satellite failover.",
+    "download_status": "downloaded",
+    "sha256": "7aec62beb7e232fa5470983a219d12f5d3bc91f80f86cecaf5bcce3b0165dd32",
+    "pages": 14,
+    "text_characters": 77431
+  },
+  {
+    "reference_number": 28,
+    "citation": "The Global Economy. 2016. Lithuania: International Internet Bandwidth per User. Available at https://www.theglobaleconomy.com/Lithuania/Internet_bandwidth/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.theglobaleconomy.com/Lithuania/Internet_bandwidth/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 29,
+    "citation": "Sandra Erwin. 2024. Starlink set to hit $11.8 billion revenue in 2025, boosted by military contracts. Available at https://spacenews.com/starlink-set-to-hit11-8-billion-revenue-in-2025-boosted-by-military-contracts/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://spacenews.com/starlink-set-to-hit11-8-billion-revenue-in-2025-boosted-by-military-contracts/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 30,
+    "citation": "Saeed Fadaei, Shubham Tiwari, Aryan Taneja, Saksham Bhushan, Mohamed Kassem, Aravindh Raman, Debopam Bhattacherjee, Lili Qiu, Alan Woodward, and Nishanth Sastry. 2025. Leoscope: Building a global testbed for low-earth orbit satellite networks. ACM SIGCOMM Computer Communication Review 55, 2 (2025), 13\u201321.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3750832.3750835",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3750832.3750835",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      }
+    ],
+    "reading_notes": "Full cited CCR paper unavailable. Checked publisher download, the author's publication links, official CCR archive and testbed repository; these do not provide an accessible verified manuscript. Repository documentation is not substituted for the paper.",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 31,
+    "citation": "Federal Communications Commission (FCC). 2022. Request for Orbital Deployment and Operating Authority for the SpaceX Gen2 NGSO Satellite System. Available at https://docs.fcc.gov/public/attachments/FCC-22-91A1_Rcd.pdf. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://docs.fcc.gov/public/attachments/FCC-22-91A1_Rcd.pdf.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 32,
+    "citation": "Federal Communications Commission (FCC). 2024. Spectrum Sharing Rules for NGSO Fixed-Satellite Service Systems. Available at https://www.federalregister. gov/documents/2024/12/13/202428993/spectrumsharingrulesforngsofixed-satellite-service-systems. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.federalregister.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 33,
+    "citation": "Jose Fl\u00e9cher. 2024. Digicel leaves its customers in Haiti stranded as thousands left without internet. Available at https://haitiantimes.com/2024/09/18/digicelleaves-its-customers-stranded/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://haitiantimes.com/2024/09/18/digicelleaves-its-customers-stranded/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 34,
+    "citation": "SubTel Forum. 2013. BTC-selects-huawei-marine-to-upgrade-bahamas-domesticsubmarine-network-international. Available at https://subtelforum.com/75btcselects-huawei-marine-to-upgrade-bahamas-domestic-submarine-networkinternational/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://subtelforum.com/75btcselects-huawei-marine-to-upgrade-bahamas-domestic-submarine-networkinternational/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 35,
+    "citation": "Johan Garcia, Simon Sundberg, and Anna Brunstrom. 2025. A Detailed Characterization of Starlink One-way Delay. In Proceedings of the 2025 3rd Workshop on LEO Networking and Communication . 43\u201349.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://diva-portal.org/smash/get/diva2%3A2013617/FULLTEXT01.pdf",
+    "attempts": [],
+    "reading_notes": "Full seven-page text reviewed. One terminal and a shared NIC clock measure bidirectional one-way delays at 266-microsecond spacing over 1,437 successful runs, separating baseline, path variation, frame scheduling and reconfiguration queues. Observations include the terrestrial PoP path; proposed decomposition is approximate, not independently identified component ground truth. The paper demonstrates aliasing at 10-ms sampling and explicitly challenges earlier interpretations of delay bands, including reference 87. Supports avoiding latency or application-service claims from our one-second capacity snapshots and treating scheduling explanations as unsettled.",
+    "download_status": "downloaded",
+    "sha256": "831dc5685c62aa4f1b239e221ace4c2c7e230a89b7ecfe470bfc4765c54c74da",
+    "pages": 7,
+    "text_characters": 39185
+  },
+  {
+    "reference_number": 36,
+    "citation": "Jack Haddon. 2024. Ghana to licence Starlink in response to subsea cable cuts. (Accessed on September 29th, 2025).",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 37,
+    "citation": "The New Zealand Herald. 2022. Elon Musk/\u2019s SpaceX to help Tonga fix internet with Starlink satellite technology. Available at https://www.scmp.com/news/ asia/australasia/article/3166029/elon-musks-spacex-help-tonga-fix-internetstarlink-satellite. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.scmp.com/news/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 38,
+    "citation": "Jeremy Hsu. 2025. NATO tests satellite internet as backup to sabotaged undersea cables. Available at https://www.newscientist.com/article/2464396-nato-testssatelliteinternetas-backup-to-sabotagedundersea-cables/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.newscientist.com/article/2464396-nato-testssatelliteinternetas-backup-to-sabotagedundersea-cables/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 39,
+    "citation": "International Telecommunication Union (ITU). 1992. Constitution and Convention of the International Telecommunication Union.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 40,
+    "citation": "International Telecommunication Union (ITU). 2024. Radio Regulation: Articles.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 41,
+    "citation": "Liz Izhikevich, Manda Tran, Katherine Izhikevich, Gautam Akiwate, and Zakir Durumeric. 2024. Democratizing LEO Satellite Network Measurement. Proceedings of the ACM on Measurement and Analysis of Computing Systems 8, 1 (2024), 1\u201326.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://cs.stanford.edu/~gakiwate/papers/sigmetrics24-satellite.pdf",
+    "attempts": [],
+    "reading_notes": "Full twenty-six-page HitchHiking paper, references and all appendices reviewed. TTL-specific ICMP probes subtract the last visible pre-satellite hop from the customer hop, then smooth at fifteen seconds. Ground truth from one San Diego dish supports latency accuracy, while 2,473 exposed endpoints broaden geographic coverage but represent about 0.1% of users and exclude jittery paths. Measurements include gateway-to-PoP fiber and cannot directly identify satellite/ISL paths. Sustained-delay explanations combine physical lower bounds, customer location and operator confirmation; individual path assignments remain inferences. OneWeb extension lacks equipment-based validation. Important counterevidence to interpreting shortest-path physics as deployed network behavior: PoP anchoring and remote-gateway routing can increase latency. Does not measure national aggregate failover bandwidth or prove that observed endpoint samples represent all subscribers.",
+    "download_status": "downloaded",
+    "sha256": "9a73c180ce94d1eb3859df047520def6769742f90e4ecf486fdbce005571d1fc",
+    "pages": 26,
+    "text_characters": 94805
+  },
+  {
+    "reference_number": 42,
+    "citation": "Jonathan McDowell. 2024. Satellite Constellations - Orbital distribution. Available at https://www.planet4589.org/space/con/star/planes.html. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.planet4589.org/space/con/star/planes.html.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 43,
+    "citation": "Michael Kan. 2025. Starlink Offers Cheapest Plan Yet to Entice Inactive Users. Available at https://www.pcmag.com/news/starlink-offers-cheapest-plan-yetto-entice-inactive-users. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.pcmag.com/news/starlink-offers-cheapest-plan-yetto-entice-inactive-users.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 44,
+    "citation": "Mohamed M Kassem and Nishanth Sastry. 2024. xeoverse: A Real-time Simulation Platform for Large LEO Satellite Mega-Constellations. arXiv preprint arXiv:2406.11366 (2024).",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://arxiv.org/pdf/2406.11366",
+    "attempts": [],
+    "version_note": "Nine-page arXiv:2406.11366v1, June 2024.",
+    "reading_notes": "Full preprint text reviewed. Mininet-based platform precomputes orbital/link/routing states, applies only changing links and prunes to paths relevant to selected flows. Supports RF/weather-dependent GSLs, fixed ISLs and shortest-path routing with Linux applications. Scalability comparisons depend on implementation, machine and flow selection; preparation cost is separate from real-time updates. Weather throughput comparisons use a local terminal and assumed cell-density sharing, not independent national-scale capacity validation. Routing update loss and application dynamics are distinct from a maximum-flow upper bound. Relevant-link pruning cannot be transferred to a national max-flow problem without preserving alternative paths.",
+    "download_status": "downloaded",
+    "sha256": "7bd47130566fad47d61ca1c144e9c3dc9ee1d33f398ab2d0ee42d977542be9ca",
+    "pages": 9,
+    "text_characters": 54211
+  },
+  {
+    "reference_number": 45,
+    "citation": "Kassing, Simon and Bhattacherjee, Debopam and \u00c1guas, Andr\u00e9 Baptista and Saethre, Jens Eirik and Singla, Ankit. 2020. Exploring the \u201cInternet from space\u201d with Hypatia. In Proc. of ACM IMC \u201920 . 214\u2013229.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://bdebopam.github.io/papers/imc2020-hypatia.pdf",
+    "attempts": [],
+    "reading_notes": "Full sixteen-page Hypatia paper, bibliography and bent-pipe appendix reviewed. Separates precomputed TLE/connectivity/forwarding states from ns-3 packet events and Cesium visualization. Its default four-ISL topology and FCC-era constellations differ from CosmoSim's three-ISL design. Static snapshots match most propagation RTTs but miss packets taking detours during route changes; one-second updates miss changes that 100-ms updates preserve. Loss-free handoffs and absent RF interference are favorable assumptions. TCP can misinterpret reordering as loss or orbital RTT increases as congestion, and changing cross-traffic leaves bandwidth unused. These results motivate temporal and application validation; they do not validate aggregate national maximum flow as achievable service.",
+    "download_status": "downloaded",
+    "sha256": "ae54c1edac2cdf742f60b6f93b0fcaaf747cacd691227582e875ee0d2e049064",
+    "pages": 16,
+    "text_characters": 86458
+  },
+  {
+    "reference_number": 46,
+    "citation": "T.S. Kelso. 2025. CelesTrak. Available at https://celestrak.org/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://celestrak.org/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 47,
+    "citation": "Simon Kemp. 2024. Digital 2024: Lithuania. Available at https://datareportal. com/reports/digital-2024-lithuania. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://datareportal.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 48,
+    "citation": "Eunsun Kim, Ian P Roberts, Taekyun Lee, and Jeffrey G Andrews. 2025. Satellite Selection for In-Band Coexistence of Dense LEO Networks. arXiv preprint arXiv:2503.15262 (2025).",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://wireless.ee.ucla.edu/pdf/pub/satellite-selection.pdf",
+    "attempts": [],
+    "version_note": "Thirteen-page author manuscript; references include 2025 material whereas the main bibliography gives a September 2023 preprint date. Exact-version equivalence is not asserted.",
+    "reading_notes": "Full text and equations reviewed. Models Starlink/Kuiper shared-band downlinks with phased-array gains, power-flux limits, 0.1-second states and ten clusters of 127 cells. Lagrangian/subgradient satellite selection trades time-averaged protection, absolute interference peaks and secondary utilization; dual bounds do not automatically prove global optimality of an integer solution. Interference protection is a proposed operating constraint, not evidence of regulatory acceptance. Intra-system interference is omitted. Learned primary associations have modest top-one accuracy, while more conservative candidate sets reduce utilization. Establishes that cross-constellation interference and handover-window choices can change usable capacity, both absent from our idealized fixed-rate national model.",
+    "download_status": "downloaded",
+    "sha256": "e7d93b9c2c8452dd1a1485aaff4b4c53ad53649e83636a85978dff1f85cafe5c",
+    "pages": 13,
+    "text_characters": 72690
+  },
+  {
+    "reference_number": 49,
+    "citation": "Kontur. 2023. Kontur Population: Global Population Density for 400m H3 Hexagons. Available at https://data.humdata.org/dataset/kontur-populationdataset. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://data.humdata.org/dataset/kontur-populationdataset.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 50,
+    "citation": "Zeqi Lai, Hewu Li, Yangtao Deng, Qian Wu, Jun Liu, Yuanjie Li, Jihao Li, Lixin Liu, Weisen Liu, and Jianping Wu. 2023. StarryNet: Empowering Researchers to Evaluate Futuristic Integrated Space and Terrestrial Networks. In USENIX Symposium on Networked Systems Design and Implementation (NSDI) . USENIX.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://www.usenix.org/system/files/nsdi23-lai-zeqi.pdf",
+    "attempts": [],
+    "reading_notes": "Full seventeen-page proceedings file, including cover and references, reviewed. StarryNet combines observed orbital/configuration data, Skyfield states and distributed Docker/Open vSwitch emulation; VLANs preserve topology and precomputed updates reduce orchestration overhead. Capacity is user-configured and validation tunes rates to an existing terminal trace, so matching that trace is calibration rather than independent aggregate-capacity validation. OSPF experiments expose reconvergence and address-change disruptions; hardware-in-loop demonstrates processor/power effects on one prototype. Public TLE accuracy, missing ISL details and limited PHY fidelity constrain the digital twin. Supports distinguishing network service/recovery behavior from static maximum-flow bounds.",
+    "download_status": "downloaded",
+    "sha256": "620afe3d7bd9bd76009cb2e29e19281d42442e90a2e223d0c5e57de6ebcf709b",
+    "pages": 17,
+    "text_characters": 86337
+  },
+  {
+    "reference_number": 51,
+    "citation": "Dominic Laniewski, Eric Lanter, Simon Beainn, Jan Dunker, Michael D\u00fcckers, and Nils Aschenbruck. 2024. Starlink on the Road: A First Look at Mobile Starlink Performance in Central Europe. In 2024 8th Network Traffic Measurement and Analysis Conference (TMA). IEEE, 1\u20138.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://tma.ifip.org/2024/wp-content/uploads/sites/13/2024/05/tma2024-final53.pdf",
+    "attempts": [],
+    "reading_notes": "Full eight-page text reviewed. Two-month German service-van campaign logs 15,269 samples, including 4,196 while moving, with FHP dish, UDP tests, ping, route and power data. Throughput drops with motion but correlations with actual speed are weak; high-speed groups are sparse and route obstructions confound attribution. Priority and hardware differ from stationary comparison data. Power samples are much fewer than network samples; startup and winter heating confound motion-power effects. Battery charging limits prevented fully autonomous operation. Emphasizes deployability and power constraints excluded from idealized national capacity.",
+    "download_status": "downloaded",
+    "sha256": "ec706be4e40b05530582961500c89e51905f208070d39dcba9efe87a5aeef55b",
+    "pages": 8,
+    "text_characters": 41047
+  },
+  {
+    "reference_number": 52,
+    "citation": "Daniele Lepido and Donato Paolo Mancini. 2025. Italy Plans $1.6 Billion SpaceX Telecom Security Deal - Bloomberg. Available at https://www.bloomberg.com/ news/articles/2025-01-05/italy-plans-1-5-billion-spacex-telecom-securityservices-deal. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.bloomberg.com/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 53,
+    "citation": "Kevin T Li, Christian A Hofmann, and Andreas Knopp. 2025. Simulation and Comparison of Vehicle Satellite Connectivity under a 3D Foliage Environment: Starlink and OneWeb. InProceedings of the 2025 3rd Workshop on LEO Networking and Communication. 15\u201320.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://www.researchgate.net/publication/395350709_Simulation_and_Comparison_of_Vehicle_Satellite_Connectivity_under_a_3D_Foliage_Environment_Starlink_and_OneWeb",
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1145/3748749.3749086",
+        "outcome": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3748749.3749086",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3748749.3749086",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      }
+    ],
+    "reading_notes": "Models one rural forested vehicle route with 100 randomized orbital starting times, SGP4 geometry, Blender/OSM terrain and canopy-height meshes. Fixed foliage attenuation and hypothetical satellite selection policies give different obstruction and SNR tails for Starlink and OneWeb; cadence effects depend on constellation geometry. Link-budget and DVB-S2X thresholds do not establish application goodput or national capacity. The authors identify simplified attenuation, additional routes and physical drive-test validation as future work. Supports obstruction and scheduler sensitivity as untested limitations of our fixed-rate national maximum-flow model. Publisher, Athene institutional record and ResearchGate PDF attempts did not yield an accessible PDF.",
+    "web_text_reviewed": true,
+    "version_note": "Reviewed the complete six-page author-uploaded text, including figure captions, tables and references, through the publicly indexed ResearchGate page (uploaded by Kevin T. Li). PDF requests remain inaccessible; this is a web-text review, not a downloaded PDF or independent visual inspection of the figure artwork.",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 54,
+    "citation": "Yuanjie Li, Lixin Liu, Hewu Li, Wei Liu, Yimei Chen, Wei Zhao, Jianping Wu, Qian Wu, Jun Liu, and Zeqi Lai. 2024. Stable Hierarchical Routing for Operational LEO Networks. In Proceedings of the 30th Annual International Conference on Mobile Computing and Networking (Washington D.C., DC, USA) (ACM MobiCom \u201924). Association for Computing Machinery, New York, NY, USA, 296\u2013311. https: //doi.org/10.1145/3636534.3649362",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1145/3636534.3649362",
+        "outcome": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3636534.3649362",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3636534.3649362",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      }
+    ],
+    "reading_notes": "Full text unavailable. Publisher download, author-site searches and a coauthor publication archive were checked. Slides and third-party summaries are not substituted for the cited paper.",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 55,
+    "citation": "Zhiyuan Lin, Zuyao Ni, Linling Kuang, Chunxiao Jiang, and Zhen Huang. 2022. Multi-Satellite Beam Hopping Based on Load Balancing and Interference Avoidance for NGSO Satellite Communication Systems. IEEE Transactions on Communications 71, 1 (2022), 282\u2013295.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9968247",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9968247",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      }
+    ],
+    "reading_notes": "Full cited IEEE Transactions on Communications article unavailable (DOI 10.1109/TCOMM.2022.3226190). The publisher requires sign-in. Related beam-hopping papers with different identifiers are not substituted.",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 56,
+    "citation": "Paul Lipscombe. 2022. TCC signs agreement with Kacific to expand connectivity in Tonga. Available at https://www.datacenterdynamics.com/en/news/tccsigns-agreement-with-kacific-to-expand-connectivity-in-tonga/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.datacenterdynamics.com/en/news/tccsigns-agreement-with-kacific-to-expand-connectivity-in-tonga/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 57,
+    "citation": "Lixin Liu, Yuanjie Li, Hewu Li, Jiabo Yang, Wei Liu, Jingyi Lan, Yufeng Wang, Jiarui Li, Jianping Wu, Qian Wu, Jun Liu, and Zeqi Lai. 2024. Democratizing Direct-toCell Low Earth Orbit Satellite Networks. In21st USENIX Symposium on Networked Systems Design and Implementation (NSDI 24) . USENIX Association, Santa Clara, CA, 791\u2013808. https://www.usenix.org/conference/nsdi24/presentation/liu-lixin",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://www.usenix.org/system/files/nsdi24-liu-lixin.pdf",
+    "attempts": [],
+    "reading_notes": "Full nineteen-page NSDI paper, references and security appendix reviewed. MOSAIC restructures multi-operator satellite cellular access around in-band state retrieval, caching and pay-as-you-go cryptographic tokens. Commodity cellular-stack prototypes and emulated orbital/network conditions support reductions in control overhead and service interruptions, not measurements of national aggregate capacity. Security relies on established blind-signature properties, tamper-resistant SIMs and clearing; cracked SIM double spending is detected afterward, while service-quality enforcement needs additional two-sided measurement. Regulatory spectrum authorization and trustworthy accounting remain operational dependencies. Supports testing control-plane continuity, roaming and multi-tenancy separately from an idealized maximum-flow bound.",
+    "download_status": "downloaded",
+    "sha256": "76fb9698671e379bf2959e71b5bdfe68067aea5d42b6e8baca9e258964b865ed",
+    "pages": 19,
+    "text_characters": 93176
+  },
+  {
+    "reference_number": 58,
+    "citation": "Amanda Macias and Michael Sheetz. 2023. Pentagon awards SpaceX with Ukraine contract for Starlink satellite internet. Available at https://www.cnbc.com/2023/ 06/01/pentagon-awards-spacex-with-ukraine-contract-for-starlink-satelliteinternet.html. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.cnbc.com/2023/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 59,
+    "citation": "Doug Madory. 2023. Dual Subsea Cable Cuts Disrupt African Internet. Available at https://www.kentik.com/blog/dual-subsea-cable-cuts-disrupt-africaninternet/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.kentik.com/blog/dual-subsea-cable-cuts-disrupt-africaninternet/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 60,
+    "citation": "Marlene H. Dortch, Federal Communications Commission (FCC). 2025. ICFS File Nos. SAT-LOA-20200526-00055, SAT-AMD-20210818-00105, SATAMD-2022121600175; SAT-MOD-20241011-00224 and SAT-AMD-20241017-00228; Call Signs: S3069 and S2992. Available at https://www.viasat.com/content/dam/us-site/ corporate/documents/SpaceX_Response_Gen2.pdf. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.viasat.com/content/dam/us-site/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 61,
+    "citation": "Alexander Martin. 2025. UK to examine undersea cable vulnerability as Russian spy ship spotted in British waters. Available at https://therecord.media/britainundersea-cables-russian-spy-ship. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://therecord.media/britainundersea-cables-russian-spy-ship.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 62,
+    "citation": "Alan Mauldin. 2023. Is the Lifespan of a Submarine Cable Really 25 Years? Available at https://blog.telegeography.com/2023-mythbusting-part-2. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://blog.telegeography.com/2023-mythbusting-part-2.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 63,
+    "citation": "Maya Mehrara. 2025. Starlink Usage in Iran Skyrockets. Available at https: //www.newsweek.com/starlink-usage-iran-skyrockets-break-internet-lawrebel-restrictions-2011111. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 64,
+    "citation": "Praveen Menon and Tom Westbrook. 2022. An undersea cable fault could cut Tonga from the rest of the world for weeks. Available at https://www.reuters.com/ markets/funds/undersea-cable-fault-could-cut-off-tonga-rest-world-weeks2022-01-18/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.reuters.com/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 65,
+    "citation": "Fran\u00e7ois Michel, Martino Trevisan, Danilo Giordano, and Olivier Bonaventure. 2022. A First Look at Starlink Performance. InProceedings of the 22nd ACM Internet Measurement Conference (Nice, France) (IMC \u201922). Association for Computing Machinery, New York, NY, USA, 130\u2013136. https://doi.org/10.1145/3517745. 3561416",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://iris.polito.it/retrieve/handle/11583/2972615/609130",
+    "attempts": [],
+    "version_note": "Eight-page institutional repository file contains a cover and seven-page accepted manuscript with placeholder DOI fields.",
+    "reading_notes": "Full text reviewed. A single Belgian Starlink site measures months of ping, Ookla, QUIC transfers and website loads, compared with a GEO service and wired baseline. QUIC removes transport-proxy ambiguity; offered load raises latency and packet loss, and single-flow QUIC differs from multi-flow speed tests. Satellite-only and terrestrial-path delays are not identical. No throughput seasonality at this early deployment does not establish absence of later contention or capacity availability elsewhere. The geographically narrow and historical observations inform terminal-rate plausibility, not a national aggregate validation.",
+    "download_status": "downloaded",
+    "sha256": "cfedfaea14263c852705c37d27a894f7affc8b19b4db3b2d2ababe2266653aaa",
+    "pages": 8,
+    "text_characters": 43913
+  },
+  {
+    "reference_number": 66,
+    "citation": "Nitinder Mohan, Andrew E Ferguson, Hendrik Cech, Rohan Bose, Prakita Rayyan Renatin, Mahesh K Marina, and J\u00f6rg Ott. 2024. A Multifaceted Look at Starlink Performance. In Proceedings of the ACM on Web Conference 2024 . 2723\u20132734.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://spearlab.nl/papers/2024/starlinkWWW2024.pdf",
+    "attempts": [],
+    "reading_notes": "Full twelve-page paper including appendices reviewed. Combines 19.2-million user-initiated speed tests, 98 Atlas probes, controlled terminals and application experiments. IP/PoP geolocation, country inclusion thresholds, repeated users and mixed wired/mobile operator samples constrain global comparisons. Controlled shielding challenges a satellite-handoff-only explanation of 15-second performance events; clock drift in interrupted tests required adjustment. Loaded delay, packet loss and goodput differ from idealized rate limits. Ground infrastructure and terrestrial PoP paths matter, while ISL usage is inferred because satellite hops are invisible. Supports sensitivity analysis and rejects extrapolating aggregate service from single-terminal performance.",
+    "download_status": "downloaded",
+    "sha256": "16a5a98e2c2abbd0f02517f7d8d67bc4438b605bcb8fe44c6233218bd2f76046",
+    "pages": 12,
+    "text_characters": 73853
+  },
+  {
+    "reference_number": 67,
+    "citation": "Tamer Omar, Zakhia Abichar, Ahmed E Kamal, J Morris Chang, and Mohammad Abdullah Alnuem. 2016. Fault-Tolerant Small Cells Locations Planning in 4G/5G Heterogeneous Wireless Networks. IEEE Transactions on Vehicular Technology 66, 6 (2016), 5269\u20135283.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1109/tvt.2016.2615325",
+        "outcome": "HTML/other content; not a PDF"
+      }
+    ],
+    "reading_notes": "Full text unavailable. The UCF STARS record explicitly states the document is unavailable; an author publication page links back to IEEE access. No findings are inferred from the abstract.",
+    "metadata_error": "URLError",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 68,
+    "citation": "Nils Pachler, Edward F Crawley, and Bruce G Cameron. 2024. Flooding the Market: Comparing the Performance of Nine Broadband Megaconstellations. IEEE Wireless Communications Letters (2024).",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://bpb-us-e1.wpmucdn.com/sites.mit.edu/dist/e/1448/files/2025/02/pachler24c.pdf",
+    "attempts": [],
+    "version_note": "Five-page author manuscript; template publication placeholders remain. Final typeset equivalence is not asserted.",
+    "reading_notes": "Full text reviewed. Sequential resource allocation models nine proposed constellations with population-based 50-Tbps demand, atmospheric link budgets, gateway antennas, and coordinated interference. Thirty states at two-minute spacing are optimized with Gurobi; no global satellite power constraint or ISL congestion is modeled. Proposed combined capacity and subscriber extrapolations depend on oversubscription and geographically reachable demand. Gateway antennas are not equivalent to gateway sites. Differences from older estimates demonstrate sensitivity to resource-allocation assumptions; this is not operational national failover evidence.",
+    "download_status": "downloaded",
+    "sha256": "9d59ca41a3023fee04f42dc2f6c8fe3cbd3bae3a37d12d8258653c24600e0854",
+    "pages": 5,
+    "text_characters": 28212
+  },
+  {
+    "reference_number": 69,
+    "citation": "Nils Pachler, Inigo del Portillo, Edward F Crawley, and Bruce G Cameron. 2021. An Updated Comparison of Four Low Earth Orbit Satellite Constellation Systems to Provide Global Broadband. In 2021 IEEE international conference on communications workshops (ICC workshops) . IEEE, 1\u20137.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://bpb-us-e1.wpmucdn.com/sites.mit.edu/dist/e/1448/files/2025/02/pachler21a.pdf",
+    "attempts": [],
+    "reading_notes": "Full seven-page author text reviewed. Compares January-2021 filed Telesat, OneWeb, Starlink and Kuiper designs using population demand, ITU atmospheric attenuation, link budgets, optimized ground segments and maximum flow. Evaluates 1,440 daily orbital scenarios with 10,000 atmospheric samples per scenario. Initial and final phases use different elevation-angle assumptions; some ISL configurations are hypothetical. Capacity depends on gateway antennas and effective geographic demand, with diminishing returns from more satellites. Some summary improvement percentages differ from detailed tables; use scenario-specific values. Historical global totals cannot validate our national, fixed-rate upper-bound model directly.",
+    "download_status": "downloaded",
+    "sha256": "5ceae48d88e09c631abc37054925edc28e34cc08a1328819e01fb3f80c91a79d",
+    "pages": 7,
+    "text_characters": 37995
+  },
+  {
+    "reference_number": 70,
+    "citation": "Nils Pachler de la Osa. 2024. Optimizing resource allocation in large communications satellite constellations . Ph. D. Dissertation. Massachusetts Institute of Technology.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://bpb-us-e1.wpmucdn.com/sites.mit.edu/dist/e/1448/files/2025/02/pachler24a.pdf",
+    "attempts": [],
+    "reading_notes": "Full 315-page MIT doctoral dissertation, including four appendices and bibliography, reviewed. Decomposes beam/user grouping, satellite/frequency allocation and gateway routing into sequential heuristic or mixed-integer subproblems; subproblem optimization is not global optimality. Link-budget checks compare earlier models, not field ground truth. Annual weather statistics, fixed population demand and same-system interference add realism, but sufficient satellite power, instantaneous handovers, unobstructed terminals and no competing constellations remain favorable assumptions. The historical SpaceX link example yields 0.956 Gbps at zenith and 0.823 Gbps at forty degrees. Gateway antennas differ from station sites; routing candidates and hop limits restrict the feasible set. Capacity, design rankings and LEO/MEO benefits change with demand and interference assumptions. The surrogate permits simultaneous multi-satellite terminal service and omits some operational restrictions. Failure robustness and real-time adaptation are future work. Supports conditional capacity bounds and separate continuity experiments, not empirical national emergency validation.",
+    "download_status": "downloaded",
+    "sha256": "77efe8334a17c3f1cfefcf0ab4c598e1a066698c9c97169d15b4b6b5e2006155",
+    "pages": 315,
+    "text_characters": 579782
+  },
+  {
+    "reference_number": 71,
+    "citation": "Nils Pachler de la Osa, Markus Guerster, Inigo del Portillo Barrios, Edward Crawley, and Bruce Cameron. 2021. Static beam placement and frequency plan algorithms for LEO constellations. International Journal of Satellite Communications and Networking 39, 1 (2021), 65\u201377.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://bpb-us-e1.wpmucdn.com/sites.mit.edu/dist/e/1448/files/2025/02/pachler20a.pdf",
+    "attempts": [],
+    "version_note": "Thirteen-page author typeset text carries 2020 acceptance and citation information; main bibliography dates the journal volume 2021.",
+    "reading_notes": "Full paper and algorithms reviewed. Static beam placement groups fixed users using worst-case angular separation and randomized clique heuristics; first-fit frequency planning enforces interference and satellite-group reuse constraints. Evaluation uses historical 4,409-satellite geometry and 18,712 proprietary projected terminals. Small cases permit optimality checks; larger cases only establish improvement over selected baselines, with about 2.3% of beams unassigned. Pairwise angular compatibility is a modeling approximation to physical beam coverage. Caption and body give inconsistent India example counts. Static plans, conservative satellite grouping and omitted joint power optimization differ from CosmoSim's state-specific greedy allocation; radio-coverage heuristics are not proven national service optima.",
+    "download_status": "downloaded",
+    "sha256": "eb9e693d455b47751098653873f4f2c9ac83260f49fcd4aca0288d8dd8843572",
+    "pages": 13,
+    "text_characters": 52040
+  },
+  {
+    "reference_number": 72,
+    "citation": "Sergei Pekhterev. 2021. The bandwidth of the StarLink Constellation. . . and the assessment of its potential subscriber base in the USA. SatMagazine 11 (2021), 54\u201357.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://satmagazine.com/wp-content/uploads/2026/02/SM_Nov2021-1.pdf",
+    "attempts": [],
+    "version_note": "Archived the complete November 2021 magazine issue (61 PDF pages); reviewed only the cited four-page article, printed pages 54\u201357. Industry analysis, not a peer-reviewed research article.",
+    "reading_notes": "Full cited article reviewed. Estimates Starlink throughput from FCC filings, modulation assumptions, beam hopping and reported terminal SNR. Separates theoretical dual-polarization satellite bandwidth from first-generation terminal constraints, and estimates US subscribers using five-hour average consumption, loading and geographic satellite visibility. Its cell and subscriber numbers depend on assumptions different from emergency 100-Mbps-per-terminal service; arithmetic and contemporaneous hardware assumptions prevent treating these estimates as measured capacity. Supports documenting RF-rate provenance and avoiding subscriber-count equivalence.",
+    "download_status": "downloaded",
+    "sha256": "7d36a3ba80702c6145921cd0e9cb64944520788cf2170963ca8d4b5aa3f8b9a4",
+    "pages": 61,
+    "text_characters": 179514
+  },
+  {
+    "reference_number": 73,
+    "citation": "Winston Qiu. 2023. Amiti\u00e9 Cable System Ready for Service. Available at https:// www.submarinenetworks.com/en/systems/trans-atlantic/amitie/amitie-cablesystem-ready-for-service. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 74,
+    "citation": "Jason Rainbow. 2024. Starlink activates emergency phone connectivity for Hurricane Milton. Available at https://spacenews.com/starlink-activates-emergencyphone-connectivity-for-hurricane-milton/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://spacenews.com/starlink-activates-emergencyphone-connectivity-for-hurricane-milton/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 75,
+    "citation": "Chathurika Ranaweera, Mauricio GC Resende, Kenneth Reichmann, Patrick Iannone, Paul Henry, Byoung-Jo Kim, Pete Magill, Kostas N Oikonomou, Rakesh K Sinha, and Sheryl Woodward. 2013. Design and optimization of fiber optic smallcell backhaul based on an existing fiber-to-the-node residential access network. IEEE Communications Magazine 51, 9 (2013), 62\u201369.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1109/mcom.2013.6588652",
+        "outcome": "HTML/other content; not a PDF"
+      }
+    ],
+    "reading_notes": "Full cited IEEE Communications Magazine article unavailable. Checked the publisher, embargoed Deakin record and coauthor publication archive. The accessible similarly titled ECOC conference paper has different scope and is not substituted.",
+    "metadata_error": "URLError",
+    "download_status": "unavailable"
+  },
+  {
+    "reference_number": 76,
+    "citation": "Reuters. 2024. Israel eyes use of Musk\u2019s Starlink in event of war with Hezbollah, Calcalist reports. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": null,
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 77,
+    "citation": "Denys Rozenvasser and Kateryna Shulakova. 2023. Estimation of the Starlink Global Satellite System Capacity. In Proceedings of the 12th International Conference on Applied Innovation in IT (ICAIIT 2024) . 55\u201359.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://icaiit.org/proceedings/11th_ICAIIT_1/1_9%20ICAIIT_2023_paper_4290.pdf",
+    "attempts": [],
+    "version_note": "Retrieved the five-page March 2023 proceedings paper, pages 55\u201359. The main bibliography inconsistently names the 2024 conference while specifying 2023.",
+    "reading_notes": "Full text reviewed. Uses assumed Shannon/link-budget and modulation efficiencies to estimate per-satellite and aggregate constellation capacity, including a future deployment extrapolation. Multiplying nominal satellite rates by constellation size omits national visibility, demand geography, gateway and ISL constraints, RF interference, and operational scheduling. Coding-gain assumptions are not independent physical received-power measurements. These global theoretical totals are not a direct reference outcome for national failover.",
+    "download_status": "downloaded",
+    "sha256": "907e96708cb004a11c55b0ef6ef90e25999ea2d64e4c04821bb16035b1f19dc4",
+    "pages": 5,
+    "text_characters": 16258
+  },
+  {
+    "reference_number": 78,
+    "citation": "Mario A. Sanchez, Fabian E. Bustamante, Balachander Krishnamurthy, Walter Willinger, Georgios Smaragdakis, and Jeffrey Erman. 2014. Inter-Domain Traffic Estimation for the Outsider. In Proceedings of the 2014 Conference on Internet Measurement Conference (Vancouver, BC, Canada) (IMC \u201914) . Association for Computing Machinery, New York, NY, USA, 1\u201314. https://doi.org/10.1145/ 2663716.2663740",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://conferences.sigcomm.org/imc/2014/papers/p1.pdf",
+    "attempts": [],
+    "reading_notes": "Full fourteen-page paper reviewed. Network Syntax relates traceroute-derived AS-link popularity to traffic ground truth from one Tier-1 ISP and one IXP across 2011/2013 datasets. Strong correlations primarily apply to transformed, clustered links, not calibrated individual cable-byte volumes. Prediction excludes some outlying links and yields coarse order-of-magnitude estimates with substantial error. BGP graphs perform differently, and sparse vantage-point locations can inflate apparent popularity. Cleaning and coverage choices matter; private ground truth limits independent replication. Supports using route frequency as a qualified dependency proxy while rejecting its direct equivalence to measured traffic lost during a cable outage.",
+    "download_status": "downloaded",
+    "sha256": "12180e7499954496eb7f3cc6ea5d7e41c3d4ac216239a7a6c2c9cabb63711008",
+    "pages": 14,
+    "text_characters": 65742
+  },
+  {
+    "reference_number": 79,
+    "citation": "Kanishka Singh. 2024. Dozens of Starlink systems deployed for Hurricane Helene by Biden administration. Available at https://www.reuters.com/world/us/trumpsays-he-spoke-musk-about-getting-internet-areas-hit-by-hurricane-2024-0930/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.reuters.com/world/us/trumpsays-he-spoke-musk-about-getting-internet-areas-hit-by-hurricane-2024-0930/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 80,
+    "citation": "Mackenzie Smith. 2022. Pacific digital infrastructure under spotlight after Tonga disaster. Available at https://www.abc.net.au/pacific/programs/pacificbeat/pacsatellite-internet/13729920. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.abc.net.au/pacific/programs/pacificbeat/pacsatellite-internet/13729920.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 81,
+    "citation": "Internet Society. 2024. 2024 West Africa Submarine Cable Outage Report. Available at https://www.internetsociety.org/resources/doc/2024/2024-west-africasubmarine-cable-outage-report/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.internetsociety.org/resources/doc/2024/2024-west-africasubmarine-cable-outage-report/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 82,
+    "citation": "SpaceX. 2016. FCC Selected Application for Space Exploration Holdings, LLC. Available at https://fcc.report/IBFS/SAT-LOA-20161115-00118/1158350.pdf. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://fcc.report/IBFS/SAT-LOA-20161115-00118/1158350.pdf.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 83,
+    "citation": "SpaceX. 2019. SPACEX NON-GEOSTATIONARY SATELLITE SYSTEM. Available at https://fcc.report/IBFS/SAT-MOD-20190830-00087/1877671. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://fcc.report/IBFS/SAT-MOD-20190830-00087/1877671.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 84,
+    "citation": "SpaceX FCC Filing. 2017. SpaceX V-BAND NON-GEOSTATIONARY SATELLITE SYSTEM. Available at https://fcc.report/IBFS/SAT-LOA-20170301-00027/1190019. pdf. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://fcc.report/IBFS/SAT-LOA-20170301-00027/1190019.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 85,
+    "citation": "SpaceX Update. 2017. SPACEX NON-GEOSTATIONARY SATELLITE SYSTEM. Available at https://fcc.report/IBFS/SAT-MOD-20181108-00083/1569860.pdf. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://fcc.report/IBFS/SAT-MOD-20181108-00083/1569860.pdf.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 86,
+    "citation": "Joe Supan. 2024. Starlink Puts Customers On Waitlist in Several US Cities. Available at https://www.cnet.com/home/internet/starlink-puts-customers-onwaitlist-in-several-us-cities/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://www.cnet.com/home/internet/starlink-puts-customers-onwaitlist-in-several-us-cities/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 87,
+    "citation": "Hammas Bin Tanveer, Mike Puchol, Rachee Singh, Antonio Bianchi, and Rishab Nithyanand. 2023. Making Sense of Constellations: Methodologies for Understanding Starlink\u2019s Scheduling Algorithms. InCompanion of the 19th International Conference on Emerging Networking EXperiments and Technologies . 37\u201343.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://arxiv.org/pdf/2307.00402",
+    "attempts": [],
+    "version_note": "Retrieved seven-page arXiv:2307.00402v1 (July 2023), rather than the final CoNEXT companion layout; an obsolete conference template appears in the preprint.",
+    "reading_notes": "Full preprint text reviewed. Four terminals and high-frequency PoP-directed measurements reveal synchronized 15-second scheduling intervals and within-interval latency bands. Serving satellites are inferred from successive obstruction-map differences and TLE trajectory matching; manual agreement is reported for 500 pilot cases. Selection favors elevation, direction, launch age and sunlight; explanations remain partly inferred and exclude proprietary load information. A random forest predicts satellite-feature clusters, not exact identities, with top-five accuracy compared to a baseline. This supports treating adjacent seconds as correlated states and distinguishes our remapping heuristic from an empirical Starlink scheduler.",
+    "download_status": "downloaded",
+    "sha256": "9da5e0e9f46d9c9ff5a2236427c5911d40b3af184fe093949aead85a5247b6f7",
+    "pages": 7,
+    "text_characters": 35227
+  },
+  {
+    "reference_number": 88,
+    "citation": "Karl Vick. 2023. Inside the Clandestine Efforts to Smuggle Starlink Internet Into Iran. Available at https://time.com/6249365/iran-elon-musk-starlink-protests/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://time.com/6249365/iran-elon-musk-starlink-protests/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 89,
+    "citation": "Vivek Wadhwa and Alex Salkever. 2022. How Elon Musk\u2019s Starlink Got BattleTested in Ukraine. Available at https://foreignpolicy.com/2022/05/04/starlinkukraine-elon-musk-satellite-internet-broadband-drones/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://foreignpolicy.com/2022/05/04/starlinkukraine-elon-musk-satellite-internet-broadband-drones/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 90,
+    "citation": "Caleb J. Wang, Ying Zhang, Qianli Dong, Esteban Carisimo, Ramakrishnan Durairajan, and Fabi\u00e1n E. Bustamante. 2025. Threading the Ocean: Mapping Digital Routes Across Submarine Cables using Calypso. In Proceedings of the ACM SIGCOMM 2025 Conference (SIGCOMM \u201925) \u2013 Short Papers. Association for Computing Machinery, Coimbra, Portugal. https://doi.org/10.1145/3718958.3750512",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://ix.cs.uoregon.edu/~ram/papers/SIGCOMM-2025.pdf",
+    "attempts": [],
+    "reading_notes": "Full three-page paper reviewed. Calypso combines cable/rights metadata with traceroute, ASN, geolocation and latency feasibility to infer physical cable paths. Experts confirmed 56 of 66 selected mappings, with ten undisclosed rather than incorrect; that validation is not a random ground-truth sample. Route Stress reflects dependencies of observed traceroutes, not traffic byte volume or cable capacity. Supports keeping published cable-risk rankings separate from a measured national traffic-loss denominator.",
+    "download_status": "downloaded",
+    "sha256": "4cffc52b962096ccd34918572035ab491c4e345e2f95e40b3af6e88d486a4ad8",
+    "pages": 3,
+    "text_characters": 14618
+  },
+  {
+    "reference_number": 91,
+    "citation": "Shangguang Wang, Qing Li, Mengwei Xu, Xiao Ma, Ao Zhou, and Qibo Sun. 2021. Tiansuan Constellation: An Open Research Platform. In 2021 IEEE International Conference on Edge Computing (EDGE) . IEEE, 94\u2013101.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://wangshangguang.github.io/assets/TiansuanFinal1203.pdf",
+    "attempts": [],
+    "version_note": "Verified author-hosted eight-page Tiansuan paper. A previously guessed arXiv URL returned an unrelated ontology paper, which was rejected and quarantined; it is not counted as this source. The author manuscript discusses events after the cited conference date, so exact final-version equivalence is not asserted.",
+    "reading_notes": "Full text reviewed. Proposes an open experimental constellation in three phases and describes satellite hardware, limited ground-contact windows, core-network and KubeEdge image-inference deployments. Many networking, computing and security capabilities are research proposals rather than completed evaluations. Case studies establish feasibility of onboard functions, not national aggregate broadband throughput. Highlights power, thermal, radiation, orchestration and intermittent-link limits absent from our idealized capacity model.",
+    "download_status": "downloaded",
+    "sha256": "faf16fc1526ddba0fb94543ae375f565bae8870231e0e79851ed718c30ad3d6e",
+    "pages": 8,
+    "text_characters": 44483
+  },
+  {
+    "reference_number": 92,
+    "citation": "Shaowei Wang and Chen Ran. 2016. Rethinking cellular network planning and optimization. IEEE Wireless Communications 23, 2 (2016), 118\u2013125.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://mint.nju.edu.cn/_upload/tpl/08/ac/2220/template2220/pdf/mwc16wr.pdf",
+    "attempts": [],
+    "reading_notes": "Full eight-page text reviewed. Proposes hierarchical heterogeneous-cell planning through approximately balanced traffic-demand territories, followed by radio/QoS coverage checks and low-power cells for uncovered demand. Replanning is triggered by the coefficient of variation of cell loads. Preliminary deployment illustrations and simplified interference arguments do not establish a universal optimum for satellite terminals; terrestrial base stations and coverage constraints differ. Supports reporting spatial allocation, served population, actual deployment and capacity separately rather than equating population-proportional placement with optimal service.",
+    "download_status": "downloaded",
+    "sha256": "af1e3e981770bd937cb81baa08a35e8af44bd1844abb4175cf5bb97876ebde28",
+    "pages": 8,
+    "text_characters": 40351
+  },
+  {
+    "reference_number": 93,
+    "citation": "Chris Woodhams. 2025. Undersea Vigilance: Britain monitors Russian spy ship amid heightened maritime security. Available at https://boatingnz.co.nz/2025/ 01/undersea-vigilance-britain-monitors-russian-spy-ship-amid-heightenedmaritime-security/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://boatingnz.co.nz/2025/",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 94,
+    "citation": "Niva Yadav. 2024. BW Digital to Expand Hawaiki Cable to Connect Tonga. Available at https://subtelforum.com/bw-digital-to-expand-hawaiki-cable-toconnect-tonga/. Accessed on September 29th, 2025.",
+    "kind": "web/data/regulation",
+    "reading_status": "not a research paper",
+    "source_url": "https://subtelforum.com/bw-digital-to-expand-hawaiki-cable-toconnect-tonga/.",
+    "download_status": "web citation"
+  },
+  {
+    "reference_number": 95,
+    "citation": "Jingwei Zhang, Dali Qin, Chuili Kong, Feiran Zhao, Rong Li, Jun Wang, and Ye Wang. 2023. System-Level Evaluation of Beam Hopping in NR-Based LEO Satellite Communication System. In 2023 IEEE Wireless Communications and Networking Conference (WCNC). IEEE, 1\u20136.",
+    "kind": "research",
+    "reading_status": "reviewed",
+    "source_url": "https://arxiv.org/pdf/2205.10721",
+    "attempts": [],
+    "version_note": "Downloaded arXiv:2205.10721v3 (October 2022), preceding the cited WCNC 2023 publication; equivalence with the final conference version is not asserted.",
+    "reading_notes": "Full six-page preprint reviewed. Models a 600-km Walker constellation, 5G NR protocol stack, S/Ka bands, phased-array beams, power budgets, intra/inter-satellite interference and time-varying traffic. Greedy scheduling selects high-demand beams while enforcing a 42-km distance constraint; evaluation uses four satellites and 1,000 users in a China region. Beam separation improves SINR, throughput and satisfaction over unrestricted/round-robin schedules, and extra simultaneous beams can stop helping. This is not the fixed maximum-rate, interference-free CosmoSim bound; highlights omitted RF and scheduling uncertainty.",
+    "download_status": "downloaded",
+    "sha256": "e1d336c0294662361d285dee71aa07d9843ca1ca4aee9bf519b3c1a0d9369d37",
+    "pages": 6,
+    "text_characters": 30205
+  },
+  {
+    "reference_number": 96,
+    "citation": "Till Zimmermann, Eric Lanfer, Dominic Laniewski, Simon Brinkmann, and Nils Aschenbruck. 2025. Better Fill Up Your Pipe-Revisiting Starlink\u2019s Burst Characterization. In Proceedings of the 2025 3rd Workshop on LEO Networking and Communication. 36\u201342.",
+    "kind": "research",
+    "reading_status": "unread",
+    "source_url": null,
+    "attempts": [
+      {
+        "url": "https://doi.org/10.1145/3748749.3749089",
+        "outcome": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3748749.3749089",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3748749.3749089",
+        "outcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      }
+    ],
+    "reading_notes": "Full cited paper unavailable. Publisher download and the University of Osnabruck author page were checked; the latter lists the title without a paper link. The public StarFrame-UDP dataset record confirms provenance but is not the manuscript.",
+    "download_status": "unavailable"
+  }
+]

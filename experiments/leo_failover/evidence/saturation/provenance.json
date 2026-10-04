@@ -1,0 +1,202 @@
+{
+  "campaign": {
+    "id": "leo-failover-imc2025-saturation-v1",
+    "title": "LEO Failover Saturation Follow-up",
+    "status": "complete",
+    "protocol": {
+      "id": "leo-failover-imc2025-saturation-v1",
+      "title": "LEO Failover Saturation Follow-up",
+      "frozen_before_primary_execution": true,
+      "paper_doi": "10.1145/3730567.3764482",
+      "artifact_commit": "57af374432fbde4cd7b1f2dade64095f87296e05",
+      "primary_claim": "Distinguish the Table 1 capacity ceiling from the initial 200000-terminal result",
+      "primary_configuration": "Config A, uncapped GCB, coordinated beams, no incumbents; 2000000 requested terminals for temporal summary",
+      "sampling": "Four terminal budgets (500000, 1000000, 2000000, 4000000) at t=0, 2000000 terminals at all 15 adjacent seconds; artifact GCB variant at 4000000, t=0",
+      "comparison_rule": "Signed relative difference from Table 1 and the original predeclared \u00b15% numerical threshold. Report terminal-budget convergence separately; do not infer a ceiling unless the largest tested budgets agree.",
+      "uncertainty": "Deterministic time-state ranges, no inferential intervals or independent replications",
+      "corrections": [
+        "Reuse the exact original runner, graph corrections, beam mapping and gateway provisioning. Allocation variants retain their declared differences."
+      ],
+      "limitations": [
+        "This follow-up was designed after inspecting the initial campaign; it is exploratory and does not replace the original frozen design.",
+        "A plateau across tested budgets is evidence of numerical saturation at tested epochs, not a global optimum proof.",
+        "Capacity remains an optimistic simulated downlink bound, not observed operational satellite traffic."
+      ]
+    },
+    "protocol_sha256": "4b9cc24da04a28a3a4a8bb063ab7225a47e002a607d5b93bb6cdd6f656661983",
+    "artifact_commit": "57af374432fbde4cd7b1f2dade64095f87296e05",
+    "paper_sha256": "cf034fa5b66366a58444988189396cf6cf227c90a5dd074a25760534d9cf32f6",
+    "planned_samples": 114,
+    "recorded_samples": 114,
+    "limitations": [
+      "This follow-up was designed after inspecting the initial campaign; it is exploratory and does not replace the original frozen design.",
+      "A plateau across tested budgets is evidence of numerical saturation at tested epochs, not a global optimum proof.",
+      "Capacity remains an optimistic simulated downlink bound, not observed operational satellite traffic.",
+      "Post-execution clarification: released code doubles ISL rates when Ku=2.5 Gbps. The original frozen protocol described this as Ku-only; the amended interpretation is a Ku+ISL sensitivity, with baseline Ka and constellation. The frozen document remains unchanged for audit.",
+      "Literature review is recorded source by source; inaccessible or unread sources are not treated as reviewed.",
+      "Primary execution preceded completion of the supporting bibliography review; later review does not retrospectively alter its predeclared configurations.",
+      "Published Table 1 arithmetic inconsistency: Lithuania prints 2,005 Gbps satellite capacity, 101 Gbps lost cable capacity and 198 percent. Dividing the printed capacities gives 1,985.15 percent. Recorded capacity/cable fractions use the printed capacity denominator; no source field is silently corrected."
+    ],
+    "provenance": {
+      "execution": "local CPU simulation, no AWS satellite test infrastructure",
+      "python": "3.13.3",
+      "runner_sha256": "657798d339dc3b9157ca3fa948d5163525a078d24f8dd913387b664ea367d281",
+      "analysis_sha256": "034af6b1fc87c3152f0a9f2e2fe6743bd23258821d562119f2758dd62d3b295b",
+      "samples_sha256": "8fb8b833fa69b203a296226ae0fc6bd1694f84792bfd44a58574b55d2e121e41",
+      "schedule_sha256": "825191457f6c26c4beb0d4c8e51e64d285e62e879d3e10c2e37adb4a3e13aef7",
+      "literature_sha256": "8c328ded625e21735e944dc7174226c9c5d433cdd2826e5c36b0265a33513ef8",
+      "graph_generation": "Exact PyEphem distances after conservative spatial pruning; two exhaustive cell audits per country/epoch",
+      "source_files": {
+        "inputs/README.md": "055e210578888c4f5e8b3885fb61cecf7ab3219acbf2e08dafc24d0d00da8def",
+        "inputs/cells/britain.txt": "1f2a718aac6f9faaaa910e7e256fb5fcdf8bafcaa934ae6e51e6fbedbddbfdf8",
+        "inputs/cells/ghana.txt": "8fb05b69ed607fb5e331b330ddd2941526e0641458087a6fcaa053f81f8530dd",
+        "inputs/cells/haiti.txt": "687746031f500ba9dc6423c6499ebb3413981467c5c1063315ff6e8e91a4c557",
+        "inputs/cells/lithuania.txt": "ef37ae43c0e7c2754ddbe8f373b67cbe389ed973507e136378fa0289e8394751",
+        "inputs/cells/malaysia.txt": "d4dbd9b07da244619e33cb29eaa9685af45e1003edd5d4a156ea2daabd92658d",
+        "inputs/cells/southafrica.txt": "81c8d459f2c87819b5d29ea9c04c3465ddbb975fc0c541df9148151008e716cd",
+        "inputs/cells/starlink_cells.txt": "865f255804fb6fcd7ae76f9077d4b58c788261a45922a93ee5397622b7088a8c",
+        "inputs/cells/starlink_level5.txt": "8860d7d064259cf8d6fb1a400a223ee1712c90da8d17111e420a5ae96fb9384b",
+        "inputs/cells/tonga.txt": "d8272d4fb2dadace0f54b28c5891eee0077d6a6721e3fe3491ef01c94f5146aa",
+        "inputs/groundstations/ground_stations_cities_sorted_by_estimated_2025_pop_top_100.txt": "7432ad4abf5d2159ed9351080599657604e210095b73874e3e51d7fb9871ab62",
+        "inputs/groundstations/ground_stations_cities_sorted_by_estimated_2025_pop_top_1000.txt": "d3b818536bde570128bc89e6ebbaea655755688789e3956d41fa66d8ec87e232",
+        "inputs/groundstations/ground_stations_starlink.txt": "4ace11372544e8dd078db2c12e3dd1347acf79d073f2244ec27861303f9e0f54",
+        "inputs/groundstations/ground_stations_world_grid.basic.txt": "63fc9c0acc562c5ae458e51b6958526a4cfbc6b6f43cb60b506d2aafbf88a96e",
+        "inputs/groundstations/groundstations_starlink.txt": "4ace11372544e8dd078db2c12e3dd1347acf79d073f2244ec27861303f9e0f54",
+        "inputs/groundstations/visualize_gs.py": "21b91b5e124070e6ab8a8b881a343643598d708258d7798c6cd92547774b2140",
+        "inputs/list_cell_populations.py": "c329eca1474a5aaddcbac16529e5dd4e9ef37e949b5ae70d800b0ece6529dd2f"
+      },
+      "protocol_clarification": "Ku=2.5 invokes doubled ISLs, unchanged Ka; original protocol retained.",
+      "constellation_files": {
+        "constellation_configurations/configs/starlink_5shells/description.txt": "2de433e2d34cff2b18c9af6e4562141277dddec723838dcf50f61344942303ad",
+        "constellation_configurations/configs/starlink_5shells/isls.txt": "e37331bcb90d5673e7b7112742a3751394ff6effb6e6f64be4a5ad75234efade",
+        "constellation_configurations/configs/starlink_5shells/tles.txt": "cada0438a80388496441bfa8ba6d52d966ef4403014164a08a6cd5e9c5bdc388",
+        "constellation_configurations/configs/starlink_all/description.txt": "5ade425e3dab5c72200a60f738b4f7fcee24a0d8a652c572c61ae4778ed1dd7b",
+        "constellation_configurations/configs/starlink_all/isls.txt": "4aefa39c383f3872d70f20a80335d3f886c63759159baae7a590d0f74807610e",
+        "constellation_configurations/configs/starlink_all/tles.txt": "f886412825ae030163ce4e9d1f53540a77195225fd47422c76702c8bf460d5fc",
+        "constellation_configurations/configs/starlink_double/description.txt": "90088abcd02ab153970d88108d2ecd33286d2a66630dfbacf3e642417eddc9e6",
+        "constellation_configurations/configs/starlink_double/isls.txt": "18d234f29419ee8437cf56e59567b278234d6369b462e36643e55690df236f04",
+        "constellation_configurations/configs/starlink_double/tles.txt": "84181800f4dc4374457825d52cfd9542368b0a89242e7449fc724dd90c751b02",
+        "constellation_configurations/sample_constellation.yaml": "016ad9d56247621173113246c413a156c5465381faf045325cb628015707588b",
+        "constellation_configurations/starlink_5shells.yaml": "fdd440573d7d54422e9d0a7a5775f481ce5b3c2a19b60e35a928bc9622020b37",
+        "constellation_configurations/starlink_all.yaml": "6baeb062b73f44afbae5a3e9441f3cf805d6bc60b31dec41340b3b7979939307",
+        "constellation_configurations/starlink_double.yaml": "98d853ea294970d6435a29dd58a75c8fb10f7c08239642c70e3a3d1d3d68ce8e"
+      },
+      "constellation_epochs": {
+        "starlink_5shells": "2022-01-01 00:00:00.000"
+      },
+      "epoch_interpretation": "Generated idealized TLE epoch, not the wall-clock date of execution or a measured operational constellation.",
+      "budget_convergence": {
+        "tonga": [
+          {
+            "terminals": 500000,
+            "gbps": 40.96
+          },
+          {
+            "terminals": 1000000,
+            "gbps": 40.96
+          },
+          {
+            "terminals": 2000000,
+            "gbps": 40.96
+          },
+          {
+            "terminals": 4000000,
+            "gbps": 40.96
+          }
+        ],
+        "haiti": [
+          {
+            "terminals": 500000,
+            "gbps": 1238.08
+          },
+          {
+            "terminals": 1000000,
+            "gbps": 1238.08
+          },
+          {
+            "terminals": 2000000,
+            "gbps": 1238.08
+          },
+          {
+            "terminals": 4000000,
+            "gbps": 1238.08
+          }
+        ],
+        "lithuania": [
+          {
+            "terminals": 500000,
+            "gbps": 1877.76
+          },
+          {
+            "terminals": 1000000,
+            "gbps": 1877.76
+          },
+          {
+            "terminals": 2000000,
+            "gbps": 1877.76
+          },
+          {
+            "terminals": 4000000,
+            "gbps": 1877.76
+          }
+        ],
+        "ghana": [
+          {
+            "terminals": 500000,
+            "gbps": 2071.68
+          },
+          {
+            "terminals": 1000000,
+            "gbps": 2071.68
+          },
+          {
+            "terminals": 2000000,
+            "gbps": 2071.68
+          },
+          {
+            "terminals": 4000000,
+            "gbps": 2071.68
+          }
+        ],
+        "britain": [
+          {
+            "terminals": 500000,
+            "gbps": 3009.92
+          },
+          {
+            "terminals": 1000000,
+            "gbps": 3009.92
+          },
+          {
+            "terminals": 2000000,
+            "gbps": 3009.92
+          },
+          {
+            "terminals": 4000000,
+            "gbps": 3009.92
+          }
+        ],
+        "southafrica": [
+          {
+            "terminals": 500000,
+            "gbps": 4715.84
+          },
+          {
+            "terminals": 1000000,
+            "gbps": 4767.04
+          },
+          {
+            "terminals": 2000000,
+            "gbps": 4767.04
+          },
+          {
+            "terminals": 4000000,
+            "gbps": 4767.04
+          }
+        ]
+      }
+    }
+  },
+  "configurations": 30,
+  "samples": 114
+}

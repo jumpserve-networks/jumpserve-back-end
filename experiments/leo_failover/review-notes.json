@@ -1,0 +1,164 @@
+{
+  "11": {
+    "reading_notes": "Full text unavailable. Publisher access and the University of Luxembourg ORBilu record were checked; the repository offers request access rather than an accessible full manuscript. No findings are inferred from metadata."
+  },
+  "17": {
+    "reading_notes": "Full SSRN companion text unavailable: abstract and delivery endpoints return HTTP 403. The reviewed IMC paper is not silently substituted for this policy companion."
+  },
+  "20": {
+    "reading_notes": "Full fifty-two-page book chapter unavailable from the publisher. Partial NASA material does not establish that the entire cited chapter was read."
+  },
+  "30": {
+    "reading_notes": "Full cited CCR paper unavailable. Checked publisher download, the author's publication links, official CCR archive and testbed repository; these do not provide an accessible verified manuscript. Repository documentation is not substituted for the paper."
+  },
+  "53": {
+    "reading_status": "reviewed",
+    "web_text_reviewed": true,
+    "source_url": "https://www.researchgate.net/publication/395350709_Simulation_and_Comparison_of_Vehicle_Satellite_Connectivity_under_a_3D_Foliage_Environment_Starlink_and_OneWeb",
+    "version_note": "Reviewed the complete six-page author-uploaded text, including figure captions, tables and references, through the publicly indexed ResearchGate page (uploaded by Kevin T. Li). PDF requests remain inaccessible; this is a web-text review, not a downloaded PDF or independent visual inspection of the figure artwork.",
+    "reading_notes": "Models one rural forested vehicle route with 100 randomized orbital starting times, SGP4 geometry, Blender/OSM terrain and canopy-height meshes. Fixed foliage attenuation and hypothetical satellite selection policies give different obstruction and SNR tails for Starlink and OneWeb; cadence effects depend on constellation geometry. Link-budget and DVB-S2X thresholds do not establish application goodput or national capacity. The authors identify simplified attenuation, additional routes and physical drive-test validation as future work. Supports obstruction and scheduler sensitivity as untested limitations of our fixed-rate national maximum-flow model. Publisher, Athene institutional record and ResearchGate PDF attempts did not yield an accessible PDF."
+  },
+  "54": {
+    "reading_notes": "Full text unavailable. Publisher download, author-site searches and a coauthor publication archive were checked. Slides and third-party summaries are not substituted for the cited paper."
+  },
+  "55": {
+    "reading_notes": "Full cited IEEE Transactions on Communications article unavailable (DOI 10.1109/TCOMM.2022.3226190). The publisher requires sign-in. Related beam-hopping papers with different identifiers are not substituted."
+  },
+  "67": {
+    "reading_notes": "Full text unavailable. The UCF STARS record explicitly states the document is unavailable; an author publication page links back to IEEE access. No findings are inferred from the abstract."
+  },
+  "75": {
+    "reading_notes": "Full cited IEEE Communications Magazine article unavailable. Checked the publisher, embargoed Deakin record and coauthor publication archive. The accessible similarly titled ECOC conference paper has different scope and is not substituted."
+  },
+  "96": {
+    "reading_notes": "Full cited paper unavailable. Publisher download and the University of Osnabruck author page were checked; the latter lists the title without a paper link. The public StarFrame-UDP dataset record confirms provenance but is not the manuscript."
+  },
+  "70": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full 315-page MIT doctoral dissertation, including four appendices and bibliography, reviewed. Decomposes beam/user grouping, satellite/frequency allocation and gateway routing into sequential heuristic or mixed-integer subproblems; subproblem optimization is not global optimality. Link-budget checks compare earlier models, not field ground truth. Annual weather statistics, fixed population demand and same-system interference add realism, but sufficient satellite power, instantaneous handovers, unobstructed terminals and no competing constellations remain favorable assumptions. The historical SpaceX link example yields 0.956 Gbps at zenith and 0.823 Gbps at forty degrees. Gateway antennas differ from station sites; routing candidates and hop limits restrict the feasible set. Capacity, design rankings and LEO/MEO benefits change with demand and interference assumptions. The surrogate permits simultaneous multi-satellite terminal service and omits some operational restrictions. Failure robustness and real-time adaptation are future work. Supports conditional capacity bounds and separate continuity experiments, not empirical national emergency validation."
+  },
+  "26": {
+    "reading_status": "reviewed",
+    "version_note": "Eighteen-page Virginia Tech accepted manuscript of the cited AIAA SCITECH 2025 article; final typeset equivalence is not asserted.",
+    "reading_notes": "Full eighteen-page text and references reviewed. SpaceNet precomputes Skyfield states, four-neighbor PlusGrid links and shortest-latency routes, then runs Mininet on the paths relevant to selected ground-station pairs. Twelve scenarios compare ideal and actual 1,584-satellite shells at two epochs, with twelve ten-second states and one trial each. Network transitions are paused out of ping measurements. Actual TLE irregularity can create more than four bidirectional ISLs per satellite; latency outliers may reflect emulator artifacts rather than orbital effects. SDR/Raspberry Pi hardware integration demonstrates connectivity at about two Mbps, not national capacity. Weather-dependent ground links and hardware integration are capabilities, while higher-fidelity ground links and resiliency remain future work. Supports reporting emulation overhead, routing assumptions and transition exclusions separately; path pruning cannot preserve national maximum flow without additional validation."
+  },
+  "50": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full seventeen-page proceedings file, including cover and references, reviewed. StarryNet combines observed orbital/configuration data, Skyfield states and distributed Docker/Open vSwitch emulation; VLANs preserve topology and precomputed updates reduce orchestration overhead. Capacity is user-configured and validation tunes rates to an existing terminal trace, so matching that trace is calibration rather than independent aggregate-capacity validation. OSPF experiments expose reconvergence and address-change disruptions; hardware-in-loop demonstrates processor/power effects on one prototype. Public TLE accuracy, missing ISL details and limited PHY fidelity constrain the digital twin. Supports distinguishing network service/recovery behavior from static maximum-flow bounds."
+  },
+  "27": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full fourteen-page paper reviewed. Constructs an incomplete US long-haul conduit map from operator maps, rights-of-way and public records, then overlays traceroutes to examine shared infrastructure. Logical provider diversity can conceal common physical conduits. Risk rankings use sharing and route-frequency proxies, not failure probabilities or observed byte-volume loss; hidden MPLS paths and geolocation errors remain limits. Suggested backup paths/new conduits improve modeled sharing metrics, but physical rights-of-way and deployment costs constrain feasibility. Historical legal discussion is not current policy guidance. Supports explicit shared-failure dependencies and separate cable capacity versus traffic-loss measures; it does not independently validate satellite failover."
+  },
+  "78": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full fourteen-page paper reviewed. Network Syntax relates traceroute-derived AS-link popularity to traffic ground truth from one Tier-1 ISP and one IXP across 2011/2013 datasets. Strong correlations primarily apply to transformed, clustered links, not calibrated individual cable-byte volumes. Prediction excludes some outlying links and yields coarse order-of-magnitude estimates with substantial error. BGP graphs perform differently, and sparse vantage-point locations can inflate apparent popularity. Cleaning and coverage choices matter; private ground truth limits independent replication. Supports using route frequency as a qualified dependency proxy while rejecting its direct equivalence to measured traffic lost during a cable outage."
+  },
+  "24": {
+    "reading_status": "reviewed",
+    "version_note": "Retrieved sixteen-page IAC-18-B2.1.7 conference text describing September 2018 filings; the citation names the 2019 Acta Astronautica journal article. This precursor is not asserted identical to the cited final version.",
+    "reading_notes": "Full available text reviewed. Historical SpaceX/OneWeb/Telesat comparison combines demand, ITU atmospheric attenuation, DVB-S2X link budgets, genetic ground-site selection and minimum-cost maximum flow. Daily 60-second orbital states and independent weather draws model capacity distributions; ISL analysis subsamples feeder-capacity quantiles. Demand assumes 10% market capture and 300 kbps per user, with no obstruction, power shortfall, competing-constellation interference or landing-right restrictions. Ground sites and gateway antennas have different roles and counts. Shows why rate, demand and gateway assumptions materially affect bounds, but historical global sellable capacity is not empirical national emergency capacity."
+  },
+  "71": {
+    "reading_status": "reviewed",
+    "version_note": "Thirteen-page author typeset text carries 2020 acceptance and citation information; main bibliography dates the journal volume 2021.",
+    "reading_notes": "Full paper and algorithms reviewed. Static beam placement groups fixed users using worst-case angular separation and randomized clique heuristics; first-fit frequency planning enforces interference and satellite-group reuse constraints. Evaluation uses historical 4,409-satellite geometry and 18,712 proprietary projected terminals. Small cases permit optimality checks; larger cases only establish improvement over selected baselines, with about 2.3% of beams unassigned. Pairwise angular compatibility is a modeling approximation to physical beam coverage. Caption and body give inconsistent India example counts. Static plans, conservative satellite grouping and omitted joint power optimization differ from CosmoSim's state-specific greedy allocation; radio-coverage heuristics are not proven national service optima."
+  },
+  "48": {
+    "reading_status": "reviewed",
+    "version_note": "Thirteen-page author manuscript; references include 2025 material whereas the main bibliography gives a September 2023 preprint date. Exact-version equivalence is not asserted.",
+    "reading_notes": "Full text and equations reviewed. Models Starlink/Kuiper shared-band downlinks with phased-array gains, power-flux limits, 0.1-second states and ten clusters of 127 cells. Lagrangian/subgradient satellite selection trades time-averaged protection, absolute interference peaks and secondary utilization; dual bounds do not automatically prove global optimality of an integer solution. Interference protection is a proposed operating constraint, not evidence of regulatory acceptance. Intra-system interference is omitted. Learned primary associations have modest top-one accuracy, while more conservative candidate sets reduce utilization. Establishes that cross-constellation interference and handover-window choices can change usable capacity, both absent from our idealized fixed-rate national model."
+  },
+  "45": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full sixteen-page Hypatia paper, bibliography and bent-pipe appendix reviewed. Separates precomputed TLE/connectivity/forwarding states from ns-3 packet events and Cesium visualization. Its default four-ISL topology and FCC-era constellations differ from CosmoSim's three-ISL design. Static snapshots match most propagation RTTs but miss packets taking detours during route changes; one-second updates miss changes that 100-ms updates preserve. Loss-free handoffs and absent RF interference are favorable assumptions. TCP can misinterpret reordering as loss or orbital RTT increases as congestion, and changing cross-traffic leaves bandwidth unused. These results motivate temporal and application validation; they do not validate aggregate national maximum flow as achievable service."
+  },
+  "15": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full six-page text reviewed. Astrolabe estimates propagation RTT bounds for shortest-path ISL networks using orbital geometry; validation uses Hypatia simulations of city pairs rather than physical national capacity measurements. Lower bounds use chords to avoid arc overestimation, and upper bounds deliberately overestimate routes across planes. The model is conditional on routing/topology and omits operational delay sources. Supports orbital-state sensitivity and the need to distinguish geometric bounds from measured service performance."
+  },
+  "90": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full three-page paper reviewed. Calypso combines cable/rights metadata with traceroute, ASN, geolocation and latency feasibility to infer physical cable paths. Experts confirmed 56 of 66 selected mappings, with ten undisclosed rather than incorrect; that validation is not a random ground-truth sample. Route Stress reflects dependencies of observed traceroutes, not traffic byte volume or cable capacity. Supports keeping published cable-risk rankings separate from a measured national traffic-loss denominator."
+  },
+  "95": {
+    "reading_status": "reviewed",
+    "version_note": "Downloaded arXiv:2205.10721v3 (October 2022), preceding the cited WCNC 2023 publication; equivalence with the final conference version is not asserted.",
+    "reading_notes": "Full six-page preprint reviewed. Models a 600-km Walker constellation, 5G NR protocol stack, S/Ka bands, phased-array beams, power budgets, intra/inter-satellite interference and time-varying traffic. Greedy scheduling selects high-demand beams while enforcing a 42-km distance constraint; evaluation uses four satellites and 1,000 users in a China region. Beam separation improves SINR, throughput and satisfaction over unrestricted/round-robin schedules, and extra simultaneous beams can stop helping. This is not the fixed maximum-rate, interference-free CosmoSim bound; highlights omitted RF and scheduling uncertainty."
+  },
+  "68": {
+    "reading_status": "reviewed",
+    "version_note": "Five-page author manuscript; template publication placeholders remain. Final typeset equivalence is not asserted.",
+    "reading_notes": "Full text reviewed. Sequential resource allocation models nine proposed constellations with population-based 50-Tbps demand, atmospheric link budgets, gateway antennas, and coordinated interference. Thirty states at two-minute spacing are optimized with Gurobi; no global satellite power constraint or ISL congestion is modeled. Proposed combined capacity and subscriber extrapolations depend on oversubscription and geographically reachable demand. Gateway antennas are not equivalent to gateway sites. Differences from older estimates demonstrate sensitivity to resource-allocation assumptions; this is not operational national failover evidence."
+  },
+  "69": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full seven-page author text reviewed. Compares January-2021 filed Telesat, OneWeb, Starlink and Kuiper designs using population demand, ITU atmospheric attenuation, link budgets, optimized ground segments and maximum flow. Evaluates 1,440 daily orbital scenarios with 10,000 atmospheric samples per scenario. Initial and final phases use different elevation-angle assumptions; some ISL configurations are hypothetical. Capacity depends on gateway antennas and effective geographic demand, with diminishing returns from more satellites. Some summary improvement percentages differ from detailed tables; use scenario-specific values. Historical global totals cannot validate our national, fixed-rate upper-bound model directly."
+  },
+  "72": {
+    "reading_status": "reviewed",
+    "version_note": "Archived the complete November 2021 magazine issue (61 PDF pages); reviewed only the cited four-page article, printed pages 54\u201357. Industry analysis, not a peer-reviewed research article.",
+    "reading_notes": "Full cited article reviewed. Estimates Starlink throughput from FCC filings, modulation assumptions, beam hopping and reported terminal SNR. Separates theoretical dual-polarization satellite bandwidth from first-generation terminal constraints, and estimates US subscribers using five-hour average consumption, loading and geographic satellite visibility. Its cell and subscriber numbers depend on assumptions different from emergency 100-Mbps-per-terminal service; arithmetic and contemporaneous hardware assumptions prevent treating these estimates as measured capacity. Supports documenting RF-rate provenance and avoiding subscriber-count equivalence."
+  },
+  "77": {
+    "reading_status": "reviewed",
+    "version_note": "Retrieved the five-page March 2023 proceedings paper, pages 55\u201359. The main bibliography inconsistently names the 2024 conference while specifying 2023.",
+    "reading_notes": "Full text reviewed. Uses assumed Shannon/link-budget and modulation efficiencies to estimate per-satellite and aggregate constellation capacity, including a future deployment extrapolation. Multiplying nominal satellite rates by constellation size omits national visibility, demand geography, gateway and ISL constraints, RF interference, and operational scheduling. Coding-gain assumptions are not independent physical received-power measurements. These global theoretical totals are not a direct reference outcome for national failover."
+  },
+  "87": {
+    "reading_status": "reviewed",
+    "version_note": "Retrieved seven-page arXiv:2307.00402v1 (July 2023), rather than the final CoNEXT companion layout; an obsolete conference template appears in the preprint.",
+    "reading_notes": "Full preprint text reviewed. Four terminals and high-frequency PoP-directed measurements reveal synchronized 15-second scheduling intervals and within-interval latency bands. Serving satellites are inferred from successive obstruction-map differences and TLE trajectory matching; manual agreement is reported for 500 pilot cases. Selection favors elevation, direction, launch age and sunlight; explanations remain partly inferred and exclude proprietary load information. A random forest predicts satellite-feature clusters, not exact identities, with top-five accuracy compared to a baseline. This supports treating adjacent seconds as correlated states and distinguishes our remapping heuristic from an empirical Starlink scheduler."
+  },
+  "91": {
+    "reading_status": "reviewed",
+    "version_note": "Verified author-hosted eight-page Tiansuan paper. A previously guessed arXiv URL returned an unrelated ontology paper, which was rejected and quarantined; it is not counted as this source. The author manuscript discusses events after the cited conference date, so exact final-version equivalence is not asserted.",
+    "reading_notes": "Full text reviewed. Proposes an open experimental constellation in three phases and describes satellite hardware, limited ground-contact windows, core-network and KubeEdge image-inference deployments. Many networking, computing and security capabilities are research proposals rather than completed evaluations. Case studies establish feasibility of onboard functions, not national aggregate broadband throughput. Highlights power, thermal, radiation, orchestration and intermittent-link limits absent from our idealized capacity model."
+  },
+  "92": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full eight-page text reviewed. Proposes hierarchical heterogeneous-cell planning through approximately balanced traffic-demand territories, followed by radio/QoS coverage checks and low-power cells for uncovered demand. Replanning is triggered by the coefficient of variation of cell loads. Preliminary deployment illustrations and simplified interference arguments do not establish a universal optimum for satellite terminals; terrestrial base stations and coverage constraints differ. Supports reporting spatial allocation, served population, actual deployment and capacity separately rather than equating population-proportional placement with optimal service."
+  },
+  "25": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full seven-page article and repository cover reviewed. Four-month Kiel-Fjord vessel campaign combines Starlink FHP and two 5G networks using TWAMP and fixed-target UDP throughput. The 50-Mbps downlink target censors achievable capacity; an uplink shortfall is distinct from national downlink failover. Measurement rates, moving/docked sample counts and terrestrial PoP delays differ. Trace emulation shows BBR throughput/retransmission tradeoffs, not a change to satellite aggregate capacity. Priority traffic, local cellular coverage, mounting and geographic selection limit generalization."
+  },
+  "35": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full seven-page text reviewed. One terminal and a shared NIC clock measure bidirectional one-way delays at 266-microsecond spacing over 1,437 successful runs, separating baseline, path variation, frame scheduling and reconfiguration queues. Observations include the terrestrial PoP path; proposed decomposition is approximate, not independently identified component ground truth. The paper demonstrates aliasing at 10-ms sampling and explicitly challenges earlier interpretations of delay bands, including reference 87. Supports avoiding latency or application-service claims from our one-second capacity snapshots and treating scheduling explanations as unsettled."
+  },
+  "65": {
+    "reading_status": "reviewed",
+    "version_note": "Eight-page institutional repository file contains a cover and seven-page accepted manuscript with placeholder DOI fields.",
+    "reading_notes": "Full text reviewed. A single Belgian Starlink site measures months of ping, Ookla, QUIC transfers and website loads, compared with a GEO service and wired baseline. QUIC removes transport-proxy ambiguity; offered load raises latency and packet loss, and single-flow QUIC differs from multi-flow speed tests. Satellite-only and terrestrial-path delays are not identical. No throughput seasonality at this early deployment does not establish absence of later contention or capacity availability elsewhere. The geographically narrow and historical observations inform terminal-rate plausibility, not a national aggregate validation."
+  },
+  "51": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full eight-page text reviewed. Two-month German service-van campaign logs 15,269 samples, including 4,196 while moving, with FHP dish, UDP tests, ping, route and power data. Throughput drops with motion but correlations with actual speed are weak; high-speed groups are sparse and route obstructions confound attribution. Priority and hardware differ from stationary comparison data. Power samples are much fewer than network samples; startup and winter heating confound motion-power effects. Battery charging limits prevented fully autonomous operation. Emphasizes deployability and power constraints excluded from idealized national capacity."
+  },
+  "44": {
+    "reading_status": "reviewed",
+    "version_note": "Nine-page arXiv:2406.11366v1, June 2024.",
+    "reading_notes": "Full preprint text reviewed. Mininet-based platform precomputes orbital/link/routing states, applies only changing links and prunes to paths relevant to selected flows. Supports RF/weather-dependent GSLs, fixed ISLs and shortest-path routing with Linux applications. Scalability comparisons depend on implementation, machine and flow selection; preparation cost is separate from real-time updates. Weather throughput comparisons use a local terminal and assumed cell-density sharing, not independent national-scale capacity validation. Routing update loss and application dynamics are distinct from a maximum-flow upper bound. Relevant-link pruning cannot be transferred to a national max-flow problem without preserving alternative paths."
+  },
+  "66": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full twelve-page paper including appendices reviewed. Combines 19.2-million user-initiated speed tests, 98 Atlas probes, controlled terminals and application experiments. IP/PoP geolocation, country inclusion thresholds, repeated users and mixed wired/mobile operator samples constrain global comparisons. Controlled shielding challenges a satellite-handoff-only explanation of 15-second performance events; clock drift in interrupted tests required adjustment. Loaded delay, packet loss and goodput differ from idealized rate limits. Ground infrastructure and terrestrial PoP paths matter, while ISL usage is inferred because satellite hops are invisible. Supports sensitivity analysis and rejects extrapolating aggregate service from single-terminal performance."
+  },
+  "57": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full nineteen-page NSDI paper, references and security appendix reviewed. MOSAIC restructures multi-operator satellite cellular access around in-band state retrieval, caching and pay-as-you-go cryptographic tokens. Commodity cellular-stack prototypes and emulated orbital/network conditions support reductions in control overhead and service interruptions, not measurements of national aggregate capacity. Security relies on established blind-signature properties, tamper-resistant SIMs and clearing; cracked SIM double spending is detected afterward, while service-quality enforcement needs additional two-sided measurement. Regulatory spectrum authorization and trustworthy accounting remain operational dependencies. Supports testing control-plane continuity, roaming and multi-tenancy separately from an idealized maximum-flow bound."
+  },
+  "12": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full twenty-six-page proceedings PDF, including cover, appendices, code listings and artifact instructions, reviewed. LEOCraft uses process-parallel orbital geometry and flow models to optimize trajectories/topologies. Throughput is a multi-commodity linear program restricted to twenty shortest candidate paths, with gravity-model demand, equal feeder bandwidth sharing, free-space/Shannon rates and fifty-Gbps four-ISL connectivity. These differ from CosmoSim national downlink maximum flow and its three-ISL graph. Domain-informed variable-neighborhood search accelerates tested designs but establishes heuristic improvements rather than global optimality; optimization comparisons use empirically chosen iteration budgets. Hypatia agreement validates selected propagation RTTs, not total capacity. Inter-shell handovers, obstruction and interference remain qualified limitations. Code and artifact instructions aid reproducibility, while traffic/gateway and PHY assumptions prevent direct empirical emergency-service claims."
+  },
+  "16": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full twenty-nine-page author paper and references reviewed. Hypatia geometry at one-second updates characterizes shortest-path lifetimes, usage and RTTs over complete 100\u2013110-minute orbits; Mahimahi/Pantheon separately emulate selected delay/bandwidth traces. Greedy routing can abandon usable paths for small RTT gains and concentrate many city pairs onto one path. Congestion-control results use one selected sixty-second route and deliberately alternating bandwidth levels, so they illustrate sensitivity rather than measure national deployment performance. ISL geometry is relatively stable; variable GSL availability and route composition create spatially structured RTT changes. Four-ISL phased grids, independent shells and no ground relays differ from our model. Additional satellite shells help variability only for certain inclinations/altitudes. Supports future service-continuity and application tests beyond static capacity snapshots."
+  },
+  "41": {
+    "reading_status": "reviewed",
+    "reading_notes": "Full twenty-six-page HitchHiking paper, references and all appendices reviewed. TTL-specific ICMP probes subtract the last visible pre-satellite hop from the customer hop, then smooth at fifteen seconds. Ground truth from one San Diego dish supports latency accuracy, while 2,473 exposed endpoints broaden geographic coverage but represent about 0.1% of users and exclude jittery paths. Measurements include gateway-to-PoP fiber and cannot directly identify satellite/ISL paths. Sustained-delay explanations combine physical lower bounds, customer location and operator confirmation; individual path assignments remain inferences. OneWeb extension lacks equipment-based validation. Important counterevidence to interpreting shortest-path physics as deployed network behavior: PoP anchoring and remote-gateway routing can increase latency. Does not measure national aggregate failover bandwidth or prove that observed endpoint samples represent all subscribers."
+  }
+}
