@@ -1,0 +1,17 @@
+--- /Users/Shared/allstar/jumpserve-back-end/experiments/reliable_sketch/sources/author/CPU/src/sketch/rs.cpp	2026-10-04 19:12:42
++++ /Users/Shared/allstar/jumpserve-back-end/experiments/reliable_sketch/implementation/rs-weighted-v1.cpp	2026-10-04 19:22:37
+@@ -220,12 +220,12 @@
+             min_val = min(min_val, bkt);
+         }
+         if (min_val != mf_err_bound) {
+-            int add_val = min(v, mf_err_bound - min_val);
++            int add_val = min(f, mf_err_bound - min_val);
+             f -= add_val;
+             for (register int j = 0; j < mf_n_hash; ++j) {
+                 int pos = MurmurHash3_x86_32((void*)&v, sizeof(int), rand_mf[j]) % mf_row_size + mf_row_size*j;
+                 int &bkt = mf[pos];
+-                bkt += add_val;
++                bkt = max(bkt, min_val + add_val);
+             }
+             if (f == 0)
+                 return;

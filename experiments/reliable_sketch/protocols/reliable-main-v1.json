@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "locked_at": "2026-10-05T00:22:39.590064+00:00",
+  "artifact_commit": "5a83f03c775142401d23a78e7e81b163ddf7b604",
+  "implementation_manifest_sha256": "be6bc2a2d4dc9d980a0d603963c619b251625db780d1a06e6715f384582f4448",
+  "comparison": "Exact ground-truth counts; outlier abs(error)>25. Equal input SHA, key identity, budget regime and seed for contrasts. No threshold tuning.",
+  "missing": "Failed runs retained with reason; no replacement seeds. Missing numbers null, zero explicit. Invalid input/parse/coverage is software failure. Scientific outliers and interval violations are findings.",
+  "statistics": "Run is replication unit. Ten preselected hash-seed runs on one fixed stream per skewness; keys and timing queries dependent. Report median and min/max descriptive range. No CI, p-value, population failure rate or causal estimate.",
+  "resources": {
+    "host": "local macOS arm64 workstation; actual platform recorded per campaign",
+    "requested_processes": 1,
+    "aws_instances": 0,
+    "max_wall_seconds": 1800,
+    "max_run_seconds": 45,
+    "max_original_input_bytes": 3000000,
+    "max_retained_bytes": 200000000,
+    "incremental_cloud_compute_usd": 0,
+    "allocated_workstation_cost_usd": null,
+    "model_cost_usd": null
+  },
+  "stopping": "Execute fixed grid once; stop after 1800 seconds or resource/hash failure; preserve all completed/failed/excluded records. Never retry a seed silently.",
+  "inapplicable": [
+    "Orbital epochs, geography, deployed terminal counts and link propagation/throughput tests: stream counting domain.",
+    "Archived data reanalysis: no authors result datasets/plot tables are released.",
+    "Protocol compliance: not a network protocol conformance paper."
+  ],
+  "limits": [
+    "Not the paper\u2019s original real-world traces or 32M-item synthetic input.",
+    "No FPGA VC709 or Tofino/SDE; synthesis, switch accuracy and line rate remain untested.",
+    "Fixed observed-key census plus three absent probes is not an unlimited-key/domain guarantee.",
+    "Formal theorem uses stronger constants, hash assumptions and SpaceSaving fallback; empirical CPU configuration excludes fallback.",
+    "Timing on one machine cannot replicate i9-10980XE results or operational effectiveness."
+  ],
+  "id": "reliable-main-v1",
+  "stage": "main",
+  "question": "How does released CPU accuracy behave under nominal memory budgets?",
+  "hypotheses": [
+    "All observed keys and absent probes have error<=25 when insertion mass is retained; violations remain recorded.",
+    "MPE interval includes exact truth; violations are investigated, not excluded.",
+    "Allocated counter memory differs from reported packed memory for ReliableSketch."
+  ],
+  "metrics": {
+    "outliers": "keys",
+    "max_absolute_error": "count units",
+    "AAE": "count units/key",
+    "ARE": "dimensionless on positive truth only",
+    "interval_violations": "keys; null for baselines without bounds",
+    "lost_mass": "unit updates",
+    "insert_throughput": "million updates/s",
+    "query_throughput": "million repeated key queries/s",
+    "memory": "bytes, explicitly nominal or allocated counters; exclude metadata/allocator/RSS"
+  },
+  "configurations": {
+    "algorithms": [
+      "RS",
+      "RS_raw",
+      "CM3",
+      "CM16",
+      "CU3",
+      "CU16"
+    ],
+    "budgets_bytes": [
+      8192,
+      32768,
+      131072
+    ],
+    "budget_regime": "nominal",
+    "lambda_count_units": 25,
+    "r_w": 2.0,
+    "r_lambda": 2.5,
+    "max_layers": 20,
+    "filter_fraction": 0.2,
+    "filter_threshold": 3,
+    "filter_hashes": 2
+  },
+  "inputs": {
+    "generator": "Python random.Random.choices weighted finite support 1..4096, w(k)=k**(-skew); uint32 little endian, positive unit updates",
+    "items": 250000,
+    "support": 4096,
+    "skewness": [
+      0.3,
+      1.2,
+      3.0
+    ],
+    "input_seeds": [
+      2026100401,
+      2026100402,
+      2026100403
+    ],
+    "hash_seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "versions": "Python version retained; exact stream bytes+hashes authoritative"
+  },
+  "sample_size": "3 skewness x 3 budgets x 6 algorithms x 10 fixed hash seeds =540 runs. Bounded seed sensitivity, not powered validation of Delta<1e-10.",
+  "controls": "Exact Counter truth and independent CSV aggregate recomputation; bucket state enumeration and weighted controls separately frozen; main original unit API only.",
+  "sensitivity": "Filtered/raw, 3/16 rows, memory budgets, skewness; equal-allocated follow-up predeclared separately."
+}

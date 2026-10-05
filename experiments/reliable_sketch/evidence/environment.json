@@ -1,0 +1,12 @@
+{
+  "python": "3.13.3",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "packages": {
+    "pypdf": "6.19.0",
+    "pypdfium2": "5.14.0",
+    "boto3": "1.43.108",
+    "strands-agents": "1.57.2",
+    "pydantic": "2.13.5",
+    "httpx": "0.28.1"
+  }
+}

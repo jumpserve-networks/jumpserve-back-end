@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "locked_at": "2026-10-05T00:22:39.590064+00:00",
+  "artifact_commit": "5a83f03c775142401d23a78e7e81b163ddf7b604",
+  "implementation_manifest_sha256": "be6bc2a2d4dc9d980a0d603963c619b251625db780d1a06e6715f384582f4448",
+  "comparison": "Exact ground-truth counts; outlier abs(error)>25. Equal input SHA, key identity, budget regime and seed for contrasts. No threshold tuning.",
+  "missing": "Failed runs retained with reason; no replacement seeds. Missing numbers null, zero explicit. Invalid input/parse/coverage is software failure. Scientific outliers and interval violations are findings.",
+  "statistics": "Run is replication unit. Ten preselected hash-seed runs on one fixed stream per skewness; keys and timing queries dependent. Report median and min/max descriptive range. No CI, p-value, population failure rate or causal estimate.",
+  "resources": {
+    "host": "local macOS arm64 workstation; actual platform recorded per campaign",
+    "requested_processes": 1,
+    "aws_instances": 0,
+    "max_wall_seconds": 1800,
+    "max_run_seconds": 45,
+    "max_original_input_bytes": 3000000,
+    "max_retained_bytes": 200000000,
+    "incremental_cloud_compute_usd": 0,
+    "allocated_workstation_cost_usd": null,
+    "model_cost_usd": null
+  },
+  "stopping": "Execute fixed grid once; stop after 1800 seconds or resource/hash failure; preserve all completed/failed/excluded records. Never retry a seed silently.",
+  "inapplicable": [
+    "Orbital epochs, geography, deployed terminal counts and link propagation/throughput tests: stream counting domain.",
+    "Archived data reanalysis: no authors result datasets/plot tables are released.",
+    "Protocol compliance: not a network protocol conformance paper."
+  ],
+  "limits": [
+    "Not the paper\u2019s original real-world traces or 32M-item synthetic input.",
+    "No FPGA VC709 or Tofino/SDE; synthesis, switch accuracy and line rate remain untested.",
+    "Fixed observed-key census plus three absent probes is not an unlimited-key/domain guarantee.",
+    "Formal theorem uses stronger constants, hash assumptions and SpaceSaving fallback; empirical CPU configuration excludes fallback.",
+    "Timing on one machine cannot replicate i9-10980XE results or operational effectiveness."
+  ],
+  "id": "reliable-controls-pilot-v1",
+  "stage": "pilot",
+  "question": "Do weighted filter, printed lock order and finite bucket invariants behave as specified?",
+  "inputs": "Keys1/2/10, weight5; pilot seed1, main seeds1..5; bucket length<=5, three keys and positive weights1..3.",
+  "metrics": "Exact estimates, bounds, mass and interval inclusion; no statistical inference.",
+  "publication_criterion": "Report every control, including mismatches. A released-code bug is not proof of published generating code."
+}

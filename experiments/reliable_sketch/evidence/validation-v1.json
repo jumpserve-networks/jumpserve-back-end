@@ -1,0 +1,23 @@
+{
+  "id": "reliable-validation-v1",
+  "at": "2026-10-05T00:32:59.281809+00:00",
+  "raw_files_checked": 1080,
+  "raw_hashes_passed": 1080,
+  "key_identity_checks": 1080,
+  "independent_aggregate_checks": 4320,
+  "findings": {
+    "total_cpu_runs": 1080,
+    "source_records": 47,
+    "claims": 16,
+    "lossless_main_RS_runs": 120,
+    "lossless_main_interval_violations": 0,
+    "main_RS_runs_with_loss": 60,
+    "main_RS_runs_with_outliers": 60,
+    "all_cpu_statuses": {
+      "complete": 1080
+    }
+  },
+  "limitations": [
+    "Independent aggregate arithmetic shares retained inputs, public CSV and specified metrics. It does not independently implement the full sketch/hash or validate the theorem."
+  ]
+}

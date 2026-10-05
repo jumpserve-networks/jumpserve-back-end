@@ -1,0 +1,2659 @@
+[
+  {
+    "reference_number": 0,
+    "citation": "Wu et al. 2025. Approaching 100% Confidence in Stream Summary through ReliableSketch. IMC 2025, 18 pages.",
+    "doi": "10.1145/3730567.3764459",
+    "kind": "main paper",
+    "role": "assessed paper",
+    "source_url": "https://yangtonghome.github.io/uploads/ReliableSketch__IMC_2025.pdf",
+    "retrieved_url": "https://yangtonghome.github.io/uploads/ReliableSketch__IMC_2025.pdf",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "Author-hosted IMC 2025 PDF, 18 pages, DOI 10.1145/3730567.3764459; retrieved 2026-10-05T00:19:43.652135+00:00",
+    "original_path": "sources/main.pdf",
+    "sha256": "ee674e8153757670ee527c5f3822e533c797af1dd724023dd016be229ad18eec",
+    "byte_count": 2104886,
+    "pages": 18,
+    "retrieved_at": "2026-10-05T00:19:43.653276+00:00",
+    "findings": "Stream summary for positive weights. Empirical default excludes auxiliary fallback; formal bound includes it. CPU, FPGA and Tofino claims have different conditions.",
+    "limitations": "Main text read; proof audit and numerical digitization of all curves incomplete. Appendix concentration steps require further independent mathematical review.",
+    "retrieval_attempts": [
+      {
+        "url": "https://yangtonghome.github.io/uploads/ReliableSketch__IMC_2025.pdf",
+        "status": "retrieved PDF by curl",
+        "at": "2026-10-05T00:19:43.653279+00:00",
+        "sha256": "ee674e8153757670ee527c5f3822e533c797af1dd724023dd016be229ad18eec"
+      }
+    ],
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 1,
+    "citation": "[n. d.]. Murmur Hashing source codes. https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp.",
+    "doi": null,
+    "kind": "software",
+    "role": "implementation",
+    "source_url": "https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp.",
+    "access_status": "retrieved",
+    "review_status": "complete",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "30f121ed155ebf336af398aabb7d8d157afdfafc8d981e7b48d2a1ceb4b63e4e",
+    "pages": null,
+    "findings": "All source functions and platform branches inspected: x86_32, x86_128, x64_128, block reads, tails and avalanche. Platform variants differ; noncryptographic hashing is not an independent uniform-hash proof.",
+    "limitations": "Complete file reading; not empirical hash-independence/security validation. GitHub master retrieval is fixed by retained byte hash.",
+    "retrieval_attempts": [
+      {
+        "url": "https://raw.githubusercontent.com/aappleby/smhasher/master/src/MurmurHash3.cpp",
+        "final_url": "https://raw.githubusercontent.com/aappleby/smhasher/master/src/MurmurHash3.cpp",
+        "at": "2026-10-05T00:19:43.904020+00:00",
+        "http_status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "sha256": "30f121ed155ebf336af398aabb7d8d157afdfafc8d981e7b48d2a1ceb4b63e4e",
+        "bytes": 7901,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://raw.githubusercontent.com/aappleby/smhasher/master/src/MurmurHash3.cpp",
+    "original_path": "sources/ref-01.cpp",
+    "byte_count": 7901,
+    "retrieved_at": "2026-10-05T00:19:43.906222+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 2,
+    "citation": "[n. d.]. Source code related to ReliableSketch. https://github.com/ReliableSketch/ReliableSketch.",
+    "doi": null,
+    "kind": "software",
+    "role": "implementation",
+    "source_url": "https://github.com/ReliableSketch/ReliableSketch.",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "9a25d7658a633a24684ce75305c825ecdd344c5e7737d761880dc6a7e7878be6",
+    "pages": null,
+    "findings": "Pinned CPU RS/CM/CU implementation and allocation/update/query paths examined; FPGA and TestBed source trees retained.",
+    "limitations": "CPU paths and harness linkage reviewed; FPGA RTL, P4 compilation and full source tree not completely inspected. GitHub API metadata alone is not the artifact; full git revision preserved.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.github.com/repos/ReliableSketch/ReliableSketch/commits/5a83f03c775142401d23a78e7e81b163ddf7b604",
+        "final_url": "https://api.github.com/repos/ReliableSketch/ReliableSketch/commits/5a83f03c775142401d23a78e7e81b163ddf7b604",
+        "at": "2026-10-05T00:19:44.296829+00:00",
+        "http_status": 200,
+        "content_type": "application/json; charset=utf-8",
+        "sha256": "9a25d7658a633a24684ce75305c825ecdd344c5e7737d761880dc6a7e7878be6",
+        "bytes": 5147,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://api.github.com/repos/ReliableSketch/ReliableSketch/commits/5a83f03c775142401d23a78e7e81b163ddf7b604",
+    "original_path": "sources/ref-02.json",
+    "byte_count": 5147,
+    "retrieved_at": "2026-10-05T00:19:44.297748+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 3,
+    "citation": "[n. d.]. Frequent itemset mining dataset repository. http://fimi.ua.ac.be/data/.",
+    "doi": null,
+    "kind": "dataset",
+    "role": "input provenance",
+    "source_url": "http://fimi.ua.ac.be/data/.",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://fimi.uantwerpen.be/data/",
+        "at": "2026-10-05T00:19:44.370048+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1028)>"
+      },
+      {
+        "url": "http://fimi.ua.ac.be/data/",
+        "at": "2026-10-05T00:19:45.492684+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://fimi.uantwerpen.be/data/",
+        "at": "2026-10-05T00:23:45.687841+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1028)>"
+      },
+      {
+        "url": "https://fimi.ua.ac.be/data/",
+        "at": "2026-10-05T00:23:46.033494+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1028)>"
+      },
+      {
+        "url": "https://fimi.uantwerpen.be/data/",
+        "at": "2026-10-05T00:26:56.259270+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1028)>"
+      },
+      {
+        "url": "http://fimi.ua.ac.be/data/",
+        "at": "2026-10-05T00:26:56.611218+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      }
+    ],
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 4,
+    "citation": "[n. d.]. The CAIDA Anonymized Internet Traces. http://www.caida.org/data/overview/.",
+    "doi": null,
+    "kind": "dataset",
+    "role": "input provenance",
+    "source_url": "http://www.caida.org/data/overview/.",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "fb03be13991abfb04e7f99c91151ecf1877cade210c5cb04f8e8c4d81130d9cd",
+    "pages": null,
+    "findings": "CAIDA data catalog/access context inspected; exact experiment trace bytes and epoch not supplied.",
+    "limitations": "Catalog is not the trace used in paper. Data access conditions and unspecified transformation prevent original input match.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.caida.org/catalog/datasets/passive_dataset/",
+        "final_url": "https://www.caida.org/catalog/datasets/passive_dataset/",
+        "at": "2026-10-05T00:19:44.378585+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "fb03be13991abfb04e7f99c91151ecf1877cade210c5cb04f8e8c4d81130d9cd",
+        "bytes": 33769,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.caida.org/catalog/datasets/passive_dataset/",
+    "original_path": "sources/ref-04.html",
+    "byte_count": 33769,
+    "retrieved_at": "2026-10-05T00:19:44.380031+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 5,
+    "citation": "Anup Agarwal, Zaoxing Liu, and Srinivasan Seshan. 2022. {HeteroSketch}: Coordinating network-wide monitoring in heterogeneous and dynamic networks. In19th USENIX Symposium on Networked Systems Design and Implementation (NSDI 22). 719\u2013741.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "d12d1d3d6b406ae0ef5a447be829c3a0d15d61c9f064dc7d6f4e562d7753edbd",
+    "pages": 24,
+    "findings": "Heterogeneous-device placement/resource optimization; abstract and opening context inspected. Different network-wide optimization task.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.usenix.org/system/files/nsdi22-agarwal.pdf",
+        "at": "2026-10-05T00:19:44.353570+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.usenix.org/system/files/nsdi22-paper-agarwal.pdf",
+        "final_url": "https://www.usenix.org/system/files/nsdi22-paper-agarwal.pdf",
+        "at": "2026-10-05T00:23:46.266404+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "d12d1d3d6b406ae0ef5a447be829c3a0d15d61c9f064dc7d6f4e562d7753edbd",
+        "bytes": 1269963,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.usenix.org/system/files/nsdi22-paper-agarwal.pdf",
+    "original_path": "sources/ref-05.pdf",
+    "byte_count": 1269963,
+    "retrieved_at": "2026-10-05T00:23:46.271146+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 6,
+    "citation": "Noga Alon, Phillip B Gibbons, Yossi Matias, and Mario Szegedy. 1999. Tracking join and self-join sizes in limited storage. InProceedings of the eighteenth ACM SIGMOD-SIGACT-SIGART symposium on Principles of database systems. 10\u201320.",
+    "doi": "10.1145/303976.303978",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/303976.303978",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/303976.303978",
+        "at": "2026-10-05T00:19:44.166070+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f9fdb47a2fce807b84e2ff314126ad11a44f4509e2696290445a17d6b1b7dd92",
+        "bytes": 6696
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/303976.303978",
+        "at": "2026-10-05T00:19:44.320782+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/303976.303978",
+        "at": "2026-10-05T00:19:44.675563+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/303976.303978",
+        "at": "2026-10-05T00:23:45.818008+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f9fdb47a2fce807b84e2ff314126ad11a44f4509e2696290445a17d6b1b7dd92",
+        "bytes": 6696
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/303976.303978",
+        "at": "2026-10-05T00:23:46.002178+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/303976.303978",
+        "at": "2026-10-05T00:23:46.349157+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/303976.303978",
+        "at": "2026-10-05T00:26:56.245587+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f9fdb47a2fce807b84e2ff314126ad11a44f4509e2696290445a17d6b1b7dd92",
+        "bytes": 6696
+      },
+      {
+        "url": "https://www.tau.ac.il/~nogaa/PDFS/join.pdf",
+        "at": "2026-10-05T00:26:57.707987+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/303976.303978",
+        "at": "2026-10-05T00:26:57.813690+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/303976.303978",
+        "at": "2026-10-05T00:26:58.075902+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "f9fdb47a2fce807b84e2ff314126ad11a44f4509e2696290445a17d6b1b7dd92",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 7,
+    "citation": "Noga Alon, Yossi Matias, and Mario Szegedy. 1996. The space complexity of approximating the frequency moments. InProceedings of the twenty-eighth annual ACM symposium on Theory of computing. 20\u201329.",
+    "doi": "10.1145/237814.237823",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/237814.237823",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "5bf6489d13be8d74c6752843c97096506951d24bf361056997319f64103ee4bf",
+    "pages": 19,
+    "findings": "Frequency-moment space bounds; author manuscript dated February22,2002, preliminary STOC1996 paper. Not frequency-error guarantees for each key.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/237814.237823",
+        "at": "2026-10-05T00:19:44.563373+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "566cc261f977071293dee5799233ebc89abefd17f2f0c2792ab6ca8b6d76aef6",
+        "bytes": 2587
+      },
+      {
+        "url": "https://www.tau.ac.il/~nogaa/PDFS/amsz4.pdf",
+        "final_url": "https://www.tau.ac.il/~nogaa/PDFS/amsz4.pdf",
+        "at": "2026-10-05T00:19:46.258629+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "5bf6489d13be8d74c6752843c97096506951d24bf361056997319f64103ee4bf",
+        "bytes": 246911,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "566cc261f977071293dee5799233ebc89abefd17f2f0c2792ab6ca8b6d76aef6",
+    "retrieved_url": "https://www.tau.ac.il/~nogaa/PDFS/amsz4.pdf",
+    "original_path": "sources/ref-07.pdf",
+    "byte_count": 246911,
+    "retrieved_at": "2026-10-05T00:19:46.261879+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 8,
+    "citation": "Ran Ben Basat, Xiaoqi Chen, Gil Einziger, and Ori Rottenstreich. 2020. Design- ing heavy-hitter detection algorithms for programmable switches.IEEE/ACM Transactions on Networking28, 3 (2020), 1172\u20131185.",
+    "doi": "10.1109/TNET.2020.2982739",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1109/TNET.2020.2982739",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "ce6f7e8694dd84cbf9321f2953fa82f1048df7aac4896667d62c92df9f1e6410",
+    "pages": 14,
+    "findings": "PRECISION partial recirculation accommodates RMT constraints; accepted journal manuscript with provisional pagination.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/TNET.2020.2982739",
+        "at": "2026-10-05T00:19:44.640369+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "7bcd5869739b4aa5f6aa4eff5acfa52ff348f63ead43be85b83e79c7e112af9f",
+        "bytes": 8975
+      },
+      {
+        "url": "https://ieeexplore.ieee.org/ielam/90/9119211/9069311-aam.pdf",
+        "final_url": "https://ieeexplore.ieee.org/Xplore/login.jsp?url=%2Fielam%2F90%2F9119211%2F9069311-aam.pdf&authDecision=-203",
+        "at": "2026-10-05T00:19:45.339505+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "d73a9f5e47e48ace12316435f9b5c7d6a0814a71755db31493ea1048f0b426d3",
+        "bytes": 36114,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/90/9119211/09069311.pdf?arnumber=9069311",
+        "final_url": "https://xplorestaging.ieee.org/document/9069311/;jsessionid=3B68D3EC0EE7CDD8C21C3E48FF93038C",
+        "at": "2026-10-05T00:19:46.205130+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "7443a06aef98a3365a3c8fcaef1ac9221f440fa7fb468ff322cb5ed6e252d294",
+        "bytes": 51111,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://doi.org/10.1109/TNET.2020.2982739",
+        "final_url": "https://ieeexplore.ieee.org/document/9069311/",
+        "at": "2026-10-05T00:19:46.687333+00:00",
+        "http_status": 202,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1109/TNET.2020.2982739",
+        "at": "2026-10-05T00:23:45.655043+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "7bcd5869739b4aa5f6aa4eff5acfa52ff348f63ead43be85b83e79c7e112af9f",
+        "bytes": 8975
+      },
+      {
+        "url": "https://engineering.purdue.edu/~xiaoqic/documents/paper-PRECISION-ToN.pdf",
+        "final_url": "https://engineering.purdue.edu/~xiaoqic/documents/paper-PRECISION-ToN.pdf",
+        "at": "2026-10-05T00:23:46.971841+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "ce6f7e8694dd84cbf9321f2953fa82f1048df7aac4896667d62c92df9f1e6410",
+        "bytes": 2505118,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "7bcd5869739b4aa5f6aa4eff5acfa52ff348f63ead43be85b83e79c7e112af9f",
+    "retrieved_url": "https://engineering.purdue.edu/~xiaoqic/documents/paper-PRECISION-ToN.pdf",
+    "original_path": "sources/ref-08.pdf",
+    "byte_count": 2505118,
+    "retrieved_at": "2026-10-05T00:23:47.000689+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 9,
+    "citation": "Ran Ben Basat, Gil Einziger, Michael Mitzenmacher, and Shay Vargaftik. 2021. SALSA: self-adjusting lean streaming analytics. In2021 IEEE 37th International Conference on Data Engineering (ICDE). IEEE, 864\u2013875.",
+    "doi": "10.1109/ICDE51399.2021.00080",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1109/ICDE51399.2021.00080",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "fea4558f0e4570adb31c858448a0c5edda7dae62d9386ce2c62f99506707549c",
+    "pages": 15,
+    "findings": "Dynamic counter resizing by neighbor merges; abstract and final metric discussion inspected. AAE/ARE can favor a zero estimator on many small flows; metric population matters.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/ICDE51399.2021.00080",
+        "at": "2026-10-05T00:19:44.699667+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "81d0a9075bbcde7899526cc3541f91e55fc432062ff07362c23650611af86924",
+        "bytes": 7305
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/9458599/9458600/09458734.pdf?arnumber=9458734",
+        "final_url": "https://xplorestaging.ieee.org/document/9458734/;jsessionid=D828DF0CE07CE2F5EF5250530AF604A8",
+        "at": "2026-10-05T00:19:45.894441+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "622b58653021ef4e9d025d155ccb407a8e599fdb92ab2d8a568c29c70949d2e5",
+        "bytes": 46481,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://doi.org/10.1109/ICDE51399.2021.00080",
+        "final_url": "https://ieeexplore.ieee.org/document/9458734/",
+        "at": "2026-10-05T00:19:46.258732+00:00",
+        "http_status": 202,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1109/ICDE51399.2021.00080",
+        "at": "2026-10-05T00:23:45.644056+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "81d0a9075bbcde7899526cc3541f91e55fc432062ff07362c23650611af86924",
+        "bytes": 7305
+      },
+      {
+        "url": "https://arxiv.org/pdf/2102.12531",
+        "final_url": "https://arxiv.org/pdf/2102.12531",
+        "at": "2026-10-05T00:23:47.631656+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "fea4558f0e4570adb31c858448a0c5edda7dae62d9386ce2c62f99506707549c",
+        "bytes": 2225962,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "81d0a9075bbcde7899526cc3541f91e55fc432062ff07362c23650611af86924",
+    "retrieved_url": "https://arxiv.org/pdf/2102.12531",
+    "original_path": "sources/ref-09.pdf",
+    "byte_count": 2225962,
+    "retrieved_at": "2026-10-05T00:23:47.679720+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 10,
+    "citation": "Ran Ben-Basat, Xiaoqi Chen, Gil Einziger, and Ori Rottenstreich. 2018. Efficient measurement on programmable switches using probabilistic recirculation. In2018 IEEE 26th International Conference on Network Protocols (ICNP). IEEE, 313\u2013323.",
+    "doi": "10.1109/ICNP.2018.00047",
+    "kind": "research",
+    "role": "baseline",
+    "source_url": "https://doi.org/10.1109/ICNP.2018.00047",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "89324bd77d6e14def169ca56a2872dfd5deb364bf25d5d19db51ca16e902b4eb",
+    "pages": 12,
+    "findings": "Probabilistic recirculation for switch-compatible heavy hitters; conference precursor to ref8, not independent replication.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/ICNP.2018.00047",
+        "at": "2026-10-05T00:19:44.885494+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "8aceb7c95c240ce1819e5b2c9a8b405f0a5c0e982be3c24388d58ba17c87f3ea",
+        "bytes": 5323
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/8526479/8526788/08526835.pdf?arnumber=8526835",
+        "final_url": "https://xplorestaging.ieee.org/document/8526835/;jsessionid=2407AD9D95B6A4648E4683AFF464CB0F",
+        "at": "2026-10-05T00:19:45.925745+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "af2499635378879d255d33ad93725af08977ed6ae86127d5d2647260cf9d5c57",
+        "bytes": 47696,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://doi.org/10.1109/ICNP.2018.00047",
+        "final_url": "https://ieeexplore.ieee.org/document/8526835/",
+        "at": "2026-10-05T00:19:46.286143+00:00",
+        "http_status": 202,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1109/ICNP.2018.00047",
+        "at": "2026-10-05T00:23:46.263615+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "8aceb7c95c240ce1819e5b2c9a8b405f0a5c0e982be3c24388d58ba17c87f3ea",
+        "bytes": 5323
+      },
+      {
+        "url": "https://arxiv.org/pdf/1808.03412",
+        "final_url": "https://arxiv.org/pdf/1808.03412",
+        "at": "2026-10-05T00:23:46.656358+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "89324bd77d6e14def169ca56a2872dfd5deb364bf25d5d19db51ca16e902b4eb",
+        "bytes": 790060,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "8aceb7c95c240ce1819e5b2c9a8b405f0a5c0e982be3c24388d58ba17c87f3ea",
+    "retrieved_url": "https://arxiv.org/pdf/1808.03412",
+    "original_path": "sources/ref-10.pdf",
+    "byte_count": 790060,
+    "retrieved_at": "2026-10-05T00:23:46.690342+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 11,
+    "citation": "Theophilus Benson, Aditya Akella, and David A Maltz. 2010. Network traffic char- acteristics of data centers in the wild. InProceedings of the 10th ACM SIGCOMM conference on Internet measurement. 267\u2013280.",
+    "doi": "10.1145/1879141.1879175",
+    "kind": "research",
+    "role": "input provenance",
+    "source_url": "https://doi.org/10.1145/1879141.1879175",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:19:45.817501+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "c68b6b0594246892f7a6e2d7d9a93ed403aae5da34f6e55771cde32a78e2df6e",
+        "bytes": 8798
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:19:46.013986+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:19:46.444435+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:23:46.650779+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "c68b6b0594246892f7a6e2d7d9a93ed403aae5da34f6e55771cde32a78e2df6e",
+        "bytes": 8798
+      },
+      {
+        "url": "https://pages.cs.wisc.edu/~akella/papers/imc10.pdf",
+        "at": "2026-10-05T00:23:46.898147+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://tbenson.github.io/docs/imc10.pdf",
+        "at": "2026-10-05T00:23:47.159160+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:23:47.353728+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:23:47.774284+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:26:56.171981+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "c68b6b0594246892f7a6e2d7d9a93ed403aae5da34f6e55771cde32a78e2df6e",
+        "bytes": 8798
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:26:56.340666+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/1879141.1879175",
+        "at": "2026-10-05T00:26:56.727688+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "c68b6b0594246892f7a6e2d7d9a93ed403aae5da34f6e55771cde32a78e2df6e",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 12,
+    "citation": "Robert S Boyer and J Strother Moore. 1991. MJRTY\u2014a fast majority vote algorithm. InAutomated Reasoning. Springer, 105\u2013117.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "partial resource",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "5c5e0cb46e70876de6b5245266fa251da57e757de73237aed0dbafcd1bc54f3c",
+    "pages": null,
+    "findings": "Associated original software/author landing resource inspected; cited full publication not retrieved.",
+    "limitations": "Webpage is not the full cited paper/book chapter. Algorithm proofs, publication text and figures remain unavailable; rows12/31 use same author webpage and are not independent sources.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.cs.utexas.edu/~moore/best-ideas/mjrty/index.html",
+        "final_url": "https://www.cs.utexas.edu/~moore/best-ideas/mjrty/index.html",
+        "at": "2026-10-05T00:19:46.906501+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "5c5e0cb46e70876de6b5245266fa251da57e757de73237aed0dbafcd1bc54f3c",
+        "bytes": 1320,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.cs.utexas.edu/~moore/best-ideas/mjrty/index.html",
+    "original_path": "sources/ref-12.html",
+    "byte_count": 1320,
+    "retrieved_at": "2026-10-05T00:19:46.907261+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 13,
+    "citation": "Weibo Cai, Shulin Yang, Gang Sun, Qiming Zhang, and Hongfang Yu. 2023. Adaptive load balancing for parameter servers in distributed machine learning over heterogeneous networks.ZTE Communications21, 1 (March 2023), 72\u201380. doi:10.12142/ZTECOM.202301009",
+    "doi": "10.12142/ZTECOM.202301009",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.12142/ZTECOM.202301009",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "dfff7f106f814842ed8e3965bea42bae1d5d426354c7572a27a37ebd60329f9c",
+    "pages": 9,
+    "findings": "Network-aware parameter-server load balancing; application motivation, not sketch validation.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.12142/ZTECOM.202301009",
+        "at": "2026-10-05T00:19:46.519832+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://doi.org/10.12142/ZTECOM.202301009",
+        "final_url": "https://zte.magtechjournal.com/EN/10.12142/ZTECOM.202301009",
+        "at": "2026-10-05T00:19:57.863502+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "b5b3e11ed50825d595234878beb27829ce74c3b1816bffc8ed586222aab5a4dc",
+        "bytes": 82296,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.12142/ZTECOM.202301009",
+        "at": "2026-10-05T00:23:47.208826+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://doi.org/10.12142/ZTECOM.202301009",
+        "final_url": "https://zte.magtechjournal.com/EN/10.12142/ZTECOM.202301009",
+        "at": "2026-10-05T00:23:58.955278+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "b5b3e11ed50825d595234878beb27829ce74c3b1816bffc8ed586222aab5a4dc",
+        "bytes": 82296,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.12142/ZTECOM.202301009",
+        "at": "2026-10-05T00:26:56.177927+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 429: Too Many Requests"
+      },
+      {
+        "url": "https://zte.magtechjournal.com/CN/article/downloadArticleFile.do?attachType=PDF&id=814",
+        "final_url": "https://zte.magtechjournal.com/CN/article/downloadArticleFile.do?attachType=PDF&id=814",
+        "at": "2026-10-05T00:29:34.605560+00:00",
+        "http_status": 200,
+        "content_type": "application/octet-stream",
+        "sha256": "dfff7f106f814842ed8e3965bea42bae1d5d426354c7572a27a37ebd60329f9c",
+        "bytes": 1086414,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://zte.magtechjournal.com/CN/article/downloadArticleFile.do?attachType=PDF&id=814",
+    "original_path": "sources/ref-13.pdf",
+    "byte_count": 1086414,
+    "retrieved_at": "2026-10-05T00:29:34.611334+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 14,
+    "citation": "Moses Charikar, Kevin Chen, and Martin Farach-Colton. 2002. Finding frequent items in data streams. InAutomata, Languages and Programming. Springer.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "a681c36a24c9307948e58a71d36eb4f87451ac25d59c4ac89e951f16b900d075",
+    "pages": 11,
+    "findings": "Count Sketch estimates frequent items with restricted space; distinct algorithm from Count-Min.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.cs.princeton.edu/courses/archive/spring04/cos598B/bib/CharikarCF.pdf",
+        "final_url": "https://www.cs.princeton.edu/courses/archive/spring04/cos598B/bib/CharikarCF.pdf",
+        "at": "2026-10-05T00:19:47.180141+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "a681c36a24c9307948e58a71d36eb4f87451ac25d59c4ac89e951f16b900d075",
+        "bytes": 146538,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.cs.princeton.edu/courses/archive/spring04/cos598B/bib/CharikarCF.pdf",
+    "original_path": "sources/ref-14.pdf",
+    "byte_count": 146538,
+    "retrieved_at": "2026-10-05T00:19:47.181819+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 15,
+    "citation": "Graham Cormode. 2011. Sketch techniques for approximate query processing. Foundations and Trends in Databases. NOW publishers(2011).",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.cs.ox.ac.uk/people/graham.cormode/papers/cormode.pdf",
+        "at": "2026-10-05T00:23:48.014489+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.cs.ox.ac.uk/people/graham.cormode/pubs/papers/sketch.pdf",
+        "at": "2026-10-05T00:26:56.618904+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      }
+    ],
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 16,
+    "citation": "Graham Cormode and Minos Garofalakis. 2005. Sketching streams through the net: Distributed approximate query tracking. InProceedings of the 31st interna- tional conference on Very large data bases. 13\u201324.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "bd1a66862aa371d2135bbcb74357251528c072911012b376e71481b11da04c98",
+    "pages": 12,
+    "findings": "Distributed query tracking uses sketches and predictive local models; communication cost is separate from per-key error.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.vldb.org/conf/2005/papers/p13-cormode.pdf",
+        "final_url": "https://www.vldb.org/conf/2005/papers/p13-cormode.pdf",
+        "at": "2026-10-05T00:19:47.500912+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "bd1a66862aa371d2135bbcb74357251528c072911012b376e71481b11da04c98",
+        "bytes": 260755,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.vldb.org/conf/2005/papers/p13-cormode.pdf",
+    "original_path": "sources/ref-16.pdf",
+    "byte_count": 260755,
+    "retrieved_at": "2026-10-05T00:19:47.501606+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 17,
+    "citation": "Graham Cormode and Shan Muthukrishnan. 2005. An improved data stream summary: the count-min sketch and its applications.Journal of Algorithms55, 1 (2005).",
+    "doi": "10.1016/j.jalgor.2003.12.001",
+    "kind": "research",
+    "role": "baseline",
+    "source_url": "https://doi.org/10.1016/j.jalgor.2003.12.001",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "0b8de23a7310e15c362cf50b49517feaff0907c11e4e7f6c7013cf2ed846ff67",
+    "pages": 18,
+    "findings": "Count-Min point/range/inner-product queries; nonnegative stream and hash assumptions constrain error interpretation.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1016/j.jalgor.2003.12.001",
+        "at": "2026-10-05T00:19:46.930741+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "03fd73cf3a8d9d76cd4be75bcda3a22e50a63e0147d950597e1a69ccaa6cc5ed",
+        "bytes": 10006
+      },
+      {
+        "url": "https://dimacs.rutgers.edu/~graham/pubs/papers/cm-full.pdf",
+        "at": "2026-10-05T00:19:47.570812+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jalgor.2003.12.001",
+        "final_url": "https://linkinghub.elsevier.com/retrieve/pii/S0196677403001913",
+        "at": "2026-10-05T00:19:48.230039+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "31effd64737e098e646089aed373d6713d4f04b02bf25d4c8ad6d0e995fb7b71",
+        "bytes": 2689,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1016/j.jalgor.2003.12.001",
+        "at": "2026-10-05T00:23:48.096394+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "03fd73cf3a8d9d76cd4be75bcda3a22e50a63e0147d950597e1a69ccaa6cc5ed",
+        "bytes": 10006
+      },
+      {
+        "url": "https://archive.dimacs.rutgers.edu/~graham/pubs/papers/cm-full.pdf",
+        "at": "2026-10-05T00:23:49.020210+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.cs.ox.ac.uk/people/graham.cormode/papers/cm-full.pdf",
+        "at": "2026-10-05T00:23:49.601748+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://doi.org/10.1016/j.jalgor.2003.12.001",
+        "final_url": "https://linkinghub.elsevier.com/retrieve/pii/S0196677403001913",
+        "at": "2026-10-05T00:23:50.052626+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "31effd64737e098e646089aed373d6713d4f04b02bf25d4c8ad6d0e995fb7b71",
+        "bytes": 2689,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1016/j.jalgor.2003.12.001",
+        "at": "2026-10-05T00:26:56.973212+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "03fd73cf3a8d9d76cd4be75bcda3a22e50a63e0147d950597e1a69ccaa6cc5ed",
+        "bytes": 10006
+      },
+      {
+        "url": "https://www.cs.ox.ac.uk/people/graham.cormode/pubs/papers/cm-full.pdf",
+        "final_url": "https://www.cs.ox.ac.uk/people/graham.cormode/pubs/papers/cm-full.pdf",
+        "at": "2026-10-05T00:26:58.257797+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "0b8de23a7310e15c362cf50b49517feaff0907c11e4e7f6c7013cf2ed846ff67",
+        "bytes": 147417,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "03fd73cf3a8d9d76cd4be75bcda3a22e50a63e0147d950597e1a69ccaa6cc5ed",
+    "retrieved_url": "https://www.cs.ox.ac.uk/people/graham.cormode/pubs/papers/cm-full.pdf",
+    "original_path": "sources/ref-17.pdf",
+    "byte_count": 147417,
+    "retrieved_at": "2026-10-05T00:26:58.259938+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 18,
+    "citation": "Erik D Demaine, Alejandro L\u00f3pez-Ortiz, and J Ian Munro. 2002. Frequency estimation of internet packet streams with limited space. InEuropean Symposium on Algorithms. Springer.",
+    "doi": "10.1007/3-540-45749-6_33",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1007/3-540-45749-6_33",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "2369b2ccf13ef88acdf542e9da45885406575eb96d0727d681250ad95a47ac54",
+    "pages": 12,
+    "findings": "Deterministic counter-based frequency threshold and randomly permuted sampling model; order assumptions matter.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1007/3-540-45749-6_33",
+        "at": "2026-10-05T00:19:47.273959+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "43ee44c0b7a769a3896b086a10ca496811cf47ed03b098acf4c41b7128e3bd20",
+        "bytes": 8821
+      },
+      {
+        "url": "https://erikdemaine.org/papers/NetworkStats_ESA2002/paper.pdf",
+        "final_url": "https://erikdemaine.org/papers/NetworkStats_ESA2002/paper.pdf",
+        "at": "2026-10-05T00:19:48.980495+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "2369b2ccf13ef88acdf542e9da45885406575eb96d0727d681250ad95a47ac54",
+        "bytes": 147328,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "43ee44c0b7a769a3896b086a10ca496811cf47ed03b098acf4c41b7128e3bd20",
+    "retrieved_url": "https://erikdemaine.org/papers/NetworkStats_ESA2002/paper.pdf",
+    "original_path": "sources/ref-18.pdf",
+    "byte_count": 147328,
+    "retrieved_at": "2026-10-05T00:19:48.982986+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 19,
+    "citation": "Cristian Estan and George Varghese. 2002. New directions in traffic measurement and accounting. InProceedings of the 2002 conference on Applications, technologies, architectures, and protocols for computer communications. 323\u2013336.",
+    "doi": "10.1145/633025.633056",
+    "kind": "research",
+    "role": "baseline",
+    "source_url": "https://doi.org/10.1145/633025.633056",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/633025.633056",
+        "at": "2026-10-05T00:19:47.811740+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "65c8084a31e930ba884a0792ab593502045ec72e07860ff79435541d99dbaed4",
+        "bytes": 7144
+      },
+      {
+        "url": "https://cseweb.ucsd.edu/~varghese/PAPERS/sigcomm2002.pdf",
+        "at": "2026-10-05T00:19:48.370818+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/633025.633056",
+        "at": "2026-10-05T00:19:48.493137+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/633025.633056",
+        "at": "2026-10-05T00:19:48.862186+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/633025.633056",
+        "at": "2026-10-05T00:23:48.371242+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "65c8084a31e930ba884a0792ab593502045ec72e07860ff79435541d99dbaed4",
+        "bytes": 7144
+      },
+      {
+        "url": "https://pages.cs.wisc.edu/~estan/publications/measurement.pdf",
+        "at": "2026-10-05T00:23:48.533685+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/633025.633056",
+        "at": "2026-10-05T00:23:48.697557+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/633025.633056",
+        "at": "2026-10-05T00:23:49.036169+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/633025.633056",
+        "at": "2026-10-05T00:26:56.794107+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "65c8084a31e930ba884a0792ab593502045ec72e07860ff79435541d99dbaed4",
+        "bytes": 7144
+      },
+      {
+        "url": "https://cseweb.ucsd.edu/~varghese/PAPERS/sigcomm2002.pdf",
+        "at": "2026-10-05T00:26:57.234912+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/633025.633056",
+        "at": "2026-10-05T00:26:57.355700+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/633025.633056",
+        "at": "2026-10-05T00:26:57.666954+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "65c8084a31e930ba884a0792ab593502045ec72e07860ff79435541d99dbaed4",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 20,
+    "citation": "Philippe Flajolet, \u00c9ric Fusy, Olivier Gandouet, and Fr\u00e9d\u00e9ric Meunier. 2007. Hy- perloglog: the analysis of a near-optimal cardinality estimation algorithm.",
+    "doi": "10.46298/dmtcs.3545",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.46298/dmtcs.3545",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "60a708db2b8b771587c816be9bdb7e1f800bfc759f82a273afc76bc8417826e9",
+    "pages": 20,
+    "findings": "HyperLogLog estimates distinct cardinality, not individual frequencies; relative standard error is a different estimand.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.46298/dmtcs.3545",
+        "at": "2026-10-05T00:19:48.231084+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "09cdbaf64e5a462d2a0c7ab14da40612d05a720ed5265ca1690bef091945d7af",
+        "bytes": 3512
+      },
+      {
+        "url": "https://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf",
+        "final_url": "https://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf",
+        "at": "2026-10-05T00:19:50.221058+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "60a708db2b8b771587c816be9bdb7e1f800bfc759f82a273afc76bc8417826e9",
+        "bytes": 527392,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "09cdbaf64e5a462d2a0c7ab14da40612d05a720ed5265ca1690bef091945d7af",
+    "retrieved_url": "https://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf",
+    "original_path": "sources/ref-20.pdf",
+    "byte_count": 527392,
+    "retrieved_at": "2026-10-05T00:19:50.238100+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 21,
+    "citation": "Qun Huang, Xin Jin, Patrick PC Lee, Runhui Li, Lu Tang, Yi-Chao Chen, and Gong Zhang. 2017. Sketchvisor: Robust network measurement for software packet processing. InProceedings of the Conference of the ACM Special Interest Group on Data Communication. 113\u2013126.",
+    "doi": "10.1145/3098822.3098831",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/3098822.3098831",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:19:48.445720+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "faeeaa85df7063dc799cd62df5c1e539fa8670d0d15a516cb8fedcdde18fdb2d",
+        "bytes": 13000
+      },
+      {
+        "url": "https://www.cs.cmu.edu/~zaoxing/papers/sketchvisor.pdf",
+        "at": "2026-10-05T00:19:48.926702+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:19:49.061572+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:19:49.431128+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:23:48.413998+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "faeeaa85df7063dc799cd62df5c1e539fa8670d0d15a516cb8fedcdde18fdb2d",
+        "bytes": 13000
+      },
+      {
+        "url": "https://qhuang.me/papers/sketchvisor_sigcomm17.pdf",
+        "at": "2026-10-05T00:23:48.496853+00:00",
+        "status": "failed",
+        "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:23:48.651596+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:23:49.002281+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:26:56.974252+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "faeeaa85df7063dc799cd62df5c1e539fa8670d0d15a516cb8fedcdde18fdb2d",
+        "bytes": 13000
+      },
+      {
+        "url": "https://www.cs.cmu.edu/~zaoxing/papers/sketchvisor.pdf",
+        "at": "2026-10-05T00:26:57.260951+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:26:57.381509+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3098822.3098831",
+        "at": "2026-10-05T00:26:57.651314+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "faeeaa85df7063dc799cd62df5c1e539fa8670d0d15a516cb8fedcdde18fdb2d",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 22,
+    "citation": "Qun Huang, Siyuan Sheng, Po-Han Wang, Xiang Chen, Chi Zhang, Isaac Pedisich, Yungang Bao, Zhaoyang Han, Dinesh Bharadia, Rui Zhang, et al. 2021. Toward nearly-zero-error sketching via compressive sensing. In18th {USENIX} Sympo- sium on Networked Systems Design and Implementation ({NSDI} 21). 1027\u20131044.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "256ccb2e4b81a77f8aaf0978aa01153d6f192dd09d7a95680845ed0385a49a95",
+    "pages": 19,
+    "findings": "Compressive sensing aims at negligible per-flow errors; abstract inspected, underlying recovery experiments not independently verified.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.usenix.org/system/files/nsdi21-huang.pdf",
+        "final_url": "https://www.usenix.org/system/files/nsdi21-huang.pdf",
+        "at": "2026-10-05T00:19:49.661553+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "256ccb2e4b81a77f8aaf0978aa01153d6f192dd09d7a95680845ed0385a49a95",
+        "bytes": 1766246,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.usenix.org/system/files/nsdi21-huang.pdf",
+    "original_path": "sources/ref-22.pdf",
+    "byte_count": 1766246,
+    "retrieved_at": "2026-10-05T00:19:49.668649+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 23,
+    "citation": "Yuhe Ji, Jing Han, Yongxin Zhao, Shenglin Zhang, and Zican Gong. 2023. Log anomaly detection through GPT-2 for large scale systems.ZTE Communications 21, 3 (Sept. 2023), 70\u201376. doi:10.12142/ZTECOM.202303010",
+    "doi": "10.12142/ZTECOM.202303010",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.12142/ZTECOM.202303010",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "2c2f106f4f101bfc005cfb2f72c03837788c2b05cd89e93eec1d02e300ac8234",
+    "pages": 128,
+    "findings": "GPT-2 log anomaly detection; application motivation. Adopted full September2023 issue includes target article pp70\u201376; target conclusion inspected, unrelated issue papers not reviewed.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. Target conclusion inspected; other issue articles outside direct-reference scope.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.12142/ZTECOM.202303010",
+        "at": "2026-10-05T00:19:49.407027+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://doi.org/10.12142/ZTECOM.202303010",
+        "final_url": "https://zte.magtechjournal.com/EN/10.12142/ZTECOM.202303010",
+        "at": "2026-10-05T00:20:07.656240+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "aa99f8faf7ba644ecf5a67ae03c2bfd7be7675c4015fbdeae6742f1b1735b7a9",
+        "bytes": 93624,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.12142/ZTECOM.202303010",
+        "at": "2026-10-05T00:23:49.291650+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://doi.org/10.12142/ZTECOM.202303010",
+        "final_url": "https://zte.magtechjournal.com/EN/10.12142/ZTECOM.202303010",
+        "at": "2026-10-05T00:24:04.337841+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "aa99f8faf7ba644ecf5a67ae03c2bfd7be7675c4015fbdeae6742f1b1735b7a9",
+        "bytes": 93624,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.12142/ZTECOM.202303010",
+        "at": "2026-10-05T00:26:57.833778+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.zte.com.cn/content/dam/zte-site/res-www-zte-com-cn/mediares/magazine/publication/com_en/pdf/en202303-.pdf",
+        "final_url": "https://www.zte.com.cn/content/dam/zte-site/res-www-zte-com-cn/mediares/magazine/publication/com_en/pdf/en202303-.pdf",
+        "at": "2026-10-05T00:27:12.794149+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "2c2f106f4f101bfc005cfb2f72c03837788c2b05cd89e93eec1d02e300ac8234",
+        "bytes": 34594331,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.zte.com.cn/content/dam/zte-site/res-www-zte-com-cn/mediares/magazine/publication/com_en/pdf/en202303-.pdf",
+    "original_path": "sources/ref-23.pdf",
+    "byte_count": 34594331,
+    "retrieved_at": "2026-10-05T00:27:12.865222+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 24,
+    "citation": "Zohar Karnin, Kevin Lang, and Edo Liberty. 2016. Optimal quantile approximation in streams. In2016 ieee 57th annual symposium on foundations of computer science (focs). IEEE, 71\u201378.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "61f80573ed5484faf45e8296d558f6bfd8b0da237e7720b5c2f7a60e6861a09b",
+    "pages": 12,
+    "findings": "KLL approximate ranks with additive rank error and probability; quantiles differ from frequency counts.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://arxiv.org/pdf/1603.05346",
+        "final_url": "https://arxiv.org/pdf/1603.05346",
+        "at": "2026-10-05T00:19:50.029979+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "61f80573ed5484faf45e8296d558f6bfd8b0da237e7720b5c2f7a60e6861a09b",
+        "bytes": 538044,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://arxiv.org/pdf/1603.05346",
+    "original_path": "sources/ref-24.pdf",
+    "byte_count": 538044,
+    "retrieved_at": "2026-10-05T00:19:50.071391+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 25,
+    "citation": "Haoyu Li, Qizhi Chen, Yixin Zhang, Tong Yang, and Bin Cui. 2022. Stingy sketch: a sketch framework for accurate and fast frequency estimation.Proceedings of the VLDB Endowment15, 7 (2022), 1426\u20131438.",
+    "doi": "10.14778/3523210.3523220",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.14778/3523210.3523220",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "9b35c9c886fa13a866e31e72f776d9fc564b72c83246be785d4e00baeb110ca3",
+    "pages": 13,
+    "findings": "Stingy Sketch combines compact counter trees and pipelined prefetch; counters and CPU locality affect memory/speed comparisons.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.14778/3523210.3523220",
+        "at": "2026-10-05T00:19:50.677319+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f5c280eda6b06886775bfff2de84435dda53982872a26794126a246ed50d1b30",
+        "bytes": 16290
+      },
+      {
+        "url": "https://www.vldb.org/pvldb/vol15/p1426-li.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol15/p1426-li.pdf",
+        "at": "2026-10-05T00:19:51.978726+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "9b35c9c886fa13a866e31e72f776d9fc564b72c83246be785d4e00baeb110ca3",
+        "bytes": 1761197,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "f5c280eda6b06886775bfff2de84435dda53982872a26794126a246ed50d1b30",
+    "retrieved_url": "https://www.vldb.org/pvldb/vol15/p1426-li.pdf",
+    "original_path": "sources/ref-25.pdf",
+    "byte_count": 1761197,
+    "retrieved_at": "2026-10-05T00:19:52.023702+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 26,
+    "citation": "Zaoxing Liu, Ran Ben-Basat, Gil Einziger, Yaron Kassner, Vladimir Braverman, Roy Friedman, and Vyas Sekar. 2019. Nitrosketch: Robust and general sketch- based monitoring in software switches. InProceedings of the ACM Special Interest Group on Data Communication. 334\u2013350.",
+    "doi": "10.1145/3341302.3342076",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/3341302.3342076",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:19:50.677242+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f043347d4f94ac878b2bcf2ac0cc5029a4b8a0d8f550b19b34bc639f1f3e8ad5",
+        "bytes": 14911
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:19:50.896829+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:19:51.188223+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:23:49.275980+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f043347d4f94ac878b2bcf2ac0cc5029a4b8a0d8f550b19b34bc639f1f3e8ad5",
+        "bytes": 14911
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:23:49.386467+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:23:49.748339+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:26:57.882054+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "f043347d4f94ac878b2bcf2ac0cc5029a4b8a0d8f550b19b34bc639f1f3e8ad5",
+        "bytes": 14911
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:26:58.006739+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3341302.3342076",
+        "at": "2026-10-05T00:26:58.317785+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "f043347d4f94ac878b2bcf2ac0cc5029a4b8a0d8f550b19b34bc639f1f3e8ad5",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 27,
+    "citation": "Zaoxing Liu, Antonis Manousis, Gregory Vorsanger, Vyas Sekar, and Vladimir Braverman. 2016. One sketch to rule them all: Rethinking network flow monitor- ing with univmon. InSIGCOMM.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.cs.cmu.edu/~zaoxing/papers/univmon.pdf",
+        "at": "2026-10-05T00:23:49.374604+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      }
+    ],
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 28,
+    "citation": "Charles Masson, Jee E Rim, and Homin K Lee. [n. d.]. DDSketch: A Fast and Fully-Mergeable Quantile Sketch with Relative-Error Guarantees.Proceedings of the VLDB Endowment12, 12 ([n. d.]).",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "c7b422851082bb28013f185f8c4bd6f457d105cead11bee1f516f19e06a14a7b",
+    "pages": 11,
+    "findings": "DDSketch mergeable relative-value quantiles; relative-value guarantee is different from rank and per-key count errors.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.vldb.org/pvldb/vol12/p2195-masson.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol12/p2195-masson.pdf",
+        "at": "2026-10-05T00:19:51.725597+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "c7b422851082bb28013f185f8c4bd6f457d105cead11bee1f516f19e06a14a7b",
+        "bytes": 622583,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.vldb.org/pvldb/vol12/p2195-masson.pdf",
+    "original_path": "sources/ref-28.pdf",
+    "byte_count": 622583,
+    "retrieved_at": "2026-10-05T00:19:51.728954+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 29,
+    "citation": "Dimitrios Melissourgos, Haibo Wang, Shigang Chen, Chaoyi Ma, and Shiping Chen. 2024. Single Update Sketch with Variable Counter Structure.Proceedings of the VLDB Endowment16, 13 (2024).",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "e970b0faf3fec34adba5227f6e5c0fa4d2ba0e95b2deb1d61e1b6392cf2c9586",
+    "pages": 14,
+    "findings": "Single-update variable counter structure balances update overhead and accuracy; baseline architecture context.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.vldb.org/pvldb/vol16/p3796-melissourgos.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol16/p3796-melissourgos.pdf",
+        "at": "2026-10-05T00:19:51.723519+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "ff8383912a732c64ed7173398c912ea8503115e4f2f643bc8fdebe224a0d9113",
+        "bytes": 36448,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://www.vldb.org/pvldb/vol16/p3790-melissourgos.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol16/p3790-melissourgos.pdf",
+        "at": "2026-10-05T00:23:49.832233+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "ff8383912a732c64ed7173398c912ea8503115e4f2f643bc8fdebe224a0d9113",
+        "bytes": 36448,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://www.vldb.org/pvldb/vol16/p4296-wang.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol16/p4296-wang.pdf",
+        "at": "2026-10-05T00:26:59.033531+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "e970b0faf3fec34adba5227f6e5c0fa4d2ba0e95b2deb1d61e1b6392cf2c9586",
+        "bytes": 512450,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.vldb.org/pvldb/vol16/p4296-wang.pdf",
+    "original_path": "sources/ref-29.pdf",
+    "byte_count": 512450,
+    "retrieved_at": "2026-10-05T00:26:59.036905+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 30,
+    "citation": "Ahmed Metwally, Divyakant Agrawal, and Amr El Abbadi. 2005. Efficient compu- tation of frequent and top-k elements in data streams. InInternational Conference on Database Theory. Springer.",
+    "doi": null,
+    "kind": "research",
+    "role": "baseline",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "cadf4560feceec10f2f785bb89b2367b32b2123ba7140e97d0cd8a805ef7ff68",
+    "pages": 21,
+    "findings": "SpaceSaving frequent/top-k integrated method with distribution-dependent behavior; fallback cited by ReliableSketch formal analysis.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.cs.ucsb.edu/research/tech_reports/reports/2005-23.pdf",
+        "at": "2026-10-05T00:19:52.282721+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://sites.cs.ucsb.edu/research/tech_reports/reports/2005-23.pdf",
+        "at": "2026-10-05T00:23:50.234968+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.cs.emory.edu/~cheung/Courses/584/Syllabus/papers/Frequency-count/2005-Metwally-Top-k-elements.pdf",
+        "final_url": "https://www.cs.emory.edu/~cheung/Courses/584/Syllabus/papers/Frequency-count/2005-Metwally-Top-k-elements.pdf",
+        "at": "2026-10-05T00:26:59.158399+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "cadf4560feceec10f2f785bb89b2367b32b2123ba7140e97d0cd8a805ef7ff68",
+        "bytes": 411780,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.cs.emory.edu/~cheung/Courses/584/Syllabus/papers/Frequency-count/2005-Metwally-Top-k-elements.pdf",
+    "original_path": "sources/ref-30.pdf",
+    "byte_count": 411780,
+    "retrieved_at": "2026-10-05T00:26:59.177779+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 31,
+    "citation": "J Strother Moore. 1981. A fast majority vote algorithm.Automated Reasoning: Essays in Honor of Woody Bledsoe(1981).",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "partial resource",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "5c5e0cb46e70876de6b5245266fa251da57e757de73237aed0dbafcd1bc54f3c",
+    "pages": null,
+    "findings": "Associated original software/author landing resource inspected; cited full publication not retrieved.",
+    "limitations": "Webpage is not the full cited paper/book chapter. Algorithm proofs, publication text and figures remain unavailable; rows12/31 use same author webpage and are not independent sources.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.cs.utexas.edu/~moore/best-ideas/mjrty/index.html",
+        "final_url": "https://www.cs.utexas.edu/~moore/best-ideas/mjrty/index.html",
+        "at": "2026-10-05T00:19:52.608144+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "5c5e0cb46e70876de6b5245266fa251da57e757de73237aed0dbafcd1bc54f3c",
+        "bytes": 1320,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.cs.utexas.edu/~moore/best-ideas/mjrty/index.html",
+    "original_path": "sources/ref-31.html",
+    "byte_count": 1320,
+    "retrieved_at": "2026-10-05T00:19:52.608401+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 32,
+    "citation": "Hun Namkung, Zaoxing Liu, Daehyeok Kim, Vyas Sekar, Peter Steenkiste, Guyue Liu, Ao Li, Christopher Canel, Adithya Abraham Philip, Ranysha Ware, et al . 2022. Sketchlib: Enabling efficient sketch-based monitoring on programmable switches. NSDI.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "2394def3dd50fe1cdfa2bdcc20318a11062c51fbffd684142dcd7c36f09a08b9",
+    "pages": 18,
+    "findings": "SketchLib hardware resource optimizations; abstract inspected, synthesis is not reproduced here.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://www.usenix.org/system/files/nsdi22-namkung.pdf",
+        "at": "2026-10-05T00:19:53.164681+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.usenix.org/system/files/nsdi22-paper-namkung.pdf",
+        "final_url": "https://www.usenix.org/system/files/nsdi22-paper-namkung.pdf",
+        "at": "2026-10-05T00:23:50.559221+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "2394def3dd50fe1cdfa2bdcc20318a11062c51fbffd684142dcd7c36f09a08b9",
+        "bytes": 1166048,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://www.usenix.org/system/files/nsdi22-paper-namkung.pdf",
+    "original_path": "sources/ref-32.pdf",
+    "byte_count": 1166048,
+    "retrieved_at": "2026-10-05T00:23:50.564669+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 33,
+    "citation": "Alex Rousskov and Duane Wessels. 2004. High-performance benchmarking with Web Polygraph.Software: Practice and Experience(2004).",
+    "doi": "10.1002/spe.576",
+    "kind": "research",
+    "role": "input provenance",
+    "source_url": "https://doi.org/10.1002/spe.576",
+    "access_status": "partial resource",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "fe74bbd554aab44c06ee2282bc3d9f75e903daf4aef4e52be485846033ffccb6",
+    "pages": null,
+    "findings": "Associated original software/author landing resource inspected; cited full publication not retrieved.",
+    "limitations": "Webpage is not the full cited paper/book chapter. Algorithm proofs, publication text and figures remain unavailable; rows12/31 use same author webpage and are not independent sources.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1002/spe.576",
+        "at": "2026-10-05T00:19:52.784596+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "af49e8cdb137287fa6bd0e0268a556b6df89e3fa2e0b6fa937b62d10cc6307e5",
+        "bytes": 7159
+      },
+      {
+        "url": "https://www.web-polygraph.org/docs/papers/polygraph-spe.pdf",
+        "at": "2026-10-05T00:19:53.377424+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://www.web-polygraph.org/",
+        "final_url": "https://www.web-polygraph.org/",
+        "at": "2026-10-05T00:19:53.680538+00:00",
+        "http_status": 200,
+        "content_type": "text/html",
+        "sha256": "fe74bbd554aab44c06ee2282bc3d9f75e903daf4aef4e52be485846033ffccb6",
+        "bytes": 5491,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "af49e8cdb137287fa6bd0e0268a556b6df89e3fa2e0b6fa937b62d10cc6307e5",
+    "retrieved_url": "https://www.web-polygraph.org/",
+    "original_path": "sources/ref-33.html",
+    "byte_count": 5491,
+    "retrieved_at": "2026-10-05T00:19:53.681538+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 34,
+    "citation": "Rana Shahout, Roy Friedman, and Ran Ben Basat. 2023. Together is Better: Heavy Hitters Quantile Estimation.Proceedings of the ACM on Management of Data1, 1 (2023), 1\u201325.",
+    "doi": "10.1145/3588937",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/3588937",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "be6dcbb26be1ebb1281f3e34583823c7e887bbf6cee4335ae2098482226bff8d",
+    "pages": 24,
+    "findings": "SQUAD heavy-hitter per-item quantiles; author-hosted manuscript first page cites2024 whereas main bibliography says2023. Version difference retained.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3588937",
+        "at": "2026-10-05T00:19:52.790291+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "d1fabe436420f0acc74238ff1489b16d4af1815dd9164550ff0eecf149fe4ef7",
+        "bytes": 13837
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3588937",
+        "at": "2026-10-05T00:19:52.994726+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3588937",
+        "at": "2026-10-05T00:19:53.278597+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3588937",
+        "at": "2026-10-05T00:23:50.266156+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "d1fabe436420f0acc74238ff1489b16d4af1815dd9164550ff0eecf149fe4ef7",
+        "bytes": 13837
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3588937",
+        "at": "2026-10-05T00:23:50.381052+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3588937",
+        "at": "2026-10-05T00:23:50.697467+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3588937",
+        "at": "2026-10-05T00:26:58.697583+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "d1fabe436420f0acc74238ff1489b16d4af1815dd9164550ff0eecf149fe4ef7",
+        "bytes": 13837
+      },
+      {
+        "url": "https://discovery.ucl.ac.uk/id/eprint/10188361/1/Tailatency_Sketch_SIGMOD__for_RPS_.pdf",
+        "final_url": "https://discovery.ucl.ac.uk/id/eprint/10188361/1/Tailatency_Sketch_SIGMOD__for_RPS_.pdf",
+        "at": "2026-10-05T00:27:01.582324+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "be6dcbb26be1ebb1281f3e34583823c7e887bbf6cee4335ae2098482226bff8d",
+        "bytes": 1036957,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "d1fabe436420f0acc74238ff1489b16d4af1815dd9164550ff0eecf149fe4ef7",
+    "retrieved_url": "https://discovery.ucl.ac.uk/id/eprint/10188361/1/Tailatency_Sketch_SIGMOD__for_RPS_.pdf",
+    "original_path": "sources/ref-34.pdf",
+    "byte_count": 1036957,
+    "retrieved_at": "2026-10-05T00:27:01.585552+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 35,
+    "citation": "Vibhaalakshmi Sivaraman, Srinivas Narayana, Ori Rottenstreich, S Muthukrish- nan, and Jennifer Rexford. 2017. Heavy-hitter detection entirely in the data plane. InSOSR. ACM.",
+    "doi": "10.1145/3050220.3063772",
+    "kind": "research",
+    "role": "baseline",
+    "source_url": "https://doi.org/10.1145/3050220.3063772",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "325e310490267885485d41847fa52373c388da7bb2bf1892d67526545713172d",
+    "pages": 13,
+    "findings": "HashPipe pipeline retains heavier flow counters; finite recall on ISP traces is not all-key frequency confidence.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3050220.3063772",
+        "at": "2026-10-05T00:19:53.364183+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "21e0cd24a2419a63b57c51e4913122ec79103e75fbd23d20b18a69e1c186c509",
+        "bytes": 12965
+      },
+      {
+        "url": "https://arxiv.org/pdf/1611.04825",
+        "final_url": "https://arxiv.org/pdf/1611.04825",
+        "at": "2026-10-05T00:19:55.109000+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "325e310490267885485d41847fa52373c388da7bb2bf1892d67526545713172d",
+        "bytes": 859913,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "21e0cd24a2419a63b57c51e4913122ec79103e75fbd23d20b18a69e1c186c509",
+    "retrieved_url": "https://arxiv.org/pdf/1611.04825",
+    "original_path": "sources/ref-35.pdf",
+    "byte_count": 859913,
+    "retrieved_at": "2026-10-05T00:19:55.113436+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 36,
+    "citation": "Lu Tang, Qun Huang, and Patrick PC Lee. 2019. Mv-sketch: A fast and compact invertible sketch for heavy flow detection in network data streams. InIEEE INFOCOM 2019-IEEE Conference on Computer Communications. IEEE, 2026\u20132034.",
+    "doi": "10.1109/INFOCOM.2019.8737499",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1109/INFOCOM.2019.8737499",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "9ef1615206b797e868866aef1af1544e82a13a807733f8c320c1c312b168390e",
+    "pages": 15,
+    "findings": "MV-Sketch majority-vote candidates in invertible sketch. Adopted arXiv1910.10441 journal extension, not exact INFOCOM2019 proceedings; earlier wrong-identity PDF was rejected.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1109/INFOCOM.2019.8737499",
+        "at": "2026-10-05T00:19:53.544254+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "3a916fab30870e861a864dc7b52f47fb4e519089f706a32ce70435d052e7850b",
+        "bytes": 5640
+      },
+      {
+        "url": "http://xplorestaging.ieee.org/ielx7/8732929/8737365/08737499.pdf?arnumber=8737499",
+        "final_url": "https://xplorestaging.ieee.org/document/8737499/;jsessionid=EEAAB2E855E3C0BC4023E0DE6940A3BD",
+        "at": "2026-10-05T00:19:54.521191+00:00",
+        "http_status": 200,
+        "content_type": "text/html;charset=UTF-8",
+        "sha256": "9e3c009b2b664f5861998793638bbe774b7115694ca4d0261d3847d56003e911",
+        "bytes": 46916,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://doi.org/10.1109/INFOCOM.2019.8737499",
+        "final_url": "https://ieeexplore.ieee.org/document/8737499/",
+        "at": "2026-10-05T00:19:54.789642+00:00",
+        "http_status": 202,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "status": "landing page; full text unavailable"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1109/INFOCOM.2019.8737499",
+        "at": "2026-10-05T00:23:50.469246+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "3a916fab30870e861a864dc7b52f47fb4e519089f706a32ce70435d052e7850b",
+        "bytes": 5640
+      },
+      {
+        "url": "https://arxiv.org/pdf/1902.00878",
+        "final_url": "https://arxiv.org/pdf/1902.00878",
+        "at": "2026-10-05T00:23:50.693009+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "6d1fd94cebd314de6ef97334292842066f803081ab102b9b93f3d55a6e602d66",
+        "bytes": 287057,
+        "status": "retrieved; identity pending",
+        "identity_status": "rejected: smart-contract PKI paper; wrong identity"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1109/INFOCOM.2019.8737499",
+        "at": "2026-10-05T00:26:59.775986+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "3a916fab30870e861a864dc7b52f47fb4e519089f706a32ce70435d052e7850b",
+        "bytes": 5640
+      },
+      {
+        "url": "https://www.cse.cuhk.edu.hk/~pclee/www/pubs/infocom19mvsketch.pdf",
+        "at": "2026-10-05T00:27:01.659643+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://arxiv.org/pdf/1910.10441",
+        "final_url": "https://arxiv.org/pdf/1910.10441",
+        "at": "2026-10-05T00:27:02.050935+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "9ef1615206b797e868866aef1af1544e82a13a807733f8c320c1c312b168390e",
+        "bytes": 588413,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "3a916fab30870e861a864dc7b52f47fb4e519089f706a32ce70435d052e7850b",
+    "retrieved_url": "https://arxiv.org/pdf/1910.10441",
+    "original_path": "sources/ref-36.pdf",
+    "byte_count": 588413,
+    "retrieved_at": "2026-10-05T00:27:02.082463+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 37,
+    "citation": "Daniel Ting. 2018. Data Sketches for Disaggregated Subset Sum and Frequent Item Estimation. InSIGMOD Conference.",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "d7535b87c67e55c053f0d40c99b87543e1c62adcb22a1c22bf779337caadfd40",
+    "pages": 29,
+    "findings": "Disaggregated subset sums and frequent items; author preprint September14,2017 differs from cited SIGMOD2018 version. Sampling design and aggregation scope matter.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://arxiv.org/pdf/1709.04048",
+        "final_url": "https://arxiv.org/pdf/1709.04048",
+        "at": "2026-10-05T00:27:00.312094+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "d7535b87c67e55c053f0d40c99b87543e1c62adcb22a1c22bf779337caadfd40",
+        "bytes": 525439,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://arxiv.org/pdf/1709.04048",
+    "original_path": "sources/ref-37.pdf",
+    "byte_count": 525439,
+    "retrieved_at": "2026-10-05T00:27:00.314338+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 38,
+    "citation": "Feiyu Wang, Qizhi Chen, Yuanpeng Li, Tong Yang, Yaofeng Tu, Lian Yu, and Bin Cui. 2023. JoinSketch: A Sketch Algorithm for Accurate and Unbiased Inner- Product Estimation.Proceedings of the ACM on Management of Data1, 1 (2023), 1\u201326.",
+    "doi": "10.1145/3588935",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/3588935",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3588935",
+        "at": "2026-10-05T00:19:54.000514+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "879cbc43c472beeda0c1a47a1703621ea39df8a90a665f2bdf925db9065d9c53",
+        "bytes": 14988
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3588935",
+        "at": "2026-10-05T00:19:54.110942+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3588935",
+        "at": "2026-10-05T00:19:54.522574+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3588935",
+        "at": "2026-10-05T00:23:51.007224+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "879cbc43c472beeda0c1a47a1703621ea39df8a90a665f2bdf925db9065d9c53",
+        "bytes": 14988
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3588935",
+        "at": "2026-10-05T00:23:51.165990+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3588935",
+        "at": "2026-10-05T00:23:51.594099+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3588935",
+        "at": "2026-10-05T00:27:01.093427+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "879cbc43c472beeda0c1a47a1703621ea39df8a90a665f2bdf925db9065d9c53",
+        "bytes": 14988
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3588935",
+        "at": "2026-10-05T00:27:01.216726+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3588935",
+        "at": "2026-10-05T00:27:01.489420+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "879cbc43c472beeda0c1a47a1703621ea39df8a90a665f2bdf925db9065d9c53",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 39,
+    "citation": "Kyu-Young Whang, Brad T Vander-Zanden, and Howard M Taylor. 1990. A linear-time probabilistic counting algorithm for database applications.ACM Transactions on Database Systems (TODS)15, 2 (1990).",
+    "doi": "10.1145/78922.78925",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/78922.78925",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/78922.78925",
+        "at": "2026-10-05T00:19:54.725743+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "2cc6079d8644fb75d4ea138b8f8a6849b447f9388143828b58e6dd35c0c6388d",
+        "bytes": 9207
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/78922.78925",
+        "at": "2026-10-05T00:19:54.851357+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/78922.78925",
+        "at": "2026-10-05T00:19:55.304422+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/78922.78925",
+        "at": "2026-10-05T00:23:51.661561+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "2cc6079d8644fb75d4ea138b8f8a6849b447f9388143828b58e6dd35c0c6388d",
+        "bytes": 9207
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/78922.78925",
+        "at": "2026-10-05T00:23:51.779857+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/78922.78925",
+        "at": "2026-10-05T00:23:52.134039+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/78922.78925",
+        "at": "2026-10-05T00:27:01.736023+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "2cc6079d8644fb75d4ea138b8f8a6849b447f9388143828b58e6dd35c0c6388d",
+        "bytes": 9207
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/78922.78925",
+        "at": "2026-10-05T00:27:01.900241+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/78922.78925",
+        "at": "2026-10-05T00:27:02.385042+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "2cc6079d8644fb75d4ea138b8f8a6849b447f9388143828b58e6dd35c0c6388d",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 40,
+    "citation": "Tong Yang, Jie Jiang, Peng Liu, Qun Huang, Junzhi Gong, Yang Zhou, Rui Miao, Xiaoming Li, and Steve Uhlig. 2018. Elastic sketch: Adaptive and fast network- wide measurements. InSIGCOMM. 561\u2013575.",
+    "doi": null,
+    "kind": "research",
+    "role": "baseline",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "51ce9a24c3cd87752bef682b82a2a15346874258197cd3ce2d2e0de8e5883735",
+    "pages": 15,
+    "findings": "Elastic sketch adapts to traffic; multi-platform reported comparisons require matched configurations.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://yangtonghome.github.io/uploads/ElasticSketch.pdf",
+        "at": "2026-10-05T00:19:55.053689+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://yangtonghome.github.io/uploads/elastic.pdf",
+        "at": "2026-10-05T00:23:51.643658+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 404: Not Found"
+      },
+      {
+        "url": "https://yangzhou1997.github.io/paper/elastic-sigcomm18.pdf",
+        "final_url": "https://yangzhou1997.github.io/paper/elastic-sigcomm18.pdf",
+        "at": "2026-10-05T00:23:52.267571+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "51ce9a24c3cd87752bef682b82a2a15346874258197cd3ce2d2e0de8e5883735",
+        "bytes": 3348319,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://yangzhou1997.github.io/paper/elastic-sigcomm18.pdf",
+    "original_path": "sources/ref-40.pdf",
+    "byte_count": 3348319,
+    "retrieved_at": "2026-10-05T00:23:52.276555+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 41,
+    "citation": "Yinda Zhang, Zaoxing Liu, Ruixin Wang, Tong Yang, Jizhou Li, Ruijie Miao, Peng Liu, Ruwen Zhang, and Junchen Jiang. 2021. CocoSketch: high-performance sketch-based measurement over arbitrary partial key query. InProceedings of the 2021 ACM SIGCOMM 2021 Conference. 207\u2013222.",
+    "doi": "10.1145/3452296.3472892",
+    "kind": "research",
+    "role": "baseline",
+    "source_url": "https://doi.org/10.1145/3452296.3472892",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "19b46f2702a68f32c7c2b95b64850b51898d7317656715a4f7215290552e9e6d",
+    "pages": 16,
+    "findings": "CocoSketch supports arbitrary partial-key queries via subset sums; different query workload.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3452296.3472892",
+        "at": "2026-10-05T00:19:55.403223+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "0f46f22d6de01a5ca52af6c55612dd2e9a507cc490bd77a40420d693705e9a6f",
+        "bytes": 28365
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3452296.3472892",
+        "at": "2026-10-05T00:19:55.625690+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3452296.3472892",
+        "at": "2026-10-05T00:19:55.949005+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3452296.3472892",
+        "at": "2026-10-05T00:23:51.880604+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "0f46f22d6de01a5ca52af6c55612dd2e9a507cc490bd77a40420d693705e9a6f",
+        "bytes": 28365
+      },
+      {
+        "url": "https://yangtonghome.github.io/uploads/CocoSketch.pdf",
+        "final_url": "https://yangtonghome.github.io/uploads/CocoSketch.pdf",
+        "at": "2026-10-05T00:23:52.347016+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "19b46f2702a68f32c7c2b95b64850b51898d7317656715a4f7215290552e9e6d",
+        "bytes": 1343742,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "0f46f22d6de01a5ca52af6c55612dd2e9a507cc490bd77a40420d693705e9a6f",
+    "retrieved_url": "https://yangtonghome.github.io/uploads/CocoSketch.pdf",
+    "original_path": "sources/ref-41.pdf",
+    "byte_count": 1343742,
+    "retrieved_at": "2026-10-05T00:23:52.367677+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 42,
+    "citation": "Bohan Zhao, Xiang Li, Boyu Tian, Zhiyu Mei, and Wenfei Wu. 2021. Dhs: Adaptive memory layout organization of sketch slots for fast and accurate data stream processing. InProceedings of the 27th ACM SIGKDD Conference on Knowledge Discovery & Data Mining. 2285\u20132293.",
+    "doi": "10.1145/3447548.3467353",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.1145/3447548.3467353",
+    "access_status": "unavailable",
+    "review_status": "unavailable",
+    "retrieved_version": null,
+    "sha256": null,
+    "pages": null,
+    "findings": null,
+    "limitations": "Cited full text unavailable after recorded attempts. No substantive full-text review. Metadata/failed-response hashes are not full-text evidence.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:19:55.571705+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "84edd0d7bcdb2201c6423234422ba74b871740a07b92df61a1535f08476b107e",
+        "bytes": 9669
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:19:55.686681+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:19:56.138896+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:23:52.420694+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "84edd0d7bcdb2201c6423234422ba74b871740a07b92df61a1535f08476b107e",
+        "bytes": 9669
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:23:52.608838+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:23:53.010934+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://api.crossref.org/works/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:27:02.427082+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "84edd0d7bcdb2201c6423234422ba74b871740a07b92df61a1535f08476b107e",
+        "bytes": 9669
+      },
+      {
+        "url": "https://dl.acm.org/doi/pdf/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:27:02.550087+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      },
+      {
+        "url": "https://doi.org/10.1145/3447548.3467353",
+        "at": "2026-10-05T00:27:02.922784+00:00",
+        "status": "failed",
+        "reason": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "metadata_sha256": "84edd0d7bcdb2201c6423234422ba74b871740a07b92df61a1535f08476b107e",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 43,
+    "citation": "Fuheng Zhao, Divyakant Agrawal, Amr El Abbadi, and Ahmed Metwally. 2021. SpaceSaving\u00b1: An Optimal Algorithm for Frequency Estimation and Frequent items in the Bounded Deletion Model.arXiv preprint arXiv:2112.03462(2021).",
+    "doi": null,
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": null,
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "373249936250d03f64103dfd59e65ead52c81674c87680611a25e29753d7a02a",
+    "pages": 16,
+    "findings": "SpaceSaving\u00b1 bounded-deletion frequency estimation; deletion model is outside positive-update campaign.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://arxiv.org/pdf/2112.03462",
+        "final_url": "https://arxiv.org/pdf/2112.03462",
+        "at": "2026-10-05T00:19:55.746080+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "373249936250d03f64103dfd59e65ead52c81674c87680611a25e29753d7a02a",
+        "bytes": 1079443,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "retrieved_url": "https://arxiv.org/pdf/2112.03462",
+    "original_path": "sources/ref-43.pdf",
+    "byte_count": 1079443,
+    "retrieved_at": "2026-10-05T00:19:55.752163+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 44,
+    "citation": "Fuheng Zhao, Punnal Ismail Khan, Divyakant Agrawal, Amr El Abbadi, Arpit Gupta, and Zaoxing Liu. 2023. Panakos: Chasing the Tails for Multidimensional Data Streams.Proceedings of the VLDB Endowment16, 6 (2023), 1291\u20131304.",
+    "doi": "10.14778/3583140.3583147",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.14778/3583140.3583147",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "222a3e37253b980088c365d3a718102d5dd27d201ceefa400bde032acc577e24",
+    "pages": 14,
+    "findings": "Panakos multidimensional hot/warm/cold feature streams and tails; abstraction differs from fixed per-key count study.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.14778/3583140.3583147",
+        "at": "2026-10-05T00:19:56.354814+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "dfeac28b46d10d2ebd3bdd72015e48c8dd710a3da4e015b15530fa66d9eb33d7",
+        "bytes": 21450
+      },
+      {
+        "url": "https://www.vldb.org/pvldb/vol16/p1291-zhao.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol16/p1291-zhao.pdf",
+        "at": "2026-10-05T00:19:57.502410+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "222a3e37253b980088c365d3a718102d5dd27d201ceefa400bde032acc577e24",
+        "bytes": 1728918,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "dfeac28b46d10d2ebd3bdd72015e48c8dd710a3da4e015b15530fa66d9eb33d7",
+    "retrieved_url": "https://www.vldb.org/pvldb/vol16/p1291-zhao.pdf",
+    "original_path": "sources/ref-44.pdf",
+    "byte_count": 1728918,
+    "retrieved_at": "2026-10-05T00:19:57.509484+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 45,
+    "citation": "Fuheng Zhao, Sujaya Maiyya, Ryan Wiener, Divyakant Agrawal, and Amr El Ab- badi. 2021. Kll\u00b1approximate quantile sketches over dynamic datasets.Proceedings of the VLDB Endowment14, 7 (2021), 1215\u20131227.",
+    "doi": "10.14778/3450980.3450990",
+    "kind": "research",
+    "role": "related work/theory",
+    "source_url": "https://doi.org/10.14778/3450980.3450990",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "exact retained bytes; identity/version pending inspection",
+    "sha256": "491c923a467082d03512b50301491328fa0ad1fb29cf9868cf8c294ec535ab76",
+    "pages": 13,
+    "findings": "KLL\u00b1 extends quantile sketch to bounded deletions; no deletion inputs were manufactured for this assessment.",
+    "limitations": "Abstract/opening text inspected; most algorithms, proofs, evaluation figures/tables and appendices not fully examined. No complete substantive review or independent validation.",
+    "retrieval_attempts": [
+      {
+        "url": "https://api.crossref.org/works/10.14778/3450980.3450990",
+        "at": "2026-10-05T00:19:56.319967+00:00",
+        "status": "metadata only",
+        "http_status": 200,
+        "sha256": "49e8ed009b706f73bec69df6f5d478cb31da61b3f282f9b2a1379564ead0cda5",
+        "bytes": 7886
+      },
+      {
+        "url": "https://www.vldb.org/pvldb/vol14/p1215-zhao.pdf",
+        "final_url": "https://www.vldb.org/pvldb/vol14/p1215-zhao.pdf",
+        "at": "2026-10-05T00:19:57.802055+00:00",
+        "http_status": 200,
+        "content_type": "application/pdf",
+        "sha256": "491c923a467082d03512b50301491328fa0ad1fb29cf9868cf8c294ec535ab76",
+        "bytes": 1073262,
+        "status": "retrieved; identity pending"
+      }
+    ],
+    "metadata_sha256": "49e8ed009b706f73bec69df6f5d478cb31da61b3f282f9b2a1379564ead0cda5",
+    "retrieved_url": "https://www.vldb.org/pvldb/vol14/p1215-zhao.pdf",
+    "original_path": "sources/ref-45.pdf",
+    "byte_count": 1073262,
+    "retrieved_at": "2026-10-05T00:19:57.806081+00:00",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same assistant as study implementer; not independent human review"
+    }
+  },
+  {
+    "reference_number": 46,
+    "citation": "ReliableSketch released artifact mathematical proof supplement (2024),4pages.",
+    "doi": null,
+    "kind": "associated supplement",
+    "role": "artifact proof version comparison; not a direct bibliography item",
+    "source_url": "https://github.com/ReliableSketch/ReliableSketch",
+    "retrieved_url": "https://github.com/ReliableSketch/ReliableSketch/tree/5a83f03c775142401d23a78e7e81b163ddf7b604",
+    "access_status": "retrieved",
+    "review_status": "partial",
+    "retrieved_version": "Git revision5a83f03c775142401d23a78e7e81b163ddf7b604; anonymous2024 mathematical proof supplement",
+    "original_path": "sources/author/Appendix_MATHEMATICAL PROOFS.pdf",
+    "sha256": "8b7beacb5a68dc7cf65a076ce78f605d0143eda4ba87c703a83e4aedba386a37",
+    "byte_count": 432971,
+    "pages": 4,
+    "findings": "Definitions/first-page proof setup inspected; elephant/mice definitions differ from final IMC2025 AppendixA.",
+    "limitations": "Remaining conditional concentration proof and constants not fully audited. Distinct version, not final paper appendix.",
+    "retrieval_attempts": [
+      {
+        "url": "https://github.com/ReliableSketch/ReliableSketch.git",
+        "status": "git clone pinned revision; supplement original bytes hashed"
+      }
+    ],
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same implementer"
+    }
+  }
+]

@@ -1,0 +1,10 @@
+[
+ {"id":"default","source_number":0,"location":"p9 §6.1.1","metric":"configuration","values":{"lambda":25,"memory_MB":1,"filter_percent":20,"filter_counter_bits":2,"yes_bits":32,"no_bits":16,"id_bits":32,"R_w":2,"R_lambda":2.5},"units":"count units; paper MB convention unspecified; bits"},
+ {"id":"ip-min-memory","source_number":0,"location":"p10 Fig5 and §6.2.1","metric":"zero_outlier_memory","values":{"RS_MB":0.91,"CM_acc_ratio":6.07,"CU_acc_ratio":2.69,"SS_ratio":2.01,"Elastic_ratio":9.32,"CM_fast_CU_fast_Coco_limit_MB":10},"units":"paper MB; ratios dimensionless"},
+ {"id":"cpu-throughput","source_number":0,"location":"p11 §6.3, Fig9","metric":"throughput","values":{"RS_insert":25.40,"RS_raw_insert":51.29,"RS_query":31.29,"RS_raw_query":66.89},"units":"million unit operations/s, labelled Mpps in paper"},
+ {"id":"fpga-frequency","source_number":0,"location":"p8 Table3, §5.1","metric":"clock_frequency","values":{"table_MHz":339,"prose_MHz":340,"pipeline_clocks":41},"units":"MHz; clock cycles"},
+ {"id":"fpga-resources","source_number":0,"location":"p8 Table3","metric":"FPGA_resources","values":{"LUTs":2654,"registers":2834,"BRAM_tiles":259,"LUT_percent":0.61,"register_percent":0.33,"BRAM_percent":17.62},"units":"counts and percentages"},
+ {"id":"tofino-resources","source_number":0,"location":"p8 Table4","metric":"Tofino_resources","values":{"hash_bits":541,"SRAM_blocks":138,"map_RAM_blocks":119,"TCAM_blocks":0,"SALU_count":12,"VLIW_count":23,"match_Xbar_count":109},"units":"hardware resource counts; not CPU bytes"},
+ {"id":"target-AAE","source_number":0,"location":"p12 §6.4.3, Fig14b","metric":"AAE_optimization","values":{"target_AAE":[5,10,15,20],"lambda":[15,25,35,50],"memory_MB":[1.43,1.05,0.85,0.75]},"units":"count units/key; count units; paper MB"},
+ {"id":"deployment","source_number":0,"location":"p13 §6.5.3, Fig19","metric":"switch_accuracy","values":{"packets":40000000,"link_Gbps":40,"IP_SRAM_KB":368,"Hadoop_SRAM_KB":92,"IP_AAE_Kbps_upper":4,"Hadoop_AAE_Kbps_upper":10},"units":"packets; Gbps/Kbps as printed; SRAM KB convention unspecified"}
+]
