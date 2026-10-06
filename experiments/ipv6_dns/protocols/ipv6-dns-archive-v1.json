@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "locked_at": "2026-10-05T21:45:53.022580+00:00",
+  "reviewer": {
+    "identity": "Codex primary assistant",
+    "type": "AI",
+    "independence": "Implementer"
+  },
+  "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+  "artifact_sha256": "72d505c5980b4be5c55c64a25eb10a147eebac1ec0c0f70aaf40cc49948ce9e0",
+  "pilot": "2025-09-14 summaries inspected for schema and feasibility only before this lock. Main results are not held out from this pilot.",
+  "resource_limits": {
+    "concurrency": 4,
+    "request_timeout_seconds": 40,
+    "max_artifact_bytes": 20000000,
+    "main_download_limit_bytes": 150000000,
+    "AWS_experiment_instances": 0,
+    "estimated_incremental_AWS_experiment_compute_usd": 0,
+    "local_cost_usd": null,
+    "storage_charges_usd": null,
+    "stopping_rule": "Visit every planned daily input twice at most; retain failed attempts. Stop at size limit or integrity failure; do not replace historical conditions with current scans."
+  },
+  "id": "ipv6-dns-archive-v1",
+  "stage": "main",
+  "questions": [
+    "Do released daily summaries reproduce the rounded absolute cells of Figures 13–15?",
+    "How do IPv6-minus-IPv4 differences vary by matched configuration and epoch?",
+    "Does day weighting versus denominator pooling materially change results?"
+  ],
+  "experiment_type": "Reanalysis of authors recorded summaries; author implementation folding plus independent arithmetic",
+  "epochs": {
+    "tcp-error": [
+      "2025-04-10",
+      "2025-05-23"
+    ],
+    "pre-lgi": [
+      "2025-05-25",
+      "2025-06-14"
+    ],
+    "current": [
+      "2025-06-25",
+      "2025-09-14"
+    ]
+  },
+  "input_range": [
+    "2025-04-10",
+    "2025-09-14"
+  ],
+  "inputs": [
+    "out_data/{date}/stats/all_psl_domains.json.gz",
+    "pcap_agregates/{date}.json"
+  ],
+  "input_base_url": "https://data.measurement.network/dns-mtu-msmt/",
+  "configurations": {
+    "mtu": [
+      "mtu1500",
+      "mtu1280-pmtud",
+      "mtu1280-nopmtud",
+      "mtu1280onpath-nopmtud"
+    ],
+    "address_family": [
+      "v4-only",
+      "v6-only",
+      "ds"
+    ],
+    "upstream": [
+      "lgi",
+      "no-lgi"
+    ],
+    "edns_bytes": [
+      512,
+      1232,
+      4096
+    ],
+    "cohort": [
+      "dnssec",
+      "no-dnssec"
+    ]
+  },
+  "metrics": {
+    "TIMEOUT": "100*status_count/NS-set_count, percent",
+    "SERVFAIL": "100*status_count/NS-set_count, percent",
+    "edns0_fallback": "100*client_edns_fallback/UDP_count, percent of observed UDP server identities",
+    "tcp_fallback": "100*TCP_count/UDP_count, percent ratio; not fraction of mutually exclusive events",
+    "udp_fragments": "100*UDP_frag/UDP_count, percent of observed UDP server identities",
+    "udp_packet_too_big": "100*UDP_packet_too_big/UDP_count, percent"
+  },
+  "comparison": {
+    "absolute_cell_tolerance_percentage_points": 0.0051,
+    "relative_value_unit": "percentage points",
+    "agreement_is": "Numerical agreement with printed rounded values only, not correctness or broad validation"
+  },
+  "replication_unit": "Daily aggregate and matched configuration/date. NS sets, servers, paths and repeated days are correlated; daily counts are observation coverage, not independent replications.",
+  "sample_size_rationale": "Census of all 158 calendar dates in publication interval; all grid configurations retained. Three declared epochs include 147 calendar days. No power or iid sample-size claim.",
+  "exclusions": {
+    "2025-04-21": "Missing archive day; retain missing status",
+    "2025-05-20/2025-05-24": "Known routing anomaly; original early figure window preserved, exclude in separately labeled routing sensitivity",
+    "2025-06-15/2025-06-24": "Provider policy transition; retained but outside fixed epochs",
+    "2025-05-24": "Outside printed epoch windows; retained"
+  },
+  "missing_rules": "Absent numerator or zero denominator is missing/invalid, not measured zero. Explicit recorded zero is retained. Source cohort/identity mismatches are ambiguous; no merging by order. Published author zero-imputation reproduced separately only for author fidelity.",
+  "statistics": "Unweighted mean of recorded daily percentages matches released figure fold. Sensitivity pools numerators/denominators on same valid days, and removes routing-anomaly dates. Report min/max descriptive daily range and matched-date IPv6-minus-IPv4 contrasts. No inferential CI: changing, clustered convenience panel and raw dependence structure unavailable.",
+  "algorithms_and_seeds": "Deterministic arithmetic; RNG and orbital/terminal inputs inapplicable. Historical random representative-domain selection cannot be replayed without original selections.",
+  "controls": [
+    "Counts finite/nonnegative/integer; statuses sum to cohort count; cohort partition equals all; grid and identity validation; numerator<=denominator where appropriate, TCP/UDP ratio can exceed100.",
+    "Execute AST-extracted original read_files with constrained filesystem adapter; compare independent summaries to original fold. Shared input summaries imply shared upstream aggregation assumptions."
+  ],
+  "coverage_limits": [
+    "No new network measurements, packet-drop causal experiment, live operational validation or APNIC raw-data reanalysis.",
+    "No full raw-pcap replay: published daily volumes exceed local budget.",
+    "Server-IP denominators differ from NS-set outcome denominators; do not treat them as interchangeable.",
+    "Published revisions/2025 routes cannot be inferred from archive release timestamps."
+  ],
+  "applicability": {
+    "simulations": "inapplicable: DNS empirical measurement paper",
+    "orbital_epochs": "inapplicable",
+    "equipment": "BGP-controlled paths and historical operator policy unavailable; no fresh network campaign proposed",
+    "best_case_vs_budget": "Census fixed archive window; no best-day selection; full raw replay outside150MB input budget"
+  }
+}

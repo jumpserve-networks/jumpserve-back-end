@@ -1,0 +1,172 @@
+{
+  "id": "ipv6-dns-controls-v1",
+  "executed_at": "2026-10-05T21:55:51.497327+00:00",
+  "protocol_sha256": "a4eb469b510a2d6985b4f37d970a15ed1d6d68b3cc24b50d1393d1f43cb476a8",
+  "correction_sha256": "5036eef957f3b38a79493187420f145657e2af966e8b6abc425da9e1534e40e2",
+  "reviewer": {
+    "identity": "Codex primary assistant",
+    "type": "AI",
+    "independence": "Implementer"
+  },
+  "runs": [
+    {
+      "id": "distinct-answers",
+      "protocol_id": "ipv6-dns-controls-v1",
+      "stage": "correctness",
+      "status": "complete",
+      "reason": null,
+      "raw_sha256": "b9c688a10d39cedb230c5dd0ed147c05d61dae522ce7d45ab2818884969d1e6d",
+      "source_sha256": "10d85e430cf4976e63638cb126d4cf6be322e2c3985eb41cb3ad9d442f521b0f",
+      "original": [
+        {
+          "result_hash": "ad8931e9c2667eeb6604ae7d44ec9527c222caed91c7bbb3a7f8080f4c638f1d",
+          "stats": {
+            "fields": {
+              "additional": false,
+              "autority": false,
+              "answer": true
+            },
+            "dnssec": false,
+            "edns0": false,
+            "udpsize": -1,
+            "duration": [
+              3
+            ],
+            "status": "NOERROR"
+          },
+          "count": 1
+        }
+      ],
+      "corrected": [
+        {
+          "count": 1,
+          "status": "NOERROR",
+          "durations": [
+            1
+          ]
+        },
+        {
+          "count": 1,
+          "status": "NOERROR",
+          "durations": [
+            3
+          ]
+        }
+      ],
+      "expected_observations": 2,
+      "original_retained_observations": 1,
+      "corrected_retained_observations": 2,
+      "finding": "Distinct answer group replaces earlier group",
+      "limitation": "Synthetic finite fixture; published generating revision and real occurrence frequencies unknown."
+    },
+    {
+      "id": "same-answer-different-status",
+      "protocol_id": "ipv6-dns-controls-v1",
+      "stage": "correctness",
+      "status": "complete",
+      "reason": null,
+      "raw_sha256": "9c1d7281d5c3716b748cad4ec8372b1e1a009f6875c2c0d22883406d07d60392",
+      "source_sha256": "10d85e430cf4976e63638cb126d4cf6be322e2c3985eb41cb3ad9d442f521b0f",
+      "original": [
+        {
+          "result_hash": "2b379387dfc9366dd08f7dd6f1f193258b2c9a8c4835ac231a3553f1a6497735",
+          "stats": {
+            "fields": {
+              "additional": false,
+              "autority": false,
+              "answer": true
+            },
+            "dnssec": false,
+            "edns0": false,
+            "udpsize": -1,
+            "duration": [
+              1,
+              3
+            ],
+            "status": "NOERROR"
+          },
+          "count": 2
+        }
+      ],
+      "corrected": [
+        {
+          "count": 1,
+          "status": "NOERROR",
+          "durations": [
+            1
+          ]
+        },
+        {
+          "count": 1,
+          "status": "SERVFAIL",
+          "durations": [
+            3
+          ]
+        }
+      ],
+      "expected_observations": 2,
+      "original_retained_observations": 2,
+      "corrected_retained_observations": 2,
+      "finding": "Status-only difference shares hash; first status retained",
+      "limitation": "Synthetic finite fixture; published generating revision and real occurrence frequencies unknown."
+    },
+    {
+      "id": "duration-average",
+      "protocol_id": "ipv6-dns-controls-v1",
+      "stage": "correctness",
+      "status": "complete",
+      "reason": null,
+      "raw_sha256": "4d723b77b12d4bbbbeb5f94fa827cac789d36f0c474d018237a32b8b3143ad1e",
+      "stdout_sha256": "6d42856b24f7e4334c391331a9bffb3026a837f2d8aa9a0154607cdec3c591e4",
+      "stderr_sha256": "7cddde860a8da2884c10fa69113f1bd985e9813410b0dd1478416cfb01560a40",
+      "source_sha256": "d7b029da7efc9c041fe9f1f73ce513ec490e1da7cacb64146e53874523d72977",
+      "exit_code": 0,
+      "original": {
+        "count": 1,
+        "status": {
+          "NOERROR": 1
+        },
+        "dnssec": 0,
+        "edns0": 0,
+        "duration_max": 3.0,
+        "duration_min": 1.0,
+        "duration_avg": 3.0
+      },
+      "corrected": {
+        "mean": 2.0,
+        "min": 1,
+        "max": 3,
+        "status": "recorded"
+      },
+      "finding": "duration_avg3 seconds instead of arithmetic mean2 seconds",
+      "limitation": "Not evidence that these bytes generated published latency; no historical latency recalculation attempted."
+    },
+    {
+      "id": "empty-duration",
+      "protocol_id": "ipv6-dns-controls-v1",
+      "stage": "correctness",
+      "status": "failed",
+      "reason": "Author max([]) raises ValueError; failed run retained",
+      "raw_sha256": "d6c85fa7c4307a59abd97e08a30cf9d91d56a943421775b69c8ad4b62038329a",
+      "stdout_sha256": "7b683a3b2828b19c9a670e0093dbf30192b6462a5dc4fac3bc0a29aa32ec7802",
+      "stderr_sha256": "3298c0d493d68e0a04a4c849c7d11418ec702c1b1deb753bb3e037901866bf0a",
+      "source_sha256": "d7b029da7efc9c041fe9f1f73ce513ec490e1da7cacb64146e53874523d72977",
+      "exit_code": 1,
+      "original": null,
+      "corrected": {
+        "mean": null,
+        "min": null,
+        "max": null,
+        "status": "missing"
+      },
+      "finding": "Empty duration is invalid in author implementation",
+      "limitation": "Not evidence that these bytes generated published latency; no historical latency recalculation attempted."
+    }
+  ],
+  "checks": {
+    "distinct_answers_preserved": true,
+    "original_distinct_loss_demonstrated": true,
+    "mean_control": true,
+    "missing_preserved": true
+  }
+}

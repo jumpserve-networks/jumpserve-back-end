@@ -1,0 +1,15 @@
+{
+  "sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+  "bytes": 2183602,
+  "pages": 22,
+  "metadata": {
+    "/CreationDate": "D:20250916231501+02'00'",
+    "/Creator": "LaTeX with acmart 2025/05/30 v2.14 Typesetting articles for the Association for Computing Machinery and hyperref 2024-11-05 v7.01l Hypertext links for LaTeX",
+    "/ModDate": "D:20250917100400+02'00'",
+    "/Producer": "pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024 Gentoo Linux) kpathsea version 6.4.0",
+    "/Subject": "-  Networks  ->  Network measurement.",
+    "/Title": "`How I learned to stop worrying and love IPv6': Measuring the Internet's Readiness for DNS over IPv6",
+    "/Trapped": "/False",
+    "/PTEX.Fullbanner": "This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024 Gentoo Linux) kpathsea version 6.4.0"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "locked_at": "2026-10-05T21:45:53.022580+00:00",
+  "reviewer": {
+    "identity": "Codex primary assistant",
+    "type": "AI",
+    "independence": "Implementer"
+  },
+  "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+  "artifact_sha256": "72d505c5980b4be5c55c64a25eb10a147eebac1ec0c0f70aaf40cc49948ce9e0",
+  "pilot": "2025-09-14 summaries inspected for schema and feasibility only before this lock. Main results are not held out from this pilot.",
+  "resource_limits": {
+    "concurrency": 4,
+    "request_timeout_seconds": 40,
+    "max_artifact_bytes": 20000000,
+    "main_download_limit_bytes": 150000000,
+    "AWS_experiment_instances": 0,
+    "estimated_incremental_AWS_experiment_compute_usd": 0,
+    "local_cost_usd": null,
+    "storage_charges_usd": null,
+    "stopping_rule": "Visit every planned daily input twice at most; retain failed attempts. Stop at size limit or integrity failure; do not replace historical conditions with current scans."
+  },
+  "id": "ipv6-dns-controls-v1",
+  "stage": "correctness",
+  "questions": [
+    "Does released aggregation discard earlier distinct answers?",
+    "Does a field named duration_avg use max?",
+    "Can answer hashing merge differing status-only records?"
+  ],
+  "metrics": {
+    "retained_records": "integer",
+    "duration": "seconds",
+    "status": "categorical"
+  },
+  "inputs": "Finite fabricated unit fixtures, clearly separated from network measurements",
+  "configurations": [
+    "same name two distinct NS answers",
+    "same answers statuses NOERROR/TIMEOUT",
+    "durations1 and3 seconds",
+    "empty durations"
+  ],
+  "hypotheses": "Released code may reset distinct answer groups, merge status-only differences, and report max3 as average instead of2. Test observed output before drawing conclusions.",
+  "controls": "Independent specification preserving every observation and computing arithmetic mean; preserve unmodified source AST functions and source hash. Correction in separate version; do not alter archive.",
+  "sample_size_rationale": "Exhaustive declared finite cases, no stochastic replications",
+  "statistics": "Deterministic exact comparisons; confidence intervals inapplicable",
+  "exclusions": "Failed code executions recorded; empty duration should remain invalid/missing rather than zero",
+  "coverage_limits": "A finite code defect does not prove impact on published results; actual generating revision and observation ordering unavailable."
+}

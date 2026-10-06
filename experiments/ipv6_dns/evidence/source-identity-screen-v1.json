@@ -1,0 +1,102 @@
+[
+  {
+    "ref": 10,
+    "citation": "N. Brownlee, K. Claffy, and E. Nemeth. \u201cDNS Measurements at a Root Server\u201d. In: GLOBECOM\u201901. IEEE Global Telecommunications Conference . Vol. 3. Nov. 2001. doi: 10.1109/GLOCOM.2001.965864.",
+    "first_page_identity_excerpt": "DNSMeasurementsataRootServer\nNevilBrownlee\nTheUniversityofAucklandandCAIDA,SDSC,UCSanDiego,e-mail: nevil@caida.org\nkcClaffy\nCAIDA,SDSCUCSanDiego, e-mail: kc@caida.org\nEviNemeth\nUniversityofColoradoandCAIDA,SDSC,UCSanDiego, e-mail: evi@caida.org\nAbstract\u2014The Domain Name System (DNS) domain names to be used\nin network transactions (email, web request"
+  },
+  {
+    "ref": 11,
+    "citation": "S. Castro, D. Wessels, M. Fomenkov, and K. Claffy. \u201cA Day at the Root of the Internet\u201d. In: ACM SIGCOMM Computer Communication Review 38.5 (Sept. 2008). doi: 10.1145/1452335.1452341. url: https://dl.acm.org/doi/10.1145/ 1452335.1452341 (visited on 03/12/2024).",
+    "first_page_identity_excerpt": "A Day at the Root of the Internet\nSeb\nastian Castro\nCAIDA and NIC Chile\nsecastro@caida.org\nDuane Wessels\nCAIDA and The Measurement\nFactory, Inc.\nwessels@measurement-\nfactory.com\nMarina Fomenkov,\nKimberly Claffy\nCAIDA, University of California\nSan Diego\nmarina@caida.org,\nkc@caida.org\nABSTRACT\nWe analyzed the largest simultaneous collection of full-p"
+  },
+  {
+    "ref": 13,
+    "citation": "J. Czyz, M. Allman, J. Zhang, S. Iekel-Johnson, E. Osterweil, and M. Bailey. \u201cMeasuring IPv6 adoption\u201d. In: Proc. of the 2014 ACM SIGCOMM Conference (SIGCOMM). Aug. 2014.",
+    "first_page_identity_excerpt": "Measuring IPv6 Adoption\nJakub Czyz\nUniversity of Michigan\nMark Allman\nInternational Computer\nScience Institute\nJing Zhang\nUniversity of Michigan\nScott Iekel-Johnson\nArbor Networks, Inc.\nEric Osterweil\nVerisign Labs\nMichael Bailey\nUniversity of Michigan\nABSTRACT\nAfter several IPv4 address exhaustion milestones in the last three\nyears, it is becoming"
+  },
+  {
+    "ref": 14,
+    "citation": "T. Dai, P. Jeitner, H. Shulman, and M. Waidner. \u201cFrom IP to transport and beyond: cross-layer attacks against applications\u201d. In: Proc. of the 28th ACM SIGSAC Conference on Computer and Communications Security (CCS). Nov. 2021.",
+    "first_page_identity_excerpt": "SIGCOMM \u201921: Proceedings of the 2021 ACM SIGCOMM 2021 Conference, August 2021, Pages 836-849\nAccepted version. https://doi.org/10.1145/3452296.3472933\nFrom IP to Transport and Beyond:\nCross-Layer Attacks Against Applications\nTianxiang Dai\nFraunhofer SIT\nGermany\nPhilipp Jeitner\nFraunhofer SIT\nTU Darmstadt\nGermany\nHaya Shulman\nFraunhofer SIT\nGermany\n"
+  },
+  {
+    "ref": 18,
+    "citation": "E. Di Paolo, E. Bassetti, and A. Spognardi. \u201cA new model for testing IPv6 fragment handling\u201d. In: European Symposium on Research in Computer Security . Springer. 2023.",
+    "first_page_identity_excerpt": "Evasion of High-End IPS Devices \nin the Age of IPv6\nAntonios Atlasis Enno Rey\nsecfu.net ERNW GmbH\naatlasis@secfu.net  erey@ernw.de \nAbstract\nIPv6 era is here, either if you already use it or if you continue to ignore it. However, even in the last \ncase, this does not mean that your \u201cnodes\u201d (end-hosts, networking devices, security devices) are not\na"
+  },
+  {
+    "ref": 28,
+    "citation": "T. Fiebig. \u201cCrisis, ethics, reliability & a measurement.network: Reflections on active network measurements in academia\u201d. In: Proceedings of the 2023 Applied Networking Research Workshop. 2023.",
+    "first_page_identity_excerpt": "Crisis, Ethics, Reliability & a measurement.network\nReflections on Active Network Measurements in Academia\nTobias Fiebig\nMax-Planck-Institut f\u00fcr Informatik\nSaarbr\u00fccken, Germany\ntfiebig@mpi-inf.mpg.de\nABSTRACT\nNetwork measurements are a necessary component of assessing\nreal-world protocol use to inform the development of new and\nimprovement of old p"
+  },
+  {
+    "ref": 32,
+    "citation": "S. Frankel, R. Graveman, J. Pearce, and M. Rooks. \u201cGuidelines for the secure deployment of IPv6\u201d. In: NIST Special Publication 800 (2010).",
+    "first_page_identity_excerpt": "Guidelines for the Secure \nDeployment of IPv6  \nRecommendations of the National Institute \nof Standards and T echnology \n \nSheila Frankel \nRichard Graveman  \nJohn Pearce \nMark Rooks \n \n \n \nSpecial Publication 800-119  \n"
+  },
+  {
+    "ref": 35,
+    "citation": "H. Gao, V. Yegneswaran, Y. Chen, P. Porras, S. Ghosh, J. Jiang, and H. Duan. \u201cAn Empirical Reexamination of Global DNS Behavior\u201d. In: Proceedings of the ACM SIGCOMM 2013 conference on SIGCOMM . SIGCOMM \u201913. Aug. 2013. doi: 10.1145/2486001.2486018. (Visited on 04/25/2024).",
+    "first_page_identity_excerpt": "An Empirical Reexamination of Global DNS Behavior\nHongyu Gao \u2020 Vinod Y egneswaran\u2217 Y an Chen\u2020 Phillip Porras\u2217\nShalini Ghosh \u2217 Jian Jiang \u00a7 Haixin Duan \u00a7\n\u2020Northwestern University \u2217SRI International \u00a7Tsinghua University\nABSTRACT\nThe performance and operational characteristics of the DNS pro-\ntocol are of deep interest to the research and network oper"
+  },
+  {
+    "ref": 40,
+    "citation": "F. Hilal, P. Sattler, K. Vermeulen, and O. Gasser. \u201cA First Look At IPv6 Hyper- giant Infrastructure\u201d. In: (Dec. 2024).",
+    "first_page_identity_excerpt": "A First Look At IPv6 Hypergiant Infrastructure\nFAHAD HILAL, Max Planck Institute for Informatics, Germany\nPATRICK SATTLER,Technical University of Munich (TUM), Germany\nKEVIN VERMEULEN, LAAS-CNRS, Universit\u00e9 de Toulouse, CNRS, Toulouse, France\nOLIVER GASSER, IPinfo, United States and Max Planck Institute for Informatics, Germany\nToday\u2019s Internet is "
+  },
+  {
+    "ref": 47,
+    "citation": "D. Kipping. \u201cTransit origami: a method to coherently fold exomoon transits in time series photometry\u201d. In: Monthly Notices of the Royal Astronomical Society 507.3 (2021).",
+    "first_page_identity_excerpt": "MNRAS 000, 1\u201313 (2021) Preprint 9 August 2021 Compiled using MNRAS L ATEX style \ufb01le v3.0\nTransit Origami: A Method to Coherently Fold Exomoon Transits\nin Time Series Photometry\nDavid Kipping 1\u22c6\n1Dept. of Astronomy, Columbia University, 550 W 120th Street, New York NY 10027\nAccepted 2021 July 7. Received 2021 July 4; in original form 2021 May 29\nABS"
+  },
+  {
+    "ref": 49,
+    "citation": "V. Le Pochat, T. Van Goethem, S. Tajalizadehkhoob, M. Korczy\u0144ski, and W. Joosen. \u201cTranco: A Research-Oriented Top Sites Ranking Hardened Against Manipulation\u201d. In: Proc. of the 26th Network and Distributed System Security Symposium (NDSS). Feb. 2019. doi: 10.14722/ndss.2019.23386.",
+    "first_page_identity_excerpt": "Rigging Research Results by\nManipulating Top Websites Rankings\nVictor Le Pochat, Tom Van Goethem and Wouter Joosen\nimec-DistriNet, KU Leuven\n3001 Leuven, Belgium\nEmail: \ufb01rstname.lastname@cs.kuleuven.be\nAbstract\u2014Researchers often use rankings of popular websites\nwhen measuring security practices, evaluating defenses or analyz-\ning ecosystems. Howeve"
+  },
+  {
+    "ref": 56,
+    "citation": "B. Manning. Persistent Queries and Phantom Nameservers . Nov. 2006. url: https://www.caida.org/workshops/wide/0611/slides/manning-wide0611.pdf (visited on 04/16/2024).",
+    "first_page_identity_excerpt": "persistent queries\nand phantom nameservers"
+  },
+  {
+    "ref": 61,
+    "citation": "G. C. Moura, M. M\u00fcller, M. Davids, M. Wullink, and C. Hesselman. \u201cFragmen- tation, truncation, and timeouts: are large DNS messages falling to bits?\u201d In: International Conference on Passive and Active Network Measurement . Springer. 2021.",
+    "first_page_identity_excerpt": "Fragmentation, truncation, and timeouts:\nare large DNS messages falling to bits?\nSIDN Labs T ech Report #2020-03\n2020-11-20\nGiovane C. M. Moura 1, Moritz M\u00a8 uller1,2, Marco Davids 1,\nMaarten Wullink1, and Cristian Hesselman 1,2\n1 SIDN Labs, Arnhem, The Netherlands\n2 University of Twente, Enschede, The Netherlands\n{firstname}.{lastname}@sidn.nl\nAbst"
+  },
+  {
+    "ref": 62,
+    "citation": "R. de Oliveira Schmidt, J. Heidemann, and J. H. Kuipers. \u201cAnycast Latency: How Many Sites Are Enough?\u201d In: Passive and Active Measurement. 2017. doi: 10.1007/978-3-319-54328-4_14.",
+    "first_page_identity_excerpt": "Anycast Latency: How Many Sites Are Enough?\nRicardo de O. Schmidt 1, John Heidemann 2, and Jan Harm Kuipers 1\n1University of Twente\n2USC/Information Sciences Institute\nr.schmidt@utwente.nl,johnh@isi.edu,j.h.kuipers@student.utwente.nl\nAbstract. Anycast is widely used today to provide important services\nsuch as DNS and Content Delivery Networks (CDNs"
+  },
+  {
+    "ref": 66,
+    "citation": "R. van Rijswijk-Deij, M. Jonker, A. Sperotto, and A. Pras. \u201cA High-Performance, Scalable Infrastructure for Large-Scale Active DNS Measurements\u201d. In: JSAC (June 2016). JSAC. doi: 10.1109/JSAC.2016.2558918. url: https://ieeexplore.ieee. org/abstract/document/7460220 (visited on 12/08/2023).",
+    "first_page_identity_excerpt": "IEEE JOURNAL ON SELECTED AREAS IN COMM UNICATIONS, VOL. 34, NO. 6, JUNE 2016 1877\nA High-Performance, Scalable Infrastructure for\nLarge-Scale Active DNS Measurements\nRoland van Rijswijk-Deij, Mattijs Jonker, Anna Sperotto, and Aiko Pras\nAbstract\u2014 The domain name system (DNS) is a core\ncomponent of the Internet. It performs the vital task of mapping"
+  },
+  {
+    "ref": 68,
+    "citation": "F. Steurer, A. Feldmann, and T. Fiebig. \u201cA Tree in a Tree: Measuring Biases of Partial DNS Tree Exploration\u201d. In: Proc. of the Passive and Active Measurement Conference (PAM). Mar. 2025.",
+    "first_page_identity_excerpt": "A Tree in a Tree: Measuring Biases\nof Partial DNS Tree Exploration\nFlorian Steurer1,2(B) , Anja Feldmann1 , and Tobias Fiebig1\n1 Max Planck Institute for Informatics, Saarbruecken, Germany\n{fsteurer,anja,tfiebig}@mpi-inf.mpg.de\n2 Saarland University, Saarbruecken, Germany\nAbstract. The Domain Name System (DNS) is a cornerstone of the\nInternet. As s"
+  },
+  {
+    "ref": 69,
+    "citation": "F. Steurer, D. Wagner, D. Lachos, A. Feldmann, and T. Fiebig. \u201cThe Roots Go Deep: Measuring\u2019. \u2019Under Change\u201d. In:Proc. of the Internet Measurement Conference (IMC). Oct. 2024.",
+    "first_page_identity_excerpt": "The Roots Go Deep: Measuring \u2018.\u2019 Under Change\nFlorian Steurer\nMax Planck Institute for Informatics\nSaarland University\nSaarbruecken, Germany\nfsteurer@mpi-inf.mpg.de\nDaniel Wagner\nDE-CIX\nFrankfurt, Germany\ndaniel.wagner@de-cix.net\nDanny Lachos\nBENOCS GmbH\nBerlin, Germany\ndlachos@benocs.com\nAnja Feldmann\nMax Planck Institute for Informatics\nSaarbruec"
+  },
+  {
+    "ref": 70,
+    "citation": "F. Streibelt, P. Sattler, F. Lichtblau, C. H. Gan\u00e1n, A. Feldmann, O. Gasser, and T. Fiebig. \u201cHow ready is DNS for an IPv6-only world?\u201d In: (Mar. 2023).",
+    "first_page_identity_excerpt": "If you cite this paper, please use the PAM reference: Florian Streibelt, Patrick Sattler, Franziska Lichtblau, Carlos H.\nGa\u02dc n\u00b4 an, Anja Feldmann, Oliver Gasser, and Tobias Fiebig. How Ready Is DNS for an IPv6-Only World? InProceedings\nof the Passive and Active Measurement Conference 2023 (PAM \u201923), March 21\u201323, 2023 .\nHow Ready Is DNS for an IPv6-"
+  },
+  {
+    "ref": 71,
+    "citation": "J. Ullrich, K. Krombholz, H. Hobel, A. Dabrowski, and E. Weippl. \u201cIPv6 security: Attacks and countermeasures in a nutshell\u201d. In: 8th USENIX Workshop on Offensive Technologies (WOOT 14). 2014.",
+    "first_page_identity_excerpt": "IPv6 Security: Attacks and Countermeasures in a\nNutshell\nJohanna Ullrich, Katharina Krombholz, Heidelinde Hobel, Adrian Dabrowski, Edgar Weippl\nSBA Research\nVienna, Austria\nEmail: (1stletter\ufb01rstname)(lastname)@sba-research.org\nAbstract\u2014The history of computers is full of underestimation:\n640 kilobyte, 2-digit years, and 32-bit Internet addresses. I"
+  },
+  {
+    "ref": 72,
+    "citation": "D. Wessels, J. Castonguay, and P. Barber. \u201cThirteen Years of \u201cOld J-Root\u201d\u201d. In: DNS-OARC Fall 2015 Workshop, Montreal (Oct. 2015).",
+    "first_page_identity_excerpt": "Thirteen Years of \u201cOld J-Root\u201d\nDNS-OARC Fall 2015 Workshop, Montreal\nDuane Wessels, Jason Castonguay, Piet Barber\nOctober, 2015"
+  }
+]

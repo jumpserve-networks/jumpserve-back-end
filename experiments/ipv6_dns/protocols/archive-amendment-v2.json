@@ -1,0 +1,8 @@
+{
+  "id": "ipv6-dns-archive-amendment-v2",
+  "amends": "ipv6-dns-archive-v1",
+  "stage": "infrastructure-correction-before-successful-retrieval",
+  "reason": "Sandbox denied DNS resolution for the Python retriever. Preserve all failed local attempts and the original retrieval report; use elevated network access. Local DNS resolution failures did not contact the archive and do not count against the two remote attempts per input.",
+  "scientific_changes": "None: dates, configurations, thresholds, metrics, exclusions and comparison criteria unchanged.",
+  "max_remote_attempts_per_input": 2
+}

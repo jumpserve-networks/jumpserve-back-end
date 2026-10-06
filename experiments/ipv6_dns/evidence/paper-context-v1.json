@@ -1,0 +1,488 @@
+{
+  "id": "paper-context-v1",
+  "created_at": "2026-10-06T13:55:42.576348+00:00",
+  "source_version": "PuReitem3670144_1/file3670145",
+  "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+  "published_values": [
+    {
+      "id": "table1-DNS-MTU-cases_per_daily_run",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "cases_per_daily_run",
+      "value": 36,
+      "units": "configurations",
+      "record_type": "published-context-only",
+      "note": "Published approximate quantity, not measured by this assessment. Daily2025-04-10 through2025-09-14."
+    },
+    {
+      "id": "table1-DNS-MTU-approx_domains_per_case",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_domains_per_case",
+      "value": 730000,
+      "units": "domains",
+      "record_type": "published-context-only",
+      "note": "Published approximate quantity, not measured by this assessment. Daily2025-04-10 through2025-09-14."
+    },
+    {
+      "id": "table1-DNS-MTU-approx_compressed_bytes_per_run",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_compressed_bytes_per_run",
+      "value": 55000000000,
+      "units": "bytes (decimal GB interpretation)",
+      "record_type": "published-context-only",
+      "note": "Published approximate quantity, not measured by this assessment. Daily2025-04-10 through2025-09-14."
+    },
+    {
+      "id": "table1-DNS-MTU-LGI-cases_per_daily_run",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "cases_per_daily_run",
+      "value": 36,
+      "units": "configurations",
+      "record_type": "published-context-only",
+      "note": "Published approximate quantity, not measured by this assessment. Daily2025-04-10 through2025-09-14."
+    },
+    {
+      "id": "table1-DNS-MTU-LGI-approx_domains_per_case",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_domains_per_case",
+      "value": 730000,
+      "units": "domains",
+      "record_type": "published-context-only",
+      "note": "Published approximate quantity, not measured by this assessment. Daily2025-04-10 through2025-09-14."
+    },
+    {
+      "id": "table1-DNS-MTU-LGI-approx_compressed_bytes_per_run",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_compressed_bytes_per_run",
+      "value": 55000000000,
+      "units": "bytes (decimal GB interpretation)",
+      "record_type": "published-context-only",
+      "note": "Published approximate quantity, not measured by this assessment. Daily2025-04-10 through2025-09-14."
+    },
+    {
+      "id": "table1-crux",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_compressed_bytes_per_list",
+      "value": 350000000,
+      "units": "bytes (decimal MB interpretation)",
+      "record_type": "published-context-only",
+      "note": "Monthly2025-03 through2025-08; Top10M."
+    },
+    {
+      "id": "table1-ns-no-dnssec",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_sets_per_mapping",
+      "value": 670000,
+      "units": "NS sets",
+      "record_type": "published-context-only",
+      "note": "Table1 Monthly; Sections3.1/3.5 say weekly. Cadence discrepancy remains unresolved."
+    },
+    {
+      "id": "table1-ns-dnssec",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_sets_per_mapping",
+      "value": 60000,
+      "units": "NS sets",
+      "record_type": "published-context-only",
+      "note": "Approximate table value; March narrative exact58983 and666318 withoutDNSSEC onp4."
+    },
+    {
+      "id": "table1-ns-bytes",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_bytes_per_mapping",
+      "value": 150000000,
+      "units": "bytes (decimal MB interpretation)",
+      "record_type": "published-context-only",
+      "note": "Published approximate value."
+    },
+    {
+      "id": "table1-atlas-count",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "traceroutes_per_hour",
+      "value": 1000,
+      "units": "traceroutes (4\u00d7250)",
+      "record_type": "published-context-only",
+      "note": "Footnotep4 changes quotas250/200/1250 and uses invalid dateJune31; do not invent the corrected change date."
+    },
+    {
+      "id": "table1-atlas-bytes",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Table1",
+      "metric": "approx_bytes_per_hour",
+      "value": 10000000,
+      "units": "bytes (decimal MB interpretation,4\u00d72.5MB)",
+      "record_type": "published-context-only",
+      "note": "Not measured transfer volume."
+    },
+    {
+      "id": "lists-raw-intersection",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Section3.5",
+      "metric": "raw-intersection",
+      "value": 314246,
+      "units": "names/zones",
+      "record_type": "published-context-only",
+      "note": "CrUX2025-07/Tranco2025-08-26; not reanalyzed from original list versions."
+    },
+    {
+      "id": "lists-raw-tranco-only",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Section3.5",
+      "metric": "raw-tranco-only",
+      "value": 685754,
+      "units": "names/zones",
+      "record_type": "published-context-only",
+      "note": "Same dated lists; not reanalyzed from original list versions."
+    },
+    {
+      "id": "lists-raw-crux-only",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Section3.5",
+      "metric": "raw-crux-only",
+      "value": 9663227,
+      "units": "names/zones",
+      "record_type": "published-context-only",
+      "note": "Same dated lists; not reanalyzed from original list versions."
+    },
+    {
+      "id": "lists-psl-intersection",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Section3.5",
+      "metric": "psl-intersection",
+      "value": 673557,
+      "units": "names/zones",
+      "record_type": "published-context-only",
+      "note": "After public-suffix aggregation; not reanalyzed from original list versions."
+    },
+    {
+      "id": "lists-psl-tranco-only",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Section3.5",
+      "metric": "psl-tranco-only",
+      "value": 326260,
+      "units": "names/zones",
+      "record_type": "published-context-only",
+      "note": "After public-suffix aggregation; not reanalyzed from original list versions."
+    },
+    {
+      "id": "lists-psl-crux-only",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page6,Section3.5",
+      "metric": "psl-crux-only",
+      "value": 3863398,
+      "units": "names/zones",
+      "record_type": "published-context-only",
+      "note": "After public-suffix aggregation; not reanalyzed from original list versions."
+    },
+    {
+      "id": "fig1-brazil",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page3,Figure1",
+      "metric": "brazil",
+      "value": 11.16,
+      "units": "percent",
+      "record_type": "published-context-only",
+      "note": "APNICMarch29,2025; no accessible underlying client request data reanalysis."
+    },
+    {
+      "id": "fig1-china",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page3,Figure1",
+      "metric": "china",
+      "value": 54.65,
+      "units": "percent",
+      "record_type": "published-context-only",
+      "note": "APNICMarch29,2025; no accessible underlying client request data reanalysis."
+    },
+    {
+      "id": "fig1-scale-max",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page3,Figure1",
+      "metric": "scale-max",
+      "value": 10,
+      "units": "percent",
+      "record_type": "published-context-only",
+      "note": "APNIC map color-scale maximum; no accessible underlying client request data reanalysis."
+    },
+    {
+      "id": "packet-v6-dnssec-mean",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "mean",
+      "value": 431,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500; bothEDNS1232/4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v6-dnssec-standard-deviation",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "standard-deviation",
+      "value": 208,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500; bothEDNS1232/4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v6-no-dnssec-mean",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "mean",
+      "value": 466,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500; bothEDNS1232/4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v6-no-dnssec-standard-deviation",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "standard-deviation",
+      "value": 237,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500; bothEDNS1232/4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v4-dnssec1232-mean",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "mean",
+      "value": 393,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500,EDNS1232; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v4-dnssec1232-standard-deviation",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "standard-deviation",
+      "value": 210,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500,EDNS1232; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v4-dnssec4096-mean",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "mean",
+      "value": 397,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500,EDNS4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v4-dnssec4096-standard-deviation",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "standard-deviation",
+      "value": 219,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500,EDNS4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v4-no-dnssec-mean",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "mean",
+      "value": 351,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500; bothEDNS1232/4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    },
+    {
+      "id": "packet-v4-no-dnssec-standard-deviation",
+      "source_number": 0,
+      "paper_sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+      "location": "PDF page8,Section4.3;Figure7 p9",
+      "metric": "standard-deviation",
+      "value": 236,
+      "units": "bytes",
+      "record_type": "published-context-only",
+      "note": "MTU1500; bothEDNS1232/4096; published approximate dispersion, not confidence interval. Figure7 caption dates2025-05-01; exact prose aggregation epoch not independently verified. Raw-pcap replay untested."
+    }
+  ],
+  "figure_coverage": [
+    {
+      "figure": 1,
+      "page": 3,
+      "proposed_check": "APNIC historical client-data reanalysis unavailable; map values recorded as published only",
+      "coverage": "untested"
+    },
+    {
+      "figure": 2,
+      "page": 4,
+      "proposed_check": "Topology/configuration documentation examined; historical BGP/physical setup not independently reconstructed",
+      "coverage": "partial-review"
+    },
+    {
+      "figure": 3,
+      "page": 6,
+      "proposed_check": "RIPE Atlas historical route vectors not reanalyzed; no present-day query substituted",
+      "coverage": "untested"
+    },
+    {
+      "figure": 4,
+      "page": 7,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 5,
+      "page": 8,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 6,
+      "page": 8,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 7,
+      "page": 9,
+      "proposed_check": "Packet size distributions not reproduced; full raw pcap exceeds frozen summary budget",
+      "coverage": "untested"
+    },
+    {
+      "figure": 8,
+      "page": 9,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 9,
+      "page": 10,
+      "proposed_check": "Relative figure cells not individually verified; matched-family/pooled/routing summaries supplied as bounded descriptive checks, not figure reproduction",
+      "coverage": "untested-figure"
+    },
+    {
+      "figure": 10,
+      "page": 15,
+      "proposed_check": "Relative figure cells not individually verified; matched-family/pooled/routing summaries supplied as bounded descriptive checks, not figure reproduction",
+      "coverage": "untested-figure"
+    },
+    {
+      "figure": 11,
+      "page": 16,
+      "proposed_check": "Relative figure cells not individually verified; matched-family/pooled/routing summaries supplied as bounded descriptive checks, not figure reproduction",
+      "coverage": "untested-figure"
+    },
+    {
+      "figure": 12,
+      "page": 16,
+      "proposed_check": "Relative figure cells not individually verified; matched-family/pooled/routing summaries supplied as bounded descriptive checks, not figure reproduction",
+      "coverage": "untested-figure"
+    },
+    {
+      "figure": 13,
+      "page": 17,
+      "proposed_check": "Absolute panels a/b:384 matched cells per figure reproduced; relative c/d panels not individually checked",
+      "coverage": "partial-reproduction"
+    },
+    {
+      "figure": 14,
+      "page": 18,
+      "proposed_check": "Absolute panels a/b:384 matched cells per figure reproduced; relative c/d panels not individually checked",
+      "coverage": "partial-reproduction"
+    },
+    {
+      "figure": 15,
+      "page": 19,
+      "proposed_check": "Absolute panels a/b:384 matched cells per figure reproduced; relative c/d panels not individually checked",
+      "coverage": "partial-reproduction"
+    },
+    {
+      "figure": 16,
+      "page": 20,
+      "proposed_check": "Relative figure cells not individually verified; matched-family/pooled/routing summaries supplied as bounded descriptive checks, not figure reproduction",
+      "coverage": "untested-figure"
+    },
+    {
+      "figure": 17,
+      "page": 20,
+      "proposed_check": "RIPE Atlas historical route vectors not reanalyzed; no present-day query substituted",
+      "coverage": "untested"
+    },
+    {
+      "figure": 18,
+      "page": 21,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 19,
+      "page": 21,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 20,
+      "page": 22,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    },
+    {
+      "figure": 21,
+      "page": 22,
+      "proposed_check": "Daily six-metric inputs retained and epoch means checked; every plotted time point not verified. NXDOMAIN series not included among six campaign metrics",
+      "coverage": "partial-coverage"
+    }
+  ],
+  "table_coverage": {
+    "table": 1,
+    "page": 6,
+    "status": "published overview documented; dataset size/list overlap/Atlas raw outputs not reproduced"
+  },
+  "limits": "Supplemental published-context inventory, separate from1152 frozen absolute-cell comparisons and reproduced measurements. Dates/approximate quantities retained; no inferred observations.",
+  "reviewer": {
+    "identity": "Codex primary implementer",
+    "type": "AI",
+    "independence": "Not human or independent review"
+  }
+}

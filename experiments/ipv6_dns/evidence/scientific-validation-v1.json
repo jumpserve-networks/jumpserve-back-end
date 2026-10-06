@@ -1,0 +1,24 @@
+{
+  "id": "ipv6-scientific-validation-v1",
+  "passed": true,
+  "checks": [
+    "Original protocol locks unchanged",
+    "Complete observation identities, count units, arithmetic and missing-value invariants",
+    "Published and reproduced values remain separate; original fold agrees; failed control retained; direct-source inventory complete in topology, incomplete in review",
+    "Every original manifest byte hash verified locally; private storage round-trip verification is a separate report"
+  ],
+  "counts": {
+    "runs": 158,
+    "measurements": 136512,
+    "configurations": 144,
+    "published": 1152,
+    "comparisons": 1152,
+    "sources": 74,
+    "claims": 15
+  },
+  "assessment_sha256": "3c3532901aa4b507a61849666d925a0268c0658c0129dbfd729514df8c3a07b0",
+  "python": "3.13.3 (v3.13.3:6280bb54784, Apr  8 2025, 10:47:54) [Clang 15.0.0 (clang-1500.3.9.4)]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "shared_assumptions": "Mechanical arithmetic checks reuse parsed evidence; original fold and reanalysis share author summaries. Neither independently validates upstream packet aggregation or causal claims.",
+  "coverage_limits": "Partial main/direct literature review; unavailable APNIC/raw-pcap/historical routes; no new empirical network measurements, simulation or inferential CI."
+}

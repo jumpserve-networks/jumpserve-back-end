@@ -1,0 +1,2702 @@
+[
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 816,
+    "sha256": "a1a2fceae572594ebf77506274f6eb7f222c7bca35e647f4690746128db87504"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "97d948f565cfa09dcc57431a75265f340a359909b6c328614485a47b10368ee9"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 730,
+    "sha256": "e25b9e16f1bce20cfd99f2469e9bd5d6ee645a98c6e0d3de74217d94f36355ec"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "6007d59e3cd59fab082a8ac5a491e008e9e605e9faa1e8fbed32f3ce2f3876d1"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "a9e93334b05b1a59cbd6e55c121fafa5e006a52da38c44ec1dce40e9aa6cc2c4"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 838,
+    "sha256": "9dabbd6319e563183b56b2fe64d7655af570830226849e3053e44c0ba5a76f88"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 781,
+    "sha256": "b2e4abdd2e868244838021a90c0366bf7d236e013b8d59e7d4f625e1710cc940"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 728,
+    "sha256": "a593a32471ae0af62412e69a044e6c58b9eb6daf8320e1db0108630e8beb0090"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "86618b66e4117fba5c3276b1bae29814620e5ec75f80f045461c474e5edffab0"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 783,
+    "sha256": "effccafecfbd62dfc41bdd065774605b4148c6acebc147b5dbf58a6abebaffdf"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 785,
+    "sha256": "a5c9e610b9e6203182b5535c7ac890bad8370463921a2edd81ee39e620fd58b3"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 783,
+    "sha256": "3a49b01147903467234dc7f48e26f6b79724d105032d556e68999beb263e6922"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "65738c07c7a1f44a41db3efc957ea88579ddae5cf399b48c9f8349e44c642935"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 787,
+    "sha256": "f89922768b4af02a178a461dd5b46c1961554cf7d38bda0ddfc646dd20baecd4"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 840,
+    "sha256": "59f4e2fb339923c7d10d3801496a0f63edfb83c2f3c44bc5680e616f05e28444"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "cb252f9aba441317a0bfbb6204d48211a8cfbf0b122b01515a5af436c3268754"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 840,
+    "sha256": "c5339c6abf1f427318b1eecb045b2f9d8acb05e9cdea746e8aa416276a4b3a44"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 787,
+    "sha256": "f4de4dd7da7eccb9923151140eee46b22f1559871ace5175d8dbe400f6ae06cb"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 730,
+    "sha256": "367995affd73e5be0e367342ba346ae4bd8d52260368507c730d7e37da9e75c0"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 792,
+    "sha256": "f6e20d0c7951296f4daa9e94518a22bf8382f88313db3aa682f2dce1856538b5"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "e580b5aa71b4334d3251e36cb6f575059c067692b2416074a02d977b49263183"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 729,
+    "sha256": "dc25af0a08fdbace88df168150b77522f112649324f1f67616bef8864869a249"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "c0e5e7153eab6d13b473dd84e48fe00e1146d077de419691c7055241586a7c12"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "a7842742a82d1523d702ed69fd58d8fc977d0f37a6b4fb0d23950c1f7542747a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 837,
+    "sha256": "364b2c9c05746c7b7a22c366233fa44f57942aa2f201cb6b799d214c0e3273c6"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 780,
+    "sha256": "f4e3af2599cdbd940d43d2dd056858466064f100a9747117deda68500a77768a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 727,
+    "sha256": "66c4216c070f7bbd8be5be901e7c31919eb19ca050000e7a98a36688beebfa7b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "47b1b7d3204d3064aa0b80842cae024cb25403648df1a9678de211cd080c97a9"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 782,
+    "sha256": "37ffce4ff3c7ded50658c9f14feab5269cb749ade0150ddc71b89a91da48e674"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 784,
+    "sha256": "806617770724e6642b8ea13de0d4da39c17c97ff837701637bc883ed60befef0"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 782,
+    "sha256": "2e85516c3ab590bdcfeb6315689215168f210832ddd32bb6498a809c133f9809"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "7f99d735d86265f1dcc88b6cc626a6ff320f709e6fa3861573cfacd8eed1160d"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 786,
+    "sha256": "3138ca60e5b52ae3656517fdbab4238b0774b5368743ea1e7de32b94371fed65"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 839,
+    "sha256": "268a15317e229d2c34420be5174626ffe4b22d2213d4e905ab04c54e4f6fcc47"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "b957a5ba6ae8ae8dff037f53387668ecc19e9ebf9f061a3cbdfe32f32d506f6e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 839,
+    "sha256": "3ea6bb02e76aefd4f6eb214d1490612ed66339581cbafe6fc8145ab8af0fca65"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 786,
+    "sha256": "69e03be740b17ea7c79e5f67c554a2da89cd6875ad8d60645fccfad1581603b0"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 729,
+    "sha256": "4f762eb8e2f51115670db729c2be8133fa2de14bd8b8bfe78d095525f37bb7c8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 794,
+    "sha256": "648fa8dc2cbeb00ff6872b75c5ec8c33563dd2e5439dd634bac09eb9f48d9a67"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "313274daa3cf69cfd09924a60e2ef3a8331335ddcaf6cf288751534824e92b63"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 730,
+    "sha256": "63f6fe8c21304040fc908574ba8b05fd1d851c63f8bf2da85c6e26dc81778019"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "ce7db2c2e235c5e380284590888967b567b40b5b86be1c1e462894c0c78a1384"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "f9eb1e337efe56f908185aaec9edd1f4e81430c0aaf6932d20490a9f5bc2d4ab"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 838,
+    "sha256": "0eb1e1b8c29ed934f2ba8c4c9852058ca1368a739d3557614ce9abd774ff9106"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 781,
+    "sha256": "fa4562124e6badcfcd989b1aeb9294d9c5564c28b14c83da434ea64ba726bd9b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 728,
+    "sha256": "9dbe7f1f3e5cbbdc5b2485c170d8de5f048da47aad135b2464477a34d7a22ea6"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "98b3410fa17c921fcf761e4a89495b3ac91baab3cbc0c8646d26f2310d4aa9b2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 783,
+    "sha256": "0dd4123f869b6bce9178726a1bd1a607bf3220592e4a8934d9958a38cf9941b1"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 785,
+    "sha256": "58ebdaf799fe8431ec292709fddcd20f8d1d5c176a10e69e44d561f23138f0ec"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 783,
+    "sha256": "b5e8cfba5c2e49c63f21195af184f7215c029451ae288520ce2f416585edd348"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "68acf63c821f46db5622e7c87244d2a191fa8c179e674824c544e943bea6b807"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 787,
+    "sha256": "f256cbd28b17568e906a530633aac177f20429fa931485c09d80b0c890a921f6"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 840,
+    "sha256": "09adde578f38c46d21041e1d8f64df93afd5a233b7eceb1996025f1c54851d34"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "6cb5fd587fb9bc1d3d6e2bf8a0659df61784f6a7104d99e053d96738f20004ba"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 840,
+    "sha256": "d8fc675615af990dc58a247b54ccdacdaf64945ef24404037bbc27a1df6472fa"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 787,
+    "sha256": "e73ce025b7f22d1b8e207003375fe28a4aac9006f50b06bb9f88d22c3a212ca8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 730,
+    "sha256": "9db2d7b1baf3c28a2265ca198e631c78d8856b0bda40ccb970cc0f5c76b6b85e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 822,
+    "sha256": "d1efa84eb712d5d3aa5363cf6a2ef9a405cfd004e6337632b87d55b5848ed91c"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "cb47e0b68f1f8340234c892a0a9548b24b3dfeb432cace2108358f8c2434d851"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 731,
+    "sha256": "49357776e1b5dd7a41c0a83b20b5422fff13e7d3b237488c97e895d75d310d08"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "537b870955e42ccb4a60cd689c445f85fb4cd7896d2883e9689e29bc3466cf2d"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "b710b7036d0520a20f7697e15bb09867579acee3703f00c2b54cf4ce89b5c51b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 839,
+    "sha256": "f5c43532773c50dc32ae9ffd84f95dfbf8925b8a604f6d66795fe3c0eda8fa0d"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 782,
+    "sha256": "cac75fb87c873d6f80605c8a8db8fff472c7cf9787b46b7a4816be1cbd191f73"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 729,
+    "sha256": "c28206f9b6ad8fdce15941bed9f33c7419bff89bc142c2af24031e6294f58c37"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "68d2696651a046835b89937d6f1b33e2ead2a6c2ac808a56cbff7c97c7509740"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 784,
+    "sha256": "71c4710caadfd7b33f3fed5096f295681a0b97a03079247ae698b53927904b6e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 786,
+    "sha256": "32d7676680105a544d913080ae688064d22d723fcfbcf7bc11c9709b6871aa5b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 784,
+    "sha256": "f17ccf3490df5a758a1061171638fb527b0d895d1a2d3e05f5b505eb176f7986"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "8f8a2e846cecf499aba09697f38a96b5a9249733b25861ddf55fedc67e0c1140"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 788,
+    "sha256": "5af178ca5edc4580222b96a92e345d85a73c1f5081807d6200a4b717234a2ff2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 841,
+    "sha256": "2f2ee1d3b2b6f3a318d8a834dd5897549762dd18301669a5066f9ba392820088"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "65e074a279aff2bcfd1b8bab1af4925846ec53e2c99692ad8194d5726d69c58e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 841,
+    "sha256": "b0a0c7b27303a8df9990c852c73d3828b52051c1e35f5a3702bd2bff3aa1e489"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 788,
+    "sha256": "87d97779493624ea842fd766fd656fa0db037c029a4c167e1a046bf78e770d33"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 731,
+    "sha256": "5e5cff6577ba6aeca3dd64fc0acb1d790a1780ad70df1588661d0e2228154b2e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 729,
+    "sha256": "df4a07cb8b7dc878a5a645167eb69e350a2d6bc2758fe74440119e620380724f"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/check_file_status.py",
+    "bytes": 1572,
+    "sha256": "e2ae7a12cbf148de4dfb89662ae82a45bd6b03d3be0732af8af29f365d5804fd"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/proc_file_rk.sh",
+    "bytes": 1244,
+    "sha256": "e88be303ff217e2c6c9769852379afc11b5171ebb65b55c200f0ba0683a566b1"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/find_proc_files_dev.sh",
+    "bytes": 579,
+    "sha256": "68b35a19cac970ad32c12bf2046aa7d7d533060e6e11a47b581878d15a26fdfe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/proc_file.sh",
+    "bytes": 756,
+    "sha256": "5cdcffda0da2efcc3fb1186efbdfa30a4ecbf02367d1c8bbd4f7ac8d25ca0bb2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/parse_tcpdump.py",
+    "bytes": 21079,
+    "sha256": "b19c46ab7ba01748c1149997955574c7fe779f339d2c90de3400553176abf205"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/proc_file_rem.sh",
+    "bytes": 1051,
+    "sha256": "23b874c6d831cc619dd4a1fbf16687721cd8ef7467b320ff6fcd3fbf490b184f"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/processing_queue.sh",
+    "bytes": 942,
+    "sha256": "3433bdbadd71205a0dd03f81f819c2d9272bd50caf23288056154b002de49aa2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run_analysis.sh",
+    "bytes": 1695,
+    "sha256": "6ae0c27ec0a347f887bbb54a12eb65121eb802f5db157e8b9a3255b9669462eb"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/find_proc_files.sh",
+    "bytes": 835,
+    "sha256": "97b3efdf623a41ceee2d6d88ca2e6672116994a9dc48a4660b7590d50b73fc2e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/agg_port_results.py",
+    "bytes": 1287,
+    "sha256": "12e22d43055c4d2943aa9162d19c61ea01341203c4ead433d82f95c9b5f30d0b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 822,
+    "sha256": "acaa5916b1b43930cb971c36a9f215d82097bdc87336918d2f41f2f9cc259ba0"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "88efbae05fd02973577b245dea900e22f0b5f412e0fcf0116586d44084de8254"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 731,
+    "sha256": "01ef765cf8da5712ab54e557fc5139c6080571e089359da94ba5dad5c880be0c"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "04bdbadd3d9f0e5564a123ed46fefa32deca51b3d56bd1d5c216aa2f2cfe30f4"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "d4ecae3e79f5e4ce65edbaa03955ca7871b00f242669e1476af2f6a16a6c6a98"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 839,
+    "sha256": "5ded984113c8d1dd7d78ea6043c8d4efa929e3f40ddb72c5e6fb138a7948a6ef"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 782,
+    "sha256": "e3dce7ad6db68e78fcab969689dd005ca7c306ff4e331dc6281bb6e602c071f2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 729,
+    "sha256": "65204774ae5c2112e260a26167536a68a7ee30907f47e8682f5cbca195b87471"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "1678b49975f8824e6a57375de0c6c2d711983dee639b4dd5063db00e6ece97db"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 784,
+    "sha256": "93158a03a9be10c5ed1f6423ab7d23410351a33ba5a577a099636962e46add7e"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 786,
+    "sha256": "9c94d1c3edc9e567f8e8d602c8c71ff3ae65570b20684b13caea179cafe48696"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 784,
+    "sha256": "56bdcb1674ad2cb4a666941e997e328c2280c3e8f0f264a171edfa4ed6ace7cb"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "ace137d72710bac84124229438972e155eb1e8e6bc19b02877553a98a321d515"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 788,
+    "sha256": "a75ff90e37a8cf3c1688dbd16ba9140997e46ef0dcda4a62b25231b6ba3e8053"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 841,
+    "sha256": "cdcfe7b3b4fee9d5dd87e3351c93704f7b2c5cc1e52ec98e9ac0406d972220ad"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "861fc7cd16f2664ec02fb573ae390416846fcd960d36f2303e05b7b56690c1f3"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 841,
+    "sha256": "b51785ac757caa309c4349433e0a78c5da8516d55a86915c04c6046903c5dca0"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 788,
+    "sha256": "b3079dc793edb653b15fb9e24e67a1c7dc5223b3bfe9e5b07c85df1da9d6bcf8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 731,
+    "sha256": "2f42e6d0432a1c3854bd33c8d6b12e402f11edaff08caec5131ef7f392dd191b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 798,
+    "sha256": "e352b385771b8766ed64e35fb5ae912e148cbef8c9834569a56f6b3e0ff97f56"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "d20affe307417d584addca7febdafabe71fda19a235fb0b593d0ac2c84af8dd7"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 730,
+    "sha256": "54d04c1469e749f2fe63d7b32dceadda4a3b1a6385e838e237cba73ca8ec3864"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "43723a3c47196d3edc760f7b8eda4c7286a6a9782a22284b8f088736a46cc34d"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "7a00e397624451a12ed8b4669202371a27c03a630bf535c1659a1d18e0bad1bd"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 838,
+    "sha256": "942e9130fbbe80f8b7c8a53673f83cb0a803ce2b1cd8894a87aecf7ad32e2d3b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 781,
+    "sha256": "2e046261fb190dc6de3e7e59a697534eb91f4da3f24b355595d3e247b664a34c"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 728,
+    "sha256": "2183a103a946405fb924689166bfd4d12ce51f0fcb5f9d90af3a75092c7b7dc7"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "bbbc63813dbb1c8d99cc3ecce93186bf8b31c93e9f1d51651afcb44ecdb6a51a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 783,
+    "sha256": "7e2d39d99f7765bc7950abb3971edc9689a9bf9659e4db32b7d2b3ec579393bf"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 785,
+    "sha256": "17bfe2302a1b8768b06d57b464b892f1bab7402b8343f1be1acee45f21cfc66b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 783,
+    "sha256": "9511a2748a787afd577cd8e4f974f7176e4acd7d04d2438c5b790975bbcc26b5"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "14b6de40c4c3fed993b00439e9f94448cc34611bc64dfa372a308669dfdecdef"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 787,
+    "sha256": "0471451ecb141f6c3a866ce0c15999c9e58464e6223ccc321cb6ac7fb449758d"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 840,
+    "sha256": "8be9c4fbb260062d535aba0ad8882b6c43b466e6096a86e038e2a5abc41e4ba2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "fa5225d14a2af3ba8ad1c7517b55e0c7bcaa69f7606c71958940c88cd1a57d0f"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 840,
+    "sha256": "a4ef4507f3160982e6e576ed9d112878f95fb81359c73ebe68c62b730f240df1"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 787,
+    "sha256": "8faf8c3bacbebecfd0a3bfdd64868e8cd1af0486953efd2d2dd9670accc3b6da"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 730,
+    "sha256": "e6ab440c8bdab70a7894f90f0f9c7bfee3e93bfc86d0bb9f60c4c0ef94345ae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280onpath-nopmtud.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 814,
+    "sha256": "57105e875fa2bc20072aea477f1a293622502cba14273b5d67cb08c8d7e251d5"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "9a71fd209745abba09cd379a5a6a783d665d0c0f6335568f626807b69c73972a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 729,
+    "sha256": "1ace7c85fd12d194ee979851d3beec7a89dcc98107419d3bbf9cd0d337d48547"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "42b59038230a190054cd902164483cd2c39d4ffd51adf5478fd794b05bf9f50f"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "aa8d9d6f00f4fb55190abe951dbb7b2d9534492d54578205ea51263d1532f2b5"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 837,
+    "sha256": "d7b8f91387932f661efa5c069c08d3a20b449305fdc107e9f50272fa52cb6448"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 780,
+    "sha256": "a3d90d2424b8f0fbe4bd3e39f8dcc214d6ff466aba1f6e5569629ee322458ccb"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 727,
+    "sha256": "54b3b83a1cafe6274d458cd2a57c0a535a67c377e6099cdb603de9abe1a790b2"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "8b8bd72e3cef09634699481682123a6cc13199f0e833d9265efb209661e02962"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 782,
+    "sha256": "c3b3dea7a6e247f9d9be00aae6d5e32e6c96ff74facb63659e69368e1d647690"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 784,
+    "sha256": "288946089f41da02cabf886933cde7cc83c1bf56ad7e46bad068d6785de234a4"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 782,
+    "sha256": "3f2b187bff6cb82d8abd59d13f54e22987ef9f010ba303e5a79ff9dc654277ed"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "454a1afa13cd38091b2ad8e318e861f8237c47cfe550797ea32408854a8e30ef"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 786,
+    "sha256": "341d5b5f1cbe276e9971f3484d3017a669fe871e76e7d4493efbcab32626161f"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 839,
+    "sha256": "749401f8dad34f73e824ab5b9746fa4d61870a9a2f087c79d5e308b224fe84d3"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "8102576e7fb74a9581ba645f91f6277cd27aa996c2531777ec7e346ce74a8098"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 839,
+    "sha256": "b30a170bfb4c0c79eeb294d3ec459e2c3345baac75cb7fcc326a0273d7959ca7"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 786,
+    "sha256": "e3504fb5359e35986ee01fa0a32ff036e413947999eb42b579b7c9d2aacf0b14"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 729,
+    "sha256": "3c9557b4350274d4ce563c075d538c70edc7ac87610e3c743c723ef21be1cc88"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1280-pmtud-lgi.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 800,
+    "sha256": "57c09b0ab4269f456af095e1185e51bd915008fa49f31dc34467304a3d98af4b"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns1232",
+    "bytes": 730,
+    "sha256": "6ae4d00b1972efa574a59b25bb7761e5acbcdd71166eb69a900982c3d5fd7a51"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns1232",
+    "bytes": 731,
+    "sha256": "bc65084c683f7fdba90d852bc0f38d5398c22c55feee79e8304f250bb7bcdc0d"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns512",
+    "bytes": 728,
+    "sha256": "57e38747fd133ba1957a647a43f0aee5a1f72c38b86df93494747f4ab7156782"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns1232",
+    "bytes": 783,
+    "sha256": "6f5a7cf6979ab56844019f53bd33c84d0c10378ed236f121878a726fdcca9ff9"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns512",
+    "bytes": 839,
+    "sha256": "aad57ff79577ef92b9b48e3bba051a86d15be5195da42a52ac5e832deddf0ff4"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns512",
+    "bytes": 782,
+    "sha256": "2b9376cd27039dbd608eca4b4c08ca8b3a5cb1a4404e0739420cb4eaa62f5495"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns512",
+    "bytes": 729,
+    "sha256": "25172574dabf221f7e15205fd175bc802bbb3f0163e3fdb39fb996bda7ae4a60"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns512",
+    "bytes": 781,
+    "sha256": "5a06aba3c898b3d71cdf50c71301ee0d1c2f2cb16fdeb8780fcf396175e42e81"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns1232",
+    "bytes": 784,
+    "sha256": "e3c17aac2e61d2b5683bb3fb2ed9d2b7f9d05e80851cb2731cfe5f6582a9b340"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns512",
+    "bytes": 786,
+    "sha256": "93234a8e95f85928cbf41ce8e63a965e1f7f91405e53441f8647390ad9c19c61"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v4-only-edns4096",
+    "bytes": 784,
+    "sha256": "d9445f50ced82fa3a4ac85e3f28fc0c467cfcebab362331f9c2ea6ce393ae435"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-v6-only-edns4096",
+    "bytes": 783,
+    "sha256": "d9804349f9b003893386284aadaffc011f720f4b328a19e750c3ef5a99d9a7e3"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns1232",
+    "bytes": 788,
+    "sha256": "c4c5dae3f6bde90517d06d894faf541c2410190278f474f8a28d51ae31d960d8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns4096",
+    "bytes": 841,
+    "sha256": "f0a5307798b30afe9813a76bc666e39b5235fcf91f3a92c93dc8181a1f5128c1"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v6-only-edns4096",
+    "bytes": 730,
+    "sha256": "b825faf5523a598d252119b308ba374efac2e3c222936bedaeded20494007564"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/unbound-conf-ds-edns1232",
+    "bytes": 841,
+    "sha256": "ebbf5b76385b6e6480cd6b70cedb0ee651994006840e5927a4dde99ec0eb2a9f"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-ds-edns4096",
+    "bytes": 788,
+    "sha256": "1a7e8a9c41da79cb64942ba22bec63f29a063690ae9070bdb9a55e662c51e953"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/unbound/no_dnssec-unbound-conf-v4-only-edns4096",
+    "bytes": 731,
+    "sha256": "265a116885c1d07ae4e327ca1a88dbdc9ce6312f046abee7dc40d378e3303efe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run.sh",
+    "bytes": 8096,
+    "sha256": "fd1210713a02fe2768a9a6f2f8c101f6852dcf07db3b78e23eea9845bff94ffe"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_in_data.py",
+    "bytes": 388,
+    "sha256": "d2b00571fd87cbfe8445c865e3fc525cedd038f65a62638a04c615205db1fae8"
+  },
+  {
+    "path": "srv/script_backup/msmt-hosts/msmt-mtu1500.dns-mtu.measurement.network/opt/msmt/msmt/scripts/set_unbound_case.sh",
+    "bytes": 87,
+    "sha256": "ef730ae6abb983cd8f768bccd73d85b514f2ec11f3e9bda0c105ae41e3b36f8a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 798,
+    "sha256": "b1380a38bf904dd3b3d6bdec853974a2330064a3e971ba4f8a13731cad5e0087"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/var/spool/cron/crontabs/msmt",
+    "bytes": 1600,
+    "sha256": "f5de10225a4d0f4928e328f1494b75d0fca167d7e692332d8325418e5b59aaa5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/dependabot.yml",
+    "bytes": 675,
+    "sha256": "b515adcc58b9cf44a9f96e3b6453da8a358bfab5bd403cb01875aa22f4579def"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/CODEOWNERS",
+    "bytes": 204,
+    "sha256": "6b2bbb6ceec0ecda8ceeb31090caa123aadf8a941b63ba76f21d0f39107d3657"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/ISSUE_TEMPLATE/bug_report.md",
+    "bytes": 715,
+    "sha256": "13080d99ae06c818b00f0ce1d77414ca4032d0c976e9a3b692904ddc05b22f91"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/ISSUE_TEMPLATE/feature_request.md",
+    "bytes": 923,
+    "sha256": "d83437ee494fc59cd7d693c3420b3dec6560ccd1a7f66ec9524f7f848731dd08"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/workflows/version_tagging.yml",
+    "bytes": 1095,
+    "sha256": "88f20eaa357ea76c490ece7544c656c081159fb097ab4f825704670167966c23"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/workflows/ci.yml",
+    "bytes": 1977,
+    "sha256": "d0e29a90fe7720ee59c6476bee0e1a645cf1a5d4c243945ae9797991ec760b2b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/workflows/check_license.sh",
+    "bytes": 305,
+    "sha256": "a82f78888c4a073d9db637dbfb8f8330e4c0fc80b626c18c3a1205b7e66872ec"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.github/workflows/large_scan_integration_test.yml",
+    "bytes": 780,
+    "sha256": "f458ca52ad43180eac21177f3ef94effa1cbab01af92c9969eb921e4130acb0b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/zdns",
+    "bytes": 18424410,
+    "sha256": "15cf7e6b4c4aa287b60388fbeb148e8d4ff8d719cb03c5c56e8472c28f719b54"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/docs/threads_vs_runtime.png",
+    "bytes": 779324,
+    "sha256": "91695b01ff3da226414ea3285c40b8ef54b21df60da37bdb7f8d27053abb79b6"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/main.go",
+    "bytes": 1490,
+    "sha256": "cab2b2a4fa04242f039764885fe36b7465c9988d0e6984484c03777e07d3bdcb"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/CONTRIBUTING.md",
+    "bytes": 1306,
+    "sha256": "0690df19fc333ab3ef0f8b4389954ef090ffeafbf14c9a7dbade21d6c42343e9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/README.md",
+    "bytes": 18114,
+    "sha256": "05f24626b96c96855cb264826a90639941e091ea4650d47965504dbecca77abc"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/description",
+    "bytes": 73,
+    "sha256": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/refs/remotes/origin/HEAD",
+    "bytes": 30,
+    "sha256": "2bb6a24aa0fc6c484100f5d51a29bbad841cd2c755f5d93faa204e5dbb4eb2b4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/refs/heads/main",
+    "bytes": 41,
+    "sha256": "788554d037002ee917aebaa6d8c2edb5e7cbc9a127e8f2b94f3a793800a04f86"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/packed-refs",
+    "bytes": 3552,
+    "sha256": "5c83439bb03e3c7eee374ca47a044fefa8a56b5d13d4ce3c3a0c265856117075"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/index",
+    "bytes": 9141,
+    "sha256": "3ef3dd7187aaa030fcd8738f4998c80d191fe0c888972cf9e1e32af4b36f1072"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/config",
+    "bytes": 249,
+    "sha256": "dfc02f3bc3a0ec19d6837db5cb25d06b7831eb9666dff7129e175c950a7d7e14"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/logs/refs/remotes/origin/HEAD",
+    "bytes": 232,
+    "sha256": "f946ff956c4a814e8cd7441d393f183ca87ad33146a8a43cad0b9f1f3458f2ae"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/logs/refs/heads/main",
+    "bytes": 232,
+    "sha256": "f946ff956c4a814e8cd7441d393f183ca87ad33146a8a43cad0b9f1f3458f2ae"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/logs/HEAD",
+    "bytes": 1090,
+    "sha256": "fd43c5a986dff916709ca26c2a801cb76195c243f46ced2ea2ce980867a69021"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/pre-push.sample",
+    "bytes": 1374,
+    "sha256": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/fsmonitor-watchman.sample",
+    "bytes": 4726,
+    "sha256": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/pre-receive.sample",
+    "bytes": 544,
+    "sha256": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/push-to-checkout.sample",
+    "bytes": 2783,
+    "sha256": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/commit-msg.sample",
+    "bytes": 896,
+    "sha256": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/post-update.sample",
+    "bytes": 189,
+    "sha256": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/update.sample",
+    "bytes": 3650,
+    "sha256": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/pre-applypatch.sample",
+    "bytes": 424,
+    "sha256": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/pre-merge-commit.sample",
+    "bytes": 416,
+    "sha256": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/pre-rebase.sample",
+    "bytes": 4898,
+    "sha256": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/applypatch-msg.sample",
+    "bytes": 478,
+    "sha256": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/prepare-commit-msg.sample",
+    "bytes": 1492,
+    "sha256": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/hooks/pre-commit.sample",
+    "bytes": 1643,
+    "sha256": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/objects/pack/pack-7e728f729acf823e08c66afb635f2741b7d7e4d9.pack",
+    "bytes": 15278694,
+    "sha256": "f68c64b7e4052c8c567505750f0de73a22f6e42add2b915a8932bb32192e3948"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/objects/pack/pack-7e728f729acf823e08c66afb635f2741b7d7e4d9.idx",
+    "bytes": 190884,
+    "sha256": "5a6b7c308f103d2f8910eed42b01f8fb58e70482a0631f5bc0379b2251415b13"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/info/exclude",
+    "bytes": 240,
+    "sha256": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.git/HEAD",
+    "bytes": 41,
+    "sha256": "0518088457d44ef55c0b65a695de9248280580c4d8bea33fabf24cf6e111db64"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/go.sum",
+    "bytes": 66031,
+    "sha256": "746aea48f740872b9fcead019d82d57c3d60d9d5c776f139e86bc6129670ad33"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/LICENSE",
+    "bytes": 11324,
+    "sha256": "972f0d9c8f3af5489f8cf957b7ab1e8dff7ad0b3574f6809136e51ba456e4d38"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/go.mod",
+    "bytes": 2005,
+    "sha256": "96f38fba6c000c1f097633927d8fda2c6c38befbe455cde91494827b88a480b9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/CITATION.cff",
+    "bytes": 1373,
+    "sha256": "0bb149eb227dc46abde96debe505a217e9d52b874058aaa104657caa2dfb435e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.golangci.yml",
+    "bytes": 2377,
+    "sha256": "f68a45092ef153caf84c6aa44ffacff1943875ec764a2cab2bb803288a68be08"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/requirements.txt",
+    "bytes": 62,
+    "sha256": "fe2405dc5250ad1dcf698c503b56e504c186eba519d6f766634726ee1606c92a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/axfr.json",
+    "bytes": 4277,
+    "sha256": "ddcdc255edd9a90733a40554b1a05cee2a422a45b280a66a4ad65e170b4b7729"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/large_scan_integration/large_scan_integration_tests.py",
+    "bytes": 3687,
+    "sha256": "261a78842956dfec2c5dd6180c431c8c2b0e1da5cb9d7919db7719d19780b381"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/large_scan_integration/README.md",
+    "bytes": 1102,
+    "sha256": "5053118552dd537b43f748fb47610fe980e7d7d602b32b2002aa920d7d149a96"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/large_scan_integration/expected_output.jsonl",
+    "bytes": 1274792,
+    "sha256": "26b723829e4beb8cbfb682210fb9f11291fc7851cb3acf313aacaeebf528958b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/integration_tests.py",
+    "bytes": 56230,
+    "sha256": "b134f73905d53e7da382496daa1a3aed8e41945a96c66964ab3837772ea20934"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/testing/ipv6_tests.py",
+    "bytes": 4290,
+    "sha256": "e35c2d188c122c30744f5e87f0ea3ede9e9ab51758de610ec4a263561f97fbde"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/benchmark/main.go",
+    "bytes": 3695,
+    "sha256": "a412dc9698924561f3ac091b696ffc725583ad08fab11f4a695e564478e001b8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/benchmark/README.md",
+    "bytes": 3311,
+    "sha256": "494038fcfc6e0910838b9065e0f8ebe52654fde1a67466789cee657878e4eb5f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/benchmark/readme_imgs/status_bar.png",
+    "bytes": 7092,
+    "sha256": "f32b411010ee7374f131c0b20c561786c7896cc2468545f739c87c0414614af2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/benchmark/readme_imgs/pprof_web.png",
+    "bytes": 123990,
+    "sha256": "f93cc073b337472826b87337eda4ef77905d92f15d1ea7d9d9da0894d29fb2ff"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/benchmark/10k_crux_top_domains.input",
+    "bytes": 166643,
+    "sha256": "aa7e1e2f49bce06eec1b65550efcd7741b71842aa9bac841293ba4a195acecdc"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/benchmark/stats.go",
+    "bytes": 7240,
+    "sha256": "0e60b459ca26b87a07357d59d7eab32b606f268caba669029f0285fa7bd0d4a1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/makefile",
+    "bytes": 917,
+    "sha256": "5465280fb37a587d69483dabb3715319c3c59f2668d75cc3eb67898ed4a6838d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/examples/multi_thread_lookup/multi_threaded_test.go",
+    "bytes": 700,
+    "sha256": "9b4d0611b172e551e3341ccebea5e7d83eb5ccef95264796b3ea60d29c78089f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/examples/multi_thread_lookup/multi_threaded.go",
+    "bytes": 3050,
+    "sha256": "b37e92471cbb89823903bdcb9e6fc570be728bfbf79d1c80e53b1b393aefe931"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/examples/single_lookup/simple_test.go",
+    "bytes": 696,
+    "sha256": "42740b56f7283aea76546ed169a2f41a987730fbb1d2d243011b659eea21b9d6"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/examples/single_lookup/simple.go",
+    "bytes": 2891,
+    "sha256": "b8313dc8cb7d004a4ac4c1ff2b70c12534e7e47d08b4bb04fa1a0de16eaa3fc3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/examples/utils/utils.go",
+    "bytes": 859,
+    "sha256": "fdc922b48c265891e15a3ae193aa0ea4b2b1c185f5a061b0d5787736f9d6a097"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/PROPOSED_REFACTORING.md",
+    "bytes": 5964,
+    "sha256": "5a9a8ace3620bd0911cd22b56e6a470329caced464647daa0f06361a18e37da2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.test-cover.sh",
+    "bytes": 772,
+    "sha256": "ef1586ec216573a4ec045319eea7c63ac70bfecdac212c6d897bf5c95dd51294"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/.gitignore",
+    "bytes": 47,
+    "sha256": "d747afa893f1c77680924069c4da41d3e1a8bc39ed5c1d474cdcb7277947b0b5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/AUTHORS",
+    "bytes": 225,
+    "sha256": "c27bd62f2d797c14d8a12b6edda03eb521d9bcfdd7727eeaa2f8c96295f08043"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/answers_generate.go",
+    "bytes": 6990,
+    "sha256": "2cd455977581bbf92e978066212d04c510218cbc0300c74f7d98dc264bad8cb8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/nslookup.go",
+    "bytes": 3737,
+    "sha256": "70273ddbf1a65ac80d02381e503b8d126f389a221dbacf53696a956e905fde75"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/alookup.go",
+    "bytes": 3496,
+    "sha256": "cb537c3891d0c5631e88e40b2e9e43862e0d481b1266a7ea42f3197b809fc6d6"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/answers.go",
+    "bytes": 27079,
+    "sha256": "890ff62f5c5eb3c3e4eadcecb8fc729f9b8840d26d4c3bd9d3f5974351522d6a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/cache_test.go",
+    "bytes": 4714,
+    "sha256": "ec2e20cbc6f94a0566af70d95f5b107f7dd80972795266fb2026c543c4a6d592"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/resolver_test.go",
+    "bytes": 2457,
+    "sha256": "3c459478127b785c258a81787e69de2cd7d6d810eb6f835d3926807d39dc74c2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/cache.go",
+    "bytes": 11826,
+    "sha256": "51d3553f270b837d2d66b2415054e31335331f331448b7851544f38939077e8a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/qa.go",
+    "bytes": 5168,
+    "sha256": "19b001d4806fbf365117c0bf30f7796c144f5d3aaea9765c5a2d823e93c7a98e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/lookup_test.go",
+    "bytes": 53991,
+    "sha256": "b3aba47cc7376161545be7e7700b5937d0718eb117b328dcf189abea290f6c29"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/resolver.go",
+    "bytes": 28701,
+    "sha256": "7e31b3fa4b4bd4c73cab5e3a0874749e1d00bd0924162ca736538b5652256889"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/util.go",
+    "bytes": 6432,
+    "sha256": "8ea66beff38f4aab9c40dbc75604569caaa3bb451538d27605d1c752b40c6d25"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/types.go",
+    "bytes": 3503,
+    "sha256": "efcb8d0d4957f0d738fa07ff64df9d09ff758d57af10ef34f1ae06e182a4df7e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/lookup.go",
+    "bytes": 43564,
+    "sha256": "6004314b331bda3a9083fcd7724ac012285233b5ce96a4a5a3b383d9830767ca"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/cache_stats.go",
+    "bytes": 2382,
+    "sha256": "286ccfd1d12baab4b3f5eb74bfd0f45acc3fdd14cdab8996d6504398348942ff"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/answers_helper.go",
+    "bytes": 4333,
+    "sha256": "28043fd3aec106086198ead420e3445a0cbf37f514bb862e7b600504acd1d182"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/conf.go",
+    "bytes": 5063,
+    "sha256": "d90100a8d3ad2181a1b31e46bd9fa1b2f806c032b6559157f7e9aca217194c00"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/zdns/edns.go",
+    "bytes": 5004,
+    "sha256": "e86174e888e4d845038db17e8d5149ebcd0a24d08811fe48b668689055e31ddd"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/bindversion/bindversion.go",
+    "bytes": 2502,
+    "sha256": "8a1f248c4c47e7f9ef6cc61b35c181f11cc526c7e1b32dbe64b1129906043d3a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/bindversion/bindversion_test.go",
+    "bytes": 3405,
+    "sha256": "1ce5965bfaf6628d026901e4fd5259d70ccab3b0b9806970be142aa8a4c2b7d1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/dmarc/dmarc_test.go",
+    "bytes": 7572,
+    "sha256": "53bee5eb27fd520775a17c34b8a5934ff360eea99bc88c34d5b5b0a4592cd015"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/dmarc/dmarc.go",
+    "bytes": 2374,
+    "sha256": "a20cedbeb7ea59ae79007a6f9e094c69e7c5e3c3676539ea3a26751685c17e5f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/mxlookup/mx_lookup.go",
+    "bytes": 4767,
+    "sha256": "57fb296c7919296fc865327be48d2a0da9438de1bb9149f0b752f02b88c54aa9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/spf/spf_test.go",
+    "bytes": 5958,
+    "sha256": "38883d49de4c3e269765f39f4fcc1241f1d7877660bae9bac43c835e47b2188b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/spf/spf.go",
+    "bytes": 2289,
+    "sha256": "7cd8e15064363ad8fd30bf449d38cd74b18cf2f8b52e111cf23ce7d040ec3dd2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/alookup/a_lookup.go",
+    "bytes": 2505,
+    "sha256": "ee4627b12832ffaa2d6bd073a1222c5ff127fa7dcf5de75dab71b599ed286ed4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/nslookup/ns_lookup.go",
+    "bytes": 3372,
+    "sha256": "6b9db96b95f08a71f3df3c741fa9346db4b79ba81f82e5738985ff4027778833"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/axfr/axfr.go",
+    "bytes": 4966,
+    "sha256": "4ae1edbf28a1eae7ed8f72f86d07df8fff2566c3ae2e1383a7895b6f3f9cb877"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/modules/axfr/axfr_test.go",
+    "bytes": 11026,
+    "sha256": "dd336a05bb6fbe12b84c4d8482bddd4fcfc7ec8dad664eca4a3fb7eb67601f16"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/internal/util/util_test.go",
+    "bytes": 4359,
+    "sha256": "c4cd8cfe93f0009cfbca6b2d7fc134d5c1ce3f2af26e13e7e7f83b92842eabb0"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/internal/util/util.go",
+    "bytes": 3100,
+    "sha256": "93f805c8de912304b2d8116bc34160be96350593038c0624a3efd28d405f4b49"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/internal/cachehash/shardedcachehash.go",
+    "bytes": 2037,
+    "sha256": "e8cce2db0844515856337f0182e7a975bbb3ca087cf8462667113a045aff8f6c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/internal/cachehash/cachehash.go",
+    "bytes": 5124,
+    "sha256": "9addbdafbe432b6ca5d1a00197e64cf32a6bd25c501b9feea39acb87eeb29903"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/internal/cachehash/cachehash_test.go",
+    "bytes": 5232,
+    "sha256": "0e903e22110d97110ba285e08ff371e986034e90e1ac6b8612881b1166e00364"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/internal/safeblacklist/safe_blacklist.go",
+    "bytes": 1391,
+    "sha256": "0e25d28e56ab318d34ffcbabbebd7cc5cc95b69751cfcce1f365acbfa97235e7"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/config_validation.go",
+    "bytes": 4979,
+    "sha256": "169b9e73cd6a6248881f7ff986659fb5d58275de76befecdfc1afc657141b4d5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/ulimit_check.go",
+    "bytes": 1353,
+    "sha256": "ee46017b451c0da81d86dbb9926a591c91675185a550720dcc763c4cd6f4bfcb"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/iohandlers/status_handler.go",
+    "bytes": 4930,
+    "sha256": "14e1db54584fe5836fbeb560b35be20a53c34b54971f8f4ddb3a2116d9c2631d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/iohandlers/stream_handlers.go",
+    "bytes": 1650,
+    "sha256": "d5701af23ec0b88991636217652cd99688d1ee6a2839cdd9bf2c7b5aeb02ee57"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/iohandlers/file_handlers.go",
+    "bytes": 2300,
+    "sha256": "08be97e7d2fea216a5377aad0f0f7bac42fe65df17a8aa083bae31caf91ce34f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/iohandlers/string_slice_input_handler.go",
+    "bytes": 1246,
+    "sha256": "ab1d1389c0765e32e904b26c27f9c002080929fc1eac6001eff75c85a8079223"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/worker_manager.go",
+    "bytes": 31361,
+    "sha256": "8238876bd0948e0395e2ccb780220ce71fbe4615e160b8af2313e1ce6155c10b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/util.go",
+    "bytes": 5272,
+    "sha256": "63105e51ac303e5f8db5c4b00845123ec2d5124c1c5c0038deaa2322b995043d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/ulimit_check_unknown.go",
+    "bytes": 780,
+    "sha256": "d96bdafdfb31c56a39b47dd2939574fd34782df7568c0b3741ebd5736c43925a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/cli.go",
+    "bytes": 15358,
+    "sha256": "b17bc7e1d8c2e75cecedbfc5cedfd83b2e54c573595b9e5ddacccade91b65ec3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/config_validation_test.go",
+    "bytes": 1790,
+    "sha256": "92f159fabb0447089f0abb52b249d7e47beff73d95ebaaa124ba8e30471347c0"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/multiple.ini",
+    "bytes": 338,
+    "sha256": "cd003c021c6e027ba773d6a4cb38a5d9296d160decd956dfc07c69ac886921f8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/worker_manager_test.go",
+    "bytes": 5112,
+    "sha256": "7c879e4e7172e951644b622fcaa8f4922231a83968f4e7f86501f4c97bc3e239"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns/src/cli/modules.go",
+    "bytes": 10637,
+    "sha256": "89751b96269d7a0c379606217df41bcd8b6884b792e311490a210330f825feb9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_as_paths.py",
+    "bytes": 26486,
+    "sha256": "9cb25add43f244db1272b5a9ede1e04babace030f7300676becb10c4d0facbe8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_frag_overview.py",
+    "bytes": 22285,
+    "sha256": "f52886fc15e6b7789e1e8a5aa055b996ed008faabc6d169b439d7aca3c68ecff"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_edns0_overview_1280pmtud_1280.py",
+    "bytes": 24742,
+    "sha256": "496947923c0120d156198ed1220833a02152fda92c6d591b1d7e67892bd40e66"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_returncode_overview_1280_1280.py",
+    "bytes": 21056,
+    "sha256": "0d1e7b69f57df3d86236673e0b20869f6c49bf9c5e6acc3100bd7f947b32c79e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_returncode_overview_1280pmtud_1500.py",
+    "bytes": 22433,
+    "sha256": "1ed6c930fdefbf12e187dd84926d23715b16139affed34a22c4ac3e628e2e94f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plots",
+    "bytes": 485,
+    "sha256": "a161d769c2d9aa70589d551e82663b06706cb7b79bd33332a203b32d5b7026b8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_latency_min.py",
+    "bytes": 26117,
+    "sha256": "76843ad1cc4c01b2e2dfcdf8680e233ce00be9d5f7e3a33a4b69b5eb34f343d6"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_apnic_as_paths.py",
+    "bytes": 28934,
+    "sha256": "db618ff513baa2a4033177c61c91b8726a8874ff104a6313ca40cad5a617c14b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_pcap_comp.py",
+    "bytes": 35105,
+    "sha256": "983cb044d036fb2f48b863486e0940e6a5fa5bb5b6f9d69c5b5e4550cab667a3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_noerror_comp_n64.py",
+    "bytes": 30903,
+    "sha256": "5bcb436d5364e7ba6abface63e415a79f02eb2d7f8e64d7ba955dd7fb7858c87"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/COMMIT_EDITMSG",
+    "bytes": 487,
+    "sha256": "0bac289bd2927cdbe469a85e2a14e8874ad3440fa89303ea7837cdb6f0b35f0c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/description",
+    "bytes": 73,
+    "sha256": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/refs/heads/master",
+    "bytes": 41,
+    "sha256": "b837326ff2598b0d6f5ab4fd52562203b358b1755234dcdbd81e9ed001612fc8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/index",
+    "bytes": 2986,
+    "sha256": "04a186285a89d4efe381b3663afe42baf1eae6c951795dfd1d6b9c565e047e9d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/config",
+    "bytes": 92,
+    "sha256": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/logs/refs/heads/master",
+    "bytes": 451,
+    "sha256": "3e265c16053d5fe2434e064b4e9cba3934838404045144fdfa0d0d268988bc9b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/logs/HEAD",
+    "bytes": 451,
+    "sha256": "3e265c16053d5fe2434e064b4e9cba3934838404045144fdfa0d0d268988bc9b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/pre-push.sample",
+    "bytes": 1374,
+    "sha256": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/fsmonitor-watchman.sample",
+    "bytes": 4726,
+    "sha256": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/pre-receive.sample",
+    "bytes": 544,
+    "sha256": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/push-to-checkout.sample",
+    "bytes": 2783,
+    "sha256": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/commit-msg.sample",
+    "bytes": 896,
+    "sha256": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/post-update.sample",
+    "bytes": 189,
+    "sha256": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/update.sample",
+    "bytes": 3650,
+    "sha256": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/pre-applypatch.sample",
+    "bytes": 424,
+    "sha256": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/pre-merge-commit.sample",
+    "bytes": 416,
+    "sha256": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/pre-rebase.sample",
+    "bytes": 4898,
+    "sha256": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/applypatch-msg.sample",
+    "bytes": 478,
+    "sha256": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/prepare-commit-msg.sample",
+    "bytes": 1492,
+    "sha256": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/hooks/pre-commit.sample",
+    "bytes": 1643,
+    "sha256": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/f1/d50a7205b49edd5810927fa4aeb83657611dcf",
+    "bytes": 9097,
+    "sha256": "7ad040ac6dacdbf7d39aa9f33be402f2d0072ea640b3325f1f5bbddbef6339e9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/f1/32584f3f3c5cc1d54ff9ab3531ea57a28be327",
+    "bytes": 767,
+    "sha256": "e82d59f58603b5215a6796a9e79f4ca8c79e9f8647e6745c33571e6008e8d514"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/6f/45d9a401b7be2d0ceeba1a48af50f87a0a3664",
+    "bytes": 8835,
+    "sha256": "0f794c7d18fe27d8f6b558926771aebf7655fedb279709f49680f8541fc9fdbf"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/0f/ed4f09f2b5212eea4eaf1cdf02377955e04598",
+    "bytes": 6738,
+    "sha256": "d6d2512c254a19ea2c3f255c2975d318bfccc476fee9c89dd03e6548a2e31d78"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/45/35fb976c7f5eb5f838a646cf6fb97265e5467a",
+    "bytes": 6740,
+    "sha256": "e2273f670363d63831a9da12cc05479b92c97145bb7c5ca4b37547c29b9b681c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/fc/74c52f8a4249430af76a9b1d7c6b210f5a2f81",
+    "bytes": 5410,
+    "sha256": "9e098c84d1b11603e5ec5685c6973fdf87e6f6fe1dc25e10562f85255780309f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/bf/25737a7697a37c8e95bba2d6c132b6f6ccee0e",
+    "bytes": 9255,
+    "sha256": "a2801d85c0cd0cc32e3560321e044a4355c0fccbc29f06256163b5243c2ffdd2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/38/0a2057245218a8e70a73c69de5fd40b0fb643a",
+    "bytes": 8962,
+    "sha256": "7b6c85f4daf404644713f44020a6dcc0f512ec846c8f216e6c8e3d48fae5f0e2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/aa/4de92cce2b874e5bab1713c58b893001936e24",
+    "bytes": 8950,
+    "sha256": "4a4e0e1cb539a3b6e35acd79435006bcc0cb538334d71b67d960452557d4ad2f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/25/949e1751bbd5dcf2b9dc65a6760bc8a87c3b76",
+    "bytes": 7416,
+    "sha256": "057b673d029ea3e10c00e5a86be39a1b1689d8643d651f6e63f3036100cfd310"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/1f/fa38b2719ce509cfd6960b201ef23ff6d84770",
+    "bytes": 7413,
+    "sha256": "835c96f9ab2ce15b6c5fb64281fde7513a9ecb4db51642f34ec09f78bbce9886"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/1f/4ddd700b40ac2760843afc8d73d81843247457",
+    "bytes": 9327,
+    "sha256": "56ecf503e5941b85bb7aa3bf8d84124593c99f429a59eec248070953630fb64c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/98/669923c68a45b8df939ade9e50b7e5c54caea6",
+    "bytes": 7807,
+    "sha256": "07c4028400c6062a7bbd3470672700bcf0603ffb6693e6e2b5ec36d66a1c8832"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/3e/2720538371cb3cdae6baf273f19f404750e02e",
+    "bytes": 7393,
+    "sha256": "05a1a5f15ebca8b4a158e6325b557ba14384b0145d7aa3fc5b2461ebecaaaefa"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/af/e354868c7b76041ac014b57570cc2045f9e428",
+    "bytes": 6835,
+    "sha256": "cef1334c5098e63ed01e80bab0217f3d5c92da31b400083b7bc16df4cbe7d965"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/af/8741f41feff1daf6164edbde6de54c276d8008",
+    "bytes": 9640,
+    "sha256": "59e979eab2867be11014cf894bf9c6b70dab7911d1c39d716830c3169f563f60"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/0c/e140a94cc0305730cbd9ed4f0996a917f2169e",
+    "bytes": 6836,
+    "sha256": "36bb682c8b8823592a58639f94dee4a4e41f011954c183808c1407773656088c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/3a/b85e3205cffc2e2d6fc94853cf421030a7253d",
+    "bytes": 6753,
+    "sha256": "9065a3b7e6c8411f21c619c0db5ec3b2682cfd543e54865f3351bab4aa33de95"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/12/e6ace748307cfaf70a386c135c5adcc6a75fe2",
+    "bytes": 6752,
+    "sha256": "3997002a0d74d644569c141b5fc6fa5b9f28f9dfab37c842f67ea617709d09f3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/84/e2e1067a499f62a3445a715966268f939b4ede",
+    "bytes": 8058,
+    "sha256": "acdef7d6c046f3591d84eb4ae6180cfbfe0c256fac894b5c8509365e2e6c0dad"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/63/9d3eb9a1b864267ae8950accdb6b8aeeb68501",
+    "bytes": 8985,
+    "sha256": "b01757d15fcfb9216f8b2e9eaa393bfda06f0ea0e2c51d02156460cb8d970e79"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/8b/76f2ecb9b15b65d1ec46ecb2f665c04628c215",
+    "bytes": 9250,
+    "sha256": "f5a855a487f7366830168795d29ad590c42961f7da970c333e6d118f08ffb982"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/24/f7c9f456705b2703ae1702e79df29c8f5cb4af",
+    "bytes": 9382,
+    "sha256": "c9c111c427933426890f7a7b106303d098260f1584a13744bcdce6960f4314b9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/28/30d5216acf970176d905fdc1ed9c0bbce9e380",
+    "bytes": 10306,
+    "sha256": "bccebaf5c521b6dc0d98eb9aeca3c9fac4cfd48b4bccb89ea21017d46c9bc8e9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/b4/5ac13ad2e6070ed80cd10ea2acc20549f6f10e",
+    "bytes": 7455,
+    "sha256": "e810a8b944059aace1e415c789c3741c75ae677fd40c235a66e2468c6202b35a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/cb/6465d8237de0b1da4b3a4d11b07f978d864709",
+    "bytes": 1037,
+    "sha256": "21a4bc183ea218bed0ac44c9b958af8b2b295970c6a166bada92d096c9b01a01"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/a8/d2ae81dc4b0b7a77d906501458adc13b661f8a",
+    "bytes": 9006,
+    "sha256": "e722f12372e261d1c99e142d8d0991ea76beb7431fbc48b185c052f6f761646b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/d2/bcfabedf67f5d9e2eb38ea43bbaa4fc2a73337",
+    "bytes": 8451,
+    "sha256": "59b6372fe57a7f0a480b7735a1b7cfb5ee8b596ce974977e84c7804ac075bc34"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/d2/a52838c8c02f044820d21b553c3c111fe2c7a1",
+    "bytes": 9340,
+    "sha256": "362135d6b844c790eae92440b0f425c99c7e26c692e2190a20a9305520d61915"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/ad/7b1186c71d63cb91548f49d73127f4d489acf1",
+    "bytes": 459,
+    "sha256": "67a408911f239a89999463cbe096babb069e1257b59aa2aac2fd89b24c230dc3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/18/4cfe2ec3a77d258f6111f04270e3084199aa96",
+    "bytes": 9213,
+    "sha256": "a1d4be07d26104e2564a17d6e71a70e01869d169af059dbf5e58bebffae5e314"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/eb/72124e8640c234c5e33c267e89cc19e5101287",
+    "bytes": 192,
+    "sha256": "af891f14a3198609ae4f86fd107bdb9e9193363cdfe7db34437a5890e28e5b1a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/eb/c98efa03703a409941e7199691ffdc6d9078e0",
+    "bytes": 8190,
+    "sha256": "35c6ce0a53cf77ab9e86aa0d6afc7b1c47512629d423d6c5b1df4cc1855c09f8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/da/351d59d7287f6cd12f7f9dd4dca1ec099f63ac",
+    "bytes": 1037,
+    "sha256": "71ddf25459d4515e517bc1a5c61f45aa6bb43d6568c48cd7e807a7af95167bf5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/f8/2bc37bea61821c4d0f767deaf6c8c052653b18",
+    "bytes": 149,
+    "sha256": "7ddbd39a41e2021bcdefdca411f4b13abe600dfba98c2b5b66ed11f9259f7e84"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/07/61dc2d44b32e3a7032a87c5e13f51938d50d2f",
+    "bytes": 9011,
+    "sha256": "334a2b7fd39b28c637d7d83e4786b434364bf598307333f8ba53c9bf7ec1ab05"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/e8/cf650753bfefab5118a16119a182ed2b848ead",
+    "bytes": 7632,
+    "sha256": "bdc4faacd0e59ea9d72a2393609c20ba72c4c56ebc51e52c35d708333af32afc"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/9d/b9ad6da0bfe0af2029ceead7bf2de3dfbb9c72",
+    "bytes": 7184,
+    "sha256": "bc2da5274043ab8695b28be4909e093cabd32c025ecb05fbb7d6ea7295084314"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/60/ea205aaeea57d8c6c9101c5fca43c038a27e38",
+    "bytes": 162,
+    "sha256": "98aa8f4b9505ec197478a37aea9cc29c1d425a6990627976b4b1c147e750f993"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/27/9257cf16ff1457c7c827078f8c803ec22a2225",
+    "bytes": 4420,
+    "sha256": "cf476d51e5791799f221c43c3db63a8a56d3cc690e83d9f4f9169e82e0d15d00"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/objects/3b/472b835f5c2406cb9e91cc923793983deb1dcb",
+    "bytes": 8406,
+    "sha256": "f11d05b9bb26dbaa7589bf852ba173b8b08b59e26e1357ac7b2b2a0497d7dd2d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/info/exclude",
+    "bytes": 240,
+    "sha256": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/.git/HEAD",
+    "bytes": 23,
+    "sha256": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_timeout_comp_lgi_small.py",
+    "bytes": 31311,
+    "sha256": "58512a99ba572ff874afcb4b45e1b28d9fd1a565a245507404c2974e3f03e29a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_timeout_comp_n64.py",
+    "bytes": 30443,
+    "sha256": "242b4462c755de6918989d8faa32608b4bc0f8d516f43b2f30a8f898f3842edd"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_stats_avg.py",
+    "bytes": 28980,
+    "sha256": "d99c203fba3527adc1fe22e3d076836628ac18210640b1323d758af902af7822"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_pcap_stats.py",
+    "bytes": 26733,
+    "sha256": "3e78440f411d0fa2881d13117062d78bb8c70a81d98bd01f05cf5e9ce318b786"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_overview_rel_1500_v4.py",
+    "bytes": 27622,
+    "sha256": "920627a801d7576967ae9f513b0c5a7d411ecce3fb487c0a00148def458d2161"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_pcap_overview.py",
+    "bytes": 28002,
+    "sha256": "8f5d98e62ef93d9a2532c22b4dce43315abcdcdef45149fba0e15f36e87a2aa8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_servfail_comp_lgi.py",
+    "bytes": 29937,
+    "sha256": "58433bd65eafaf06162fa601e5e88a209f08a673327521884b409ba1bc078330"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_returncode_overview.py",
+    "bytes": 20980,
+    "sha256": "963e776c4109879cd618f1b4ca1394acca6750e0456dab177ebcabcab4150602"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_stats_median.py",
+    "bytes": 28579,
+    "sha256": "8aed03e766714cf455d46116196c26605c1b0257948e1d6b0c99ec857bdce893"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_edns0_overview_1280pmtud_1500.py",
+    "bytes": 24053,
+    "sha256": "62ddf7e4ee43d8756f83bbe9ad64cdce9d4e133369af8d6bd2e62fdbdf08a03e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_edns0_overview.py",
+    "bytes": 24035,
+    "sha256": "81fe32fe3cf03070658682c2d713db589fd4367007824dfbdb1c2deb04cd59a7"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_timeout_comp.py",
+    "bytes": 28341,
+    "sha256": "3290f3571c95e7af6b20b67027388639aa3a51049ec35c5c030dd27bf1dadb77"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_noerror_comp_lgi_small.py",
+    "bytes": 28795,
+    "sha256": "ef95c2b3e53f6ae467331a4969db32e0f0173136cf545ef8bfa361f5977958fe"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_latency.py",
+    "bytes": 12448,
+    "sha256": "3fe7c858796c0807d68d0a931a4b564d9e714ff40e79e669dc57bad63a0d44c4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_stats.py",
+    "bytes": 27895,
+    "sha256": "202527e1c4a0f28289d534eeee72ff8580da0f1bcbee859836050cec6181f943"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_noerror_comp.py",
+    "bytes": 28334,
+    "sha256": "2686afe3c8164ec957f949dc471f1623b0f54126d3824b6e1b7144b568891fab"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_data.json",
+    "bytes": 1611,
+    "sha256": "1977e5b78f8ff2f926ad80476059084175f7c1206f64bac25d9a95ea20dda80d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_as_paths_regen.py",
+    "bytes": 26306,
+    "sha256": "77fc2c91f06709f15531775e1aaaf32acc0694c395306291609d3f5f2ccc3796"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/Makefile",
+    "bytes": 6921,
+    "sha256": "cdcc1a57fa9967e65c28e29a84bb3c875568510997799f5b0083a1f4d605066d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_overview_absolute.py",
+    "bytes": 18109,
+    "sha256": "236b86a8d678c8515fae7f99cca33c64c69a27a6c541abafe6f53cef26fe4347"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_edns.py",
+    "bytes": 25082,
+    "sha256": "c0e620750ca2a1a8707d627b5546b4647f0bea4bb302d85a5c464e3a201bea90"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_servfail_comp_n64.py",
+    "bytes": 30375,
+    "sha256": "2cc8a21d5bbef92121d654f65a2110c52ea1584fd8d3abbad101519af1dee92a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_servfail_comp.py",
+    "bytes": 28243,
+    "sha256": "22085e7855c4c92ccbb70d0a29bd2816a02c4e5546d22000b6bc037d74579e0c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_noerror_comp_lgi.py",
+    "bytes": 30108,
+    "sha256": "792800c592c09f707e52e06ce07135fdfc2ef2f68d34f2b4d5312de7ea3776f8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_overview.py",
+    "bytes": 24426,
+    "sha256": "6929869bb3cec05997a5f470e41d47a1d1ef4a121c7ba663982d181eeca27667"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/plot/plot_timeout_comp_lgi.py",
+    "bytes": 30035,
+    "sha256": "7bdb4e33f71608413c666de2049ec5bbfbcc0066377be8a2ed89af58307c9553"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/.github/dependabot.yml",
+    "bytes": 675,
+    "sha256": "b515adcc58b9cf44a9f96e3b6453da8a358bfab5bd403cb01875aa22f4579def"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/.github/CODEOWNERS",
+    "bytes": 204,
+    "sha256": "6b2bbb6ceec0ecda8ceeb31090caa123aadf8a941b63ba76f21d0f39107d3657"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/.github/workflows/ci.yml",
+    "bytes": 1872,
+    "sha256": "ced75a87f6d9fa91c20bbd63f4f335113bf2fe94d6f87eb3c16a49393a0f315c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/resources/axfr.json",
+    "bytes": 4277,
+    "sha256": "ddcdc255edd9a90733a40554b1a05cee2a422a45b280a66a4ad65e170b4b7729"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/zdns",
+    "bytes": 12659726,
+    "sha256": "01c82e12d408715d0669952bff178fec4693b69477200a99482f655fa59c196b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/main.go",
+    "bytes": 1000,
+    "sha256": "e588e24691f8d7a9bd2aebca78d64919066550e10e058c2a8ee8d418858f0a67"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/internal/util/util.go",
+    "bytes": 2478,
+    "sha256": "186ae438aac2374fdd4a14b6144f41c848abf6086b4f0a033f4d29a5a3af3f23"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/README.md",
+    "bytes": 13014,
+    "sha256": "5aefcbd72e5da9323932c2638b364605185f5ab42770816be97eeee153855fbb"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/go.sum",
+    "bytes": 52473,
+    "sha256": "8c2731f27e8faf2b0c54f07faf30f0277a41ef63f13093e9b8faba12b66c6d6c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/LICENSE",
+    "bytes": 11324,
+    "sha256": "972f0d9c8f3af5489f8cf957b7ab1e8dff7ad0b3574f6809136e51ba456e4d38"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/go.mod",
+    "bytes": 1520,
+    "sha256": "806c262f2fc612d65e5597691d025fa465db72062d80ecd98d89ba78bc14f76c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/iohandlers/streamhandlers.go",
+    "bytes": 1534,
+    "sha256": "393c18595c9ecb39efb68cb07610adef83ed527b98ea80ec269c72ed5a6eea62"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/iohandlers/filehandlers.go",
+    "bytes": 2005,
+    "sha256": "4bf2a790d952f3d9896189af96c6e1f742310580a6b34583ad0d55f7e99afbdc"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cmd/nslookup.go",
+    "bytes": 1651,
+    "sha256": "af844d482056037104bfe26e8b866ca2905eb582546f913ea4d9565db6b2cc26"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cmd/alookup.go",
+    "bytes": 1746,
+    "sha256": "d48fc715006c9d67443acd136cea305de2febaf7c321577db6c936bfb710032a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cmd/mxlookup.go",
+    "bytes": 1754,
+    "sha256": "19d4353b391ebd194e10ab5bbd5a79d2d757c8ac1c211c165263f0a5fa6ea75a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cmd/root.go",
+    "bytes": 8264,
+    "sha256": "a19efa3ae8d60a42b7fc7a0477eb47c9e2692febafe6ca7b79914822080018e1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/CITATION.cff",
+    "bytes": 1373,
+    "sha256": "0bb149eb227dc46abde96debe505a217e9d52b874058aaa104657caa2dfb435e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/testing/domains.csv",
+    "bytes": 1547,
+    "sha256": "bf6ab114a3f59f8ad61950670e5eeaa51ab6ace477002c9356ae9ec3414fb1ea"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/testing/top_domains_integration_tests.py",
+    "bytes": 6995,
+    "sha256": "508c0dec063b0f71817a9ac19cfa4f3ecc50053573ca6316d1fdf0cb33804e1f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/testing/integration_tests.py",
+    "bytes": 33951,
+    "sha256": "3c710d4c55274ad140018f7c8c51523155b24108f88d84f389c1c5e499b78278"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cachehash/shardedcachehash.go",
+    "bytes": 2013,
+    "sha256": "284302351e0b1865094f3a3d87e23c2b66e0cffce53318c1450965f38605fb4e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cachehash/cachehash.go",
+    "bytes": 2679,
+    "sha256": "516199d0e7a51e4ebe5f40b3b2c0bdb6bdf24a683f8be61dc644e1826e286ab4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/cachehash/cachehash_test.go",
+    "bytes": 3143,
+    "sha256": "c6e668f3715576bf8b1b5484fb9a57d05bbb62ad1e2c3669d7909df4a89b3472"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/makefile",
+    "bytes": 95,
+    "sha256": "4e2e042d4f4cfd0f26997e097eaf2c1769635d183043276c134728e343e03b15"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/zdns/ulimit_check.go",
+    "bytes": 1354,
+    "sha256": "111450c0c6abfd997848de69680a7cd300a829564a3f059364c8a9e8545b179a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/zdns/zdns.go",
+    "bytes": 8742,
+    "sha256": "36af4787668d38be4f38aa494ccbe20146ac616684819975bcbe9c13636c36a4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/zdns/interface.go",
+    "bytes": 5579,
+    "sha256": "e0daa984f289b51bc360cc32c3bd95111692a713b03e913fed4629f78553e81e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/zdns/ulimit_check_unknown.go",
+    "bytes": 781,
+    "sha256": "85451a8620f588ed8f3be0aba313ebfb3a4acb9b8c49ec1b82c7da404995ade6"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/zdns/lookup.go",
+    "bytes": 6890,
+    "sha256": "398477749f4d9dfcb1f65a247a62ab8b36c9f49c52b24771838b0e49a714832d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/zdns/conf.go",
+    "bytes": 4405,
+    "sha256": "920bf84e2a88d3a0b0afba6fb019215466dbc21d86197713d584f8504aadb40e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/bindversion/bindversion.go",
+    "bytes": 2671,
+    "sha256": "fd5090c16a82f1ad031438dd26d8e036a1cd2fb9a6c2fa0541779f0df9538481"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/bindversion/bindversion_test.go",
+    "bytes": 2885,
+    "sha256": "a4958b7cb1882a150d66d0eaaa2ed03a02259d118f29ccd6e142f34a60a95e75"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/dmarc/dmarc_test.go",
+    "bytes": 6433,
+    "sha256": "0c566aace65285b69930ebbca4c68c6c689a4ce5e8785b7c188f4c22eeef738a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/dmarc/dmarc.go",
+    "bytes": 2671,
+    "sha256": "2c0609d05953eb87edf408cc5ae5baa5127083baefdd942f83b8699ea92a3158"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/mxlookup/mxlookup_test.go",
+    "bytes": 8911,
+    "sha256": "231f31442f777216ff95d43d4be38d664cfb06a6a2f9402d79c3d2bb47d1c1f2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/mxlookup/mxlookup.go",
+    "bytes": 5840,
+    "sha256": "40dcadb92d00a1e752f8b66c43f1a23c26019fd4181b35185478fed1ad0b51b8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/spf/spf_test.go",
+    "bytes": 4826,
+    "sha256": "e55f7f00dfeeff0bd187f3b3f15357bf8390b84d1148fbfbabe7090e9c48596c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/spf/spf.go",
+    "bytes": 2603,
+    "sha256": "94ac2ab9cbc988e07f06af693c7003ae17be6121cf9b3f267157eee17ed03c97"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/alookup/alookup.go",
+    "bytes": 3143,
+    "sha256": "0ce56e63880b995c5fbcf0d20b9c1b06a4a319cb1b095a9247edb2f91d04c4f4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/alookup/alookup_test.go",
+    "bytes": 3094,
+    "sha256": "059fb5cc2008b74c8867b633086c36a542a1df2ab4da9858c1faab6e3bbd4f56"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/nslookup/nslookup.go",
+    "bytes": 3698,
+    "sha256": "11064d3ae2c49a37395db4a31111e894a56844909c580d7ecbf2da5aba7c1d29"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/miekg.go",
+    "bytes": 32512,
+    "sha256": "f8c8f9fd5496bff127b8a8f4cc6de5d8933471127f7e8306fdd85e1bae98728a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/answers.go",
+    "bytes": 29935,
+    "sha256": "1adf236f9c7b868de8dfb42409e3b6046f33e092f5c2ea9717d0d276a01fd06c"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/cache.go",
+    "bytes": 5592,
+    "sha256": "6b7f5e278be222089627870f207879698b573f0e64cc44b95593066a7914ca40"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/miekg_test.go",
+    "bytes": 54236,
+    "sha256": "83c4b1f549a9f362071524f2c0e6a49d1a52a73bd9973026f9f775bc3108d2f4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/util.go",
+    "bytes": 3661,
+    "sha256": "ad1cffb81311564c4401f5baed1b165267a1c694db55cf7b6e954e2d487aec5a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/edns.go",
+    "bytes": 5005,
+    "sha256": "cb1278f87361e4568f883f5f333dba0b3a56510f8db7fbc294f30ce14eb15939"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/miekg/modules.go",
+    "bytes": 8134,
+    "sha256": "fcd471ede8b77b526913ca2cd74c64f563e04ee6a3b3e3c10a4aa29482ec3573"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/axfr/axfr.go",
+    "bytes": 5498,
+    "sha256": "c02f5e524d7a8212d2f5cc6fff0a4358204af888b04c04995c4ec2a646de62a8"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/pkg/axfr/axfr_test.go",
+    "bytes": 10487,
+    "sha256": "249ca5215dc784e93f641c69f07e3b85fece5644482eb7a37976685bd705080a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/PROPOSED_REFACTORING.md",
+    "bytes": 5964,
+    "sha256": "5a9a8ace3620bd0911cd22b56e6a470329caced464647daa0f06361a18e37da2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/.test-cover.sh",
+    "bytes": 772,
+    "sha256": "ef1586ec216573a4ec045319eea7c63ac70bfecdac212c6d897bf5c95dd51294"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/.gitignore",
+    "bytes": 26,
+    "sha256": "9af20ae688010ebd2e6d5378814f615a5759dfa5c14fc3aa430696d1d73c2b4a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/zdns-1.1.0/AUTHORS",
+    "bytes": 179,
+    "sha256": "b58fec37e554b42b8ea8553ab83347861b9217f7b8d663ba6095f611ad337b0d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/chi_square.py",
+    "bytes": 3401,
+    "sha256": "6ac225a8a44c06a0f82494d1ae6aa3b55569a763a61f041df8d76528ee25e0ab"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/clean_soa_list.py",
+    "bytes": 1413,
+    "sha256": "b7cda1dabd4761c9d7979e38d1adeedc1c4234f1a850f6b1c96638d4643b0526"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/create_split.py",
+    "bytes": 273,
+    "sha256": "cf87fcfe87b0af82da9beaea4e37ac6deccc90ff32b20ce54cd1d20174f7eb2b"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/create_stats.py",
+    "bytes": 4344,
+    "sha256": "d7b029da7efc9c041fe9f1f73ce513ec490e1da7cacb64146e53874523d72977"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/README.md",
+    "bytes": 161,
+    "sha256": "c7d17d36d7ad5cd1edeaa2c9d22222f284fd0b7e9c937cbebc96248cc8b8a4c1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/parse_split.py",
+    "bytes": 854,
+    "sha256": "51eb3af92071d44de57b619e199469c2441b96cacc77d805f4195fd7417ee5c2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/regenerate_pcap_plots_date.sh",
+    "bytes": 533,
+    "sha256": "3b7e7e3f66288bcf722ee5d1df16941e89be21085bc8792fcc2c0a4435d58ee2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run_measurement.sh",
+    "bytes": 985,
+    "sha256": "37ce28ccfe682f1f3dd87362cb0307b76fe48ecc2a6d2e3000c2f4b3657ca800"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/downloader.py",
+    "bytes": 5971,
+    "sha256": "bcd86c578a1dbbca6d9c29f70ff535bb5531a51f641664041e303246bbbfd7fd"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/clean_stats.sh",
+    "bytes": 292,
+    "sha256": "01deb9d6ef9e3d4eb1af6b5a1a0956d0443f446d9e44c0caca9051ca1ac8bb54"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/sync_scripts.sh",
+    "bytes": 3378,
+    "sha256": "bc7b03274fa815fe5ec89ec4d2159ce9624d99d80e872f7522803cf1d854b43d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/combine_data.py",
+    "bytes": 444,
+    "sha256": "b93aefec8678e41347f59dab60cafd9dbe066253b3c2a618452d854924c40306"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/create_time_aggregate.sh",
+    "bytes": 1391,
+    "sha256": "2f394fb6bd969f9513cd31e705be7bcdeb54d9e8970f69d41fb74cbe8b051b6f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/fix_json.sh",
+    "bytes": 593,
+    "sha256": "591bad687c2b029f27bbb6963d2946f974caf6448f426951c007cb824a24b0d3"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/parse_tcpdump.py",
+    "bytes": 20815,
+    "sha256": "b431e9fd51e6de47855122cf6c1bed4fc2e11f5f6e1897cb7d274ea84c022ae5"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run_measurement_dev.sh",
+    "bytes": 985,
+    "sha256": "37ce28ccfe682f1f3dd87362cb0307b76fe48ecc2a6d2e3000c2f4b3657ca800"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/clean_old_files.sh",
+    "bytes": 1678,
+    "sha256": "9f5275e7c5c7833310760f54d6f65230bac3d9135429e937b0187d8b4af2a7dc"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/daily.sh",
+    "bytes": 252,
+    "sha256": "b42877a9a3d09b1576903ace02136dc1f10e35f23250f3ced0fa622549eb8437"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/aggregate_ns_list.py",
+    "bytes": 1165,
+    "sha256": "92074eae2a41838cf6a4ee07362b07843c164a81b8bdf9ecec3226b609749786"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/regenerate_pcap_plots.sh",
+    "bytes": 183,
+    "sha256": "c388fdb2c53bc64115235a78c2b5d96067bb886de0532ad050301916706da64a"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/cases.txt",
+    "bytes": 136,
+    "sha256": "ff6005d5ba002b7f675713a89a62eb8476325a7c3e2cc17a68f17fc4e1cf10e4"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/prepare_infiles.sh",
+    "bytes": 3226,
+    "sha256": "ecabfe4e972495d5ad354a9bb8bfd6fcc2b3ddf2de588c073e6d691f2d7bbaf9"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/update_frag_plots.sh",
+    "bytes": 567,
+    "sha256": "a10db72131e35315f27440f3b67afcea54b1326d57e8ee93d0b95ebc2504da1d"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/aggregate_data.sh",
+    "bytes": 6244,
+    "sha256": "eca83cbe27f3928745ede90e662ae6ab728db2dcd64850cc0629a49dd2a0b955"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/aggregate_dns_data.py",
+    "bytes": 9576,
+    "sha256": "10d85e430cf4976e63638cb126d4cf6be322e2c3985eb41cb3ad9d442f521b0f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/backend.dns-mtu.measurement.network/opt/msmt/msmt/scripts/create_pcaps.sh",
+    "bytes": 1870,
+    "sha256": "12229daeb5932707fb48022e40118eb3e595604c589cf8a73879d31e195c9107"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/etc/netplan/netplan/50-cloud-init.yaml",
+    "bytes": 729,
+    "sha256": "df4a07cb8b7dc878a5a645167eb69e350a2d6bc2758fe74440119e620380724f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/var/spool/cron/crontabs/msmt",
+    "bytes": 76,
+    "sha256": "1b0e15a1053e671beb4b870ef9508ec16c4ad74356a92e1e12aa3a6cca1e75ee"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/check_file_status.py",
+    "bytes": 1572,
+    "sha256": "e2ae7a12cbf148de4dfb89662ae82a45bd6b03d3be0732af8af29f365d5804fd"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/proc_file_rk.sh",
+    "bytes": 1244,
+    "sha256": "e88be303ff217e2c6c9769852379afc11b5171ebb65b55c200f0ba0683a566b1"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/find_proc_files_dev.sh",
+    "bytes": 579,
+    "sha256": "68b35a19cac970ad32c12bf2046aa7d7d533060e6e11a47b581878d15a26fdfe"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/proc_file.sh",
+    "bytes": 756,
+    "sha256": "5cdcffda0da2efcc3fb1186efbdfa30a4ecbf02367d1c8bbd4f7ac8d25ca0bb2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/parse_tcpdump.py",
+    "bytes": 21079,
+    "sha256": "b19c46ab7ba01748c1149997955574c7fe779f339d2c90de3400553176abf205"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/proc_file_rem.sh",
+    "bytes": 1051,
+    "sha256": "23b874c6d831cc619dd4a1fbf16687721cd8ef7467b320ff6fcd3fbf490b184f"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/processing_queue.sh",
+    "bytes": 942,
+    "sha256": "3433bdbadd71205a0dd03f81f819c2d9272bd50caf23288056154b002de49aa2"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/run_analysis.sh",
+    "bytes": 1695,
+    "sha256": "6ae0c27ec0a347f887bbb54a12eb65121eb802f5db157e8b9a3255b9669462eb"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/find_proc_files.sh",
+    "bytes": 835,
+    "sha256": "97b3efdf623a41ceee2d6d88ca2e6672116994a9dc48a4660b7590d50b73fc2e"
+  },
+  {
+    "path": "srv/script_backup/crontrol-hosts/pcapparse.dns-mtu.measurement.network/opt/msmt/msmt/scripts/agg_port_results.py",
+    "bytes": 1287,
+    "sha256": "12e22d43055c4d2943aa9162d19c61ea01341203c4ead433d82f95c9b5f30d0b"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 64,
+    "sha256": "179b2813d14b6bec79f1c96e5d9cdb2aaae0571a8fc505daddadcec3b511c0b3"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud.dns-mtu.measurement.network/pf.conf",
+    "bytes": 955,
+    "sha256": "06588e562739e60db4317bb5ce709b2878417c531668d09a5585ca2a2f5e4ddc"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 55,
+    "sha256": "6b6bf7ffab327c9b0f497ecc5228ec87acec263a3c171427cd3a7c9b4b27e452"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 63,
+    "sha256": "bbe044e610e66f629bac348a486d75c64966c7b4f9f36deccfcb99f61724a992"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/pf.conf",
+    "bytes": 969,
+    "sha256": "88897d3d5905db7a15f931b762d67755ed2c8a77f695a3ca56dccbd74cc0ad7d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-nopmtud-lgi.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 87,
+    "sha256": "318b259c2b6fad465bb91ef1b4e69af44aa3dffbb001c2ea4139a20d238522d0"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500-lgi.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 53,
+    "sha256": "0225eb74c7fdbcff18e4bd46e8ee236afea7c222b1d45c957061b397e79514b8"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500-lgi.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500-lgi.dns-mtu.measurement.network/pf.conf",
+    "bytes": 573,
+    "sha256": "c8ca87e62ee5064fc6e0f94775a87ba722e59cd2aa38fc6090c367680e08fe47"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500-lgi.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 85,
+    "sha256": "10f465d07fae10c9e6b59634fda7cf3560fad0eabc27c0f2ee28a960cd40b209"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 64,
+    "sha256": "fff6565ffd0af4b1e8b39518d2edac36bbf4439225f8f795e9e5983f7b3f404c"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud.dns-mtu.measurement.network/pf.conf",
+    "bytes": 559,
+    "sha256": "773fffc8cb66f2ceba4cbbdb41d14f5b2e679c34e5ffaf0d88c2924790bc3935"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 55,
+    "sha256": "a9a566322ed2e63a9a599b9d62b371344a297e870f4aeb43e3169014d133b047"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 165,
+    "sha256": "8c3c9251aeaf977601f51e0427685fcd984984c5a60661cbc9d614173c214c73"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/hostname.vio3",
+    "bytes": 65,
+    "sha256": "7f0ad4db8236ada70fa6b13a2c05aa3cdc8af5e7b27ebc3e1bcb16e2f6520acd"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/pf.conf",
+    "bytes": 2942,
+    "sha256": "9a494e7f9b3cf47fb030b27191f00caf0755bb90fcff1949426b551c9e149f4e"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/hostname.vio2",
+    "bytes": 163,
+    "sha256": "8adc17cde11996e4c5b3cd4e9a6f77665a65a4ff8dc582d9acf089b9e6dc3fc7"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud-lgi.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 87,
+    "sha256": "cb939ec7e3e59f3a2aa06a72d9ebfde834473eb109218533ea595cb48e916f5a"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 167,
+    "sha256": "365d3bd2c0f70cd29e8e360904baceb7cd555751bc257b7e0a701983ad8da701"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud.dns-mtu.measurement.network/hostname.vio3",
+    "bytes": 65,
+    "sha256": "0164c1a9aa5d8fc59f4af4674b209179b0ad60f07c47d4f87194765c37664f37"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud.dns-mtu.measurement.network/pf.conf",
+    "bytes": 2928,
+    "sha256": "49067b064b7b298c1bbf19302ce35fe7a57e8b90e1348f68d446d7f89c3ce139"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud.dns-mtu.measurement.network/hostname.vio2",
+    "bytes": 165,
+    "sha256": "dcca095308abcf86c6c4fc770e37144fb146f28b2a7c95e0d335c938cad70ba9"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280onpath-nopmtud.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 55,
+    "sha256": "140f765cd00554ff1e144fdcb43fe33845eebebe77850b2181bfeaa5a0693aa2"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud-lgi.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 62,
+    "sha256": "55885e822c2b24fcfb01e90abaeec321a7cd779fef243f71ab9f80c77060a643"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud-lgi.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud-lgi.dns-mtu.measurement.network/pf.conf",
+    "bytes": 573,
+    "sha256": "c8ca87e62ee5064fc6e0f94775a87ba722e59cd2aa38fc6090c367680e08fe47"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1280-pmtud-lgi.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 85,
+    "sha256": "3270938bd881cd20caa382d229227e579d98e6bb050d2254de2785169140d54f"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500.dns-mtu.measurement.network/hostname.vio1",
+    "bytes": 55,
+    "sha256": "78f76cb08ba235602d783e9be5858d28079b5b3aa2d07317050be4cd065eb54b"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500.dns-mtu.measurement.network/hostname.lo23",
+    "bytes": 45,
+    "sha256": "d5705ee5cdb9daf75b88a7907005c7348013a559f7ef8a97e8e25c9eaa80729d"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500.dns-mtu.measurement.network/pf.conf",
+    "bytes": 559,
+    "sha256": "773fffc8cb66f2ceba4cbbdb41d14f5b2e679c34e5ffaf0d88c2924790bc3935"
+  },
+  {
+    "path": "srv/script_backup/mtu-routers/gw-mtu1500.dns-mtu.measurement.network/hostname.vio0",
+    "bytes": 55,
+    "sha256": "22906b3a5556bcd6dc7deb017bff89839e5cbcb3719ed7a31752d8d9298573b8"
+  }
+]

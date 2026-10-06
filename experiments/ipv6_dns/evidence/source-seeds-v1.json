@@ -1,0 +1,1298 @@
+[
+  {
+    "reference_number": 1,
+    "citation": "APNIC. APNIC Labs Measurements and Data . url: https://labs.apnic.net/ measurements/ (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://labs.apnic.net/",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 2,
+    "citation": "F. Baker and P. Savola. Ingress Filtering for Multihomed Networks . RFC 3704. IETF, Mar. 2004. url: https://www.rfc-editor.org/rfc/rfc3704.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc3704.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 3,
+    "citation": "P. Barber, M. Larson, M. Kosters, and P. Toscano. Life and Times of J-ROOT . Oct. 2004. url: https://archive.nanog.org/meetings/nanog32/presentations/ kosters.pdf (visited on 04/15/2024).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://archive.nanog.org/meetings/nanog32/presentations/",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 4,
+    "citation": "E. Bassetti, E. Di Paolo, F. Drago, M. Conti, and A. Spognardi. “Opening Pan- dora’s Packet: Expose IPv6 Implementations Vulnerabilities Using Differential Fuzzing”. In: International Conference on Applied Cryptography and Network Security. Springer. 2025.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 5,
+    "citation": "S. Behte. DDoS: Understanding Real-Life Attacks and Mitigation Strategies . Bod - Books on Demand, 2025. isbn: 978-3819226212.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 6,
+    "citation": "R. Bonica, F. Baker, G. Huston, R. Hinden, O. Troan, and F. Gont. IP Fragmen- tation Considered Fragile. RFC 8900. IETF, Sept. 2020. url: https://www.rfc- editor.org/rfc/rfc8900.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc8900.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 7,
+    "citation": "S. Bradner. Key words for use in RFCs to Indicate Requirement Levels . RFC 2119. IETF, Mar. 1997. url: https://www.rfc-editor.org/rfc/rfc2119.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc2119.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 8,
+    "citation": "M. Brandt, T. Dai, A. Klein, H. Shulman, and M. Waidner. “Domain Valida- tion++ for MitM-Resilient PKI”. In: Proc. of the 25th ACM SIGSAC Conference on Computer and Communications Security (CCS) . Oct. 2018.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 9,
+    "citation": "M. Brandt, H. Shulman, and M. Waidner. “Evaluating resilience of domains in PKI”. In: Proc. of the 28th ACM SIGSAC Conference on Computer and Communi- cations Security (CCS). Nov. 2021.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 10,
+    "citation": "N. Brownlee, K. Claffy, and E. Nemeth. “DNS Measurements at a Root Server”. In: GLOBECOM’01. IEEE Global Telecommunications Conference . Vol. 3. Nov. 2001. doi: 10.1109/GLOCOM.2001.965864.",
+    "doi": "10.1109/GLOCOM.2001.965864",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1109/GLOCOM.2001.965864",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 11,
+    "citation": "S. Castro, D. Wessels, M. Fomenkov, and K. Claffy. “A Day at the Root of the Internet”. In: ACM SIGCOMM Computer Communication Review 38.5 (Sept. 2008). doi: 10.1145/1452335.1452341. url: https://dl.acm.org/doi/10.1145/ 1452335.1452341 (visited on 03/12/2024).",
+    "doi": "10.1145/1452335.1452341",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/1452335.1452341",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 12,
+    "citation": "A. Conta, S. Deering, and M. Gupta. Internet Control Message Protocol (ICMPv6) for the Internet Protocol Version 6 (IPv6) Specification . RFC 4443. IETF, Mar. 2006. url: https://www.rfc-editor.org/rfc/rfc4443.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc4443.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 13,
+    "citation": "J. Czyz, M. Allman, J. Zhang, S. Iekel-Johnson, E. Osterweil, and M. Bailey. “Measuring IPv6 adoption”. In: Proc. of the 2014 ACM SIGCOMM Conference (SIGCOMM). Aug. 2014.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 14,
+    "citation": "T. Dai, P. Jeitner, H. Shulman, and M. Waidner. “From IP to transport and beyond: cross-layer attacks against applications”. In: Proc. of the 28th ACM SIGSAC Conference on Computer and Communications Security (CCS). Nov. 2021.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 15,
+    "citation": "T. Dai, H. Shulman, and M. Waidner. “Let’s downgrade let’s encrypt”. In: Proc. of the 28th ACM SIGSAC Conference on Computer and Communications Security (CCS). Nov. 2021.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 16,
+    "citation": "E. Davies and J. Mohacsi. Recommendations for Filtering ICMPv6 Messages in Firewalls. RFC 4890. IETF, May 2007. url: https://www.rfc- editor.org/rfc/ rfc4890.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc4890.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 17,
+    "citation": "S. Deering and R. Hinden. Internet Protocol, Version 6 (IPv6) Specification . RFC 8200. IETF, July 2017. url: https://www.rfc-editor.org/rfc/rfc8200.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc8200.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 18,
+    "citation": "E. Di Paolo, E. Bassetti, and A. Spognardi. “A new model for testing IPv6 fragment handling”. In: European Symposium on Research in Computer Security . Springer. 2023.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 19,
+    "citation": "J. Dickinson, S. Dickinson, R. Bellis, A. Mankin, and D. Wessels. DNS Transport over TCP - Implementation Requirements . RFC 7766. IETF, Mar. 2016. url: https://www.rfc-editor.org/rfc/rfc7766.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc7766.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 20,
+    "citation": "DNS-OARC. Day In The Life of the Internet . url: https://www.dns-oarc.net/ index.php/oarc/data/ditl (visited on 04/27/2024).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.dns-oarc.net/",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 21,
+    "citation": "DNSOP WG. Issues in open source procurement in the European public sector II . Nov. 7, 2023. url: https://www.youtube.com/watch?v=7qJ9eg4UREk (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.youtube.com/watch?v=7qJ9eg4UREk",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 22,
+    "citation": "A. Durand and J. Ihren. DNS IPv6 Transport Operational Guidelines . RFC 3901. IETF, Sept. 2004. url: https://www.rfc-editor.org/rfc/rfc3901.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc3901.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 23,
+    "citation": "J. Durand, I. Pepelnjak, and G. Doering. BGP Operations and Security. RFC 7454. IETF, Feb. 2015. url: https://www.rfc-editor.org/rfc/rfc7454.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc7454.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 24,
+    "citation": "W. Eddy. Transmission Control Protocol (TCP). RFC 9293. IETF, Aug. 2022. url: https://www.rfc-editor.org/rfc/rfc9293.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc9293.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 25,
+    "citation": "Enno Rey. Some Notes on the “Drop IPv6 Fragments” vs. “This Will Break DNS[SEC]” Debate. Nov. 3, 2015. url: https://web.archive.org/web/20250 206161534/https://insinuator.net/2015/11/some-notes-on-the-drop- ipv6- fragments-vs-this-will-break-dnssec-debate/ (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://web.archive.org/web/20250",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 26,
+    "citation": "D. Farinacci, T. Li, S. Hanks, D. Meyer, and P. Traina. Generic Routing Encapsu- lation (GRE). RFC 2784. IETF, Mar. 2000. url: https://www.rfc-editor.org/rfc/ rfc2784.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc2784.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 27,
+    "citation": "P. Ferguson and D. Senie. Network Ingress Filtering: Defeating Denial of Service Attacks which employ IP Source Address Spoofing . RFC 2827. IETF, May 2000. url: https://www.rfc-editor.org/rfc/rfc2827.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc2827.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 28,
+    "citation": "T. Fiebig. “Crisis, ethics, reliability & a measurement.network: Reflections on active network measurements in academia”. In: Proceedings of the 2023 Applied Networking Research Workshop. 2023.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 29,
+    "citation": "T. Fiebig and D. Aschenbrenner. “13 propositions on an internet for a\" burning world\"”. In: Proceedings of the ACM SIGCOMM Joint Workshops on Technologies, Applications, and Uses of a Responsible Internet and Building Greener Internet . 2022.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 30,
+    "citation": "T. Fiebig, K. Borgolte, S. Hao, C. Kruegel, and G. Vigna. “Something From Nothing (There): Collecting Global IPv6 Datasets From DNS”. In: Proc. of the Passive and Active Measurement Conference (PAM) . Vol. 10176. Mar. 2017. doi: 10.1007/978-3-319-54328-4_3.",
+    "doi": "10.1007/978-3-319-54328-4_3",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1007/978-3-319-54328-4_3",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 31,
+    "citation": "M. Foundation. Public Suffix List . url: https://publicsuffix.org/ (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://publicsuffix.org/",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 32,
+    "citation": "S. Frankel, R. Graveman, J. Pearce, and M. Rooks. “Guidelines for the secure deployment of IPv6”. In: NIST Special Publication 800 (2010).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 33,
+    "citation": "K. Fujiwara and P. Vixie. IP Fragmentation A voidance in DNS over UDP. RFC 9715. IETF, Jan. 2025. url: https://www.rfc-editor.org/rfc/rfc9715.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc9715.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 34,
+    "citation": "K. Fujiwara, S. Sannomiya, A. Sato, and K. Yoshida. “Latency analysis of JP and Root DNS servers from packet capture data”. In: 2023 IEEE 47th Annual Computers, Software, and Applications Conference (COMPSAC) . June 2023. doi: 10.1109/COMPSAC57700.2023.00076.",
+    "doi": "10.1109/COMPSAC57700.2023.00076",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1109/COMPSAC57700.2023.00076",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 35,
+    "citation": "H. Gao, V. Yegneswaran, Y. Chen, P. Porras, S. Ghosh, J. Jiang, and H. Duan. “An Empirical Reexamination of Global DNS Behavior”. In: Proceedings of the ACM SIGCOMM 2013 conference on SIGCOMM . SIGCOMM ’13. Aug. 2013. doi: 10.1145/2486001.2486018. (Visited on 04/25/2024).",
+    "doi": "10.1145/2486001.2486018",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/2486001.2486018",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 36,
+    "citation": "M. Göhring, H. Shulman, and M. Waidner. “Path mtu discovery considered harmful”. In: IEEE 38th International Conference on Distributed Computing Systems (ICDCS). IEEE. 2018. Measuring the Internet’s Readiness for DNS over IPv6 IMC ’25, October 28–31, 2025, Madison, WI, USA",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 37,
+    "citation": "F. Gont, J. Linkova, T. Chown, and W. Liu. Observations on the Dropping of Packets with IPv6 Extension Headers in the Real World . RFC 7872. IETF, June 2016. url: https://www.rfc-editor.org/rfc/rfc7872.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc7872.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 38,
+    "citation": "F. Gont and W. Liu.Recommendations on the Filtering of IPv6 Packets Containing IPv6 Extension Headers at Transit Routers . RFC 9288. IETF, Aug. 2022. url: https://www.rfc-editor.org/rfc/rfc9288.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc9288.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 39,
+    "citation": "Google. Overview of CrUX. May 8, 2025. url: https://developer.chrome.com/ docs/crux (visited on 05/08/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://developer.chrome.com/",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 40,
+    "citation": "F. Hilal, P. Sattler, K. Vermeulen, and O. Gasser. “A First Look At IPv6 Hyper- giant Infrastructure”. In: (Dec. 2024).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 41,
+    "citation": "C. Hornig. A Standard for the Transmission of IP Datagrams over Ethernet Networks. RFC 894. IETF, Apr. 1984. url: https://www.rfc- editor.org/rfc/ rfc894.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc894.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 42,
+    "citation": "G. Huston. IPv6, large UDP packets and the DNS . Aug. 1, 2017. url: https : //www.dotnxdomain.net/ispcol/2017-08/xtn-hdrs.html (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 43,
+    "citation": "G. Huston. IPv6, the DNS and Happy Eyeballs . Nov. 1, 2023. url: https://www. potaroo.net/ispcol/2023-11/dns-ipv6.html (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 44,
+    "citation": "G. Huston. DNS and UDP Truncation. Feb. 1, 2024. url: https://www.potaroo. net/ispcol/2024-02/truncation.html (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.potaroo.",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 45,
+    "citation": "IANA. Internet Control Message Protocol (ICMP) Parameters . url: https://www. iana.org/assignments/icmp-parameters/icmp-parameters.xhtml (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 46,
+    "citation": "IANA. Internet Control Message Protocol version 6 (ICMPv6) Parameters . url: https://www.iana.org/assignments/icmp- parameters/icmpv6- parameters. xhtml (visited on 03/31/2025).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.iana.org/assignments/icmp-",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 47,
+    "citation": "D. Kipping. “Transit origami: a method to coherently fold exomoon transits in time series photometry”. In: Monthly Notices of the Royal Astronomical Society 507.3 (2021).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 48,
+    "citation": "T. Koch, E. Katz-Basset, J. Heidemann, M. Calder, C. Ardi, and L. Ke. “Anycast in Context: A Tale of Two Systems”. In:Proceedings of the 2021 ACM SIGCOMM 2021 Conference. Aug. 2021. (Visited on 04/25/2024).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 49,
+    "citation": "V. Le Pochat, T. Van Goethem, S. Tajalizadehkhoob, M. Korczyński, and W. Joosen. “Tranco: A Research-Oriented Top Sites Ranking Hardened Against Manipulation”. In: Proc. of the 26th Network and Distributed System Security Symposium (NDSS). Feb. 2019. doi: 10.14722/ndss.2019.23386.",
+    "doi": "10.14722/ndss.2019.23386",
+    "kind": "research",
+    "source_url": "https://doi.org/10.14722/ndss.2019.23386",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 50,
+    "citation": "B. Leiba. Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words. RFC 8174. IETF, May 2017. url: https://www.rfc-editor.org/rfc/rfc8174.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc2119.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 51,
+    "citation": "G. Lencse, J. P. Martinez, L. Howard, R. Patterson, and I. Farrer. Pros and Cons of IPv6 Transition Technologies for IPv4-as-a-Service (IPv4aaS) . RFC 9313. IETF, Oct. 2022. url: https://www.rfc-editor.org/rfc/rfc9313.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc9313.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 52,
+    "citation": "M. Lentz, D. Levin, J. Castonguay, N. Spring, and B. Bhattacharjee. “D-mystifying the D-root address change”. In: Proceedings of the 2013 conference on Internet measurement conference. Oct. 2013. doi: 10.1145/2504730.2504772. (Visited on 03/01/2024).",
+    "doi": "10.1145/2504730.2504772",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/2504730.2504772",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 53,
+    "citation": "X. Li, C. Bao, and F. Baker. IP/ICMP Translation Algorithm. RFC 6145. IETF, Apr. 2011. url: https://www.rfc-editor.org/rfc/rfc6145.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc6145.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 54,
+    "citation": "Z. Li, D. Levin, N. Spring, and B. Bhattacharjee. “Internet anycast: performance, problems, & potential”. In: Proceedings of the 2018 Conference of the ACM Special Interest Group on Data Communication . Aug. 2018. doi: 10.1145/3230543. 3230547. (Visited on 04/26/2024).",
+    "doi": "10.1145/3230543",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1145/3230543",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 55,
+    "citation": "F. Lichtblau, F. Streibelt, T. Krüger, P. Richter, and A. Feldmann. “Detection, classification, and analysis of inter-domain traffic with spoofed source IP ad- dresses”. In: Proc. of the Internet Measurement Conference (IMC) . Nov. 2017.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 56,
+    "citation": "B. Manning. Persistent Queries and Phantom Nameservers . Nov. 2006. url: https://www.caida.org/workshops/wide/0611/slides/manning-wide0611.pdf (visited on 04/16/2024).",
+    "doi": null,
+    "kind": "documentation",
+    "source_url": "https://www.caida.org/workshops/wide/0611/slides/manning-wide0611.pdf",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 57,
+    "citation": "M. Mathis and J. Heffner. Packetization Layer Path MTU Discovery . RFC 4821. IETF, Mar. 2007. url: https://www.rfc-editor.org/rfc/rfc4821.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc4821.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 58,
+    "citation": "J. McCann, S. Deering, J. Mogul, and R. Hinden. Path MTU Discovery for IP version 6. RFC 8201. IETF, July 2017. url: https://www.rfc- editor.org/rfc/ rfc8201.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc8201.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 59,
+    "citation": "P. Mockapetris. Domain names - implementation and specification . RFC 1035. IETF, Nov. 1987. url: https://www.rfc-editor.org/rfc/rfc1035.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc1035.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 60,
+    "citation": "J. Mogul and S. Deering. Path MTU discovery . RFC 1191. IETF, Nov. 1990. url: https://www.rfc-editor.org/rfc/rfc1191.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc1191.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 61,
+    "citation": "G. C. Moura, M. Müller, M. Davids, M. Wullink, and C. Hesselman. “Fragmen- tation, truncation, and timeouts: are large DNS messages falling to bits?” In: International Conference on Passive and Active Network Measurement . Springer. 2021.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 62,
+    "citation": "R. de Oliveira Schmidt, J. Heidemann, and J. H. Kuipers. “Anycast Latency: How Many Sites Are Enough?” In: Passive and Active Measurement. 2017. doi: 10.1007/978-3-319-54328-4_14.",
+    "doi": "10.1007/978-3-319-54328-4_14",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1007/978-3-319-54328-4_14",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 63,
+    "citation": "J. Postel. Internet Control Message Protocol . RFC 792. IETF, Sept. 1981. url: https://www.rfc-editor.org/rfc/rfc792.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc792.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 64,
+    "citation": "J. Postel. Internet Protocol. RFC 791. IETF, Sept. 1981. url: https://www.rfc- editor.org/rfc/rfc791.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc791.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 65,
+    "citation": "L. Prehn, F. Lichtblau, and A. Feldmann. “When Wells Run Dry: The 2020 IPv4 Address Market”. In: Proc. of the ACM Conference on emerging Networking EXperiments and Technologies (CoNEXT). Nov. 2020.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 66,
+    "citation": "R. van Rijswijk-Deij, M. Jonker, A. Sperotto, and A. Pras. “A High-Performance, Scalable Infrastructure for Large-Scale Active DNS Measurements”. In: JSAC (June 2016). JSAC. doi: 10.1109/JSAC.2016.2558918. url: https://ieeexplore.ieee. org/abstract/document/7460220 (visited on 12/08/2023).",
+    "doi": "10.1109/JSAC.2016.2558918",
+    "kind": "research",
+    "source_url": "https://doi.org/10.1109/JSAC.2016.2558918",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 67,
+    "citation": "K. Sriram, D. Montgomery, and J. Haas. Enhanced Feasible-Path Unicast Reverse Path Forwarding. RFC 8704. IETF, Feb. 2020. url: https://www.rfc-editor.org/ rfc/rfc8704.txt.",
+    "doi": null,
+    "kind": "standard",
+    "source_url": "https://www.rfc-editor.org/rfc/rfc8704.txt",
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 68,
+    "citation": "F. Steurer, A. Feldmann, and T. Fiebig. “A Tree in a Tree: Measuring Biases of Partial DNS Tree Exploration”. In: Proc. of the Passive and Active Measurement Conference (PAM). Mar. 2025.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 69,
+    "citation": "F. Steurer, D. Wagner, D. Lachos, A. Feldmann, and T. Fiebig. “The Roots Go Deep: Measuring’. ’Under Change”. In:Proc. of the Internet Measurement Conference (IMC). Oct. 2024.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 70,
+    "citation": "F. Streibelt, P. Sattler, F. Lichtblau, C. H. Ganán, A. Feldmann, O. Gasser, and T. Fiebig. “How ready is DNS for an IPv6-only world?” In: (Mar. 2023).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 71,
+    "citation": "J. Ullrich, K. Krombholz, H. Hobel, A. Dabrowski, and E. Weippl. “IPv6 security: Attacks and countermeasures in a nutshell”. In: 8th USENIX Workshop on Offensive Technologies (WOOT 14). 2014.",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  },
+  {
+    "reference_number": 72,
+    "citation": "D. Wessels, J. Castonguay, and P. Barber. “Thirteen Years of “Old J-Root””. In: DNS-OARC Fall 2015 Workshop, Montreal (Oct. 2015).",
+    "doi": null,
+    "kind": "research",
+    "source_url": null,
+    "role": "Direct contextual citation; role refined by explicit review.",
+    "review_status": "unavailable-full-text",
+    "access_status": "not-attempted",
+    "retrieval_attempts": [],
+    "findings": null,
+    "limitations": "No substantive review yet.",
+    "reviewer": {
+      "identity": "Codex primary assistant",
+      "type": "AI",
+      "independence": "Same study implementer; no human review"
+    }
+  }
+]

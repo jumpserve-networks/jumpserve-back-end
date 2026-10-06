@@ -1,0 +1,6 @@
+raw/
+author/
+__pycache__/
+evidence/reanalysis-v1.json
+evidence/assessment-v*.json
+.venv/
