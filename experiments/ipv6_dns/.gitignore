@@ -3,4 +3,5 @@ author/
 __pycache__/
 evidence/reanalysis-v1.json
 evidence/assessment-v*.json
+evidence/release-v1/
 .venv/
