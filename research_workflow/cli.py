@@ -6,6 +6,7 @@ import uuid
 import bridge
 import intake
 import importer
+import preparation
 import runner
 import store
 from workflow import FIELDS, canonical, digest, identifier, now, numerical_protocol, paper_details, protocol_record, validate_record
@@ -40,6 +41,10 @@ def main():
     run.add_argument("--request-id",required=True,type=identifier); run.add_argument("--output",required=True); persist_args(run)
     imported = commands.add_parser("import-ipv6",help="Preserve the existing register and prepare nine evidence-gap records")
     imported.add_argument("--assessment",required=True); imported.add_argument("--output",required=True); persist_args(imported)
+    prepared=commands.add_parser('prepare-plan',help='Compile a source-grounded plan locally; explicit persistence prepares a verified owner study')
+    prepared.add_argument('--paper-url',required=True);prepared.add_argument('--plan',help='Exact original plan JSON; otherwise use an exact registered paper URL')
+    prepared.add_argument('--request-id',required=True,type=identifier);prepared.add_argument('--output',required=True);prepared.add_argument('--enqueue',action='store_true',help='Queue the retained jobs; requires --persist')
+    persist_args(prepared)
     external=commands.add_parser('import-campaign',help='Validate and preserve documented external campaign records and exact original files; does not verify external execution')
     external.add_argument('--bundle',required=True);external.add_argument('--request-id',required=True,type=identifier);external.add_argument('--output',required=True);persist_args(external)
     source = commands.add_parser("source",help="Inventory locally retrieved legal bytes; does not claim substantive review")
@@ -53,6 +58,38 @@ def main():
     args = parser.parse_args()
     if getattr(args,'output',None) and Path(args.output).exists():parser.error('Preserve the prior output; select a new versioned output file before starting work.')
     if getattr(args,"persist",False) and not args.actor_id: parser.error("--persist requires --actor-id and a legitimate trusted operator credential")
+    if args.command=='prepare-plan':
+        if args.enqueue and not args.persist:parser.error('--enqueue requires explicit --persist')
+        study=dict(id=args.study_id,paper_url=args.paper_url)
+        if args.persist:
+            if not store.owns(args.study_id,args.actor_id):raise ValueError('Study ownership mismatch.')
+            studies=store.rows('studies',{'id':'eq.'+args.study_id,'limit':1})
+            if not studies or preparation.url_identity(studies[0]['paper_url'])!=preparation.url_identity(args.paper_url):raise ValueError('Existing study identifies a different paper.')
+            study=studies[0]
+        if args.plan:
+            path=Path(args.plan)
+            if path.stat().st_size>preparation.MAX_UPLOADED_BYTES:raise ValueError('Uploaded original plan exceeds the 250 KB limit.')
+            raw=path.read_bytes();plan=preparation.parse(raw,preparation.MAX_UPLOADED_BYTES)
+        else:
+            plan,raw=preparation.registered(study)
+            if not plan:raise ValueError('No exact registered paper plan; supply a reviewed source-grounded plan.')
+        value=preparation.compile_plan(plan,raw,study)
+        result=dict(prepared_id=value['id'],manifest_sha256=value['manifest_sha256'],jobs=len(value['jobs']),persisted=False,queued_jobs=None)
+        if args.persist:
+            retained=preparation.prepare(study,args.actor_id,dict(action='prepare',request_id=args.request_id,**({'plan_input':raw.decode('utf-8')} if args.plan else {})))
+            result.update(persisted=True,prepared=retained['prepared'])
+            metadata=store.rows('prepared_plans',{'study_id':'eq.'+args.study_id,'id':'eq.'+value['id'],'limit':1})
+            if not metadata:raise store.StoreError('Prepared plan was not confirmed; refresh retained status before resuming.')
+            value=preparation.compiled(args.study_id,metadata[0])
+        # Persisted output must contain the first retained freeze timestamps,
+        # never the earlier local preview or a later concurrent compilation.
+        save(args.output,value)
+        if args.persist:
+            if args.enqueue:
+                for job in retained['prepared']['jobs']:
+                    if job['status']=='not-queued':preparation.enqueue(study,args.actor_id,dict(action='enqueue',prepared_id=value['id'],job_id=job['id']))
+                result['queued_jobs']=next(p['queued_jobs'] for p in preparation.status(study)['prepared'] if p['id']==value['id'])
+        print(json.dumps(result));return
     if args.command=="retrieve":
         value=intake.retrieve(args.url,args.output_directory,args.media_type);print(json.dumps(value));
         if value['status']!='retrieved':raise SystemExit(1)

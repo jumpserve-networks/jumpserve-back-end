@@ -7,6 +7,7 @@ import uuid
 import runner
 import store
 import scheduler
+import preparation
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -70,7 +71,7 @@ def dispatch(event, actor=None):
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
     if path == "/research/capabilities" and method == "GET":
-        return dict(version=VERSION, adapters=list(runner.ADAPTERS), queue=dict(version=scheduler.VERSION, limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
+        return dict(version=VERSION, adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
         if method == "GET":
             if query.get("mine") == "1":
@@ -89,6 +90,18 @@ def dispatch(event, actor=None):
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])
     owner = bool(actor and store.owns(study_id, actor))
+    if len(parts) == 5 and parts[4] == "prepare":
+        if not actor: raise HttpError(401, "Sign in to prepare the private study.")
+        if not owner: raise HttpError(404, "Study not found.")
+        studies = store.rows('studies', {'id': 'eq.' + study_id, 'limit': 1})
+        if not studies: raise HttpError(404, "Study not found.")
+        if method == 'GET': return preparation.status(studies[0])
+        if method == 'POST':
+            body = parse_body(event)
+            if body.get('action') == 'prepare': return preparation.prepare(studies[0], actor, body)
+            if body.get('action') == 'enqueue': return preparation.enqueue(studies[0], actor, body)
+            raise ValueError('Choose prepare or enqueue; queued jobs keep their original definitions.')
+        raise HttpError(404, 'Preparation endpoint not found.')
     if len(parts) == 5 and parts[4] == "queue" and method == "GET":
         if not actor: raise HttpError(401, "Sign in to view the private claim queue.")
         if not owner: raise HttpError(404, "Study not found.")

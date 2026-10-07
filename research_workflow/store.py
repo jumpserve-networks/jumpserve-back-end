@@ -52,6 +52,8 @@ def rows(kind, params=None, public=False):
         projection = "id,study_id,campaign_id,input_artifact_id,followup_of,execution_mode,priority,dependencies,exclusive_resources,request,definition_sha256,status,reason,run_id,lease_until,created_at,updated_at"
     elif kind == "queue_events" and not public:
         projection = "id,study_id,job_id,event,status,reason,details,created_at"
+    elif kind == "prepared_plans" and not public:
+        projection = "id,study_id,plan_id,manifest_sha256,original_artifact_id,compiled_artifact_id,jobs,provenance,created_at"
     else:
         raise ValueError("Unsupported research relation.")
     query = {"select": projection, "order": "created_at.asc,id.asc", "limit": 1000, **(params or {})}
@@ -63,7 +65,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
-    if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot"): raise ValueError("Unsupported research operation.")
+    if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan"): raise ValueError("Unsupported research operation.")
     return request("/rest/v1/rpc/" + name, "POST", payload)
 
 def owns(study_id, actor):
@@ -83,7 +85,12 @@ def artifact(study_id, actor, raw, record_id, media_type, provenance):
         prior = request(endpoint, raw=True)
     except StoreError as error:
         if "HTTP 400" not in str(error) and "HTTP 404" not in str(error): raise
-        request(endpoint, "POST", raw)
+        try:
+            request(endpoint, "POST", raw)
+        except StoreError as upload_error:
+            if "HTTP 409" not in str(upload_error): raise
+            # A concurrent identical preparation may have stored these bytes.
+            # Verify the complete original after the race; never overwrite it.
         prior = request(endpoint, raw=True)
     if digest(prior) != sha or prior != raw: raise StoreError("Stored original-byte artifact hash differs after retrieval.")
     record = dict(id=identifier(record_id), sha256=sha, byte_count=len(raw), storage_path=path, media_type=media_type,

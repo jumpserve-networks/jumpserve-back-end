@@ -24,6 +24,12 @@ class StorageIntegrity(unittest.TestCase):
         with self.assertRaises(ValueError):store.rows('study_owners',public=True)
         # Artifacts have an operator-only allowlist, never a snapshot/export kind.
         self.assertNotIn('artifacts',PUBLIC_KINDS)
+    def test_concurrent_original_upload_rechecks_bytes_after_conflict(self):
+        with patch.object(store,'request',side_effect=[store.StoreError('HTTP 404'),store.StoreError('HTTP 409'),b'abc']),patch.object(store,'rows',return_value=[]):
+            row=store.artifact(str(uuid.uuid4()),str(uuid.uuid4()),b'abc',str(uuid.uuid4()),'text/plain',{})
+        self.assertEqual(row['sha256'],digest(b'abc'))
+        with patch.object(store,'request',side_effect=[store.StoreError('HTTP 404'),store.StoreError('HTTP 409'),b'tampered']):
+            with self.assertRaises(store.StoreError):store.artifact(str(uuid.uuid4()),str(uuid.uuid4()),b'abc',str(uuid.uuid4()),'text/plain',{})
     def test_snapshot_checks_manifest_coverage_and_publication_identity(self):
         study='11111111-1111-4111-8111-111111111111'
         publication={'id':'pub1','study_id':study,'status':'published','version':1,'record_ids':{k:[] for k in PUBLIC_KINDS if k!='publications'}}
