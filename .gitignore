@@ -6,3 +6,4 @@ sslogs
 # Python build and test artifacts
 __pycache__/
 *.py[cod]
+.test-artifacts/
