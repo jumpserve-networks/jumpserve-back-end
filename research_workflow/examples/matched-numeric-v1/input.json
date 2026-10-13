@@ -1,0 +1,11 @@
+{
+  "published": [
+    {"observation_id":"zero","configuration_identity":"golden-example","metric":"latency","units":"ms","value":0,"status":"recorded","reason":null,"source_id":"fc68ff20-f104-43e1-851b-190815d9c531","location":"Synthetic reference row 1","extraction":"Software example; not a paper value."},
+    {"observation_id":"difference","configuration_identity":"golden-example","metric":"latency","units":"ms","value":1,"status":"recorded","reason":null,"source_id":"fc68ff20-f104-43e1-851b-190815d9c531","location":"Synthetic reference row 2","extraction":"Software example; not a paper value."},
+    {"observation_id":"missing","configuration_identity":"golden-example","metric":"latency","units":"ms","value":2,"status":"recorded","reason":null,"source_id":"fc68ff20-f104-43e1-851b-190815d9c531","location":"Synthetic reference row 3","extraction":"Software example; not a paper value."}
+  ],
+  "observed": [
+    {"observation_id":"zero","configuration_identity":"golden-example","metric":"latency","units":"ms","value":0,"status":"recorded","reason":null},
+    {"observation_id":"difference","configuration_identity":"golden-example","metric":"latency","units":"ms","value":1.2,"status":"recorded","reason":null}
+  ]
+}

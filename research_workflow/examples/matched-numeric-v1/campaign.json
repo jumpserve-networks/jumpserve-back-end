@@ -1,0 +1,11 @@
+{
+  "id":"8bfc65a1-61c9-49ae-90c9-7dd97165bd01",
+  "protocol_id":"8bfc65a1-61c9-49ae-90c9-7dd97165bd02",
+  "followup_of":null,
+  "title":"Synthetic numerical software example",
+  "stage":"pilot",
+  "experiment_type":"independent-check",
+  "adapter":"matched-numeric-v1",
+  "planned_units":3,
+  "coverage_limits":"Three software fixtures; no paper claims or new empirical measurements."
+}
