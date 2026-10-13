@@ -199,3 +199,35 @@ measurements or change their statuses; the original module remains authoritative
 The shared module links its existing evaluated chat. Generic AI interpretation is
 disabled pending a module prompt/tool design, frozen evaluation criteria, actual
 answer evaluation, provenance and declared publication checks.
+
+## Unpublished research ideas
+
+Idea intake uses the existing authenticated study endpoint with
+`study_kind: "idea"` and `paper_url: null`; existing paper request bodies and
+replays remain valid. Ideas are private owner drafts, not invented papers.
+GET/POST `/research/studies/{id}/idea` saves immutable hashed plan packets,
+records explicit readiness acceptance, prepares a reviewed campaign, or resumes
+its original queue identity. The candidate protocol is structured JSON and must
+meet the existing protocol schema and resource bounds before acceptance.
+
+Planning and fresh comprehension/critic calls use the existing authenticated
+Agent Lambda with `action: "idea"`. The server selects the research-verification
+prompt, verifies user/module/study ownership, and excludes planning history and
+prior verdicts from fresh reviews. The single structured response channel never
+executes an action. Every call, including failures, is retained; the latest review
+attempt for each role controls readiness. Substantive revisions require new
+reviews. Separate invocations of a shared model are not independent scientific
+reviewers.
+
+Campaign preparation preserves the actual unpublished proposal, hypothesis,
+configurations, candidate protocol and untested evidence gap. It creates no
+published values, measurements, scientific assessments or executed runs. Domain
+jobs are manual: an operator must supply an applicable implementation, retain
+actual observations and import/review the evidence through the existing workflow.
+Plan readiness and an AI recommendation never establish a research result.
+
+Run `python3 -B -m unittest discover -s research_workflow/tests -v` locally.
+The additive migrations, frozen evaluation protocols, actual development-answer
+reports and release order are recorded in jumpserve-infra's README and
+`docs/research-ideas-protocol-v1.json`. No production deployment is implied by
+local implementation or fixture publication.

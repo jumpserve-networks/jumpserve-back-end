@@ -78,13 +78,22 @@ def public_url(value):
     return value
 
 def paper_details(body):
-    allowed = {"title", "paper_url", "domain", "scope", "origin_module"}
+    allowed = {"title", "paper_url", "domain", "scope", "origin_module", "study_kind"}
     if not isinstance(body, dict) or set(body) - allowed:
         raise ValueError("Unsupported paper details.")
-    result = {name: text(body.get(name), name, 300 if name == "title" else 5000) for name in ("title", "paper_url", "domain", "scope")}
-    if not re.fullmatch(r"https://[^\s]+", result["paper_url"]):
-        raise ValueError("Use an HTTPS paper URL or DOI URL. Intake records the URL; it does not fetch arbitrary browser-supplied URLs.")
-    public_url(result["paper_url"])
+    result = {name: text(body.get(name), name, 300 if name == "title" else 5000) for name in ("title", "domain", "scope")}
+    kind = body.get("study_kind", "paper")
+    if kind not in ("paper", "idea"): raise ValueError("Choose a paper assessment or unpublished research idea.")
+    if kind == "idea":
+        if body.get("paper_url") is not None: raise ValueError("Unpublished ideas have no paper URL; add actual related work as sources later.")
+        result.update(study_kind="idea", paper_url=None)
+    else:
+        result["paper_url"] = text(body.get("paper_url"), "paper_url", 5000)
+        if not re.fullmatch(r"https://[^\s]+", result["paper_url"]):
+            raise ValueError("Use an HTTPS paper URL or DOI URL. Intake records the URL; it does not fetch arbitrary browser-supplied URLs.")
+        public_url(result["paper_url"])
+        # Old paper request bodies keep their original shape for replay compatibility.
+        if "study_kind" in body: result["study_kind"] = "paper"
     result["origin_module"] = body.get("origin_module")
     if result["origin_module"] is not None:
         text(result["origin_module"], "origin_module", 100)
@@ -169,7 +178,7 @@ def validate_record(kind, body):
         if value is not None:
             if name.endswith("_id") and name != "observation_id":
                 value = identifier(value)
-            elif name in JSON_FIELDS:
+            elif name in JSON_FIELDS and not (kind == "reviews" and name == "scope"):
                 if not isinstance(value, (dict, list)): raise ValueError(name + " must be JSON data.")
                 canonical(value)
             elif name in INTEGER_FIELDS:
@@ -185,6 +194,9 @@ def validate_record(kind, body):
             raise ValueError(key + " is not a SHA256 digest.")
     if "priority" in result and not 1 <= result["priority"] <= 5: raise ValueError("Priority must be 1 through 5.")
     if kind == "claims" and result["claim_type"] not in CLAIM_TYPES: raise ValueError("Unknown claim type.")
+    if kind == "reviews":
+        if result["scope"] not in ("scientific", "software", "model-evaluation"): raise ValueError("Unknown review scope.")
+        if result["status"] not in ("passed", "failed", "conditional"): raise ValueError("Unknown review status.")
     if kind == "protocols":
         validate_protocol(result["document"])
         if result["sha256"] != digest(canonical(result["document"])): raise ValueError("Protocol hash does not match its canonical document.")

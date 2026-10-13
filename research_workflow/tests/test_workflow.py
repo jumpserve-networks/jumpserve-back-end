@@ -91,6 +91,17 @@ class NumericalEvidence(unittest.TestCase):
         self.assertEqual(run_fixture(observed=[],published=[])["run"]["status"],"failed")
 
 class DesignValidation(unittest.TestCase):
+    def test_review_scope_and_claim_scope_have_distinct_types(self):
+        review=dict(id=str(uuid.uuid4()),scope="scientific",status="passed",
+            reviewer=dict(identity="AI test fixture",type="AI",independence="Development regression"),
+            judgments=dict(scope_and_limits_reviewed=True),limitations="Software fixture, not scientific evidence.")
+        for change in (dict(scope={"scientific": True}),dict(scope="unknown"),dict(status="unknown")):
+            with self.subTest(change=change),self.assertRaises(ValueError):
+                workflow.validate_record("reviews",dict(review,**change))
+        claim=dict(id=str(uuid.uuid4()),source_id=SOURCE,location="Fixture section",description="Fixture claim",
+            claim_type="numerical",scope=dict(conditions="Fixture only"),metrics=[],priority=1)
+        self.assertEqual(workflow.validate_record("claims",claim)["scope"],claim["scope"])
+        with self.assertRaises(ValueError):workflow.validate_record("claims",dict(claim,scope="scientific"))
     def test_public_source_urls_do_not_embed_credentials(self):
         for url in ('https://user:password@example.org/paper','https://example.org/paper?token=secret','https://example.org/paper?X-Amz-Signature=secret'):
             with self.assertRaises(ValueError):workflow.public_url(url)
@@ -112,6 +123,17 @@ class DesignValidation(unittest.TestCase):
         result=runner.execute(raw,protocol,campaign,str(uuid.uuid4()));self.assertEqual(result["comparisons"][0]["label"],"inconclusive")
 
 class ApiBoundaries(unittest.TestCase):
+    def test_valid_review_reaches_backend_with_text_scope(self):
+        review=dict(id=str(uuid.uuid4()),scope="scientific",status="passed",
+            reviewer=dict(identity="AI test fixture",type="AI",independence="Development regression"),
+            judgments=dict(scope_and_limits_reviewed=True),limitations="Software fixture, not scientific evidence.")
+        for scope in ("scientific","software","model-evaluation"):
+            for status in ("passed","failed","conditional"):
+                with self.subTest(scope=scope,status=status),patch.object(api.store,"rpc",return_value={}) as rpc:
+                    api.store.append(STUDY,ACTOR,"reviews",dict(review,scope=scope,status=status))
+                    self.assertEqual(rpc.call_args.args[0],"research_append")
+                    self.assertEqual(rpc.call_args.args[1]["p_record"]["scope"],scope)
+                    self.assertEqual(rpc.call_args.args[1]["p_record"]["status"],status)
     def test_failed_campaign_is_submitted_for_persistence_with_original_artifacts(self):
         raw,protocol,campaign=fixture();raw+=b' '  # Frozen input mismatch, before arithmetic.
         artifact=dict(id=str(uuid.uuid4()),sha256=workflow.digest(raw),byte_count=len(raw),storage_path='private',media_type='application/json',provenance={},verified_at=workflow.now())

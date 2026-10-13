@@ -45,7 +45,7 @@ def rows(kind, params=None, public=False):
     if kind in FIELDS:
         projection = ",".join(["id", "study_id", "created_at", *FIELDS[kind]])
     elif kind == "studies":
-        projection = "id,title,paper_url,domain,scope,origin_module,created_at"
+        projection = "id,title,paper_url,domain,scope,origin_module,study_kind,created_at"
     elif kind == "study_owners" and not public:
         projection = "study_id,owner_id"
     elif kind == "queue_jobs" and not public:
@@ -54,6 +54,14 @@ def rows(kind, params=None, public=False):
         projection = "id,study_id,job_id,event,status,reason,details,created_at"
     elif kind == "prepared_plans" and not public:
         projection = "id,study_id,plan_id,manifest_sha256,original_artifact_id,compiled_artifact_id,jobs,provenance,created_at"
+    elif kind == "idea_packets" and not public:
+        projection = "id,study_id,version,supersedes_id,document,raw_document,sha256,reason,created_at"
+    elif kind == "idea_runs" and not public:
+        projection = "id,study_id,packet_id,task,session_id,status,reason,prompt_version_id,model_id,output,raw_response,response_sha256,usage,provenance,created_at,ended_at"
+    elif kind == "idea_readiness" and not public:
+        projection = "id,study_id,packet_id,packet_sha256,comprehension_run_id,critic_run_id,decision,reason,created_at"
+    elif kind == "idea_campaign_links" and not public:
+        projection = "id,study_id,packet_id,campaign_id,protocol_id,request,created_at"
     else:
         raise ValueError("Unsupported research relation.")
     query = {"select": projection, "order": "created_at.asc,id.asc", "limit": 1000, **(params or {})}
@@ -65,7 +73,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
-    if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan"): raise ValueError("Unsupported research operation.")
+    if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan", "research_save_idea_packet", "research_accept_idea_plan", "research_prepare_idea_campaign"): raise ValueError("Unsupported research operation.")
     return request("/rest/v1/rpc/" + name, "POST", payload)
 
 def owns(study_id, actor):
