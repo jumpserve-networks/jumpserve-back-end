@@ -1,7 +1,9 @@
 import copy
+import gzip
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 import uuid
@@ -114,8 +116,14 @@ class Preparation(unittest.TestCase):
             if j['execution_mode']=='manual': self.assertIsNone(j['request']['raw_input'])
         self.assertEqual(sum(len(json.loads(j['request']['raw_input'])['published']) for j in value['jobs'] if j['execution_mode']=='automatic'),1152)
     def test_registered_manifest_regenerates_identical_original_bytes(self):
-        original=build_ipv6_plan.ROOT/'experiments/ipv6_dns/evidence/assessment-v2.json'
-        rebuilt=workflow.canonical(build_ipv6_plan.build(original))+b'\n'
+        # The exact original assessment is retained losslessly so a clean checkout
+        # needs no ignored researcher workspace or network artifact download.
+        fixture=Path(__file__).parent/'fixtures/ipv6-assessment-v2.json.gz'
+        raw=gzip.decompress(fixture.read_bytes())
+        self.assertEqual(workflow.digest(raw),build_ipv6_plan.ASSESSMENT_SHA256)
+        with tempfile.TemporaryDirectory(prefix='jumpserve-plan-regression-') as directory:
+            original=Path(directory)/'assessment-v2.json';original.write_bytes(raw)
+            rebuilt=workflow.canonical(build_ipv6_plan.build(original))+b'\n'
         _,registered=preparation.registered(self.study)
         self.assertEqual(rebuilt,registered)
 

@@ -1,0 +1,9 @@
+{
+  "original_path": "experiments/ipv6_dns/evidence/assessment-v2.json",
+  "original_sha256": "3c3532901aa4b507a61849666d925a0268c0658c0129dbfd729514df8c3a07b0",
+  "original_bytes": 47380160,
+  "stored_sha256": "ed03eca6feb9e7221a1c29c2eb2d574c0290e9de455bfe450ec61f7f20a179bc",
+  "stored_bytes": 2392079,
+  "transformation": "Lossless gzip, level 9, mtime=0. Exact decompressed bytes verified; no experiments rerun or scientific labels changed.",
+  "role": "Exposed archived-source development regression, not held-out scientific validation"
+}
