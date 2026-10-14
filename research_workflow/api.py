@@ -9,6 +9,8 @@ import store
 import scheduler
 import preparation
 import ideas
+import network_execution
+import network_spec
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -72,7 +74,7 @@ def dispatch(event, actor=None):
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
     if path == "/research/capabilities" and method == "GET":
-        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
+        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
         if method == "GET":
             if query.get("mine") == "1":
@@ -91,6 +93,30 @@ def dispatch(event, actor=None):
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])
     owner = bool(actor and store.owns(study_id, actor))
+    if len(parts)==5 and parts[4]=='network':
+        if not owner: raise HttpError(404 if actor else 401,'Sign in as this study owner to manage networking execution.')
+        body=parse_body(event)
+        if method!='POST': raise HttpError(405,'POST required.')
+        action=body.pop('action',None)
+        if action=='upload-package': return network_execution.upload(study_id,actor,body)
+        if action=='upload-input': return network_execution.upload_input(study_id,actor,body)
+        if action=='compile':
+            if set(body)-{'document','original_configuration','configuration_identity'} or 'document' not in body: raise ValueError('Compile the supplied candidate protocol only.')
+            candidate=body['document']
+            if 'original_configuration' in body:
+                from runner import parsed_decimal
+                raw=body['original_configuration']
+                if not isinstance(raw,str) or len(raw.encode())>24000: raise ValueError('Original configuration text exceeds the planning budget.')
+                parsed=json.loads(raw,parse_float=parsed_decimal,parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Nonfinite configuration JSON.')))
+                selected=next((c for c in candidate.get('configurations',[]) if c['identity']==body.get('configuration_identity')),None)
+                if not selected or parsed!=selected['details']['test_config']: raise ValueError('Original configuration bytes lose numerical precision or differ from the selected executable configuration.')
+                artifact=store.artifact(study_id,actor,raw.encode(),str(uuid.uuid5(uuid.UUID(study_id),'original-network-config:'+digest(raw.encode()))),'application/json',dict(kind='original-network-configuration',transformation='none; original owner configuration text'))
+                store.append(study_id,actor,'artifacts',artifact)
+                candidate['input_versions']=[v for v in candidate.get('input_versions',[]) if v.get('identity')!='original-network-config:'+selected['identity']]
+                candidate['input_versions'].append(dict(identity='original-network-config:'+selected['identity'],sha256=artifact['sha256'],artifact_id=artifact['id']))
+            return dict(document=network_spec.bind_inputs(candidate),limitations='Only executable specifications and hashes are compiled; scientific methods and readiness remain separately reviewed.')
+        if action=='cancel': return network_execution.cancel(study_id,actor,body)
+        raise ValueError('Choose upload-package, upload-input, compile or cancel.')
     if len(parts) == 5 and parts[4] == "idea":
         if not actor: raise HttpError(401, "Sign in to manage your private research idea.")
         if not owner: raise HttpError(404, "Study not found.")

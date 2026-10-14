@@ -2,6 +2,7 @@
 import uuid
 import os
 import store
+import network_execution
 from workflow import canonical, digest, identifier, text
 
 VERSION = "research-queue-v1"
@@ -60,9 +61,13 @@ def enqueue(study_id, actor, body):
         protocols = store.rows("protocols", {"study_id": "eq." + study_id, "id": "eq." + campaign["protocol_id"], "limit": 1})
         if not protocols: raise ValueError("A frozen protocol is required.")
         p = protocols[0]["document"]; limits = p["resource_limits"]
-        if campaign["adapter"] != "matched-numeric-v1" or campaign["experiment_type"] not in ("reanalysis", "independent-check"):
+        if campaign['adapter']=='network-execution-v1':
+            if campaign['experiment_type'] not in ('new-measurement','independent-check','broader-validation'): raise ValueError('Networking execution requires an applicable experiment method.')
+            network_execution.validate_input(study_id,protocols[0],raw)
+            if request['exclusive_resources']!=sorted(p['execution'].get('exclusive_resources',[])): raise ValueError('Queue resource locks differ from the reviewed execution specification.')
+        elif campaign["adapter"] != "matched-numeric-v1" or campaign["experiment_type"] not in ("reanalysis", "independent-check"):
             raise ValueError("This campaign needs a domain implementation or manual task.")
-        if limits["max_observations"] > 1000 or limits["wall_seconds"] > 10 or len(raw) > limits["max_input_bytes"]:
+        if (campaign['adapter']!='network-execution-v1' and (limits["max_observations"] > 1000 or limits["wall_seconds"] > 10)) or len(raw) > limits["max_input_bytes"]:
             raise ValueError("Frozen protocol exceeds queue execution limits; preserve it and use a domain operator.")
         if request["input_sha256"] not in [i["sha256"] for i in p["input_versions"]]: raise ValueError("Input hash differs from the frozen protocol.")
         artifact = store.artifact(study_id, actor, raw, request["input_artifact_id"], "application/json", {"job_id": job_id, "transformation": "none; original UTF-8 queue input"})

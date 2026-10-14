@@ -71,6 +71,9 @@ class QueueValidation(unittest.TestCase):
             with self.assertRaises(store.StoreError): store.artifact_bytes(STUDY,artifact)
 
 class BoundedWorkers(unittest.TestCase):
+    def setUp(self):
+        polling=patch.object(worker.network_execution,'pending',return_value=[])
+        polling.start();self.addCleanup(polling.stop)
     def test_two_slots_really_overlap_with_a_barrier(self):
         barrier=threading.Barrier(2,timeout=3); lock=threading.Lock(); observed=[]
         def execution(job):

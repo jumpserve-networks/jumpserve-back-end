@@ -4,6 +4,73 @@ Shared evidence records and bounded execution for `/module/research-verification
 The framework supports domain-specific studies; it does not automatically verify
 every paper. Scientific findings require appropriate checks and declared review.
 
+## Automatic networking execution
+
+An unpublished idea can contain a `network-execution-v1` declaration. Expand
+**Automatic networking execution**, select a runner, enter complete configuration
+and metrics with units, apply the configuration, and save a new plan version.
+Complete fresh reviews, accept readiness, freeze the candidate, and queue its jobs.
+Preparation alone does not allocate machines. Each configuration × replication
+becomes one durable invocation; packets, clients and time samples remain observations
+within it. Four global jobs and two per study can run concurrently. Declare shared
+exclusive resource identities to prevent interfering trials.
+
+Registered runners are `emulated-netem-v1` (existing Linux netem workloads),
+`real-world-iperf-v1` (existing multi-machine EC2 topology), and `custom-package-v1`
+(one isolated EC2 host). Original Python source is privately preserved with its
+version and SHA256; public Docker images require a digest. Private files have
+separate same-study artifact/version/hash references. Containers can implement
+namespaces/netem; scripts can collect real networking observations. Other hardware
+or custom distributed topologies need an applicable package and runner extension.
+Prose alone cannot execute, and other domains retain the explicit manual path.
+
+The owner API at `POST /research/studies/{studyId}/network` accepts `upload-package`,
+`upload-input`, `compile`, and `cancel`. Compilation preserves original configuration
+text, checks numeric precision and adds specification hashes. It never supplies
+missing scientific decisions. Enqueue verifies the frozen specification and private
+inputs. IAM-only invocations carry only a saved job ID and action; launchers resolve
+owner/configuration without forwarding or saving Google credentials. Lost launch
+acknowledgements trigger lookup, never an automatic second experiment. Expired,
+unconfirmed executions keep their resource reservations until cleanup is known;
+operator recovery must reconcile the original attempt rather than replay it.
+
+Packages read `JUMPSERVE_SPEC` and private files under `JUMPSERVE_INPUTS`, and write
+`JUMPSERVE_OUTPUT`. The `network-observations-v1` envelope requires `version`,
+`observations`, `provenance` and `usage` (null when unknown). Each observation has
+`observation_key`, `metric`, `units`, `value`, `status`, `reason`, and `metadata`.
+Missing, invalid, ambiguous and excluded values require null and a reason; recorded
+zero stays zero. Original output/stdout/stderr/runtime receipt bytes remain private
+artifacts; retained prefixes are explicitly incomplete. The normalized executor
+envelope has its own hash and transformation provenance. Built-in traces stay in
+their original module relations and Storage, linked from the run. Invalid output
+creates a failed run with available bytes retained. Successful execution records
+measurements and declared coverage in Supabase and leaves scientific review pending.
+It computes no inferential intervals, AUC, causality or generalization judgment.
+
+Custom hosts have no IAM profile or metadata endpoint, no inbound access, and
+independent deadline shutdown and cleanup. Containers get one CPU, 1 GiB and 256
+PIDs; Python uses the finite host capacity. Output/network thresholds use 50-ms
+sampling and may overshoot. Non-loopback interface counters can count forwarding
+multiple times; unavailable/reset counters remain missing and are not billed traffic.
+Built-in runners retain their existing traffic controls and do not enforce this
+custom network byte threshold. Allocation, installation and cleanup consume the
+wall budget. Packages must report dependency versions; actual machine image IDs
+are retained. An image digest does not archive its Docker layers. Unavailable
+charges and compute/model usage remain missing, never zero.
+
+`tests/fixtures/network_http_probe_v1.py` measures request start through response
+headers. It is not TCP RTT, exact TTFB or a CDN demand experiment. Existing frozen
+CDN protocols and datasets remain separate. A new CDN campaign needs controlled
+objects and demand assignments, genuine VPN vantages, origin credentials and the
+declared analysis. Private inputs support those credentials; the engine does not
+invent them. Local checks use actual loopback requests and isolated Postgres with
+synthetic auth/cloud transport. They are exposed development cases reviewed by
+the AI implementer, not human review or held-out scientific validation.
+
+Deployment requires the additive migration, matching pinned runtimes and explicit
+`networkExecutionEnabled=true`; see the infrastructure README and versioned
+validation report for release order, commands and conditional cloud checks.
+
 ## Intake to publication
 
 1. Record the exact paper URL, title, domain and scope in **Assess a Paper**. Google
