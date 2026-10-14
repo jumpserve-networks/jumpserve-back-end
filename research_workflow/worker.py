@@ -6,6 +6,7 @@ import time
 import uuid
 import runner
 import store
+import network_execution
 from workflow import canonical, digest, identifier, validate_record
 
 def one(kind, study_id, record_id):
@@ -25,6 +26,10 @@ def execute_job(job):
         raw = store.artifact_bytes(study_id, job["input_artifact_id"])
         if digest(raw) != job["request"]["input_sha256"]: raise ValueError("Job input hash differs from its immutable definition.")
         limits = protocol["document"]["resource_limits"]
+        if campaign['adapter']=='network-execution-v1':
+            try: return network_execution.advance(job,campaign,protocol,raw)
+            except Exception as exception:
+                return dict(status='running',job_id=job_id,reason='Networking launch or result persistence is unconfirmed; the original invocation remains leased and is never automatically restarted.',error_type=type(exception).__name__)
         if limits["max_observations"] > 1000 or limits["wall_seconds"] > 10: raise ValueError("Protocol exceeds bounded worker resources.")
         result = runner.execute(raw, protocol, campaign, job_id)
         result["run"]["provenance"]["queue"] = dict(job_id=job_id, definition_sha256=job["definition_sha256"],
@@ -47,6 +52,10 @@ def execute_job(job):
 
 def handler(event, context=None):
     tick = time.monotonic(); worker_id = str(uuid.uuid4()); outcomes = []
+    # Long-running tests retain the original lease and are polled, not restarted.
+    for job in network_execution.pending():
+        try: outcomes.append(dict(job_id=job['id'],status=execute_job(job)['status']))
+        except Exception as exception: outcomes.append(dict(job_id=job['id'],status='completion-unconfirmed',error_type=type(exception).__name__))
     # Claim inside each slot so work starts promptly; no unbounded in-memory queue.
     def slot():
         job = store.rpc("research_queue_claim", dict(p_worker=worker_id))

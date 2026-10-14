@@ -153,7 +153,7 @@ def validate_protocol(document):
         text(value.get("identity"), "input identity", 300)
     limits = document["resource_limits"]
     if not isinstance(limits, dict): raise ValueError("Resource limits must be explicit.")
-    for key, bound in (("max_observations", 10000), ("max_input_bytes", 10_000_000), ("wall_seconds", 300)):
+    for key, bound in (("max_observations", 10000), ("max_input_bytes", 10_000_000), ("wall_seconds", 3600 if document.get('execution') is not None else 300)):
         value = limits.get(key)
         if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= bound:
             raise ValueError(f"{key} must be an integer from 1 through {bound}.")
@@ -162,6 +162,9 @@ def validate_protocol(document):
         entry = document[key]
         if not isinstance(entry, dict) or not isinstance(entry.get("applicable"), bool) or not isinstance(entry.get("rationale"), str) or not entry["rationale"].strip():
             raise ValueError(key + " needs an applicability flag and rationale.")
+    if document.get('execution') is not None:
+        import network_spec
+        network_spec.specs(document)
     return document
 
 def validate_record(kind, body):

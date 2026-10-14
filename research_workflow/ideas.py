@@ -2,6 +2,7 @@
 import json
 import uuid
 import store
+import network_spec
 from workflow import canonical, digest, identifier, now, protocol_record, text, validate_protocol, validate_record
 
 VERSION = "research-ideas-v1"
@@ -78,6 +79,7 @@ def prepare_campaign(study, actor, body):
     request_id = identifier(body.get("request_id")); namespace = uuid.UUID(request_id)
     def uid(name): return str(uuid.uuid5(namespace, name))
     protocol = dict(value["protocol"], idea_packet_id=selected["id"], idea_packet_sha256=selected["sha256"])
+    executable = network_spec.specs(protocol)
     source = validate_record("sources", dict(id=uid("source"), citation="Unpublished research proposal: " + study["title"],
         source_url=None, retrieved_url=None, kind="unpublished-proposal", role="Original hypothesis and candidate experimental plan",
         retrieved_version="Idea packet " + str(selected["version"]), sha256=selected["sha256"], byte_count=len(selected["raw_document"].encode()),
@@ -92,14 +94,14 @@ def prepare_campaign(study, actor, body):
     frozen = protocol_record(protocol, uid("protocol"))
     campaign = validate_record("campaigns", dict(id=uid("campaign"), title=text(body.get("title"), "Campaign title", 300),
         protocol_id=frozen["id"], stage=body.get("stage"), experiment_type=body.get("experiment_type"),
-        adapter="domain-operator", planned_units=body.get("planned_units"), followup_of=None,
-        coverage_limits=value["limitations"] + " This prepared campaign has not executed and requires an applicable domain implementation."))
+        adapter="network-execution-v1" if executable else "domain-operator", planned_units=body.get("planned_units"), followup_of=None,
+        coverage_limits=value["limitations"] + " Preparation collects no measurements; scientific findings require recorded execution and claim review."))
     if campaign["stage"] not in ("pilot", "main") or campaign["experiment_type"] not in ("new-measurement", "independent-check", "broader-validation") or campaign["planned_units"] < 1:
         raise ValueError("Declare a pilot/main experiment with a positive number of planned units and an applicable experimental method.")
     if campaign["planned_units"] != protocol["planned_units"]:
         raise ValueError("Campaign units differ from the reviewed candidate protocol; revise and review the plan first.")
     check = validate_record("claim_checks", dict(id=uid("check"), claim_id=claim["id"], campaign_id=campaign["id"],
-        method="Preregistered domain experiment; operator execution required", applicability="applicable", rationale=value["falsification"]))
+        method="Preregistered networking execution" if executable else "Preregistered domain experiment; operator execution required", applicability="applicable", rationale=value["falsification"]))
     artifact = store.artifact(study["id"], actor, selected["raw_document"].encode(), uid("artifact"), "application/json",
         dict(origin="unpublished-proposal", packet_id=selected["id"], transformation="None from the retained canonical packet bytes; not empirical data"))
     entries = [dict(kind=kind, record=row) for kind, row in (("artifacts", artifact), ("sources", source), ("claims", claim), ("protocols", frozen), ("campaigns", campaign), ("claim_checks", check))]
@@ -108,13 +110,18 @@ def prepare_campaign(study, actor, body):
             identity=configuration["identity"], details=configuration["details"], input_versions=protocol["input_versions"], requested_resources=protocol["resource_limits"]))))
     entries.append(dict(kind="gaps", record=validate_record("gaps", dict(id=uid("gap"), claim_id=claim["id"], assessment_id=None, supersedes_id=None,
         status="planned", reason="The unpublished hypothesis has no completed experimental check.", next_check=campaign["title"],
-        required_inputs=protocol["input_versions"], dependencies=[dict(description="Domain implementation, operator and recorded measurements", status="required")],
-        feasibility="Domain-specific execution is required; no automatic experiment is implied by preparation.", estimated_cost_usd=protocol["resource_limits"].get("estimated_cost_usd"),
+        required_inputs=protocol["input_versions"], dependencies=[dict(description="Registered networking executor and recorded measurements" if executable else "Domain implementation, operator and recorded measurements", status="required")],
+        feasibility="Executable configuration prepared; queue activation and actual recorded outcomes still required." if executable else "Domain-specific execution is required; no automatic experiment is implied by preparation.", estimated_cost_usd=protocol["resource_limits"].get("estimated_cost_usd"),
         cost_basis=protocol["resource_limits"].get("cost_basis", "Missing charges are unknown, not zero."), decision_rule=value["falsification"],
         stopping_rule=protocol["stopping_rule"], priority=3, campaign_id=campaign["id"]))))
     request = {key: body[key] for key in allowed if key in body and key != "action"}
     result = store.rpc("research_prepare_idea_campaign", dict(p_study=study["id"], p_actor=actor, p_id=request_id, p_packet=selected["id"],
         p_request=request, p_records=entries, p_campaign=campaign["id"], p_protocol=frozen["id"]))
+    if executable:
+        requests=[dict(request_id=uid('network-job:'+str(index)),campaign_id=result['campaign_id'],execution_mode='automatic',priority=3,dependencies=[],
+            exclusive_resources=protocol['execution'].get('exclusive_resources',[]),raw_input=canonical(spec).decode(),
+            rationale='Execute the frozen networking specification and retain actual measurements; no automatic claim finding.',followup_of=None) for index,spec in enumerate(executable)]
+        return dict(link=result,queue_request=requests[0],queue_requests=requests,execution=dict(version=network_spec.VERSION,runner=protocol['execution']['runner'],jobs=len(requests)))
     return dict(link=result, queue_request=dict(request_id=uid("job"), campaign_id=result["campaign_id"], execution_mode="manual", priority=3,
         dependencies=[], exclusive_resources=[], raw_input=None, rationale="Prepared unpublished-hypothesis experiment; requires domain operator and retained original measurements.", followup_of=None))
 

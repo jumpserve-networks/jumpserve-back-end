@@ -142,6 +142,9 @@ def measurement_artifacts(job):
 
 def handler(event, context):
     try:
+        import research_execution
+        if research_execution.envelope(event):
+            return {'statusCode':200,'headers':{'Content-Type':'application/json','Cache-Control':'no-store'},'body':json.dumps(research_execution.handle(event,launch),allow_nan=False)}
         method = event.get("requestContext", {}).get("http", {}).get("method")
         headers = {key.lower(): value for key, value in (event.get("headers") or {}).items()}
         requires_login = method != "GET" or event.get("rawPath", "").rstrip("/") == "/real-world/tests"
