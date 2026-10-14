@@ -34,7 +34,7 @@ class NetworkingContract(unittest.TestCase):
     def test_invalid_executor_output_is_a_failed_run_with_original_hash(self):
         p=document('custom-package-v1');spec=network_spec.specs(p)[0];raw=b'{"invalid":"envelope"}'
         run,rows,summaries=network_execution.evidence(dict(id=JOB),dict(id=str(uuid.uuid4())),dict(document=p),spec,raw,dict(status='completed',started_at='2026-10-13T00:00:00Z',ended_at='2026-10-13T00:00:01Z'))
-        self.assertEqual(run['status'],'failed');self.assertEqual(run['output_sha256'],workflow.digest(raw));self.assertEqual(rows,[]);self.assertEqual(summaries[0]['missing'],3)
+        self.assertEqual(run['status'],'failed');self.assertEqual(run['output_sha256'],workflow.digest(raw));self.assertEqual(rows,[]);self.assertEqual(summaries[0]['missing'],3);self.assertEqual(run['provenance']['data_origin'],'new-empirical')
     def test_compilation_preserves_scientific_methods_and_independent_unit_identities(self):
         p=document(replications=2);workflow.validate_protocol(p)
         specs=network_spec.specs(p);self.assertEqual(len(specs),2);self.assertEqual([s['replication'] for s in specs],[0,1])

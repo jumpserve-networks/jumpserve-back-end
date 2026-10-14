@@ -84,7 +84,7 @@ def evidence(job, campaign, protocol, spec, raw, external):
         reason=invalid_output or external.get('reason') or (None if status=='complete' else 'Invocation cancelled; available observations retained.' if status=='excluded' else 'Some declared observations are unavailable.' if rows else 'No observations were returned.'),started_at=external['started_at'],ended_at=external['ended_at'],
         analysis_version=network_spec.VERSION,input_sha256=digest(canonical(spec)),output_sha256=digest(raw),requested_resources=spec['limits'],
         actual_resources=external.get('resources',{}),usage=dict(package_usage=result['usage'],measured_charges_usd=None,estimated_charges_usd=None,model_usage=None),
-        provenance=dict(runner=spec['runner'],configuration_identity=spec['configuration_identity'],replication=spec['replication'],external_job_id=external.get('external_job_id'),
+        provenance=dict(runner=spec['runner'],data_origin=protocol['document'].get('data_origin','unclassified'),execution_environment=spec['config'].get('mode',network_spec.RUNNERS[spec['runner']]['mode']),configuration_identity=spec['configuration_identity'],replication=spec['replication'],external_job_id=external.get('external_job_id'),
             protocol_id=protocol.get('id'),protocol_sha256=protocol.get('sha256'),
             execution_implementation_sha256=digest(Path(__file__).read_bytes()),spec_implementation_sha256=digest(Path(network_spec.__file__).read_bytes()),python_version=sys.version.split()[0],
             executor_response_sha256=digest(raw),executor_response_scope='Canonical normalized executor envelope; original package files retained separately',
