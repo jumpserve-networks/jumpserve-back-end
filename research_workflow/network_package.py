@@ -149,7 +149,8 @@ def ingest(event,context=None):
 def reap(event,context=None):
     """Independent deadline cleanup continues even if research workers are paused."""
     import urllib.parse
-    query=urllib.parse.urlencode(dict(select='job_id',runner='eq.custom-package-v1',phase='not.in.(completed,failed,cancelled)',deadline='lte.'+dt.datetime.now(dt.timezone.utc).isoformat(),limit=100))
+    query=urllib.parse.urlencode(dict(select='job_id',runner='eq.custom-package-v1',phase='not.in.(completed,failed,cancelled)',
+        **{'or':'(deadline.lte.'+dt.datetime.now(dt.timezone.utc).isoformat()+',cancel_requested.eq.true)'},limit=100))
     jobs=store.request('/rest/v1/research_network_executions?'+query)
     outcomes=[]
     for row in jobs:

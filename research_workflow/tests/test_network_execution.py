@@ -28,6 +28,16 @@ def document(runner='emulated-netem-v1',replications=1):
     return network_spec.bind_inputs(p)
 
 class NetworkingContract(unittest.TestCase):
+    def test_independent_reaper_includes_cancellation_before_the_deadline(self):
+        import urllib.parse
+        with patch.object(store,'request',return_value=[dict(job_id=JOB)]) as request, patch.object(network_package,'handler',return_value=dict(status='cleaning')) as handle:
+            result=network_package.reap({})
+        query=urllib.parse.parse_qs(urllib.parse.urlsplit(request.call_args.args[0]).query)
+        self.assertEqual(query['phase'],['not.in.(completed,failed,cancelled)'])
+        self.assertIn('cancel_requested.eq.true',query['or'][0])
+        self.assertIn('deadline.lte.',query['or'][0])
+        handle.assert_called_once_with(dict(source='jumpserve.network-execution',job_id=JOB,action='status'),None)
+        self.assertEqual(result['outcomes'],[dict(job_id=JOB,status='cleaning')])
     def test_declared_observations_cannot_exceed_frozen_budget(self):
         p=document('custom-package-v1');p['resource_limits']['max_observations']=2
         with self.assertRaises(ValueError):network_spec.bind_inputs(p)
