@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "stage": "exploratory-pilot",
+  "started_at": "2026-10-07T22:50:40.949249+00:00",
+  "bounds": {
+    "urls": 7,
+    "bytes_per_url": 500000,
+    "timeout_seconds": 12,
+    "requests_per_url": 1,
+    "wall_seconds": 100
+  },
+  "records": [
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/atlas/",
+      "requested_at": "2026-10-07T22:50:40.949393+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:41.667105+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/atlas-apnic/",
+      "requested_at": "2026-10-07T22:50:41.667150+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:41.997547+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/nssets-out/",
+      "requested_at": "2026-10-07T22:50:41.997578+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:42.340907+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/ns-list-out/",
+      "requested_at": "2026-10-07T22:50:42.340981+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:42.684001+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/domainlist-in/",
+      "requested_at": "2026-10-07T22:50:42.684039+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:43.003143+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/raw_data/",
+      "requested_at": "2026-10-07T22:50:43.003190+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:43.378525+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/processing/",
+      "requested_at": "2026-10-07T22:50:43.378561+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>",
+      "ended_at": "2026-10-07T22:50:43.731974+00:00"
+    }
+  ],
+  "limitations": "Directory listings are not reviewed measurement inputs; later or undated files cannot silently substitute for original campaign data.",
+  "ended_at": "2026-10-07T22:50:43.732076+00:00",
+  "wall_seconds": 2.7826580420005484,
+  "original_bytes": 0,
+  "measured_charges_usd": null,
+  "model_usage": null,
+  "unallocated_costs": [
+    "Local execution, network transfer and Codex; missing usage is not zero"
+  ],
+  "attempt": 2
+}

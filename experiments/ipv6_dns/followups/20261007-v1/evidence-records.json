@@ -1,0 +1,116 @@
+[
+  {
+    "kind": "sources",
+    "record": {
+      "id": "f536ae58-7dce-5061-8d02-2c28b1d51347",
+      "citation": "Author archive: RIPE Atlas mapped path and class summary for 2025-05-25",
+      "source_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-05-25.json",
+      "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-05-25.json",
+      "kind": "dataset",
+      "role": "Archived route-summary data for a limited structural consistency check",
+      "retrieved_version": "Original response bytes retrieved 2026-10-07T22:57:33.185010+00:00; filename epoch 2025-05-25, not a new measurement",
+      "sha256": "fa797b875b646d73904d836a354970feea205a1d2d622ff54f63c6b40c714b76",
+      "byte_count": 488172,
+      "access_status": "retrieved",
+      "review_status": "partial-review",
+      "review_definition": "Complete review requires substantive examination of the entire resource and its provenance; this follow-up is partial.",
+      "examined": "All four measurement class counts, every mapped-path multiplicity and total-count conservation; AS6830 token presence and unknown-hop counts structurally inspected.",
+      "unexamined": "Independent validation of every mapped hop, original raw Atlas/probe results, ASN/geo mapping versions, every DNS-query route and full campaign-day coverage.",
+      "retrieval_attempts": [
+        {
+          "url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-05-25.json",
+          "requested_at": "2026-10-07T22:57:30.986959+00:00",
+          "status": "retrieved",
+          "sha256": "fa797b875b646d73904d836a354970feea205a1d2d622ff54f63c6b40c714b76",
+          "byte_count": 488172,
+          "http_status": 200,
+          "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-05-25.json",
+          "path": "pilot-samples/atlas_results_2025-05-25.json",
+          "ended_at": "2026-10-07T22:57:33.185010+00:00"
+        }
+      ],
+      "reviewer": {
+        "type": "AI",
+        "identity": "Codex primary assistant",
+        "independence": "Same implementer and evaluator; no independent or human review"
+      },
+      "findings": "Four measurement summaries reconcile class and mapped-path multiplicity totals on this date. This does not verify original mapping correctness or representativeness.",
+      "limitations": "Repeated, author-mapped path counts are not independent trials. No raw-packet or mapping replay, human or independent review."
+    }
+  },
+  {
+    "kind": "sources",
+    "record": {
+      "id": "b332ba04-bfcb-5a69-9ab4-eb48ab5b1254",
+      "citation": "Author archive: RIPE Atlas mapped path and class summary for 2025-06-25",
+      "source_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-06-25.json",
+      "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-06-25.json",
+      "kind": "dataset",
+      "role": "Archived route-summary data for a limited structural consistency check",
+      "retrieved_version": "Original response bytes retrieved 2026-10-07T22:57:34.539056+00:00; filename epoch 2025-06-25, not a new measurement",
+      "sha256": "e76c8f61421581dc871afe5b50e9cfddbc9a2abc57e3e2eb69465e98b2d9ecac",
+      "byte_count": 500032,
+      "access_status": "retrieved",
+      "review_status": "partial-review",
+      "review_definition": "Complete review requires substantive examination of the entire resource and its provenance; this follow-up is partial.",
+      "examined": "All four measurement class counts, every mapped-path multiplicity and total-count conservation; AS6830 token presence and unknown-hop counts structurally inspected.",
+      "unexamined": "Independent validation of every mapped hop, original raw Atlas/probe results, ASN/geo mapping versions, every DNS-query route and full campaign-day coverage.",
+      "retrieval_attempts": [
+        {
+          "url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-06-25.json",
+          "requested_at": "2026-10-07T22:57:33.185054+00:00",
+          "status": "retrieved",
+          "sha256": "e76c8f61421581dc871afe5b50e9cfddbc9a2abc57e3e2eb69465e98b2d9ecac",
+          "byte_count": 500032,
+          "http_status": 200,
+          "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-06-25.json",
+          "path": "pilot-samples/atlas_results_2025-06-25.json",
+          "ended_at": "2026-10-07T22:57:34.539056+00:00"
+        }
+      ],
+      "reviewer": {
+        "type": "AI",
+        "identity": "Codex primary assistant",
+        "independence": "Same implementer and evaluator; no independent or human review"
+      },
+      "findings": "Four measurement summaries reconcile class and mapped-path multiplicity totals on this date. This does not verify original mapping correctness or representativeness.",
+      "limitations": "Repeated, author-mapped path counts are not independent trials. No raw-packet or mapping replay, human or independent review."
+    }
+  },
+  {
+    "kind": "summaries",
+    "record": {
+      "id": "e32d6bea-52b7-5553-a38e-83ebc01eb8a8",
+      "run_id": "4bb7389a-682e-5f9f-b157-db5fd10e87ca",
+      "metric": "paired-day-sensitivity",
+      "units": "percentage points",
+      "statistics": {
+        "paired_cells": 1152,
+        "changed_cells": 18,
+        "max_change_pp": 0.007256291693831329,
+        "alternative_criterion_disagreements": 1,
+        "configuration_dimensions": [
+          "epoch",
+          "family",
+          "cohort",
+          "upstream",
+          "mtu",
+          "edns_bytes"
+        ],
+        "discrepant_observation_ids": [
+          "fig13d-12-3"
+        ],
+        "controlled_mechanism": "Missing May30,2025 DNSSEC/LGI/IPv6/MTU1500/EDNS1232 packet counts give20 versus21 available days. Shared-day comparison uses20 days on both sides."
+      },
+      "interval_kind": "none",
+      "uncertainty_method": "Deterministic descriptive sensitivity sharing original inputs and selection; no independent replication or inferential interval.",
+      "planned": 1536,
+      "unexpected": 0,
+      "recorded": 1152,
+      "missing": 0,
+      "invalid": 0,
+      "ambiguous": 0,
+      "excluded": 384
+    }
+  }
+]

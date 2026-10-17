@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "analysis": "Predeclared matched-day sensitivity of original main output",
+  "paired_cells": 1152,
+  "changed_cells": 18,
+  "maximum_change_pp": 0.007256291693831329,
+  "alternative_criterion_disagreements": 1,
+  "mechanism_checks": [
+    {
+      "cell": {
+        "observation_id": "fig13d-12-3",
+        "location": "Physical PDF page17, Figure13d, row13, column4",
+        "published": -0.01,
+        "left": [
+          "pre-lgi",
+          "v6-only",
+          "dnssec",
+          "lgi",
+          "mtu1500",
+          1232,
+          "tcp_fallback"
+        ],
+        "right": [
+          "pre-lgi",
+          "v6-only",
+          "dnssec",
+          "no-lgi",
+          "mtu1500",
+          1232,
+          "tcp_fallback"
+        ],
+        "value": -0.005907273278845437,
+        "delta_pp": 0.004092726721154563,
+        "assessment": "reproduced",
+        "metric": "tcp_fallback",
+        "units": "percentage points",
+        "planned_days": [
+          21,
+          21
+        ],
+        "valid_days": [
+          20,
+          21
+        ],
+        "input_status_counts": [
+          {
+            "recorded": 20,
+            "missing": 1
+          },
+          {
+            "recorded": 21
+          }
+        ],
+        "paired_days": 20,
+        "paired_mean_pp": 0.001349018414985892,
+        "pairing_inapplicable_reason": null,
+        "paired_sensitivity_difference_pp": 0.007256291693831329,
+        "printed_absolute_subtraction_delta_pp": 2.1337098754514727e-16,
+        "printed_control_agrees": true
+      },
+      "original_input_exclusions": [
+        {
+          "left": [
+            "pre-lgi",
+            "v6-only",
+            "dnssec",
+            "lgi",
+            "mtu1500",
+            1232,
+            "tcp_fallback"
+          ],
+          "nonrecorded_days": {
+            "2025-05-30": {
+              "numerator": null,
+              "denominator": null,
+              "value": null,
+              "status": "missing",
+              "reason": "Recorded numerator or denominator absent"
+            }
+          }
+        },
+        {
+          "right": [
+            "pre-lgi",
+            "v6-only",
+            "dnssec",
+            "no-lgi",
+            "mtu1500",
+            1232,
+            "tcp_fallback"
+          ],
+          "nonrecorded_days": {}
+        }
+      ],
+      "demonstrated_mechanism": "Same original inputs/configurations: subtracting independently available-day means versus averaging exact shared-day contrasts changes this value. This establishes an aggregation/coverage sensitivity, not a causal network effect or a defect in the published generating revision."
+    }
+  ],
+  "cross_epoch_pairing_exclusions": 384,
+  "interval_kind": "none",
+  "limitation": "Deterministic descriptive sensitivity sharing original inputs and selection; no independent replication or inferential interval."
+}

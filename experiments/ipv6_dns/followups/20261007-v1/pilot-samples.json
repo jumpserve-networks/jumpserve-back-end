@@ -1,0 +1,46 @@
+{
+  "stage": "exploratory-pilot",
+  "started_at": "2026-10-07T22:57:30.986745+00:00",
+  "records": [
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-05-25.json",
+      "requested_at": "2026-10-07T22:57:30.986959+00:00",
+      "status": "retrieved",
+      "sha256": "fa797b875b646d73904d836a354970feea205a1d2d622ff54f63c6b40c714b76",
+      "byte_count": 488172,
+      "http_status": 200,
+      "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-05-25.json",
+      "path": "pilot-samples/atlas_results_2025-05-25.json",
+      "ended_at": "2026-10-07T22:57:33.185010+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-06-25.json",
+      "requested_at": "2026-10-07T22:57:33.185054+00:00",
+      "status": "retrieved",
+      "sha256": "e76c8f61421581dc871afe5b50e9cfddbc9a2abc57e3e2eb69465e98b2d9ecac",
+      "byte_count": 500032,
+      "http_status": 200,
+      "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/atlas/results/2025-06-25.json",
+      "path": "pilot-samples/atlas_results_2025-06-25.json",
+      "ended_at": "2026-10-07T22:57:34.539056+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/raw_data/2025-05-01/in-data-mtu1500/",
+      "requested_at": "2026-10-07T22:57:34.539098+00:00",
+      "status": "retrieved",
+      "sha256": "e2b8c178076f3b1ed281155b278832d07a24daef20b500799fd86b3d27f49f2f",
+      "byte_count": 613,
+      "http_status": 200,
+      "retrieved_url": "https://data.measurement.network/dns-mtu-msmt/raw_data/2025-05-01/in-data-mtu1500/",
+      "path": "pilot-samples/raw_data_2025-05-01_in-data-mtu1500.html",
+      "ended_at": "2026-10-07T22:57:35.163367+00:00"
+    }
+  ],
+  "bounds": {
+    "bytes_per_url": 1000000,
+    "timeout_seconds": 15,
+    "requests": 3
+  },
+  "limitations": "Two sentinel route-summary files inspect the schema; this is not a route-coverage census. No interpretation before freezing the main protocol.",
+  "ended_at": "2026-10-07T22:57:35.163397+00:00"
+}

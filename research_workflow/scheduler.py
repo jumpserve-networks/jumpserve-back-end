@@ -11,6 +11,33 @@ LIMITS = dict(global_jobs=4, study_jobs=2, invocation_jobs=2, lease_seconds=600,
               study_queue_jobs=1000, automatic_retries=0)
 TERMINAL = ("awaiting-review", "reviewed", "failed", "cancelled", "expired")
 
+def invoke_worker(target):
+    import boto3
+    from botocore.config import Config
+    return boto3.client('lambda', region_name='us-east-1', config=Config(connect_timeout=1, read_timeout=2,
+        retries={'total_max_attempts': 1})).invoke(FunctionName=target, InvocationType='Event',
+            Payload=canonical(dict(invocation='durable queue enqueue; claim through existing capacity gates')))
+
+def wake_worker(job):
+    """A notification is not a lease or a claim that execution has started."""
+    if job.get('execution_mode') != 'automatic' or job.get('status') != 'queued':
+        return dict(status='not-needed', reason='Manual or already-started/terminal work is not launched by this notification.')
+    target = os.environ.get('RESEARCH_QUEUE_WORKER_FUNCTION', '')
+    if os.environ.get('RESEARCH_QUEUE_WORKERS_ENABLED') != 'true' or not target:
+        return dict(status='deferred', reason='Immediate worker notification is unavailable; the job remains durably queued.')
+    import re
+    if not re.fullmatch(r'arn:aws:lambda:us-east-1:395567831870:function:[A-Za-z0-9_-]+', target):
+        return dict(status='deferred', reason='Worker target is misconfigured; the job remains queued for scheduled polling.')
+    try:
+        response = invoke_worker(target)
+        if response.get('StatusCode') == 202:
+            return dict(status='requested', reason='Worker notified. Atomic capacity, priority, dependencies and resource locks determine execution.')
+    except Exception:
+        pass
+    # Queue persistence succeeded. Notification failure must not turn it into an
+    # apparent failed enqueue or cause another experiment definition to be made.
+    return dict(status='deferred', reason='Worker notification is unconfirmed; scheduled polling can still pick up this queued job.')
+
 def definition(body):
     allowed = {"request_id", "campaign_id", "execution_mode", "priority", "dependencies", "exclusive_resources", "raw_input", "rationale", "followup_of"}
     if not isinstance(body, dict) or set(body) - allowed: raise ValueError("Unsupported queue fields.")
@@ -53,7 +80,7 @@ def enqueue(study_id, actor, body):
     prior = store.rows("queue_jobs", {"study_id": "eq." + study_id, "id": "eq." + job_id, "limit": 1})
     if prior:
         if prior[0]["request"] != request: raise ValueError("Queue ID already used; create a follow-up rather than changing the original.")
-        return dict(job=prior[0], replayed=True)
+        return dict(job=prior[0], replayed=True, dispatch=wake_worker(prior[0]))
     if raw is not None:
         campaigns = store.rows("campaigns", {"study_id": "eq." + study_id, "id": "eq." + request["campaign_id"], "limit": 1})
         if not campaigns: raise ValueError("Campaign not found.")
@@ -73,7 +100,7 @@ def enqueue(study_id, actor, body):
         artifact = store.artifact(study_id, actor, raw, request["input_artifact_id"], "application/json", {"job_id": job_id, "transformation": "none; original UTF-8 queue input"})
         store.append(study_id, actor, "artifacts", artifact)
     result = store.rpc("research_queue_enqueue", dict(p_study=study_id, p_actor=actor, p_id=job_id, p_request=request, p_sha256=digest(canonical(request))))
-    return dict(job=result, replayed=False)
+    return dict(job=result, replayed=False, dispatch=wake_worker(result))
 
 def blockers(job, indexed):
     reasons = []
@@ -103,6 +130,39 @@ def snapshot(study_id, actor):
       coverage=dict(jobs=len(jobs), events=len(events)),
       limitations="Readiness means prerequisites are satisfied; global/study slots and exclusive resources are checked atomically at claim time. Execution and review status do not establish scientific validity or independent evidence.")
     if len(canonical(result)) > 4_000_000: raise store.StoreError("Queue export exceeds the byte budget; history was not truncated.")
+    return result
+
+def overview(actor):
+    """Owner-only paper queue, bounded across studies; no silent truncation."""
+    owners = store.rows('study_owners', {'owner_id': 'eq.' + actor, 'limit': 101})
+    if len(owners) > 100: raise store.StoreError('Queue study coverage exceeds 100; use an operator export.')
+    ids = [r['study_id'] for r in owners]
+    studies = store.rows('studies', {'id': 'in.(' + ','.join(ids) + ')', 'limit': 101}) if ids else []
+    if {s['id'] for s in studies} != set(ids): raise store.StoreError('Queue ownership coverage is incomplete.')
+    studies = [s for s in studies if s.get('study_kind', 'paper') == 'paper']
+    ids = [s['id'] for s in studies]
+    jobs = store.rows('queue_jobs', {'study_id': 'in.(' + ','.join(ids) + ')', 'limit': 1001}) if ids else []
+    if len(jobs) > 1000: raise store.StoreError('Queue job coverage exceeds 1000; no truncated status is returned.')
+    campaign_ids = sorted({j['campaign_id'] for j in jobs})
+    campaigns = store.rows('campaigns', {'id': 'in.(' + ','.join(campaign_ids) + ')', 'study_id': 'in.(' + ','.join(ids) + ')', 'limit': 1000}) if campaign_ids else []
+    titles = {c['id']: c['title'] for c in campaigns}
+    if set(titles) != set(campaign_ids): raise store.StoreError('Queue campaign coverage is incomplete.')
+    run_ids = sorted({j['run_id'] for j in jobs if j.get('run_id')})
+    runs = store.rows('runs', {'id': 'in.(' + ','.join(run_ids) + ')', 'study_id': 'in.(' + ','.join(ids) + ')', 'limit': 1000}) if run_ids else []
+    statuses = {r['id']: r['status'] for r in runs}
+    indexed = {j['id']: dict(j, run_status=statuses.get(j.get('run_id'))) for j in jobs}
+    public_jobs = []
+    for job in indexed.values():
+        row = {key: job.get(key) for key in ('id', 'study_id', 'campaign_id', 'execution_mode', 'priority', 'status', 'reason', 'dependencies', 'exclusive_resources', 'followup_of', 'run_id', 'run_status', 'created_at', 'updated_at', 'lease_until', 'definition_sha256')}
+        row['campaign_title'] = titles[job['campaign_id']]
+        row['blockers'] = blockers(job, indexed)
+        row['readiness'] = 'blocked' if job['status'] in ('queued', 'manual') and row['blockers'] else 'ready' if job['status'] == 'queued' else job['status']
+        public_jobs.append(row)
+    result = dict(version='research-queue-overview-v1', access='owner-private', studies=studies, jobs=public_jobs,
+                  workers_enabled=os.environ.get('RESEARCH_QUEUE_WORKERS_ENABLED') == 'true', limits=LIMITS,
+                  coverage=dict(studies=len(studies), jobs=len(jobs)),
+                  limitations='Your paper studies only. Status is recorded execution progress, not scientific validation. Detailed event history remains in each private study queue. Missing run status is unknown.')
+    if len(canonical(result)) > 4_000_000: raise store.StoreError('Queue overview exceeds its byte budget; no truncated status is returned.')
     return result
 
 def action(study_id, actor, body):

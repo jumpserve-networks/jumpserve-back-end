@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 from pathlib import Path
 import sys
 import threading
@@ -19,6 +20,30 @@ def body():
       dependencies=[], exclusive_resources=["machine:shared"], raw_input="{}", rationale="Development regression", followup_of=None)
 
 class QueueValidation(unittest.TestCase):
+    def test_enqueued_jobs_request_an_immediate_worker_without_claiming_capacity(self):
+        target='arn:aws:lambda:us-east-1:395567831870:function:QueueWorker'
+        with patch.dict(os.environ,RESEARCH_QUEUE_WORKERS_ENABLED='true',RESEARCH_QUEUE_WORKER_FUNCTION=target), patch.object(scheduler,'invoke_worker',return_value={'StatusCode':202}) as invoke:
+            result=scheduler.wake_worker(dict(status='queued',execution_mode='automatic'))
+        self.assertEqual(result['status'],'requested');invoke.assert_called_once_with(target)
+        self.assertIn('Atomic capacity',result['reason'])
+    def test_worker_notification_failure_preserves_a_queued_job_and_falls_back(self):
+        with patch.dict(os.environ,RESEARCH_QUEUE_WORKERS_ENABLED='true',RESEARCH_QUEUE_WORKER_FUNCTION='arn:aws:lambda:us-east-1:395567831870:function:QueueWorker'), patch.object(scheduler,'invoke_worker',side_effect=RuntimeError('Unconfirmed transport')):
+            self.assertEqual(scheduler.wake_worker(dict(status='queued',execution_mode='automatic'))['status'],'deferred')
+        value=body();_,request,_=scheduler.definition(value)
+        prior=dict(id=value['request_id'],status='queued',execution_mode='automatic',request=request)
+        with patch.object(store,'rows',return_value=[prior]),patch.object(store,'rpc') as rpc,patch.object(scheduler,'wake_worker',return_value={'status':'deferred'}):
+            result=scheduler.enqueue(STUDY,ACTOR,value)
+        self.assertTrue(result['replayed']);self.assertEqual(result['job']['status'],'queued');rpc.assert_not_called()
+    def test_manual_terminal_disabled_or_wrong_account_never_invoke_worker(self):
+        with patch.object(scheduler,'invoke_worker') as invoke:
+            for status in ('manual','running','awaiting-review','reviewed','failed','cancelled','expired'):
+                self.assertEqual(scheduler.wake_worker(dict(status=status,execution_mode='automatic'))['status'],'not-needed')
+            self.assertEqual(scheduler.wake_worker(dict(status='queued',execution_mode='manual'))['status'],'not-needed')
+            with patch.dict(os.environ,RESEARCH_QUEUE_WORKERS_ENABLED='true',RESEARCH_QUEUE_WORKER_FUNCTION='arn:aws:lambda:us-east-1:111111111111:function:WrongAccount'):
+                self.assertEqual(scheduler.wake_worker(dict(status='queued',execution_mode='automatic'))['status'],'deferred')
+            with patch.dict(os.environ,RESEARCH_QUEUE_WORKERS_ENABLED='false'):
+                self.assertEqual(scheduler.wake_worker(dict(status='queued',execution_mode='automatic'))['status'],'deferred')
+            invoke.assert_not_called()
     def test_original_input_and_definition_identity(self):
         value = body(); value['raw_input'] = '{\n "original": 0\n}'
         job_id, request, raw = scheduler.definition(value)

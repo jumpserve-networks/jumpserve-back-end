@@ -1,0 +1,191 @@
+[
+  {
+    "enqueue": {
+      "request_id": "cd224c09-b530-51ea-a0d2-dedfd9857afa",
+      "campaign_id": "2f93ed50-a1a5-529d-b7ac-93703ab4ff1a",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Descriptive archived LGI contrasts checked; causal effect remains unidentified.",
+      "followup_of": "5c010a86-fb36-5f0e-96be-99be0831c53a"
+    },
+    "attach": {
+      "request_id": "0d143e3e-b60d-5a72-99cd-3104d55d70e8",
+      "job_id": "cd224c09-b530-51ea-a0d2-dedfd9857afa",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "65dd5dab-45de-5fad-b6f1-e610c78947a0",
+      "reason": "Partial scientific evidence awaiting review. Descriptive archived LGI contrasts checked; causal effect remains unidentified."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "c97c968b-29fa-57c2-adaa-c71d3a1cb9b7",
+      "campaign_id": "4bd3ddaa-0267-58ee-8483-1f615f179096",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Archived DNSSEC-minus-NoDNSSEC contrast checked; provider and outcome-derived cohort confounding remain.",
+      "followup_of": "bf324893-3aa8-53ea-aace-d1da5a5462fd"
+    },
+    "attach": {
+      "request_id": "78df9f2b-db4e-5b4c-8c76-2605b5b55c30",
+      "job_id": "c97c968b-29fa-57c2-adaa-c71d3a1cb9b7",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "768060e0-44db-5156-bf6b-ac64e63555c7",
+      "reason": "Partial scientific evidence awaiting review. Archived DNSSEC-minus-NoDNSSEC contrast checked; provider and outcome-derived cohort confounding remain."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "69ebbee7-a249-5665-857e-3805145c1e2c",
+      "campaign_id": "b151e7f2-6ae0-504b-b21c-4b05af1b173e",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Domain/user-weighted readiness experiment excluded: required historical mappings were not parsed within this bounded follow-up. Inputs are publicly listed, not proven unavailable.",
+      "followup_of": "b05fec73-f61b-5e3c-9348-1df7830f44b2"
+    },
+    "attach": {
+      "request_id": "f8111d15-21de-523d-a48a-05bce4e0971a",
+      "job_id": "69ebbee7-a249-5665-857e-3805145c1e2c",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "e1db3daf-933e-50ab-8164-d53f9dcb2b0c",
+      "reason": "Scientific experiment excluded; this is not a software failure. Domain/user-weighted readiness experiment excluded: required historical mappings were not parsed within this bounded follow-up. Inputs are publicly listed, not proven unavailable."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "28728e47-8236-5e02-8d7d-fc02f7052432",
+      "campaign_id": "e2c3a677-ce81-526c-b62b-bd046bcd5d9f",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Source quotations and published-count arithmetic checked; matched historical network comparison remains unresolved.",
+      "followup_of": "88c68abb-2827-5166-b7cd-10e6bcee1b83"
+    },
+    "attach": {
+      "request_id": "ae8bb4d8-7fac-5804-ab63-5c427db52945",
+      "job_id": "28728e47-8236-5e02-8d7d-fc02f7052432",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "9a2eaff4-095d-5413-9f7e-7a721a3e8c4a",
+      "reason": "Partial scientific evidence awaiting review. Source quotations and published-count arithmetic checked; matched historical network comparison remains unresolved."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "30e29213-3d29-578f-b9d3-2a493adfcc67",
+      "campaign_id": "7daf3ae5-586a-5d52-bce5-bb9389a7eb91",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Multi-operator operational validation excluded: no resolver/operator intervention or independent operational review was performed.",
+      "followup_of": "877ecb54-57c6-5b40-8357-0ba1eb850749"
+    },
+    "attach": {
+      "request_id": "0b0200a5-6f97-5f38-ad45-b3aefbabb6bd",
+      "job_id": "30e29213-3d29-578f-b9d3-2a493adfcc67",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "650cf709-7c61-5d57-bbaf-600785ba9aa7",
+      "reason": "Scientific experiment excluded; this is not a software failure. Multi-operator operational validation excluded: no resolver/operator intervention or independent operational review was performed."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "0eced4b7-f17d-5fee-8acb-b8b896eb8e44",
+      "campaign_id": "58e76589-1d91-51e0-a898-95a2bb0f8093",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Original APNIC sampling-weighted global fragment-loss test excluded. Author Atlas-to-APNIC summaries are a distinct dataset and were not substituted.",
+      "followup_of": "2269312c-d9a5-5524-8180-fbf59053d7c8"
+    },
+    "attach": {
+      "request_id": "58536027-1948-52a7-a5b6-03b9d1b0b44e",
+      "job_id": "0eced4b7-f17d-5fee-8acb-b8b896eb8e44",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "d9f1f0ed-80f8-5c26-b95b-1390eac745a3",
+      "reason": "Scientific experiment excluded; this is not a software failure. Original APNIC sampling-weighted global fragment-loss test excluded. Author Atlas-to-APNIC summaries are a distinct dataset and were not substituted."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "94e8167d-8ab0-55c0-9d13-b97d34cbe2cd",
+      "campaign_id": "12237c4f-87dd-5f1a-b996-1004fead4281",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Packet-size mean/SD reproduction excluded: daily server-count summaries do not contain individual packet lengths or a sufficient length histogram. Full May1 PCAP input/parser replay was not run.",
+      "followup_of": "b144c3b1-21d9-5dd5-9c38-c75925b818fd"
+    },
+    "attach": {
+      "request_id": "e00420f5-f854-5ff0-9088-79e4817dac40",
+      "job_id": "94e8167d-8ab0-55c0-9d13-b97d34cbe2cd",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "f558b99b-2589-56de-b907-2839e4e47778",
+      "reason": "Scientific experiment excluded; this is not a software failure. Packet-size mean/SD reproduction excluded: daily server-count summaries do not contain individual packet lengths or a sufficient length histogram. Full May1 PCAP input/parser replay was not run."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "057ef540-b568-52eb-8aee-fa91e213a132",
+      "campaign_id": "5c40ea70-ad33-5771-849c-2ac65c0e3397",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Counts and mapped-path multiplicities checked for eight measurement/date summaries on two sentinel days. Full route census, probe coverage and DNS-query route validation remain uncovered.",
+      "followup_of": "383d919e-55ea-5208-82fd-aa3835a9aad0"
+    },
+    "attach": {
+      "request_id": "292f1f8c-f55f-5090-b228-6fbd920297a1",
+      "job_id": "057ef540-b568-52eb-8aee-fa91e213a132",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "b2e816f8-6533-5bc4-8efd-2fd11d93e9d4",
+      "reason": "Partial scientific evidence awaiting review. Counts and mapped-path multiplicities checked for eight measurement/date summaries on two sentinel days. Full route census, probe coverage and DNS-query route validation remain uncovered."
+    }
+  },
+  {
+    "enqueue": {
+      "request_id": "eaffd225-0dca-544d-bd30-7be9da2b3a81",
+      "campaign_id": "5dcde430-08e2-5d1a-84b4-9e7eb87cb1fb",
+      "execution_mode": "manual",
+      "priority": 4,
+      "dependencies": [],
+      "exclusive_resources": [],
+      "raw_input": null,
+      "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. 1536 cells in Figures13\u201315c/d and16a/b checked. Every time-series/plotted observation in Figures3\u201312 and17\u201321 remains outside this campaign.",
+      "followup_of": "504c73fd-e28c-551d-97bc-130c1ca56644"
+    },
+    "attach": {
+      "request_id": "67954566-5f24-5bd3-bcd0-ce311b1249be",
+      "job_id": "eaffd225-0dca-544d-bd30-7be9da2b3a81",
+      "action": "attach-run",
+      "assessment_ids": [],
+      "run_id": "4bb7389a-682e-5f9f-b157-db5fd10e87ca",
+      "reason": "Partial scientific evidence awaiting review. 1536 cells in Figures13\u201315c/d and16a/b checked. Every time-series/plotted observation in Figures3\u201312 and17\u201321 remains outside this campaign."
+    }
+  }
+]

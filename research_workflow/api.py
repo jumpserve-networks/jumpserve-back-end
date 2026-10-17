@@ -11,6 +11,7 @@ import preparation
 import ideas
 import network_execution
 import network_spec
+import gap_queue
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -74,7 +75,7 @@ def dispatch(event, actor=None):
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
     if path == "/research/capabilities" and method == "GET":
-        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
+        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
         if method == "GET":
             if query.get("mine") == "1":
@@ -89,10 +90,18 @@ def dispatch(event, actor=None):
             if not actor: raise HttpError(401, "Sign in to create a study.")
             body = parse_body(event)
             return store.rpc("research_create_study", dict(p_actor=actor, p_id=identifier(body.get("request_id")), p_document=paper_details(body.get("paper"))))
+    if path == '/research/queue' and method == 'GET':
+        if not actor: raise HttpError(401, 'Sign in to view your experiment queue.')
+        return scheduler.overview(actor)
     parts = path.split("/")
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])
     owner = bool(actor and store.owns(study_id, actor))
+    if len(parts) == 5 and parts[4] == 'gap-experiments':
+        if not actor: raise HttpError(401, 'Sign in to queue follow-up experiments.')
+        if method == 'GET': return gap_queue.preview(study_id, actor, query.get('gap_id'))
+        if method == 'POST': return gap_queue.enqueue(study_id, actor, parse_body(event))
+        raise HttpError(405, 'GET or POST required.')
     if len(parts)==5 and parts[4]=='network':
         if not owner: raise HttpError(404 if actor else 401,'Sign in as this study owner to manage networking execution.')
         body=parse_body(event)

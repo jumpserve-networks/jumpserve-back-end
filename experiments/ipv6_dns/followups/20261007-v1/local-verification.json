@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "verified_at": "2026-10-07T23:23:59.447955+00:00",
+  "passed": true,
+  "retained_execution_sha256": "a979cf7c7dbfa7d251346bab4f414c196fcefb4ab48964b35045f4a50afb6192",
+  "rerun_fields_equal": [
+    "relative_cells",
+    "route_sentinels",
+    "rfc_source_checks",
+    "missing_original_inputs",
+    "count_invariants",
+    "summary"
+  ],
+  "decimal_control_cells": 1536,
+  "decimal_vs_float_max_difference_pp": "7.83889312849245127259309E-15",
+  "controls": "Recorded zero, missing numerator, undefined zero denominator, bounded proportion, unbounded TCP/UDP ratio.",
+  "importer_records": 3462,
+  "importer_artifacts": 9,
+  "independence": "Retained-implementation rerun is a regression. Decimal control shares the same original counts, observation selection and PDF-axis mapping; neither checks raw packet parsing or supplies new empirical data."
+}

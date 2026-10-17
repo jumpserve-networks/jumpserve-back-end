@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "stage": "exploratory-pilot",
+  "started_at": "2026-10-07T22:49:32.358072+00:00",
+  "bounds": {
+    "urls": 7,
+    "bytes_per_url": 500000,
+    "timeout_seconds": 12,
+    "requests_per_url": 1,
+    "wall_seconds": 100
+  },
+  "records": [
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/atlas/",
+      "requested_at": "2026-10-07T22:49:32.358147+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.368189+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/atlas-apnic/",
+      "requested_at": "2026-10-07T22:49:32.368195+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.368388+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/nssets-out/",
+      "requested_at": "2026-10-07T22:49:32.368391+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.368541+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/ns-list-out/",
+      "requested_at": "2026-10-07T22:49:32.368543+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.368677+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/domainlist-in/",
+      "requested_at": "2026-10-07T22:49:32.368678+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.368807+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/raw_data/",
+      "requested_at": "2026-10-07T22:49:32.368809+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.368933+00:00"
+    },
+    {
+      "url": "https://data.measurement.network/dns-mtu-msmt/processing/",
+      "requested_at": "2026-10-07T22:49:32.368934+00:00",
+      "status": "unavailable",
+      "sha256": null,
+      "byte_count": null,
+      "links": [],
+      "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+      "ended_at": "2026-10-07T22:49:32.369064+00:00"
+    }
+  ],
+  "limitations": "Directory listings are not reviewed measurement inputs; later or undated files cannot silently substitute for original campaign data.",
+  "ended_at": "2026-10-07T22:49:32.369066+00:00",
+  "wall_seconds": 0.010920624999926076,
+  "original_bytes": 0,
+  "measured_charges_usd": null,
+  "model_usage": null,
+  "unallocated_costs": [
+    "Local execution, network transfer and Codex; missing usage is not zero"
+  ]
+}

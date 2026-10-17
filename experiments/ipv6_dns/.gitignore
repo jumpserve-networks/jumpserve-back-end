@@ -5,3 +5,13 @@ evidence/reanalysis-v1.json
 evidence/assessment-v*.json
 evidence/release-v1/
 .venv/
+followups/*/*.tar.gz
+followups/*/pilot/
+followups/*/pilot-attempt*/
+followups/*/pilot-detail/
+followups/*/pilot-samples/
+followups/*/verification-v*/
+followups/*/import*.json
+followups/*/results.json
+followups/*/source-inventory.json
+followups/*/production-before.json

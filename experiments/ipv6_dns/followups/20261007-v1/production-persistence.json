@@ -1,0 +1,619 @@
+{
+  "targets": {
+    "aws_account": "395567831870",
+    "supabase_project": "regphejnlvfpyokpniny",
+    "database": "postgres"
+  },
+  "created_at": "2026-10-07T23:23:49.885146+00:00",
+  "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+  "records": 3462,
+  "artifacts": [
+    {
+      "id": "468cdbce-b491-55b0-9470-e47ef4dee7e7",
+      "sha256": "d0ee37cff1e587b316ddf3eb80384089ece60cfaab167c39e6a695d2e48b4cd1",
+      "byte_count": 2079258
+    },
+    {
+      "id": "cc0dad98-62ac-503a-a90e-507becea5268",
+      "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b",
+      "byte_count": 8243085
+    },
+    {
+      "id": "9fadd8dc-01db-5d89-950a-582c5f0530ff",
+      "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a",
+      "byte_count": 59809
+    },
+    {
+      "id": "be95af1a-b9e2-5e04-8523-3ccbc31040f7",
+      "sha256": "125733fac1605af93a94c843dabe71b17e744317b96dd1f827cd4189852c1eeb",
+      "byte_count": 114083
+    },
+    {
+      "id": "5773f3cc-f2e6-5e4b-bfb3-1b10df37eb58",
+      "sha256": "f3026699a0d9cf3f786162ea80be0183f5dc9ae85cbaeacdbf926f23ff2836fa",
+      "byte_count": 1843360
+    },
+    {
+      "id": "0a338caa-975c-5cb2-8c11-67274c216574",
+      "sha256": "a979cf7c7dbfa7d251346bab4f414c196fcefb4ab48964b35045f4a50afb6192",
+      "byte_count": 37881
+    },
+    {
+      "id": "71ab3efe-f4ee-570f-b869-27453d140f1b",
+      "sha256": "a296a2054c6353e6fe74972edc264f6cea8a6aff1db2c9c339f9b77fa4e66559",
+      "byte_count": 91832
+    },
+    {
+      "id": "89f0fe62-8df6-562f-bffc-85e1efd26f4e",
+      "sha256": "658159c21814f4b1bf0b86177805e3d0f9c1638ae96173bb3ecb3ed1334ee6e9",
+      "byte_count": 2713801
+    },
+    {
+      "id": "107f1888-7b12-50d1-9f3b-201301f10029",
+      "sha256": "ff385d4c96329433261d02fc68d7418f66ce54f7c1cc985af87446cccb4b75f0",
+      "byte_count": 2285101
+    },
+    {
+      "id": "f00bf31c-0017-5df5-b2cc-70b851ddf0b1",
+      "sha256": "1fffc4332398b75de877395182d5eb88858d7334021cb4094669fdab0f0cef4c",
+      "byte_count": 2090609
+    }
+  ],
+  "receipts": [
+    {
+      "offset": 0,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "sources": 2,
+            "artifacts": 10,
+            "protocols": 9,
+            "configurations": 139
+          }
+        }
+      ]
+    },
+    {
+      "offset": 160,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "runs": 9,
+            "campaigns": 9,
+            "claim_checks": 9,
+            "configurations": 126,
+            "published_values": 7
+          }
+        }
+      ]
+    },
+    {
+      "offset": 320,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 480,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 640,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 800,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 960,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 1120,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 1280,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 1440,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 1600,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "published_values": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 1760,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 61,
+            "published_values": 99
+          }
+        }
+      ]
+    },
+    {
+      "offset": 1920,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 2080,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 2240,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 2400,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 2560,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 2720,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 2880,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 3040,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 3200,
+      "records": 160,
+      "response": [
+        {
+          "receipt": {
+            "measurements": 160
+          }
+        }
+      ]
+    },
+    {
+      "offset": 3360,
+      "records": 112,
+      "response": [
+        {
+          "receipt": {
+            "gaps": 9,
+            "summaries": 9,
+            "assessments": 9,
+            "measurements": 85
+          }
+        }
+      ]
+    }
+  ],
+  "queue": [
+    {
+      "job_id": "cd224c09-b530-51ea-a0d2-dedfd9857afa",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "cd224c09-b530-51ea-a0d2-dedfd9857afa",
+        "reason": "Partial scientific evidence awaiting review. Descriptive archived LGI contrasts checked; causal effect remains unidentified.",
+        "run_id": "65dd5dab-45de-5fad-b6f1-e610c78947a0",
+        "status": "awaiting-review",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Descriptive archived LGI contrasts checked; causal effect remains unidentified.",
+          "campaign_id": "2f93ed50-a1a5-529d-b7ac-93703ab4ff1a",
+          "followup_of": "5c010a86-fb36-5f0e-96be-99be0831c53a",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:44.269072+00:00",
+        "updated_at": "2026-10-07T23:23:44.670832+00:00",
+        "campaign_id": "2f93ed50-a1a5-529d-b7ac-93703ab4ff1a",
+        "followup_of": "5c010a86-fb36-5f0e-96be-99be0831c53a",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "e76efef7de033fbc0463247f92163e1763005f88b9088e1557ebc3670b1121a0",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "c97c968b-29fa-57c2-adaa-c71d3a1cb9b7",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "c97c968b-29fa-57c2-adaa-c71d3a1cb9b7",
+        "reason": "Partial scientific evidence awaiting review. Archived DNSSEC-minus-NoDNSSEC contrast checked; provider and outcome-derived cohort confounding remain.",
+        "run_id": "768060e0-44db-5156-bf6b-ac64e63555c7",
+        "status": "awaiting-review",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Archived DNSSEC-minus-NoDNSSEC contrast checked; provider and outcome-derived cohort confounding remain.",
+          "campaign_id": "4bd3ddaa-0267-58ee-8483-1f615f179096",
+          "followup_of": "bf324893-3aa8-53ea-aace-d1da5a5462fd",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:45.25659+00:00",
+        "updated_at": "2026-10-07T23:23:45.584736+00:00",
+        "campaign_id": "4bd3ddaa-0267-58ee-8483-1f615f179096",
+        "followup_of": "bf324893-3aa8-53ea-aace-d1da5a5462fd",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "aad459fb063c270435602cf2cc2b7fb1c3bf198d714f7f034706e5947a09057c",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "69ebbee7-a249-5665-857e-3805145c1e2c",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "69ebbee7-a249-5665-857e-3805145c1e2c",
+        "reason": "Scientific experiment excluded; this is not a software failure. Domain/user-weighted readiness experiment excluded: required historical mappings were not parsed within this bounded follow-up. Inputs are publicly listed, not proven unavailable.",
+        "run_id": "e1db3daf-933e-50ab-8164-d53f9dcb2b0c",
+        "status": "failed",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Domain/user-weighted readiness experiment excluded: required historical mappings were not parsed within this bounded follow-up. Inputs are publicly listed, not proven unavailable.",
+          "campaign_id": "b151e7f2-6ae0-504b-b21c-4b05af1b173e",
+          "followup_of": "b05fec73-f61b-5e3c-9348-1df7830f44b2",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:45.956334+00:00",
+        "updated_at": "2026-10-07T23:23:46.124994+00:00",
+        "campaign_id": "b151e7f2-6ae0-504b-b21c-4b05af1b173e",
+        "followup_of": "b05fec73-f61b-5e3c-9348-1df7830f44b2",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "7bd524453bcc64d8dec314a35d9d691d523071ea8f2a180a9825798a8d888b75",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "28728e47-8236-5e02-8d7d-fc02f7052432",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "28728e47-8236-5e02-8d7d-fc02f7052432",
+        "reason": "Partial scientific evidence awaiting review. Source quotations and published-count arithmetic checked; matched historical network comparison remains unresolved.",
+        "run_id": "9a2eaff4-095d-5413-9f7e-7a721a3e8c4a",
+        "status": "awaiting-review",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Source quotations and published-count arithmetic checked; matched historical network comparison remains unresolved.",
+          "campaign_id": "e2c3a677-ce81-526c-b62b-bd046bcd5d9f",
+          "followup_of": "88c68abb-2827-5166-b7cd-10e6bcee1b83",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:46.61494+00:00",
+        "updated_at": "2026-10-07T23:23:46.83354+00:00",
+        "campaign_id": "e2c3a677-ce81-526c-b62b-bd046bcd5d9f",
+        "followup_of": "88c68abb-2827-5166-b7cd-10e6bcee1b83",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "e5209059f8d0e217931dea6b451c84e549760b108e0b52030c4e3b57a15f615b",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "30e29213-3d29-578f-b9d3-2a493adfcc67",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "30e29213-3d29-578f-b9d3-2a493adfcc67",
+        "reason": "Scientific experiment excluded; this is not a software failure. Multi-operator operational validation excluded: no resolver/operator intervention or independent operational review was performed.",
+        "run_id": "650cf709-7c61-5d57-bbaf-600785ba9aa7",
+        "status": "failed",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Multi-operator operational validation excluded: no resolver/operator intervention or independent operational review was performed.",
+          "campaign_id": "7daf3ae5-586a-5d52-bce5-bb9389a7eb91",
+          "followup_of": "877ecb54-57c6-5b40-8357-0ba1eb850749",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:47.296007+00:00",
+        "updated_at": "2026-10-07T23:23:47.470532+00:00",
+        "campaign_id": "7daf3ae5-586a-5d52-bce5-bb9389a7eb91",
+        "followup_of": "877ecb54-57c6-5b40-8357-0ba1eb850749",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "883d77120540a464f134073349d9f259bbe055f97d0ad37ff8aaeec6f4ffab2b",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "0eced4b7-f17d-5fee-8acb-b8b896eb8e44",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "0eced4b7-f17d-5fee-8acb-b8b896eb8e44",
+        "reason": "Scientific experiment excluded; this is not a software failure. Original APNIC sampling-weighted global fragment-loss test excluded. Author Atlas-to-APNIC summaries are a distinct dataset and were not substituted.",
+        "run_id": "d9f1f0ed-80f8-5c26-b95b-1390eac745a3",
+        "status": "failed",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Original APNIC sampling-weighted global fragment-loss test excluded. Author Atlas-to-APNIC summaries are a distinct dataset and were not substituted.",
+          "campaign_id": "58e76589-1d91-51e0-a898-95a2bb0f8093",
+          "followup_of": "2269312c-d9a5-5524-8180-fbf59053d7c8",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:47.816758+00:00",
+        "updated_at": "2026-10-07T23:23:47.984335+00:00",
+        "campaign_id": "58e76589-1d91-51e0-a898-95a2bb0f8093",
+        "followup_of": "2269312c-d9a5-5524-8180-fbf59053d7c8",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "f185ef63f8af4e9208fda06d0a3322797682af0157fcc7e3e3dfcdcfe74a45f1",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "94e8167d-8ab0-55c0-9d13-b97d34cbe2cd",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "94e8167d-8ab0-55c0-9d13-b97d34cbe2cd",
+        "reason": "Scientific experiment excluded; this is not a software failure. Packet-size mean/SD reproduction excluded: daily server-count summaries do not contain individual packet lengths or a sufficient length histogram. Full May1 PCAP input/parser replay was not run.",
+        "run_id": "f558b99b-2589-56de-b907-2839e4e47778",
+        "status": "failed",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Packet-size mean/SD reproduction excluded: daily server-count summaries do not contain individual packet lengths or a sufficient length histogram. Full May1 PCAP input/parser replay was not run.",
+          "campaign_id": "12237c4f-87dd-5f1a-b996-1004fead4281",
+          "followup_of": "b144c3b1-21d9-5dd5-9c38-c75925b818fd",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:48.431053+00:00",
+        "updated_at": "2026-10-07T23:23:48.680049+00:00",
+        "campaign_id": "12237c4f-87dd-5f1a-b996-1004fead4281",
+        "followup_of": "b144c3b1-21d9-5dd5-9c38-c75925b818fd",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "07f4436c5f151bd10fcb8c51fd0320286da131a131df5daa79439b11d846208f",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "057ef540-b568-52eb-8aee-fa91e213a132",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "057ef540-b568-52eb-8aee-fa91e213a132",
+        "reason": "Partial scientific evidence awaiting review. Counts and mapped-path multiplicities checked for eight measurement/date summaries on two sentinel days. Full route census, probe coverage and DNS-query route validation remain uncovered.",
+        "run_id": "b2e816f8-6533-5bc4-8efd-2fd11d93e9d4",
+        "status": "awaiting-review",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. Counts and mapped-path multiplicities checked for eight measurement/date summaries on two sentinel days. Full route census, probe coverage and DNS-query route validation remain uncovered.",
+          "campaign_id": "5c40ea70-ad33-5771-849c-2ac65c0e3397",
+          "followup_of": "383d919e-55ea-5208-82fd-aa3835a9aad0",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:49.022032+00:00",
+        "updated_at": "2026-10-07T23:23:49.260995+00:00",
+        "campaign_id": "5c40ea70-ad33-5771-849c-2ac65c0e3397",
+        "followup_of": "383d919e-55ea-5208-82fd-aa3835a9aad0",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "7ed2f1fea67fa04371703ea2e6fb1d7471791d768e383e17e6df12e8592e7a6b",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    },
+    {
+      "job_id": "eaffd225-0dca-544d-bd30-7be9da2b3a81",
+      "enqueue_replayed": false,
+      "attach_result": {
+        "id": "eaffd225-0dca-544d-bd30-7be9da2b3a81",
+        "reason": "Partial scientific evidence awaiting review. 1536 cells in Figures13\u201315c/d and16a/b checked. Every time-series/plotted observation in Figures3\u201312 and17\u201321 remains outside this campaign.",
+        "run_id": "4bb7389a-682e-5f9f-b157-db5fd10e87ca",
+        "status": "awaiting-review",
+        "request": {
+          "priority": 4,
+          "rationale": "User-requested unresolved-claim follow-up; externally executed by a domain operator under the retained frozen protocol. 1536 cells in Figures13\u201315c/d and16a/b checked. Every time-series/plotted observation in Figures3\u201312 and17\u201321 remains outside this campaign.",
+          "campaign_id": "5dcde430-08e2-5d1a-84b4-9e7eb87cb1fb",
+          "followup_of": "504c73fd-e28c-551d-97bc-130c1ca56644",
+          "dependencies": [],
+          "input_sha256": null,
+          "execution_mode": "manual",
+          "input_artifact_id": null,
+          "exclusive_resources": []
+        },
+        "priority": 4,
+        "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+        "created_at": "2026-10-07T23:23:49.702551+00:00",
+        "updated_at": "2026-10-07T23:23:49.855708+00:00",
+        "campaign_id": "5dcde430-08e2-5d1a-84b4-9e7eb87cb1fb",
+        "followup_of": "504c73fd-e28c-551d-97bc-130c1ca56644",
+        "lease_until": null,
+        "dependencies": [],
+        "execution_mode": "manual",
+        "definition_sha256": "3f864039ff45a4a92a29b16d73615b29c87bd623ebb960065d63baa1995ee064",
+        "input_artifact_id": null,
+        "exclusive_resources": []
+      }
+    }
+  ],
+  "actor_identity": "Authorized trusted operator using saved study ownership; not a Google session or browser authentication test.",
+  "published": false,
+  "deployment": false
+}

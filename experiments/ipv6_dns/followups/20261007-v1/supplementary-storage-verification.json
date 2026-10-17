@@ -1,0 +1,62 @@
+{
+  "targets": {
+    "aws_account": "395567831870",
+    "supabase_project": "regphejnlvfpyokpniny",
+    "database": "postgres"
+  },
+  "verified_at": "2026-10-07T23:33:28.173183+00:00",
+  "artifacts": [
+    {
+      "name": "local-verification.json",
+      "id": "0b2e70a7-1d8c-5b80-a513-905f536bb87c",
+      "sha256": "6f406aee4e09cc85afb67cc9bf9f637297fb33b15c621edf9bb450c020de5b12",
+      "byte_count": 871
+    },
+    {
+      "name": "production-persistence.json",
+      "id": "966e7a3a-ccdb-5606-a517-e50b9be6452d",
+      "sha256": "cd16aef48bbe09b14b6dcebbcffcd0d8ec755df930e8ce0c43532ece6900f38c",
+      "byte_count": 21986
+    },
+    {
+      "name": "production-verification.json",
+      "id": "f291a537-641c-5f21-80d2-9a10a0c64976",
+      "sha256": "12dbdf5b1e740a0ea5ea9d4a19ed0d619f509c7b8407b4c6965f330d49385aad",
+      "byte_count": 18633
+    },
+    {
+      "name": "source-inventory.json",
+      "id": "60a95c60-631b-51e9-bc7f-8d405b5e70c9",
+      "sha256": "52bc94cb17637d04af73ae2d88aed59223a46343a4a31fb00d0069bee611c9bb",
+      "byte_count": 1032423
+    },
+    {
+      "name": "paired-sensitivity-check.json",
+      "id": "79e95e26-8ff2-5545-9ab6-193d3c9a2365",
+      "sha256": "f473142e232999bf84fa26958bed9bc180ac0f5a19bf8d2abe262abb92a01d54",
+      "byte_count": 2882
+    },
+    {
+      "name": "report.md",
+      "id": "2eb8ac6c-d572-5310-9983-ae83496169b9",
+      "sha256": "a9f6e78b264b2119b374240b2c1105337f899b0565c844aba6ca1829cb96feae",
+      "byte_count": 9230
+    },
+    {
+      "name": "report-v2.md",
+      "id": "c297d96e-7802-53b3-9a69-30a939da2cc6",
+      "sha256": "02ef5134d10a550695c7e50d1dbea3ce5172c136a510aea23698e89decefd1f7",
+      "byte_count": 9293
+    },
+    {
+      "name": "comparisons.csv",
+      "id": "bb068218-7400-51f3-a508-146af825f1c5",
+      "sha256": "21cc232a831e63f8bed2f1b555fff70b2eb97f6b8affde7851866a1c74f9bcde",
+      "byte_count": 586262
+    }
+  ],
+  "supplemental_records": 3,
+  "snapshot_bytes": 3930733,
+  "hashes_verified": true,
+  "limitation": "Operator persistence and AI inspection; no authenticated browser, publication or deployment."
+}

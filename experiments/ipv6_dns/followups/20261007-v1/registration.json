@@ -1,0 +1,2348 @@
+{
+  "version": 1,
+  "study_id": "76c70fd9-0217-464e-8c26-0a47832409a3",
+  "frozen_at": "2026-10-07T23:00:30.971227+00:00",
+  "records": [
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "f53091c5-40b3-583e-8465-75157090ac9c",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for rq4-causality, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "rq4-causality-followup-v1",
+              "details": {
+                "claim_id": "43f95edb-31bb-5426-80c0-bf4f4ffc83a0",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": true,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "80b162fb27e59a8faf23b14a22f819de43c33e868aaccddd81b7cede8d23c43e",
+        "frozen_at": "2026-10-07T23:00:30.967561+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "7e4600a6-ffc2-55fe-9610-416086d1c343",
+        "identity": "rq4-causality-followup-v1",
+        "details": {
+          "claim_id": "43f95edb-31bb-5426-80c0-bf4f4ffc83a0",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "2f93ed50-a1a5-529d-b7ac-93703ab4ff1a",
+        "protocol_id": "f53091c5-40b3-583e-8465-75157090ac9c",
+        "followup_of": "39587a40-2572-51ec-a41b-855677448b8e",
+        "title": "Unresolved claim follow-up: rq4-causality",
+        "stage": "follow-up",
+        "experiment_type": "reanalysis",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "d0e7a5ff-b171-5463-8958-1ca85f7b7872",
+        "claim_id": "43f95edb-31bb-5426-80c0-bf4f4ffc83a0",
+        "campaign_id": "2f93ed50-a1a5-529d-b7ac-93703ab4ff1a",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "c781f06d-65bf-5766-bb42-9ad0e3888b72",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for rq5-dnssec, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "rq5-dnssec-followup-v1",
+              "details": {
+                "claim_id": "7ccd1b76-fefa-5715-9777-07ffb5f81473",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": true,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "2666184a2d5068f19b12519e135468ec6570972b763414f58cb93302238fbbd0",
+        "frozen_at": "2026-10-07T23:00:30.967936+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "e53a805a-08c3-5d56-b748-46b58300d525",
+        "identity": "rq5-dnssec-followup-v1",
+        "details": {
+          "claim_id": "7ccd1b76-fefa-5715-9777-07ffb5f81473",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "4bd3ddaa-0267-58ee-8483-1f615f179096",
+        "protocol_id": "c781f06d-65bf-5766-bb42-9ad0e3888b72",
+        "followup_of": "7240be07-ee3d-5ed5-ba18-e174becf5aaa",
+        "title": "Unresolved claim follow-up: rq5-dnssec",
+        "stage": "follow-up",
+        "experiment_type": "reanalysis",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "3b01e5ec-8c5b-5927-981c-20658e46210d",
+        "claim_id": "7ccd1b76-fefa-5715-9777-07ffb5f81473",
+        "campaign_id": "4bd3ddaa-0267-58ee-8483-1f615f179096",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "c3fea6c8-9653-57cb-9a1d-71a4b738e166",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for readiness-weighting, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "readiness-weighting-followup-v1",
+              "details": {
+                "claim_id": "3a7818ad-0990-5947-ad33-f9db5413b009",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": false,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "29b88fc72ca73ac3e3feb2e4d6cae6ff9a8b2fb82ef88aa745bffe443d56d7d7",
+        "frozen_at": "2026-10-07T23:00:30.968198+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "18c6119d-e4b0-5243-a35b-f603dcdd4283",
+        "identity": "readiness-weighting-followup-v1",
+        "details": {
+          "claim_id": "3a7818ad-0990-5947-ad33-f9db5413b009",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "b151e7f2-6ae0-504b-b21c-4b05af1b173e",
+        "protocol_id": "c3fea6c8-9653-57cb-9a1d-71a4b738e166",
+        "followup_of": "9c7fd82e-9727-5cde-a9b6-9207d63013fc",
+        "title": "Unresolved claim follow-up: readiness-weighting",
+        "stage": "follow-up",
+        "experiment_type": "source-review",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "38734a4b-7adf-547b-8d87-b78dbf6030b3",
+        "claim_id": "3a7818ad-0990-5947-ad33-f9db5413b009",
+        "campaign_id": "b151e7f2-6ae0-504b-b21c-4b05af1b173e",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "ae5c3e58-ef37-5957-8685-de3e32a3c593",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for rfc7872, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "rfc7872-followup-v1",
+              "details": {
+                "claim_id": "d8e3f2ef-f6f4-5acd-a1fd-5bf00ce7c9d7",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity.",
+            "Compare six quoted fragment-loss percentages with RFC7872 Tables1\u20132; independently recompute four paper Section7.4 percentages from its stated integer numerators/denominators, using the same 0.0051 pp printing criterion. This is source arithmetic, not repeated network measurements."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": false,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": true,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "90e7e32e149fc0694fdda9ba866abb0051b82b7828304f1fbe382a446d1c6969",
+        "frozen_at": "2026-10-07T23:00:30.968453+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "655a784e-e626-5ab5-ae01-5014b69d46a0",
+        "identity": "rfc7872-followup-v1",
+        "details": {
+          "claim_id": "d8e3f2ef-f6f4-5acd-a1fd-5bf00ce7c9d7",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "e2c3a677-ce81-526c-b62b-bd046bcd5d9f",
+        "protocol_id": "ae5c3e58-ef37-5957-8685-de3e32a3c593",
+        "followup_of": "3c71e812-f62b-54ec-9094-e25c81620568",
+        "title": "Unresolved claim follow-up: rfc7872",
+        "stage": "follow-up",
+        "experiment_type": "source-review",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "c19089fe-8dfd-5dea-bced-8c5d30ab7a5a",
+        "claim_id": "d8e3f2ef-f6f4-5acd-a1fd-5bf00ce7c9d7",
+        "campaign_id": "e2c3a677-ce81-526c-b62b-bd046bcd5d9f",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "90786685-87a1-5cc6-a76c-a17514061ba5",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for policy-recommendation, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "policy-recommendation-followup-v1",
+              "details": {
+                "claim_id": "a769fc0a-b6f4-518b-b1f4-27d7ab79a285",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": false,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "7a0376e91e25719b08247192060efbe49783fc5d8d8b38e8e3ab83a896e40815",
+        "frozen_at": "2026-10-07T23:00:30.968702+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "b236434e-692c-5f4a-8190-0c28460cdf72",
+        "identity": "policy-recommendation-followup-v1",
+        "details": {
+          "claim_id": "a769fc0a-b6f4-518b-b1f4-27d7ab79a285",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "7daf3ae5-586a-5d52-bce5-bb9389a7eb91",
+        "protocol_id": "90786685-87a1-5cc6-a76c-a17514061ba5",
+        "followup_of": "1c810940-029d-5e09-b23f-1819cf8c3a5e",
+        "title": "Unresolved claim follow-up: policy-recommendation",
+        "stage": "follow-up",
+        "experiment_type": "source-review",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "9ee3dc4b-4fb4-5017-82a3-8b14c17fd4f9",
+        "claim_id": "a769fc0a-b6f4-518b-b1f4-27d7ab79a285",
+        "campaign_id": "7daf3ae5-586a-5d52-bce5-bb9389a7eb91",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "19e384d7-9b9f-5b91-ade2-59e9cdb6f05e",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for apnic, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "apnic-followup-v1",
+              "details": {
+                "claim_id": "5adfd068-4145-5c74-993a-1aa9487b6edb",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": false,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "2154c2a86844f953986816d69a55bfb142759afb32517e551ec56603c02b7e7d",
+        "frozen_at": "2026-10-07T23:00:30.968961+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "0a69f154-3e61-5def-8106-4a80e9ea2908",
+        "identity": "apnic-followup-v1",
+        "details": {
+          "claim_id": "5adfd068-4145-5c74-993a-1aa9487b6edb",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "58e76589-1d91-51e0-a898-95a2bb0f8093",
+        "protocol_id": "19e384d7-9b9f-5b91-ade2-59e9cdb6f05e",
+        "followup_of": "0091543c-43d3-54af-8519-3f305da22133",
+        "title": "Unresolved claim follow-up: apnic",
+        "stage": "follow-up",
+        "experiment_type": "source-review",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "5019cf1b-ae5b-5d5a-8e4d-0b4c645f1de9",
+        "claim_id": "5adfd068-4145-5c74-993a-1aa9487b6edb",
+        "campaign_id": "58e76589-1d91-51e0-a898-95a2bb0f8093",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "94256f66-ae1e-5058-b811-016989425b7d",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for packet-sizes, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "packet-sizes-followup-v1",
+              "details": {
+                "claim_id": "8dbd2c75-eba1-5e14-8a5c-8348981fe393",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": false,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "55a684bea944ba3e604979dfb203cecd8fc821a59fa993c0f3101eea10296f35",
+        "frozen_at": "2026-10-07T23:00:30.969238+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "f0c2866d-bbee-565b-81ab-266b9b78c544",
+        "identity": "packet-sizes-followup-v1",
+        "details": {
+          "claim_id": "8dbd2c75-eba1-5e14-8a5c-8348981fe393",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "12237c4f-87dd-5f1a-b996-1004fead4281",
+        "protocol_id": "94256f66-ae1e-5058-b811-016989425b7d",
+        "followup_of": "edd0ebf4-6afa-578c-aa72-c3faf5150b5c",
+        "title": "Unresolved claim follow-up: packet-sizes",
+        "stage": "follow-up",
+        "experiment_type": "source-review",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "a171eafa-94d1-57e5-a6b5-ffd08744b953",
+        "claim_id": "8dbd2c75-eba1-5e14-8a5c-8348981fe393",
+        "campaign_id": "12237c4f-87dd-5f1a-b996-1004fead4281",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "760be1e8-9429-5fbc-96fc-d9520568a28d",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for route-validation, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "route-validation-followup-v1",
+              "details": {
+                "claim_id": "86870973-85df-5fb2-a4f7-d6bff5e3a94f",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": false,
+            "route_summary_checks": true,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "45891dcaf47e1751bd799ab20e0dc2f82116fd93f47723240b4d67312bbf4b20",
+        "frozen_at": "2026-10-07T23:00:30.969511+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "38594620-c64e-50e5-8399-bf3224df0ef7",
+        "identity": "route-validation-followup-v1",
+        "details": {
+          "claim_id": "86870973-85df-5fb2-a4f7-d6bff5e3a94f",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "5c40ea70-ad33-5771-849c-2ac65c0e3397",
+        "protocol_id": "760be1e8-9429-5fbc-96fc-d9520568a28d",
+        "followup_of": "0c552e80-358c-5f43-97b4-e7533fd27f0f",
+        "title": "Unresolved claim follow-up: route-validation",
+        "stage": "follow-up",
+        "experiment_type": "reanalysis",
+        "adapter": "domain-operator",
+        "planned_units": 1,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "7ff63a80-98ba-578f-9856-5bb1b391dd98",
+        "claim_id": "86870973-85df-5fb2-a4f7-d6bff5e3a94f",
+        "campaign_id": "5c40ea70-ad33-5771-849c-2ac65c0e3397",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    },
+    {
+      "kind": "protocols",
+      "record": {
+        "id": "44d795d8-52ce-5133-a454-eb0b46a4f259",
+        "version": 1,
+        "supersedes_id": null,
+        "document": {
+          "questions": [
+            "What additional archived-data check is feasible for relative-figures, and what remains unresolved?",
+            "Do newly examined printed difference cells match independently folded historical counts?"
+          ],
+          "hypotheses": "Printed arithmetic may agree without identifying a causal effect, a global population estimate, or operational effectiveness. Missing prerequisites exclude the requested empirical test; a source-availability audit is not that test.",
+          "metrics": [
+            {
+              "name": "TIMEOUT",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "SERVFAIL",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "edns0_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "tcp_fallback",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_fragments",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "udp_packet_too_big",
+              "units": "percentage points",
+              "tolerance_absolute": 0.0051
+            },
+            {
+              "name": "route_count_conservation",
+              "units": "traces"
+            },
+            {
+              "name": "path_classification_consistency",
+              "units": "traces"
+            }
+          ],
+          "configurations": [
+            {
+              "identity": "relative-figures-followup-v1",
+              "details": {
+                "claim_id": "03283d34-2f8f-5dad-9ba8-7d052e1e1229",
+                "epochs": {
+                  "tcp-error": [
+                    "2025-04-10",
+                    "2025-05-23"
+                  ],
+                  "pre-lgi": [
+                    "2025-05-25",
+                    "2025-06-14"
+                  ],
+                  "current": [
+                    "2025-06-25",
+                    "2025-09-14"
+                  ]
+                },
+                "families": [
+                  "v4-only",
+                  "v6-only"
+                ],
+                "edns_bytes": [
+                  1232,
+                  4096
+                ],
+                "mtus": [
+                  "mtu1500",
+                  "mtu1280-pmtud",
+                  "mtu1280-nopmtud",
+                  "mtu1280onpath-nopmtud"
+                ],
+                "cohorts": [
+                  "dnssec",
+                  "no-dnssec"
+                ],
+                "upstreams": [
+                  "lgi",
+                  "no-lgi"
+                ],
+                "route_sentinels": [
+                  "2025-05-25",
+                  "2025-06-25"
+                ]
+              }
+            }
+          ],
+          "input_versions": [
+            {
+              "identity": "inputs.tar.gz",
+              "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+            },
+            {
+              "identity": "input-manifest.json",
+              "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+            }
+          ],
+          "dates_or_epochs": "Historical 2025 dates as enumerated; three original fold windows and two preselected route-summary sentinel days. Retrieval in October 2026 is not a new measurement epoch.",
+          "algorithms": [
+            "Independent Python count validation, daily percentages and unweighted daily means; do not reuse previous numerical outputs.",
+            "Figures13\u201315c: DNSSEC minus NoDNSSEC; d: LGI minus NoLGI; Figure16a/b: pre-LGI minus TCP-error. All are percentage-point subtraction, not division.",
+            "Parse four 16-row 12-column blocks on physical PDF pages17\u201319 and two on page20. Axes verified in rendered pages and extraction labels. c groups: v4/LGI, v6/LGI, v4/NoLGI, v6/NoLGI; d groups: v4/NoDNSSEC, v4/DNSSEC, v6/NoDNSSEC, v6/DNSSEC.",
+            "Route audit: independently sum four recorded classes and every class path multiplicity; compare AS6830 token presence and destination-AS211286 presence with recorded classification. Ambiguous paths retain their ambiguity."
+          ],
+          "seeds": {
+            "applicable": false,
+            "rationale": "Deterministic census of the declared cells and two chosen archived days; no randomized allocation or sampling."
+          },
+          "controls": [
+            "Rehash container and every expanded original member; reject unexpected or duplicate member identities.",
+            "Validate finite nonnegative integer counts, positive denominators, status conservation, exact configuration/day matching; no zero imputation.",
+            "Printed absolute panels supply a subtraction-only cross-check with 0.01 pp rounding bound, separate from raw-count arithmetic. Both share the same PDF and upstream data.",
+            "Check matched-day subtraction as sensitivity to subtracting means with unequal valid-day coverage; mark cross-epoch Figure16 pairing inapplicable."
+          ],
+          "sensitivity": {
+            "applicable": true,
+            "rationale": "Compare difference of means with mean of differences over the exact intersection of valid dates. Two sentinel route days are descriptive, not representative sample replications."
+          },
+          "replication_unit": "Historical daily panel for percentages; entire configuration-matched epochs for Figure16. Individual cells, days, repeated paths and servers are not independent study replications.",
+          "sample_size_rationale": "Census of 1152 difference cells in Figures13\u201315c/d and 384 cells in Figure16a/b. Two route dates chosen before interpretation to match the start of original before/after windows; no power or random-sample claim.",
+          "exclusions": "Dates outside the three original fold windows are excluded. Missing files/counts and invalid denominators are retained. No complete route census, APNIC campaign, packet-distribution experiment or population weighting is claimed.",
+          "missing_data": "Missing, invalid and ambiguous observations retain null values with reasons. Recorded zeros remain numeric zero. Unavailable full inputs exclude the substantive experiment and retain its source audit.",
+          "statistics": "Descriptive means, paired contrasts, counts and numerical agreement under absolute 0.0051 pp criterion. The subtraction-only PDF control uses <=0.01 pp to allow rounding of both operands. No inferential confidence intervals.",
+          "dependence": "Same servers, changing NS-set panels, repeated days and route probes are correlated. These are convenience-panel archives. No causal, geographic, operational or population inference follows from agreement.",
+          "resource_limits": {
+            "max_observations": 10000,
+            "max_input_bytes": 10000000,
+            "max_expanded_bytes": 60000000,
+            "wall_seconds": 300,
+            "new_network_hosts": 0,
+            "model_calls": 0,
+            "estimated_cost_usd": null,
+            "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+          },
+          "stopping_rule": "One main attempt per frozen version. Stop on changed hashes, malformed topology, count invariant or resource limit; preserve failures and amend prospectively. Inputs too large or unavailable exclude their experiment, rather than substituting data.",
+          "prior_exposure": "Previous absolute-panel results and nine original labels were known. This turn inspected directory schemas, two route-summary schemas, relative panel axes and Figure16 contrast labels before freezing. Some sentinel counts were visible in schema previews. This is a follow-up with prior exposure, not independent held-out validation.",
+          "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention.",
+          "data_origin": "archived-data",
+          "applicability": {
+            "relative_cell_comparison": true,
+            "route_summary_checks": false,
+            "full_requested_scope": "Inapplicable to the available reduced archive for this attempt; excluded prerequisites are recorded separately, not invented.",
+            "historical_rfc_source_check": false,
+            "other_metrics": "Declared numeric metrics are inapplicable to a source-availability-only run; such runs contain no fabricated measurements."
+          }
+        },
+        "sha256": "2e6f66fdde443bcc24d3256aec9e5d7422ed7eda6dc0fda9e85c0007df0e42e5",
+        "frozen_at": "2026-10-07T23:00:30.969752+00:00",
+        "registration_kind": "prospective",
+        "amendment_reason": null
+      }
+    },
+    {
+      "kind": "configurations",
+      "record": {
+        "id": "423efe65-20f8-5ddb-a5b6-fa7007fd68b7",
+        "identity": "relative-figures-followup-v1",
+        "details": {
+          "claim_id": "03283d34-2f8f-5dad-9ba8-7d052e1e1229",
+          "epochs": {
+            "tcp-error": [
+              "2025-04-10",
+              "2025-05-23"
+            ],
+            "pre-lgi": [
+              "2025-05-25",
+              "2025-06-14"
+            ],
+            "current": [
+              "2025-06-25",
+              "2025-09-14"
+            ]
+          },
+          "families": [
+            "v4-only",
+            "v6-only"
+          ],
+          "edns_bytes": [
+            1232,
+            4096
+          ],
+          "mtus": [
+            "mtu1500",
+            "mtu1280-pmtud",
+            "mtu1280-nopmtud",
+            "mtu1280onpath-nopmtud"
+          ],
+          "cohorts": [
+            "dnssec",
+            "no-dnssec"
+          ],
+          "upstreams": [
+            "lgi",
+            "no-lgi"
+          ],
+          "route_sentinels": [
+            "2025-05-25",
+            "2025-06-25"
+          ]
+        },
+        "input_versions": [
+          {
+            "identity": "inputs.tar.gz",
+            "sha256": "5d1ba531426b3d9eb3267b342ad1479e16941efd4146b401d9059ff28b29b26b"
+          },
+          {
+            "identity": "input-manifest.json",
+            "sha256": "435c3ec6201bff06fea121414a2905edfe262fc10536078e30b8b25ddc755f2a"
+          }
+        ],
+        "requested_resources": {
+          "max_observations": 10000,
+          "max_input_bytes": 10000000,
+          "max_expanded_bytes": 60000000,
+          "wall_seconds": 300,
+          "new_network_hosts": 0,
+          "model_calls": 0,
+          "estimated_cost_usd": null,
+          "cost_basis": "Local compute, database/storage/transfer and Codex are unallocated; missing charges are not zero."
+        }
+      }
+    },
+    {
+      "kind": "campaigns",
+      "record": {
+        "id": "5dcde430-08e2-5d1a-84b4-9e7eb87cb1fb",
+        "protocol_id": "44d795d8-52ce-5133-a454-eb0b46a4f259",
+        "followup_of": "ac674cd6-f50f-5ce2-b49f-d778379fdb8c",
+        "title": "Unresolved claim follow-up: relative-figures",
+        "stage": "follow-up",
+        "experiment_type": "reanalysis",
+        "adapter": "domain-operator",
+        "planned_units": 1536,
+        "coverage_limits": "Partial claim assessment only. A successful source audit is not successful reproduction. No raw PCAP replay, route-to-DNS-query join, independent IP-to-AS reclassification, representative population sample, historical matched RFC experiment or multi-operator operational intervention."
+      }
+    },
+    {
+      "kind": "claim_checks",
+      "record": {
+        "id": "d698690b-1e5e-578d-8dda-8de8438774f1",
+        "claim_id": "03283d34-2f8f-5dad-9ba8-7d052e1e1229",
+        "campaign_id": "5dcde430-08e2-5d1a-84b4-9e7eb87cb1fb",
+        "method": "Bounded archived-data reanalysis and original-source prerequisite audit",
+        "applicability": "partial",
+        "rationale": "The original requested empirical scope is attempted only when its exact prerequisites are present; exclusions remain explicit."
+      }
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# Retain the exact archived export bytes used by the follow-up manifests.
+experiments/ipv6_dns/followups/20261007-v1/comparisons.csv -text whitespace=cr-at-eol
