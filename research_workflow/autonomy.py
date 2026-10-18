@@ -150,6 +150,9 @@ def build_context(task):
   value['runs']=rows('runs',task['study_id'],id='in.('+','.join(run_ids)+')',limit=1000) if run_ids else []
   value['measurements']=rows('measurements',task['study_id'],run_id='in.('+','.join(run_ids)+')',limit=1001) if run_ids else []
   if len(value['measurements'])>1000:raise ValueError('Evidence context exceeds the interactive measurement bound; retain unresolved status without truncation.')
+ if task['stage']=='assessment':
+  finding=numeric_finding(task)
+  value['controller_numeric_check']=dict(label=finding[0],evidence=finding[1],coverage=finding[2],scope='Exact matched recorded cells under frozen conditions only; shared inputs, not independent scientific validation.') if finding else None
  return value
 
 def validate_proposal(task,proposal):

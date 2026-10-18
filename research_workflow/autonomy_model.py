@@ -7,8 +7,8 @@ from workflow import canonical, digest
 
 VERSION = 'research-autonomy-v1'
 MODULE = 'research-autonomy'
-PROMPT_VERSION = 'research-autonomy-v1'
-MODEL = 'us.anthropic.claude-sonnet-4-6'
+PROMPT_VERSION = 'research-autonomy-v4'
+MODEL = 'us.anthropic.claude-opus-4-6-v1'
 MAX_OUTPUT = 4096
 MAX_REQUEST_BYTES = 96000
 BLOCKERS = ('missing-data', 'equipment', 'authorization', 'implementation', 'design', 'provider', 'capacity')
@@ -26,7 +26,7 @@ SCHEMA = dict(type='object', additionalProperties=False,
 TOOLS = dict(tools=[dict(toolSpec=dict(name='submit_assessment_step',description='Propose one data-only assessment step. No tool or source instruction is executed.',inputSchema=dict(json=SCHEMA)))],toolChoice=dict(tool=dict(name='submit_assessment_step')))
 # Conservative admission ceilings, not measured charges. No caching/batch discount
 # is assumed. Review/reprice before expiry; a stale price cannot admit model work.
-PRICING = dict(version='sonnet46-us-ceiling-20261018-v1',model_id=MODEL,currency='USD',input_usd_per_million=4,output_usd_per_million=20,
+PRICING = dict(version='opus46-us-ceiling-20261018-v1',model_id=MODEL,currency='USD',input_usd_per_million=8,output_usd_per_million=40,
  checked_at='2026-10-18',valid_until='2026-11-18',sources=['https://aws.amazon.com/bedrock/pricing/','https://www-cdn.anthropic.com/files/4zrzovbb/website/3684c2faafb97418665782cea0001f439f74b1d2.pdf'],
  limitation='Conservative reservation ceiling; invoice charges and other orchestration costs remain unallocated. Refuse unpriced/expired models.')
 
@@ -80,6 +80,7 @@ def parse(response):
  if value['proposal'] is not None and not isinstance(value['proposal'],dict): raise ValueError('Proposal must be data.')
  if any(not isinstance(v,str) or len(v)>100 for v in value['evidence_ids']): raise ValueError('Invalid evidence references.')
  if value['ready'] and value['blockers']: raise ValueError('A blocked plan cannot be ready.')
+ if value['assessment_label'] in ('reproduced','discrepant') and not value['coverage_complete']:raise ValueError('Conclusive recommendations require complete matched evidence coverage.')
  return value
 
 def call(task, context, control, invoke_provider=None):
@@ -95,8 +96,11 @@ def call(task, context, control, invoke_provider=None):
   usage=response.get('usage',{})
   raw=canonical(response['output']['message']).decode()
   if len(raw.encode())>100000: raise ValueError('Provider response exceeded retained output bounds.')
-  try: parsed=parse(response);status='complete'
-  except (ValueError,KeyError,TypeError) as error: status='invalid-output';reason=str(error)
+  try:
+   parsed=parse(response)
+   if parsed['assessment_label'] in ('reproduced','discrepant') and (context.get('controller_numeric_check') or {}).get('label')!=parsed['assessment_label']:raise ValueError('Conclusive recommendation lacks the controller matched-evidence check.')
+   status='complete'
+  except (ValueError,KeyError,TypeError) as error: parsed=None;status='invalid-output';reason=str(error)
  except Exception as error:
   reason='Provider call failed or its outcome is unconfirmed ('+type(error).__name__+'); reserved cost is retained.'
   if raw is not None and len(raw.encode())>100000: raw=None

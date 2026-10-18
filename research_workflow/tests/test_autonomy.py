@@ -92,6 +92,27 @@ class Autonomy(unittest.TestCase):
   t=task()
   with patch.object(model,'load_prompt',return_value=({'id':str(uuid.uuid4())},'System')):
    with self.assertRaisesRegex(ValueError,'never blindly'):model.call(t,{},lambda *a:dict(replayed=True),lambda _:self.fail('No provider replay'))
+ def test_only_the_exact_corrective_published_prompt_can_load(self):
+  p=dict(id=str(uuid.uuid4()),module_id=model.MODULE,version='research-autonomy-v1',system_prompt='System',research_context='Context',content_sha256=workflow.digest(b'System\n\nContext'),published_at='2026-10-18T00:00:00Z')
+  with patch.object(store,'request',return_value=[p]):
+   with self.assertRaisesRegex(ValueError,'identity/publication/hash'):model.load_prompt()
+   p['version']=model.PROMPT_VERSION;self.assertEqual(model.load_prompt()[1],'System\n\nContext')
+   p['published_at']=None
+   with self.assertRaises(ValueError):model.load_prompt()
+ def test_partial_coverage_cannot_recommend_a_conclusive_label(self):
+  v=answer('assess');v.update(assessment_label='discrepant',coverage_complete=False)
+  with self.assertRaisesRegex(ValueError,'complete matched evidence'):model.parse(response(v))
+ def test_model_cannot_recommend_a_conclusion_without_controller_evidence(self):
+  t=task('assessment');v=answer('assess');v.update(assessment_label='reproduced',coverage_complete=True)
+  def control(*args):return dict(replayed=False)
+  with patch.object(model,'load_prompt',return_value=({'id':str(uuid.uuid4())},'System')):
+   result=model.call(t,{},control,lambda _:response(v))
+  self.assertEqual(result['status'],'invalid-output');self.assertIsNone(result['output']);self.assertIn('controller matched-evidence',result['reason'])
+ def test_assessment_context_contains_only_the_recorded_controller_numeric_check(self):
+  t=task('assessment');claim=dict(id=t['claim_id'],source_id=str(uuid.uuid4()),description='Exact original')
+  finding=('discrepant',[dict(kind='runs',id='recorded-run')],dict(decision_runs=1))
+  with patch.object(autonomy,'one',side_effect=[claim,{'id':claim['source_id']}]),patch.object(autonomy,'rows',return_value=[]),patch.object(autonomy,'numeric_finding',return_value=finding):v=autonomy.build_context(t)
+  self.assertEqual(v['controller_numeric_check']['label'],'discrepant');self.assertEqual(v['controller_numeric_check']['evidence'],finding[1]);self.assertIn('shared inputs',v['controller_numeric_check']['scope'])
  def test_interpretation_disagreement_reuses_existing_evidence_without_new_experiments(self):
   for covered,label in ((True,'reproduced'),(False,'inconclusive')):
    t=task('assessment');t['context']={'job_ids':['original-job'],'campaign_ids':['original-campaign']}
