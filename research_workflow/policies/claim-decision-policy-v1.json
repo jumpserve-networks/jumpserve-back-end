@@ -1,0 +1,6 @@
+{
+  "version": "claim-decision-policy-v1",
+  "mode": "descriptive-only",
+  "statistics": "Report observed values and matched configuration contrasts descriptively, with recorded units, coverage and exclusions. Ranges describe observed values, not confidence intervals. Do not infer independent samples from separate invocations, flows or adjacent time points. No hypothesis test, equivalence test or population inference is authorized by this policy.",
+  "decision_rule": "This descriptive pilot has no decision rule for reproducing or contradicting the wider paper claim. Distribution overlap, a non-significant result or failure to reject a null does not establish no effect or equivalence. Missing, invalid and ambiguous observations cannot decide the claim; recorded zero remains a value. An inferential conclusion requires a separately reviewed analysis design specifying the estimand, sampling/dependence structure, decision criteria and any justified equivalence margin. No automatic claim label is assigned."
+}

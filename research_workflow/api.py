@@ -9,6 +9,7 @@ import store
 import scheduler
 import preparation
 import ideas
+import claim_design
 import network_execution
 import network_spec
 import gap_queue
@@ -75,7 +76,7 @@ def dispatch(event, actor=None):
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
     if path == "/research/capabilities" and method == "GET":
-        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
+        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, claim_design_version=claim_design.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
         if method == "GET":
             if query.get("mine") == "1":
@@ -83,7 +84,9 @@ def dispatch(event, actor=None):
                 owners = store.rows("study_owners", {"owner_id": "eq." + actor, "limit": 101})
                 if len(owners) > 100: raise HttpError(413, "Owner study listing exceeds 100 records; use operator pagination.")
                 ids = [r["study_id"] for r in owners]
-                return {"studies": store.rows("studies", {"id": "in.(" + ",".join(ids) + ")", "limit": 100}) if ids else [], "access": "owner-drafts"}
+                studies = store.rows("studies", {"id": "in.(" + ",".join(ids) + ")", "limit": 100}) if ids else []
+                designs = {row['study_id'] for row in store.rows('claim_designs', {'study_id': 'in.(' + ','.join(ids) + ')', 'select': 'study_id', 'limit': 101})} if ids else set()
+                return {"studies": [dict(row, claim_design=True) if row['id'] in designs else row for row in studies], "access": "owner-drafts"}
             records = store.rows("studies", {"limit": 101}, public=True)
             return {"studies": records[:100], "has_more": len(records) > 100, "access": "published"}
         if method == "POST":
@@ -99,8 +102,10 @@ def dispatch(event, actor=None):
     owner = bool(actor and store.owns(study_id, actor))
     if len(parts) == 5 and parts[4] == 'gap-experiments':
         if not actor: raise HttpError(401, 'Sign in to queue follow-up experiments.')
-        if method == 'GET': return gap_queue.preview(study_id, actor, query.get('gap_id'))
-        if method == 'POST': return gap_queue.enqueue(study_id, actor, parse_body(event))
+        if method == 'GET': return claim_design.selection(study_id, actor, query['claim_id'])[0] if query.get('claim_id') else gap_queue.preview(study_id, actor, query.get('gap_id'))
+        if method == 'POST':
+            body = parse_body(event)
+            return claim_design.start(study_id, actor, body) if body.get('action') == 'design' else gap_queue.enqueue(study_id, actor, body)
         raise HttpError(405, 'GET or POST required.')
     if len(parts)==5 and parts[4]=='network':
         if not owner: raise HttpError(404 if actor else 401,'Sign in as this study owner to manage networking execution.')
@@ -126,18 +131,21 @@ def dispatch(event, actor=None):
             return dict(document=network_spec.bind_inputs(candidate),limitations='Only executable specifications and hashes are compiled; scientific methods and readiness remain separately reviewed.')
         if action=='cancel': return network_execution.cancel(study_id,actor,body)
         raise ValueError('Choose upload-package, upload-input, compile or cancel.')
-    if len(parts) == 5 and parts[4] == "idea":
+    if len(parts) == 5 and parts[4] in ("idea", "claim-design"):
         if not actor: raise HttpError(401, "Sign in to manage your private research idea.")
         if not owner: raise HttpError(404, "Study not found.")
         studies = store.rows("studies", {"id": "eq." + study_id, "limit": 1})
-        if not studies or studies[0].get("study_kind") != "idea": raise HttpError(409, "This flow is for unpublished research ideas.")
-        if method == "GET": return ideas.status(study_id)
+        designing = parts[4] == 'claim-design'
+        retained = claim_design.context(study_id) if designing else None
+        if not studies or studies[0].get('study_kind') != ('paper' if designing else 'idea'): raise HttpError(409, 'Choose the planning flow for this study origin.')
+        if method == "GET": return claim_design.status(study_id) if designing else ideas.status(study_id)
         if method == "POST":
             body = parse_body(event)
-            if body.get("action") == "save": return ideas.save(study_id, actor, body)
-            if body.get("action") == "accept": return ideas.accept(study_id, actor, body)
-            if body.get("action") == "prepare-campaign": return ideas.prepare_campaign(studies[0], actor, body)
-            if body.get("action") == "resume-campaign": return ideas.resume_campaign(studies[0], actor, body)
+            if body.get('action') == 'adopt' and designing: return claim_design.adopt(study_id, actor, body)
+            if body.get("action") == "save": return claim_design.save(study_id, actor, body) if designing else ideas.save(study_id, actor, body)
+            if body.get("action") == "accept": return claim_design.accept(study_id, actor, body) if designing else ideas.accept(study_id, actor, body)
+            if body.get("action") == "prepare-campaign": return ideas.prepare_campaign(studies[0], actor, body, retained=retained)
+            if body.get("action") == "resume-campaign": return ideas.resume_campaign(studies[0], actor, body, retained=retained)
             raise ValueError("Choose save, accept, prepare-campaign or resume-campaign.")
         raise HttpError(404, "Idea endpoint not found.")
     if len(parts) == 5 and parts[4] == "prepare":
@@ -160,6 +168,7 @@ def dispatch(event, actor=None):
     if method == "GET" and len(parts) == 4:
         data = store.snapshot(study_id, owner=owner)
         if not data: raise HttpError(404, "Study not found or no published assessment is available.")
+        if owner and store.rows('claim_designs', {'study_id': 'eq.' + study_id, 'limit': 1}): data['study']['claim_design'] = True
         return data
     if method != "POST" or len(parts) != 5: raise HttpError(404, "Research endpoint not found.")
     if not actor: raise HttpError(401, "Sign in to manage this study.")

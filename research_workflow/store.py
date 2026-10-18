@@ -56,6 +56,8 @@ def rows(kind, params=None, public=False):
         projection = "id,study_id,plan_id,manifest_sha256,original_artifact_id,compiled_artifact_id,jobs,provenance,created_at"
     elif kind == "idea_packets" and not public:
         projection = "id,study_id,version,supersedes_id,document,raw_document,sha256,reason,created_at"
+    elif kind == "claim_designs" and not public:
+        projection = "id,study_id,document,raw_document,sha256,source_id,claim_id,created_at"
     elif kind == "idea_runs" and not public:
         projection = "id,study_id,packet_id,task,session_id,status,reason,prompt_version_id,model_id,output,raw_response,response_sha256,usage,provenance,created_at,ended_at"
     elif kind == "idea_readiness" and not public:
@@ -73,6 +75,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name == 'research_initialize_claim_design': return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan", "research_save_idea_packet", "research_accept_idea_plan", "research_prepare_idea_campaign", "research_network_begin", "research_network_pending", "research_network_cancel", "research_network_launch", "research_network_update", "research_network_token"): raise ValueError("Unsupported research operation.")
     return request("/rest/v1/rpc/" + name, "POST", payload)
 

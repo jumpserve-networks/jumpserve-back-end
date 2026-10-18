@@ -71,11 +71,16 @@ def accept(study_id, actor, body):
         p_packet=selected["id"], p_comprehension=identifier(body.get("comprehension_run_id")),
         p_critic=identifier(body.get("critic_run_id")), p_reason=text(body.get("reason"), "Readiness rationale", 2000)))
 
-def prepare_campaign(study, actor, body):
+def prepare_campaign(study, actor, body, retained=None):
     allowed = {"action", "request_id", "packet_id", "title", "stage", "claim_type", "experiment_type", "planned_units"}
     if set(body) - allowed: raise ValueError("Unsupported idea campaign fields.")
     selected = packet(study["id"], body.get("packet_id")); value = selected["document"]
     if completeness(value): raise ValueError("Complete and review the current plan before freezing an experimental campaign.")
+    if retained:
+        from claim_design import validate_binding
+        validate_binding(value, retained)
+        if any(body.get(key) != value['protocol'].get(field) for key, field in (('stage', 'stage'), ('experiment_type', 'experiment_type'))):
+            raise ValueError('Campaign stage and method must match the reviewed paper-claim protocol.')
     request_id = identifier(body.get("request_id")); namespace = uuid.UUID(request_id)
     def uid(name): return str(uuid.uuid5(namespace, name))
     protocol = dict(value["protocol"], idea_packet_id=selected["id"], idea_packet_sha256=selected["sha256"])
@@ -91,6 +96,12 @@ def prepare_campaign(study, actor, body):
     claim = validate_record("claims", dict(id=uid("claim"), source_id=source["id"], location="Idea packet hypothesis",
         description=value["hypothesis"], claim_type=body.get("claim_type"), scope=dict(origin="unpublished-hypothesis", conditions=value["conditions"], packet_id=selected["id"]),
         metrics=protocol["metrics"], priority=3))
+    if retained:
+        source = store.rows('sources', {'study_id': 'eq.' + study['id'], 'id': 'eq.' + retained['source_id'], 'limit': 1})[0]
+        claim = store.rows('claims', {'study_id': 'eq.' + study['id'], 'id': 'eq.' + retained['claim_id'], 'limit': 1})[0]
+        from workflow import FIELDS
+        source = {key: source[key] for key in ('id', *FIELDS['sources'])}
+        claim = {key: claim[key] for key in ('id', *FIELDS['claims'])}
     frozen = protocol_record(protocol, uid("protocol"))
     campaign = validate_record("campaigns", dict(id=uid("campaign"), title=text(body.get("title"), "Campaign title", 300),
         protocol_id=frozen["id"], stage=body.get("stage"), experiment_type=body.get("experiment_type"),
@@ -103,13 +114,13 @@ def prepare_campaign(study, actor, body):
     check = validate_record("claim_checks", dict(id=uid("check"), claim_id=claim["id"], campaign_id=campaign["id"],
         method="Preregistered networking execution" if executable else "Preregistered domain experiment; operator execution required", applicability="applicable", rationale=value["falsification"]))
     artifact = store.artifact(study["id"], actor, selected["raw_document"].encode(), uid("artifact"), "application/json",
-        dict(origin="unpublished-proposal", packet_id=selected["id"], transformation="None from the retained canonical packet bytes; not empirical data"))
+        dict(origin="paper-claim-design" if retained else "unpublished-proposal", packet_id=selected["id"], transformation="None from the retained canonical packet bytes; not empirical data"))
     entries = [dict(kind=kind, record=row) for kind, row in (("artifacts", artifact), ("sources", source), ("claims", claim), ("protocols", frozen), ("campaigns", campaign), ("claim_checks", check))]
     for index, configuration in enumerate(protocol["configurations"]):
         entries.append(dict(kind="configurations", record=validate_record("configurations", dict(id=uid("configuration:" + str(index)),
             identity=configuration["identity"], details=configuration["details"], input_versions=protocol["input_versions"], requested_resources=protocol["resource_limits"]))))
     entries.append(dict(kind="gaps", record=validate_record("gaps", dict(id=uid("gap"), claim_id=claim["id"], assessment_id=None, supersedes_id=None,
-        status="planned", reason="The unpublished hypothesis has no completed experimental check.", next_check=campaign["title"],
+        status="planned", reason="This proposed campaign has no completed experimental check; original findings remain separate.", next_check=campaign["title"],
         required_inputs=protocol["input_versions"], dependencies=[dict(description="Registered networking executor and recorded measurements" if executable else "Domain implementation, operator and recorded measurements", status="required")],
         feasibility="Executable configuration prepared; queue activation and actual recorded outcomes still required." if executable else "Domain-specific execution is required; no automatic experiment is implied by preparation.", estimated_cost_usd=protocol["resource_limits"].get("estimated_cost_usd"),
         cost_basis=protocol["resource_limits"].get("cost_basis", "Missing charges are unknown, not zero."), decision_rule=value["falsification"],
@@ -123,10 +134,10 @@ def prepare_campaign(study, actor, body):
             rationale='Execute the frozen networking specification and retain actual measurements; no automatic claim finding.',followup_of=None) for index,spec in enumerate(executable)]
         return dict(link=result,queue_request=requests[0],queue_requests=requests,execution=dict(version=network_spec.VERSION,runner=protocol['execution']['runner'],jobs=len(requests)))
     return dict(link=result, queue_request=dict(request_id=uid("job"), campaign_id=result["campaign_id"], execution_mode="manual", priority=3,
-        dependencies=[], exclusive_resources=[], raw_input=None, rationale="Prepared unpublished-hypothesis experiment; requires domain operator and retained original measurements.", followup_of=None))
+        dependencies=[], exclusive_resources=[], raw_input=None, rationale="Prepared experiment; requires domain operator and retained original measurements.", followup_of=None))
 
-def resume_campaign(study, actor, body):
+def resume_campaign(study, actor, body, retained=None):
     if set(body) != {"action", "prepared_id"}: raise ValueError("Resume uses the saved campaign identity only.")
     rows = store.rows("idea_campaign_links", {"study_id": "eq." + study["id"], "id": "eq." + identifier(body["prepared_id"]), "limit": 1})
     if not rows: raise ValueError("Prepared campaign is unavailable in this study.")
-    return prepare_campaign(study, actor, dict(rows[0]["request"], action="prepare-campaign"))
+    return prepare_campaign(study, actor, dict(rows[0]["request"], action="prepare-campaign"), retained=retained)
