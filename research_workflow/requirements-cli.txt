@@ -1,3 +1,3 @@
 # Optional operator PDF extraction; exact locally exercised parser version.
-# Lambda runtime uses stdlib and its bundled boto3; do not bundle this parser there.
+# Autonomous PDF worker uses the same parser through the hash-verified dedicated layer.
 pypdf==6.19.0

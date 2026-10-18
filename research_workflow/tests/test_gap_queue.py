@@ -121,7 +121,7 @@ class QueueOverview(unittest.TestCase):
         study = str(uuid.uuid4()); campaign = str(uuid.uuid4()); previous = str(uuid.uuid4())
         jobs = [dict(id=previous, study_id=study, campaign_id=campaign, status='failed', execution_mode='automatic', dependencies=[], reason='Original failure', request={'private': 'input'})]
         jobs.append(dict(jobs[0], id=str(uuid.uuid4()), status='queued', run_id=str(uuid.uuid4()), dependencies=[dict(job_id=previous, requirement='complete-run')]))
-        with patch.object(store, 'rows', side_effect=[[dict(study_id=study)], [dict(id=study)], jobs, [dict(id=campaign, title='Actual campaign')], []]):
+        with patch.object(store, 'rows', side_effect=[[dict(study_id=study)], [dict(id=study)], jobs, [dict(id=campaign, title='Actual campaign')], [], []]):
             result = scheduler.overview(ACTOR)
         self.assertEqual(result['jobs'][0]['status'], 'failed'); self.assertEqual(result['jobs'][1]['readiness'], 'blocked')
         self.assertIsNone(result['jobs'][1]['run_status']); self.assertNotIn('request', result['jobs'][0])

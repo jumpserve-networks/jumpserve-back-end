@@ -158,7 +158,8 @@ def overview(actor):
         row['blockers'] = blockers(job, indexed)
         row['readiness'] = 'blocked' if job['status'] in ('queued', 'manual') and row['blockers'] else 'ready' if job['status'] == 'queued' else job['status']
         public_jobs.append(row)
-    result = dict(version='research-queue-overview-v1', access='owner-private', studies=studies, jobs=public_jobs,
+    import autonomy
+    result = dict(version='research-queue-overview-v1', access='owner-private', studies=studies, jobs=public_jobs, autonomy=autonomy.overview(studies),
                   workers_enabled=os.environ.get('RESEARCH_QUEUE_WORKERS_ENABLED') == 'true', limits=LIMITS,
                   coverage=dict(studies=len(studies), jobs=len(jobs)),
                   limitations='Your paper studies only. Status is recorded execution progress, not scientific validation. Detailed event history remains in each private study queue. Missing run status is unknown.')

@@ -13,6 +13,7 @@ import claim_design
 import network_execution
 import network_spec
 import gap_queue
+import autonomy
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -76,7 +77,7 @@ def dispatch(event, actor=None):
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
     if path == "/research/capabilities" and method == "GET":
-        return dict(version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, claim_design_version=claim_design.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
+        return dict(autonomy=autonomy.capability(), version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, claim_design_version=claim_design.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
         if method == "GET":
             if query.get("mine") == "1":
@@ -92,6 +93,8 @@ def dispatch(event, actor=None):
         if method == "POST":
             if not actor: raise HttpError(401, "Sign in to create a study.")
             body = parse_body(event)
+            if body.get('autonomous') is True: return autonomy.start(actor,body)
+            if 'autonomous' in body: raise ValueError('Choose the autonomous paper intake with its application defaults.')
             return store.rpc("research_create_study", dict(p_actor=actor, p_id=identifier(body.get("request_id")), p_document=paper_details(body.get("paper"))))
     if path == '/research/queue' and method == 'GET':
         if not actor: raise HttpError(401, 'Sign in to view your experiment queue.')
@@ -100,6 +103,14 @@ def dispatch(event, actor=None):
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])
     owner = bool(actor and store.owns(study_id, actor))
+    if len(parts)==5 and parts[4]=='autonomy':
+        if not owner: raise HttpError(404 if actor else 401,'Sign in as this paper owner to view autonomous progress.')
+        if method=='GET':
+            if query.get('task'): return autonomy.history(study_id,query['task'],query.get('before'))
+            return autonomy.overview([{'id':study_id}])
+        if method=='POST' and parse_body(event)=={'action':'cancel'}:
+            return store.rpc('research_autonomy_control',dict(p_operation='cancel',p_actor=actor,p_study=study_id,p_payload={}))
+        raise HttpError(400,'Choose owner-scoped history or cancellation; limits and prompts are server owned.')
     if len(parts) == 5 and parts[4] == 'gap-experiments':
         if not actor: raise HttpError(401, 'Sign in to queue follow-up experiments.')
         if method == 'GET': return claim_design.selection(study_id, actor, query['claim_id'])[0] if query.get('claim_id') else gap_queue.preview(study_id, actor, query.get('gap_id'))

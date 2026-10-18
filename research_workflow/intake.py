@@ -103,7 +103,7 @@ def text_packet(path, output):
     raw=path.read_bytes();started=now();tick=time.monotonic()
     limits={'wall_seconds':30,'cpu_seconds':20,'address_space_bytes':536870912 if sys.platform.startswith('linux') else None,'input_bytes':10_000_000,'pages':300,'characters':2_000_000}
     try:
-        process=subprocess.run([sys.executable,str(Path(__file__).resolve()),'--text-worker'],input=raw,capture_output=True,timeout=limits['wall_seconds'])
+        process=subprocess.run([sys.executable,'-B',str(Path(__file__).resolve()),'--text-worker'],input=raw,capture_output=True,timeout=limits['wall_seconds'])
         if process.returncode!=0:raise ValueError('PDF extraction failed or reached its CPU/memory limit; original bytes remain unchanged. '+process.stderr.decode(errors='replace')[-1000:])
         packet=json.loads(process.stdout);packet['resource_limits']=limits
         packet['usage']={'wall_seconds':time.monotonic()-tick,'original_bytes':len(raw),'measured_charges_usd':None}

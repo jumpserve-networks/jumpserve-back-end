@@ -1,0 +1,6 @@
+{
+  "version": "autonomy-experiment-costs-v1",
+  "currency": "USD",
+  "quotes": [],
+  "limitations": "No cloud configuration has yet passed a hard-resource-bound cost review for autonomous spending. Existing registered arithmetic can run under its conservative hosting reservation. Networking needs a versioned server-approved exact-specification quote; model-generated prices and unknown network usage cannot authorize cloud spending. Existing manual networking flows are unchanged."
+}

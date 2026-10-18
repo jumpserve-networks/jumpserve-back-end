@@ -48,6 +48,12 @@ def rows(kind, params=None, public=False):
         projection = "id,title,paper_url,domain,scope,origin_module,study_kind,created_at"
     elif kind == "study_owners" and not public:
         projection = "study_id,owner_id"
+    elif kind == 'autonomy_workflows' and not public:
+        projection = 'study_id,initial_prompt,initial_sha256,max_spend_cents,max_attempts,committed_cents,overhead_reservation_cents,status,reason,created_at,deadline_at,updated_at'
+    elif kind == 'autonomy_tasks' and not public:
+        projection = 'id,study_id,claim_id,stage,status,label,attempts,context,reason,required_inputs,next_at,created_at,updated_at'
+    elif kind == 'autonomy_turns' and not public:
+        projection = 'id,study_id,task_id,number,stage,prompt_version_id,model_id,request,request_raw,request_sha256,status,reserved_cents,estimated_cents,raw_response,response_sha256,output,usage,reason,created_at,ended_at'
     elif kind == "queue_jobs" and not public:
         projection = "id,study_id,campaign_id,input_artifact_id,followup_of,execution_mode,priority,dependencies,exclusive_resources,request,definition_sha256,status,reason,run_id,lease_until,created_at,updated_at"
     elif kind == "queue_events" and not public:
@@ -66,7 +72,7 @@ def rows(kind, params=None, public=False):
         projection = "id,study_id,packet_id,campaign_id,protocol_id,request,created_at"
     else:
         raise ValueError("Unsupported research relation.")
-    query = {"select": projection, "order": "created_at.asc,id.asc", "limit": 1000, **(params or {})}
+    query = {"select": projection, "order": "created_at.asc,study_id.asc" if kind == 'autonomy_workflows' else "created_at.asc,id.asc", "limit": 1000, **(params or {})}
     if kind == "study_owners": query.pop("order", None)
     result = request("/rest/v1/" + table + "?" + urllib.parse.urlencode(query), public=public)
     if kind in ('measurements', 'published_values'):
@@ -75,7 +81,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
-    if name in ('research_initialize_claim_design', 'research_reuse_claim_packet'): return request('/rest/v1/rpc/' + name, 'POST', payload)
+    if name in ('research_initialize_claim_design', 'research_reuse_claim_packet', 'research_autonomy_control'): return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan", "research_save_idea_packet", "research_accept_idea_plan", "research_prepare_idea_campaign", "research_network_begin", "research_network_pending", "research_network_cancel", "research_network_launch", "research_network_update", "research_network_token"): raise ValueError("Unsupported research operation.")
     return request("/rest/v1/rpc/" + name, "POST", payload)
 
