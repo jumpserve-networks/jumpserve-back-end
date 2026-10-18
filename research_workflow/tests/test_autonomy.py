@@ -10,7 +10,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import api,autonomy,autonomy_model as model,autonomy_sources as sources,store,workflow
 
 def answer(action='blocked'):
- return dict(action=action,reason='Specific recorded evidence gap.',blockers=[],claims=[],check_id=None,proposal=None,ready=None,coverage_complete=False,assessment_label=None,evidence_ids=[])
+ return dict(action=action,reason='evidence-incomplete',blockers=[],claims=[],check_id=None,proposal=None,ready=None,coverage_complete=False,assessment_label=None,evidence_ids=[])
 def response(value):return dict(stopReason='tool_use',output=dict(message=dict(role='assistant',content=[dict(toolUse=dict(name='submit_assessment_step',input=value,toolUseId='test'))])),usage=dict(inputTokens=100,outputTokens=20))
 def task(stage='planning'):
  return dict(id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),actor_id=str(uuid.uuid4()),claim_id=str(uuid.uuid4()),lease_token=str(uuid.uuid4()),attempts=0,stage=stage,context={},workflow=dict(initial_prompt='Exact initial form',max_spend_cents=10000,committed_cents=500,deadline_at='2026-10-25T00:00:00Z'))
@@ -38,7 +38,7 @@ class Autonomy(unittest.TestCase):
   self.assertGreater(model.reservation(value,today=dt.date(2026,10,18)),0)
   with self.assertRaises(ValueError):model.reservation(value,today=dt.date(2027,1,1))
  def test_model_output_validation_does_not_repair_blocked_readiness(self):
-  v=answer('review');v.update(ready=True,blockers=[dict(kind='missing-data',detail='Dataset absent',required_input='Original dataset bytes')])
+  v=answer('review');v.update(reason='ready-within-scope',ready=True,blockers=[dict(kind='missing-data',detail='missing-source-data',required_input='Original dataset bytes')])
   with self.assertRaises(ValueError):model.parse(response(v))
   v=answer();v['claims']=[dict(page=True,quote='Text',claim_type='numerical')]
   with self.assertRaises(ValueError):model.parse(response(v))
@@ -102,8 +102,17 @@ class Autonomy(unittest.TestCase):
  def test_partial_coverage_cannot_recommend_a_conclusive_label(self):
   v=answer('assess');v.update(assessment_label='discrepant',coverage_complete=False)
   with self.assertRaisesRegex(ValueError,'complete matched evidence'):model.parse(response(v))
+ def test_typed_rationales_preserve_raw_input_and_reject_unbounded_assertions(self):
+  v=answer('assess');v['assessment_label']='inconclusive';raw=response(v);parsed=model.parse(raw)
+  self.assertEqual(raw['output']['message']['content'][0]['toolUse']['input']['reason'],'evidence-incomplete');self.assertEqual(parsed['reason'],model.REASONS['evidence-incomplete'])
+  v['reason']='Adjacent samples are necessarily correlated.'
+  with self.assertRaises(ValueError):model.parse(response(v))
+ def test_resource_questions_cannot_request_waiving_fixed_limits(self):
+  v=answer();v['reason']='resource-limit';v['blockers']=[dict(kind='capacity',detail='resource-exhausted',required_input='Reset the attempt counter')]
+  with self.assertRaisesRegex(ValueError,'reset or waived'):model.parse(response(v))
+  v['blockers'][0]['required_input']=model.LIMIT_INPUT;self.assertEqual(model.parse(response(v))['reason'],model.REASONS['resource-limit'])
  def test_model_cannot_recommend_a_conclusion_without_controller_evidence(self):
-  t=task('assessment');v=answer('assess');v.update(assessment_label='reproduced',coverage_complete=True)
+  t=task('assessment');v=answer('assess');v.update(reason='matched-numeric-check',assessment_label='reproduced',coverage_complete=True)
   def control(*args):return dict(replayed=False)
   with patch.object(model,'load_prompt',return_value=({'id':str(uuid.uuid4())},'System')):
    result=model.call(t,{},control,lambda _:response(v))

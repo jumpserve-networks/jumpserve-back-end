@@ -1,4 +1,5 @@
 """Bounded data-only model turns. The controller, never source text, selects work."""
+import copy
 import datetime as dt
 import math
 import time
@@ -7,18 +8,42 @@ from workflow import canonical, digest
 
 VERSION = 'research-autonomy-v1'
 MODULE = 'research-autonomy'
-PROMPT_VERSION = 'research-autonomy-v4'
+PROMPT_VERSION = 'research-autonomy-v5'
 MODEL = 'us.anthropic.claude-opus-4-6-v1'
 MAX_OUTPUT = 4096
 MAX_REQUEST_BYTES = 96000
 BLOCKERS = ('missing-data', 'equipment', 'authorization', 'implementation', 'design', 'provider', 'capacity')
+REASON_VERSION='autonomy-issue-catalog-v1'
+REASONS={
+ 'text-extracted':'Candidate claims were extracted from the supplied text; source coverage remains as recorded.',
+ 'retained-check':'The retained check is selected by identity; its frozen inputs and criteria remain unchanged.',
+ 'prospective-pilot':'The prospective pilot requires fresh reviews before execution.',
+ 'unresolved-method':'The candidate has unresolved method issues; no readiness or full-coverage finding is made.',
+ 'ready-within-scope':'The candidate is ready within its declared scope; readiness does not establish scientific validity.',
+ 'evidence-incomplete':'Recorded evidence has missing observations or unmatched conditions; no conclusive finding is made.',
+ 'matched-numeric-check':'The matched recorded evidence supports the controller calculation under the frozen conditions only.',
+ 'missing-required-inputs':'Required inputs or an applicable implementation are unavailable; the affected claim is paused.',
+ 'resource-limit':'Fixed resource limits prevent additional work; prior records are retained.'}
+DETAILS={
+ 'missing-source-data':'Required source data are not available in the supplied evidence.',
+ 'missing-configuration':'Required configuration details are not supplied.',
+ 'missing-design-specification':'The method needs an explicit design specification.',
+ 'unsupported-inference':'The proposed inference lacks a justified sampling or dependence design.',
+ 'insufficient-scope':'The proposed check does not cover the original claim scope.',
+ 'unavailable-equipment':'Required physical apparatus or a validated domain model is unavailable.',
+ 'unavailable-implementation':'An applicable registered implementation is unavailable.',
+ 'missing-authorization':'Required execution authorization is unavailable.',
+ 'resource-exhausted':'Fixed resources are exhausted; no additional work can be admitted.',
+ 'invalid-source-grounding':'The source grounding does not match retained evidence.',
+ 'unconfirmed-provider':'The provider outcome needs reconciliation before further work.'}
+LIMIT_INPUT='This workflow cannot admit further work under its fixed limits; preserve all prior records.'
 SCHEMA = dict(type='object', additionalProperties=False,
  required=['action','reason','blockers','claims','check_id','proposal','ready','coverage_complete','assessment_label','evidence_ids'],
  properties=dict(
   action=dict(type='string',enum=['discover','choose-check','propose','review','assess','blocked']),
-  reason=dict(type='string',minLength=1,maxLength=3000),
+  reason=dict(type='string',enum=list(REASONS)),
   blockers=dict(type='array',maxItems=10,items=dict(type='object',additionalProperties=False,
-   required=['kind','detail','required_input'],properties=dict(kind=dict(type='string',enum=list(BLOCKERS)),detail=dict(type='string',minLength=1,maxLength=1000),required_input=dict(type='string',minLength=1,maxLength=1000)))),
+   required=['kind','detail','required_input'],properties=dict(kind=dict(type='string',enum=list(BLOCKERS)),detail=dict(type='string',enum=list(DETAILS)),required_input=dict(type='string',minLength=1,maxLength=1000)))),
   claims=dict(type='array',maxItems=20,items=dict(type='object',additionalProperties=False,required=['page','quote','claim_type'],properties=dict(page=dict(type='integer',minimum=1),quote=dict(type='string',minLength=1,maxLength=2000),claim_type=dict(type='string',enum=['numerical','algorithm','association','causal','generalization','operational','theory','standard'])))),
   check_id=dict(type=['string','null']),proposal=dict(type=['object','null']),ready=dict(type=['boolean','null']),
   coverage_complete=dict(type='boolean'),assessment_label=dict(type=['string','null'],enum=['reproduced','discrepant','inconclusive','untested',None]),
@@ -66,21 +91,28 @@ def invoke(value):
 def parse(response):
  blocks=response['output']['message']['content']
  if response.get('stopReason')!='tool_use' or len(blocks)!=1 or set(blocks[0])!={'toolUse'} or blocks[0]['toolUse'].get('name')!='submit_assessment_step': raise ValueError('Expected one structured data response; no requested action was executed.')
- value=blocks[0]['toolUse'].get('input')
+ value=copy.deepcopy(blocks[0]['toolUse'].get('input'))
  if not isinstance(value,dict) or set(value)!=set(SCHEMA['required']): raise ValueError('Incomplete autonomous response schema.')
- if value['action'] not in SCHEMA['properties']['action']['enum'] or not isinstance(value['reason'],str) or not 1<=len(value['reason'].strip())<=3000: raise ValueError('Invalid response action or rationale.')
+ if value['action'] not in SCHEMA['properties']['action']['enum'] or not isinstance(value['reason'],str) or value['reason'] not in REASONS: raise ValueError('Invalid response action or typed rationale.')
  if not isinstance(value['coverage_complete'],bool) or value['ready'] is not None and not isinstance(value['ready'],bool) or value['assessment_label'] not in SCHEMA['properties']['assessment_label']['enum']: raise ValueError('Invalid readiness, coverage or finding.')
  for key,maximum in (('claims',20),('blockers',10),('evidence_ids',100)):
   if not isinstance(value[key],list) or len(value[key])>maximum: raise ValueError('Response exceeds '+key+' limit.')
  for b in value['blockers']:
   if not isinstance(b,dict) or set(b)!={'kind','detail','required_input'} or b['kind'] not in BLOCKERS or any(not isinstance(b[k],str) or not 1<=len(b[k].strip())<=1000 for k in ('detail','required_input')): raise ValueError('Invalid blocker; required input must be explicit.')
+  if b['detail'] not in DETAILS:raise ValueError('Unknown typed issue detail.')
+  if b['kind']=='capacity' and (b['detail']!='resource-exhausted' or b['required_input']!=LIMIT_INPUT):raise ValueError('Fixed resource limits cannot be reset or waived.')
  for c in value['claims']:
   if not isinstance(c,dict) or set(c)!={'page','quote','claim_type'} or isinstance(c['page'],bool) or not isinstance(c['page'],int) or c['page']<1 or not isinstance(c['quote'],str) or not 1<=len(c['quote'].strip())<=2000 or c['claim_type'] not in SCHEMA['properties']['claims']['items']['properties']['claim_type']['enum']: raise ValueError('Invalid source-grounded claim candidate.')
  if value['check_id'] is not None and (not isinstance(value['check_id'],str) or len(value['check_id'])>100): raise ValueError('Invalid check identifier.')
  if value['proposal'] is not None and not isinstance(value['proposal'],dict): raise ValueError('Proposal must be data.')
  if any(not isinstance(v,str) or len(v)>100 for v in value['evidence_ids']): raise ValueError('Invalid evidence references.')
  if value['ready'] and value['blockers']: raise ValueError('A blocked plan cannot be ready.')
+ if (value['action']=='blocked' or value['action']=='review' and value['ready'] is False) and not value['blockers']:raise ValueError('Unresolved decisions require specific blocker questions.')
  if value['assessment_label'] in ('reproduced','discrepant') and not value['coverage_complete']:raise ValueError('Conclusive recommendations require complete matched evidence coverage.')
+ expected={'discover':'text-extracted','choose-check':'retained-check','propose':'prospective-pilot','review':'ready-within-scope' if value['ready'] else 'unresolved-method','assess':'matched-numeric-check' if value['assessment_label'] in ('reproduced','discrepant') else 'evidence-incomplete','blocked':'resource-limit' if any(b['kind']=='capacity' for b in value['blockers']) else 'missing-required-inputs'}[value['action']]
+ if value['reason']!=expected:raise ValueError('Typed rationale does not match the actual decision.')
+ value['reason']=REASONS[value['reason']]
+ for b in value['blockers']:b['detail']=DETAILS[b['detail']]
  return value
 
 def call(task, context, control, invoke_provider=None):
@@ -107,7 +139,8 @@ def call(task, context, control, invoke_provider=None):
  receipt=dict(id=str(turn_id),status=status,raw_response=raw,output=parsed,reason=reason,
   estimated_cents=estimate(usage),usage=dict(tokens=usage,wall_seconds=max(0,time.monotonic()-tick),pricing=PRICING,
   measured_charges_usd=None,estimated_cost_usd=estimate(usage)/100 if estimate(usage) is not None else None,
-  response_scope='Canonical SDK message JSON; original provider HTTP bytes unavailable.',automatic_retries=0))
+  response_scope='Original canonical SDK message retained; typed issue codes rendered from the versioned catalog. Original provider HTTP bytes unavailable.',automatic_retries=0))
+ receipt['usage']['response_processing']=REASON_VERSION
  control(task,'finish',receipt)
  task['attempts']+=1
  if status=='failed': raise ValueError(reason)
