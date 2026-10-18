@@ -8,7 +8,7 @@ from workflow import canonical, digest
 
 VERSION = 'research-autonomy-v1'
 MODULE = 'research-autonomy'
-PROMPT_VERSION = 'research-autonomy-v5'
+PROMPT_VERSION = 'research-autonomy-v6'
 MODEL = 'us.anthropic.claude-opus-4-6-v1'
 MAX_OUTPUT = 4096
 MAX_REQUEST_BYTES = 96000
@@ -65,10 +65,17 @@ def load_prompt():
  return p,system
 
 def request(system, context):
+ phase=context.get('task');allowed=phase_actions(phase);tools=copy.deepcopy(TOOLS)
+ if allowed:tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']=allowed
+ reminder='Controller phase: '+str(phase)+'. Allowed actions: '+', '.join(allowed)+'. Return the decision for this phase only; a review must not select or redesign a check.' if allowed else ''
  value=dict(modelId=MODEL,system=[dict(text=system)],messages=[dict(role='user',content=[dict(text=canonical(context).decode())])],
-  inferenceConfig=dict(maxTokens=MAX_OUTPUT,temperature=0),toolConfig=TOOLS)
+  inferenceConfig=dict(maxTokens=MAX_OUTPUT,temperature=0),toolConfig=tools)
+ if reminder:value['system'].append(dict(text=reminder))
  if len(canonical(value))>MAX_REQUEST_BYTES: raise ValueError('Autonomous context exceeds 96 KB; retain explicit coverage rather than truncate evidence.')
  return value
+
+def phase_actions(phase):
+ return {'discover':['discover','blocked'],'planning':['choose-check','propose','blocked'],'comprehension':['review','blocked'],'critic':['review','blocked'],'assessment':['assess','blocked']}.get(phase,[])
 
 def reservation(value, today=None):
  today=today or dt.datetime.now(dt.timezone.utc).date()
@@ -130,6 +137,9 @@ def call(task, context, control, invoke_provider=None):
   if len(raw.encode())>100000: raise ValueError('Provider response exceeded retained output bounds.')
   try:
    parsed=parse(response)
+   allowed=phase_actions(context.get('task'))
+   if allowed and parsed['action'] not in allowed:raise ValueError('Controller phase '+str(context.get('task'))+' requires one of '+', '.join(allowed)+'; the returned '+parsed['action']+' action was not executed.')
+   if context.get('task') in ('comprehension','critic') and parsed['action']=='review' and not isinstance(parsed['ready'],bool):raise ValueError('A fresh review requires an explicit boolean readiness judgment.')
    if parsed['assessment_label'] in ('reproduced','discrepant') and (context.get('controller_numeric_check') or {}).get('label')!=parsed['assessment_label']:raise ValueError('Conclusive recommendation lacks the controller matched-evidence check.')
    status='complete'
   except (ValueError,KeyError,TypeError) as error: parsed=None;status='invalid-output';reason=str(error)

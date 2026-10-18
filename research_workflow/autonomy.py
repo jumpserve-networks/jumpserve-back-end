@@ -128,18 +128,32 @@ def blocked(task,output):
  context=dict(task['context'],blockers=output['blockers'],last_feedback=output['reason'])
  return advance(task,'blocked',context=context,reason=output['reason'])
 
+def check_context(job,study,selection=False):
+ campaign=one('campaigns',study,job['campaign_id']);record=one('protocols',study,campaign['protocol_id']);document=record['document']
+ if selection:
+  document=copy.deepcopy(document)
+  document['configurations']=[dict(identity=c['identity'],details_sha256=digest(canonical(c['details']))) for c in document['configurations']]
+ result=dict(id=job['id'],title=job['title'],execution_mode=job['execution_mode'],campaign=campaign,protocol=document,
+  protocol_reference=dict(id=record['id'],document_sha256=digest(canonical(record['document'])),view='selection-index; full configuration details retained for the selected fresh review' if selection else 'full-selected-document'))
+ raw=job['request'].get('raw_input')
+ if isinstance(raw,str) and campaign['adapter']=='matched-numeric-v1':
+  data=json.loads(raw)
+  result['retained_input_inventory']=dict(sha256=digest(raw.encode()),byte_count=len(raw.encode()),provenance='Computed from the hash-verified compiled original; counts describe archived input records, not new measurements.',counts={kind:{status:sum(r.get('status')==status for r in data.get(kind,[])) for status in ('recorded','missing','invalid','ambiguous')} for kind in ('published','observed')})
+ return result
+
 def build_context(task):
  claim=one('claims',task['study_id'],task['claim_id']);source=one('sources',task['study_id'],claim['source_id']);context=task['context']
  value=dict(task=task['stage'],initial_prompt=task['workflow']['initial_prompt'],claim=claim,source=source,attempt_number=task['attempts']+1,limits=DEFAULTS,
   source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
   prior_attempts=[{k:r.get(k) for k in ('number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
+ if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
-  value['registered_checks']=[dict(id=j['id'],title=j['title'],execution_mode=j['execution_mode'],campaign=one('campaigns',task['study_id'],j['campaign_id']),protocol=one('protocols',task['study_id'],one('campaigns',task['study_id'],j['campaign_id'])['protocol_id'])['document']) for j in available if j['id'] not in context.get('tried_check_ids',[])]
+  value['registered_checks']=[check_context(j,task['study_id'],selection=True) for j in available if j['id'] not in context.get('tried_check_ids',[])] if task['stage']=='planning' else []
  if context.get('proposal'):value['candidate']=context['proposal']
  if context.get('selected_check_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id']);job=next(j for j in available if j['id']==context['selected_check_id'])
-  value['candidate']=dict(registered_job_id=job['id'],campaign=one('campaigns',task['study_id'],job['campaign_id']),protocol=one('protocols',task['study_id'],one('campaigns',task['study_id'],job['campaign_id'])['protocol_id'])['document'])
+  selected=check_context(job,task['study_id']);value['candidate']=dict(registered_job_id=selected['id'],**{k:selected[k] for k in ('campaign','protocol','protocol_reference')},**({'retained_input_inventory':selected['retained_input_inventory']} if 'retained_input_inventory' in selected else {}))
  if task['stage'] in ('comprehension','critic'):
   # Fresh reviews receive the candidate/source only, no earlier AI verdict/history.
   value.pop('prior_attempts');value.pop('previous_feedback');value.pop('attempt_number')
@@ -276,7 +290,8 @@ def step(task):
  if task['attempts']>=25:return advance(task,'attempt-limit',reason='25 attempts reached; unresolved evidence retained.')
  answer=model.call(task,build_context(task),control)
  if answer.get('denied'):return advance(task,answer['denied'],reason='Paper admission stopped by '+answer['denied']+'.')
- if answer['status']!='complete':return advance(task,'queued',context=dict(context,last_feedback=answer['reason']),reason='Invalid answer retained; next prompt addresses the exact failure.')
+ if answer['status']!='complete':return advance(task,'queued',context=dict(context,last_feedback=answer['reason'],last_response_error=answer['reason']),reason='Invalid answer retained; next prompt addresses the exact failure.')
+ context.pop('last_response_error',None)
  output=answer['output'];context['last_turn_id']=answer['id']
  if output['action']=='blocked' or any(b['kind'] in EXTERNAL for b in output['blockers']):return blocked(dict(task,context=context),output)
  if task['stage']=='planning':

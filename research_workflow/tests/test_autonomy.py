@@ -15,7 +15,47 @@ def response(value):return dict(stopReason='tool_use',output=dict(message=dict(r
 def task(stage='planning'):
  return dict(id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),actor_id=str(uuid.uuid4()),claim_id=str(uuid.uuid4()),lease_token=str(uuid.uuid4()),attempts=0,stage=stage,context={},workflow=dict(initial_prompt='Exact initial form',max_spend_cents=10000,committed_cents=500,deadline_at='2026-10-25T00:00:00Z'))
 
+def retained_ipv6_contexts():
+ raw=(Path(__file__).resolve().parents[1]/'plans/ipv6-archive-v1.json').read_bytes();plan=json.loads(raw)
+ compiled=autonomy.preparation.compile_plan(plan,raw,dict(id='f776d397-a3d4-5f44-a558-e249002f0434',paper_url=plan['paper_urls'][0]))
+ records={}
+ for entry in compiled['records']:records.setdefault(entry['kind'],{})[entry['record']['id']]=entry['record']
+ claim=next(c for c in records['claims'].values() if c['description']=='Published absolute folded metrics')
+ available=[j for j in compiled['jobs'] if j['execution_mode']=='automatic'];t=task();t.update(study_id=compiled['study_id'],claim_id=claim['id']);t['context']={'prepared_id':compiled['id']};t['workflow']['initial_prompt']='Operational verification of retained archived numerical checks only, under original frozen conditions and complete recorded coverage. No new network measurements or broader validation.'
+ with patch.object(autonomy,'one',side_effect=lambda kind,study,key:records[kind][key]),patch.object(autonomy,'rows',return_value=[]),patch.object(autonomy,'choices',return_value=(compiled,available)):
+  planning=autonomy.build_context(t);t['stage']='comprehension';t['context']['selected_check_id']=available[0]['id'];review=autonomy.build_context(t)
+ return planning,review,compiled,records
+
 class Autonomy(unittest.TestCase):
+ def test_all_six_retained_checks_fit_the_bound_without_dropping_full_selected_conditions(self):
+  planning,review,compiled,records=retained_ipv6_contexts();before=workflow.digest(workflow.canonical(compiled));choices=planning['registered_checks']
+  self.assertEqual(len(choices),6);self.assertEqual({j['id'] for j in choices},{j['id'] for j in compiled['jobs'] if j['execution_mode']=='automatic'})
+  for item in choices:
+   original=records['protocols'][item['protocol_reference']['id']]['document'];self.assertEqual(item['protocol_reference']['document_sha256'],workflow.digest(workflow.canonical(original)))
+   self.assertEqual([c['identity'] for c in item['protocol']['configurations']],[c['identity'] for c in original['configurations']])
+   self.assertTrue(all(c['details_sha256']==workflow.digest(workflow.canonical(o['details'])) for c,o in zip(item['protocol']['configurations'],original['configurations'])))
+  selected=review['candidate'];self.assertEqual(selected['protocol'],records['protocols'][selected['protocol_reference']['id']]['document']);self.assertEqual(review['registered_checks'],[])
+  for value in (planning,review):self.assertLessEqual(len(workflow.canonical(model.request('Server policy '*1000,value))),96000)
+  self.assertEqual(before,workflow.digest(workflow.canonical(compiled)))
+ def test_each_phase_request_binds_actions_without_mutating_other_requests(self):
+  planning=model.request('System',{'task':'planning'});review=model.request('System',{'task':'critic'})
+  schema=lambda r:r['toolConfig']['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']
+  self.assertEqual(schema(review),['review','blocked']);self.assertEqual(schema(planning),['choose-check','propose','blocked'])
+  self.assertIn('discover',model.SCHEMA['properties']['action']['enum']);self.assertIn('Controller phase: critic',review['system'][-1]['text'])
+ def test_confirmed_wrong_phase_answer_is_retained_invalid_and_can_receive_a_numbered_correction(self):
+  t=task('comprehension');events=[];v=answer('choose-check');v.update(reason='retained-check',check_id='original-check')
+  def control(t,op,payload):events.append((op,payload));return dict(replayed=False)
+  with patch.object(model,'load_prompt',return_value=({'id':str(uuid.uuid4())},'System')):
+   result=model.call(t,{'task':'comprehension'},control,lambda _:response(v))
+  self.assertEqual(result['status'],'invalid-output');self.assertEqual(t['attempts'],1)
+  receipt=events[-1][1];self.assertEqual(receipt['status'],'invalid-output');self.assertIsNone(receipt['output']);self.assertIn('choose-check',receipt['raw_response'])
+  with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=result),patch.object(autonomy,'advance',return_value={}) as advance:
+   autonomy.step(t)
+  self.assertEqual(advance.call_args.args[1],'queued');self.assertIn('requires one of review',advance.call_args.kwargs['context']['last_response_error'])
+ def test_protocol_feedback_survives_fresh_review_without_prior_ai_verdicts(self):
+  t=task('critic');t['context']['last_response_error']='Controller phase critic requires review; choose-check was not executed.';claim=dict(id=t['claim_id'],source_id=str(uuid.uuid4()))
+  with patch.object(autonomy,'one',side_effect=[claim,{'id':claim['source_id']}]),patch.object(autonomy,'rows',return_value=[]):value=autonomy.build_context(t)
+  self.assertEqual(value['response_contract_feedback'],t['context']['last_response_error']);self.assertNotIn('prior_attempts',value);self.assertNotIn('previous_feedback',value)
  def test_intake_is_atomic_and_server_owns_defaults(self):
   body=dict(request_id=str(uuid.uuid4()),autonomous=True,paper=dict(title='Paper',paper_url='https://example.org/main.pdf',domain='Networking',scope='Declared scope'))
   with patch.object(store,'rpc',return_value={'id':body['request_id']}) as rpc,patch.object(autonomy,'wake',return_value={'status':'deferred'}):
