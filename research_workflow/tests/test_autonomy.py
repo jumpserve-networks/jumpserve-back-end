@@ -27,6 +27,16 @@ def retained_ipv6_contexts():
  return planning,review,compiled,records
 
 class Autonomy(unittest.TestCase):
+ def test_lossless_evidence_packet_preserves_null_zero_details_and_all_original_fields(self):
+  records=[dict(id='r'+str(i),run_id='run',study_id='study',created_at='fixed',configuration_identity='config'+str(i%2),observation_id='cell'+str(i),metric='latency',units='ms',value=v,status='missing' if v is None else 'recorded',reason=None,details=dict(metric='latency',units='ms',value=v,reference='0.00000000000000000001')) for i,v in enumerate(['0',None,'0.00000000000000000001','1000000000000000000000000001'])]
+  original=workflow.canonical(records);packet=autonomy.evidence_packet(records)
+  self.assertEqual(workflow.canonical(autonomy.evidence_records(packet)),original);self.assertEqual(workflow.canonical(records),original)
+  self.assertEqual(packet['record_count'],4);self.assertEqual(packet['original_records_sha256'],workflow.digest(original));self.assertEqual(autonomy.evidence_records(packet)[0]['value'],'0');self.assertIsNone(autonomy.evidence_records(packet)[1]['value'])
+ def test_lossless_transport_never_fills_absent_fields_or_invalid_dictionary_indices(self):
+  with self.assertRaises(ValueError):autonomy.evidence_packet([{'value':None},{}])
+  records=[{'id':str(i),'value':str(i%2),'label':'Recorded long repeated status '+str(i%2)} for i in range(50)];packet=autonomy.evidence_packet(records);self.assertTrue(packet['dictionaries'])
+  column=next(iter(packet['dictionaries']));packet['rows'][0][packet['columns'].index(column)]=True
+  with self.assertRaises(ValueError):autonomy.evidence_records(packet)
  def test_all_six_retained_checks_fit_the_bound_without_dropping_full_selected_conditions(self):
   planning,review,compiled,records=retained_ipv6_contexts();before=workflow.digest(workflow.canonical(compiled));choices=planning['registered_checks']
   self.assertEqual(len(choices),6);self.assertEqual({j['id'] for j in choices},{j['id'] for j in compiled['jobs'] if j['execution_mode']=='automatic'})
