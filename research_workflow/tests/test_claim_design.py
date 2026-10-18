@@ -123,5 +123,27 @@ class ClaimDesign(unittest.TestCase):
                 claim_design.adopt(self.study['id'],ACTOR,dict(action='adopt',request_id=self.claim['id'],run_id=self.claim['id'],packet_id=self.claim['id']))
             save.assert_not_called()
 
+    def test_reusing_an_unchanged_plan_audits_adoption_without_a_new_version(self):
+        from test_ideas import plan
+        _, origin = claim_design.selection(self.study['id'], ACTOR, self.claim['id'])
+        value = plan(); value['hypothesis'] = self.claim['description']
+        value['falsification'] = claim_design.POLICY['decision_rule']
+        value['protocol'].update(hypotheses=self.claim['description'], stage='pilot', statistics=claim_design.POLICY['statistics'], decision_policy=claim_design.POLICY_IDENTITY)
+        value['protocol']['input_versions'].append(dict(identity='Original source', sha256=self.source['sha256']))
+        policy = dict(claim_design.POLICY_IDENTITY, origin='server-policy', model_authored=False, protocol_reused=True)
+        run = dict(status='complete', task='planning', packet_id=self.claim['id'], output=dict(proposal=copy.deepcopy(value), decision_policy=policy, response_version=claim_design.RESPONSE_VERSION, response_mode='reuse', questions=[]))
+        body = dict(action='adopt', request_id=str(uuid.uuid4()), run_id=str(uuid.uuid4()), packet_id=self.claim['id'])
+        expected = dict(id=self.claim['id'], adoption={'new_packet_created': False})
+        with patch.object(store,'rows',return_value=[run]), patch.object(claim_design,'context',return_value=dict(document=origin)), patch.object(ideas,'packet',return_value={'document':value}), patch.object(ideas,'save') as save, patch.object(store,'rpc',return_value=expected) as rpc:
+            self.assertEqual(claim_design.adopt(self.study['id'], ACTOR, body), expected)
+            save.assert_not_called()
+            self.assertEqual(rpc.call_args.args, ('research_reuse_claim_packet',dict(p_study=self.study['id'],p_actor=ACTOR,p_id=body['request_id'],p_packet=body['packet_id'],p_run=body['run_id'])))
+        # Matching protected configuration fields alone cannot hide changed prose.
+        changed = copy.deepcopy(run); changed['output']['proposal']['conditions'] += ' Changed.'
+        with patch.object(store,'rows',return_value=[changed]), patch.object(claim_design,'context',return_value=dict(document=origin)), patch.object(ideas,'packet',return_value={'document':value}), patch.object(store,'rpc') as rpc:
+            with self.assertRaisesRegex(ValueError,'entire saved packet'):
+                claim_design.adopt(self.study['id'], ACTOR, body)
+            rpc.assert_not_called()
+
 
 if __name__ == '__main__': unittest.main()

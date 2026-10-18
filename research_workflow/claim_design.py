@@ -140,7 +140,8 @@ def adopt(study_id, actor, body):
     if any(policy.get(key) != value for key,value in POLICY_IDENTITY.items()) or policy.get('origin') != 'server-policy' or policy.get('model_authored') is not False:
         raise ValueError('This earlier proposal lacks the corrected decision policy; retain it and request a new proposal.')
     validate_binding(proposal, context(study_id))
-    previous = ideas.packet(study_id,body['packet_id'])['document'].get('protocol')
+    selected = ideas.packet(study_id,body['packet_id'])
+    previous = selected['document'].get('protocol')
     if previous and proposal['protocol']:
         for key in ('configurations','execution','planned_units','resource_limits','input_versions','metrics'):
             if canonical(proposal['protocol'].get(key)) != canonical(previous.get(key)):
@@ -149,6 +150,11 @@ def adopt(study_id, actor, body):
         raise ValueError('Resolve the retained proposal questions before adopting a candidate protocol.')
     if proposal['protocol'] and proposal['protocol'].get('execution'):
         proposal = dict(proposal, protocol=network_spec.bind_inputs(proposal['protocol']))
+    if rows[0]['output']['response_mode'] == 'reuse':
+        if canonical(proposal) != canonical(selected['document']):
+            raise ValueError('A reused plan must match the entire saved packet; save material changes before another review.')
+        return store.rpc('research_reuse_claim_packet', dict(p_study=study_id, p_actor=actor,
+            p_id=identifier(body['request_id']), p_packet=identifier(body['packet_id']), p_run=identifier(body['run_id'])))
     return ideas.save(study_id, actor, dict(action='save', request_id=body['request_id'], supersedes_id=body['packet_id'],
         document=proposal, reason='Owner adopted retained AI proposal ' + body['run_id'] + '; scientific validity is unestablished.'))
 

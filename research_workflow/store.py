@@ -75,7 +75,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
-    if name == 'research_initialize_claim_design': return request('/rest/v1/rpc/' + name, 'POST', payload)
+    if name in ('research_initialize_claim_design', 'research_reuse_claim_packet'): return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan", "research_save_idea_packet", "research_accept_idea_plan", "research_prepare_idea_campaign", "research_network_begin", "research_network_pending", "research_network_cancel", "research_network_launch", "research_network_update", "research_network_token"): raise ValueError("Unsupported research operation.")
     return request("/rest/v1/rpc/" + name, "POST", payload)
 
