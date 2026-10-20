@@ -45,7 +45,9 @@ def rows(kind, params=None, public=False):
     if kind in FIELDS:
         projection = ",".join(["id", "study_id", "created_at", *FIELDS[kind]])
     elif kind == "studies":
-        projection = "id,title,paper_url,domain,scope,origin_module,study_kind,created_at"
+        projection = "id,title,paper_url,paper_upload,domain,scope,origin_module,study_kind,created_at"
+    elif kind == 'paper_uploads' and not public:
+        projection = 'id,owner_id,paper,status,reason,original_artifact_id,created_at,expires_at'
     elif kind == "study_owners" and not public:
         projection = "study_id,owner_id"
     elif kind == 'autonomy_workflows' and not public:
@@ -85,6 +87,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name == 'research_paper_upload': return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name in ('research_autonomy_resume_context','research_autonomy_context_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_initialize_claim_design', 'research_reuse_claim_packet', 'research_autonomy_control'): return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan", "research_save_idea_packet", "research_accept_idea_plan", "research_prepare_idea_campaign", "research_network_begin", "research_network_pending", "research_network_cancel", "research_network_launch", "research_network_update", "research_network_token"): raise ValueError("Unsupported research operation.")

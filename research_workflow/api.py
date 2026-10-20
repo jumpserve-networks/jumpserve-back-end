@@ -14,6 +14,7 @@ import network_execution
 import network_spec
 import gap_queue
 import autonomy
+import paper_uploads
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -76,8 +77,12 @@ def dispatch(event, actor=None):
     path = event.get("rawPath", "").rstrip("/")
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
+    if path == '/research/paper-uploads' and method == 'POST':
+        if not actor: raise HttpError(401, 'Sign in to upload a private paper.')
+        if os.environ.get('RESEARCH_AUTONOMY_ENABLED') != 'true': raise HttpError(503, 'Autonomous paper assessment is temporarily unavailable. No upload was admitted.')
+        return paper_uploads.submit(actor, parse_body(event))
     if path == "/research/capabilities" and method == "GET":
-        return dict(autonomy=autonomy.capability(), version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, claim_design_version=claim_design.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
+        return dict(autonomy=autonomy.capability(), paper_uploads=paper_uploads.capability(), version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, claim_design_version=claim_design.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
         if method == "GET":
             if query.get("mine") == "1":

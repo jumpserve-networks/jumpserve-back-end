@@ -90,14 +90,23 @@ def parse(raw, maximum=MAX_PLAN_BYTES):
     plan['campaigns'] = ordered
     return plan
 
+def matches_paper(plan,study):
+    identities={url_identity(url) for url in plan['paper_urls']}
+    upload=study.get('paper_upload')
+    if upload:
+        return any(e['record']['sha256']==upload['sha256'] and e['record']['byte_count']==upload['byte_count']
+            and any(url and url_identity(url) in identities for url in (e['record']['source_url'],e['record']['retrieved_url']))
+            for e in plan['records'] if e['kind']=='sources')
+    return bool(study.get('paper_url') and url_identity(study['paper_url']) in identities)
+
 def registered(study):
     for path in sorted(PLAN_DIRECTORY.glob('*.json')):
         raw = path.read_bytes(); plan = parse(raw)
-        if url_identity(study['paper_url']) in [url_identity(url) for url in plan['paper_urls']]: return plan, raw
+        if matches_paper(plan,study): return plan, raw
     return None, None
 
 def compile_plan(plan, raw, study):
-    if url_identity(study['paper_url']) not in [url_identity(url) for url in plan['paper_urls']]: raise ValueError('This preparation plan identifies a different paper.')
+    if not matches_paper(plan,study): raise ValueError('This preparation plan identifies a different paper or uploaded source version.')
     study_id = identifier(study['id']); namespace = uuid.UUID(study_id); sha = digest(raw)
     prepared_id = str(uuid.uuid5(namespace, 'prepared:' + sha))
     def uid(name): return str(uuid.uuid5(uuid.UUID(prepared_id), name))
@@ -158,7 +167,9 @@ def compile_plan(plan, raw, study):
         scheduler.definition(body)
         jobs.append(dict(key=item['key'], id=job_id, title=campaign['title'], campaign_id=campaign_id, execution_mode=item['execution_mode'], request=body))
     if covered != claims: raise ValueError('Every imported claim needs a planned applicable check; uncovered claims cannot silently vanish.')
-    return dict(id=prepared_id, study_id=study_id, plan_id=plan['plan_id'], manifest_sha256=sha, records=entries, jobs=jobs, provenance=plan['provenance'])
+    provenance=copy.deepcopy(plan['provenance'])
+    if study.get('paper_upload'): provenance['paper_match']=dict(method='exact-uploaded-main-paper-sha256-and-byte-count',sha256=study['paper_upload']['sha256'],byte_count=study['paper_upload']['byte_count'])
+    return dict(id=prepared_id, study_id=study_id, plan_id=plan['plan_id'], manifest_sha256=sha, records=entries, jobs=jobs, provenance=provenance)
 
 def summary(prepared, jobs):
     indexed = {j['id']: j for j in jobs}; public_jobs = []

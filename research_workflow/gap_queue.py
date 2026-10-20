@@ -62,11 +62,12 @@ def enqueue(study_id, actor, body):
     # later visits resume this follow-up. It never opens another user's study.
     target = str(uuid.uuid5(uuid.UUID(actor), 'gap-followup:' + study_id + ':' + value['gap_id'] + ':' + value['gap_sha256'] + ':' + value['plan_sha256']))
     original = snapshot['study']
-    paper = paper_details(dict(title=('Follow-up: ' + original['title'])[:300], paper_url=original['paper_url'], domain=original['domain'],
+    paper = paper_details(dict(title=('Follow-up: ' + original['title'])[:300], paper_url=original['paper_url'], paper_upload=original.get('paper_upload'), domain=original['domain'],
         origin_module=original['origin_module'], study_kind='paper',
         scope=f"Private follow-up to published or owner study {study_id}, gap {value['gap_id']} (selection SHA256 {value['gap_sha256']}). Only selected retained checks and their prerequisites are queued. Imported findings keep their original scope; no new measurement or scientific review is inferred."))
     if body['action'] == 'create-followup':
-        store.rpc('research_create_study', dict(p_actor=actor, p_id=target, p_document=paper))
+        from paper_uploads import create_private_study
+        create_private_study(actor,target,paper,study_id)
         # Retain the exact selection as well as the preparation manifest/input bytes.
         provenance = canonical(dict(version=VERSION, source_study_id=study_id, gap_id=value['gap_id'], gap_sha256=value['gap_sha256'], plan_sha256=value['plan_sha256']))
         artifact = store.artifact(target, actor, provenance, str(uuid.uuid5(uuid.UUID(target), 'gap-selection')), 'application/json',

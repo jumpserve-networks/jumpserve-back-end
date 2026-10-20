@@ -60,10 +60,11 @@ def start(study_id, actor, body):
     target = str(uuid.uuid5(uuid.UUID(actor), 'claim-design:' + study_id + ':' + digest(canonical(origin))))
     def uid(name): return str(uuid.uuid5(uuid.UUID(target), name))
     paper = paper_details(dict(title=('Experiment: ' + claim['description'][:160] + ' · ' + origin['study']['title'])[:300],
-        paper_url=origin['study']['paper_url'], domain=origin['study']['domain'], study_kind='paper',
+        paper_url=origin['study']['paper_url'], paper_upload=origin['study'].get('paper_upload'), domain=origin['study']['domain'], study_kind='paper',
         origin_module=origin['study'].get('origin_module'),
         scope='Private experiment design for paper claim ' + claim['id'] + '. Original assessment is unchanged.'))
-    store.rpc('research_create_study', dict(p_actor=actor, p_id=target, p_document=paper))
+    from paper_uploads import create_private_study
+    create_private_study(actor,target,paper,study_id)
     # Re-key exact records; preserve the original claim/source identities privately.
     copied_source = {key: source.get(key) for key in FIELDS['sources']}
     copied_source['id'] = uid('source')

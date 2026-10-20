@@ -32,10 +32,13 @@ def start(actor,body):
  paper=paper_details(body['paper'])
  if paper.get('study_kind','paper')!='paper':raise ValueError('Autonomous paper verification requires a published paper identity.')
  paper['study_kind']='paper';study=identifier(body['request_id'])
- initial=canonical(dict(instruction='Assess this paper autonomously within application defaults. Preserve unresolved findings and explain external blockers; never force a desired result.',paper=paper,defaults=DEFAULTS)).decode()
- result=store.rpc('research_autonomy_control',dict(p_operation='start',p_actor=actor,p_study=study,p_payload=dict(paper=paper,initial_prompt=initial,intake_id=uid(study,'autonomous-intake'))))
+ result=store.rpc('research_autonomy_control',dict(p_operation='start',p_actor=actor,p_study=study,p_payload=start_payload(study,paper)))
  result['dispatch']=wake()
  return result
+
+def start_payload(study,paper):
+ initial=canonical(dict(instruction='Assess this paper autonomously within application defaults. Preserve unresolved findings and explain external blockers; never force a desired result.',paper=paper,defaults=DEFAULTS)).decode()
+ return dict(paper=paper,initial_prompt=initial,intake_id=uid(study,'autonomous-intake'))
 
 def wake():
  target=os.environ.get('RESEARCH_AUTONOMY_WORKER_FUNCTION','')

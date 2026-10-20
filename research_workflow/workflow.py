@@ -78,15 +78,24 @@ def public_url(value):
     return value
 
 def paper_details(body):
-    allowed = {"title", "paper_url", "domain", "scope", "origin_module", "study_kind"}
+    allowed = {"title", "paper_url", "domain", "scope", "origin_module", "study_kind", "paper_upload"}
     if not isinstance(body, dict) or set(body) - allowed:
         raise ValueError("Unsupported paper details.")
     result = {name: text(body.get(name), name, 300 if name == "title" else 5000) for name in ("title", "domain", "scope")}
     kind = body.get("study_kind", "paper")
     if kind not in ("paper", "idea"): raise ValueError("Choose a paper assessment or unpublished research idea.")
     if kind == "idea":
-        if body.get("paper_url") is not None: raise ValueError("Unpublished ideas have no paper URL; add actual related work as sources later.")
+        if body.get("paper_url") is not None or body.get("paper_upload") is not None: raise ValueError("Unpublished ideas have no paper input; add actual related work as sources later.")
         result.update(study_kind="idea", paper_url=None)
+    elif body.get('paper_upload') is not None:
+        upload = body['paper_upload']
+        if body.get('paper_url') is not None or not isinstance(upload, dict) or set(upload) != {'sha256', 'byte_count', 'filename'}:
+            raise ValueError('An uploaded paper requires its exact PDF identity, without a URL.')
+        if not isinstance(upload['sha256'], str) or not re.fullmatch(r'[a-f0-9]{64}', upload['sha256']): raise ValueError('Uploaded PDF SHA256 is invalid.')
+        if isinstance(upload['byte_count'], bool) or not isinstance(upload['byte_count'], int) or not 1 <= upload['byte_count'] <= 10_000_000: raise ValueError('Upload a PDF no larger than 10 MB.')
+        filename = text(upload['filename'], 'PDF filename', 200)
+        if not filename.lower().endswith('.pdf') or any(c in filename for c in ('/', '\\')) or any(ord(c) < 32 or ord(c) == 127 for c in filename): raise ValueError('Use a PDF filename without path or control characters.')
+        result.update(study_kind='paper', paper_url=None, paper_upload=upload)
     else:
         result["paper_url"] = text(body.get("paper_url"), "paper_url", 5000)
         if not re.fullmatch(r"https://[^\s]+", result["paper_url"]):

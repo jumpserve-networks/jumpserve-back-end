@@ -77,17 +77,25 @@ class PDFLink(HTMLParser):
 
 def _original(study,actor):
  uid=lambda key:str(uuid.uuid5(uuid.UUID(study['id']),key))
- raw,url,audit=fetch(study['paper_url'])
- if not raw[:1024].lstrip().startswith(b'%PDF-'):
-  landing=store.artifact(study['id'],actor,raw,uid('landing:'+digest(raw)),'text/html',dict(kind='paper-landing-original',requested_url=study['paper_url'],retrieved_url=url,transformation='none'))
-  store.append(study['id'],actor,'artifacts',landing)
-  parser=PDFLink();parser.feed(raw.decode('utf-8',errors='replace'))
-  if not parser.url: raise ValueError('The public page did not identify an accessible PDF. A full-text resource or lawful original artifact is required.')
-  raw,url,second=fetch(urljoin(url,parser.url));audit+=second
- if not raw[:1024].lstrip().startswith(b'%PDF-'):raise ValueError('Retrieved response is not a full-text PDF.')
- artifact=store.artifact(study['id'],actor,raw,uid('paper-original:'+digest(raw)),'application/pdf',dict(kind='paper-original',requested_url=study['paper_url'],retrieved_url=url,transformation='none',retrieval_attempts=audit))
- store.append(study['id'],actor,'artifacts',artifact)
- source=dict(id=uid('source:'+digest(raw)),citation=study['title'],source_url=study['paper_url'],retrieved_url=url,kind='main paper',role='Candidate claim extraction from accessible original bytes',retrieved_version='Public response retrieved '+now(),sha256=digest(raw),byte_count=len(raw),access_status='retrieved',review_status='retrieved-unreviewed',
+ uploaded=study.get('paper_upload')
+ if uploaded:
+  records=store.rows('artifacts',{'study_id':'eq.'+study['id'],'id':'eq.'+uid('paper-original:'+uploaded['sha256']),'limit':1})
+  if len(records)!=1 or records[0]['provenance'].get('kind')!='paper-original-upload':raise ValueError('The original uploaded PDF was not verified and retained.')
+  artifact=records[0];raw=store.artifact_bytes(study['id'],artifact['id'],maximum=MAX_BYTES);url=None
+  if digest(raw)!=uploaded['sha256'] or len(raw)!=uploaded['byte_count'] or not raw[:1024].lstrip().startswith(b'%PDF-'):raise ValueError('Retained PDF differs from the uploaded original.')
+  audit=[dict(method='private owner upload; stored original GET and SHA256 verification',retrieved_at=now(),sha256=digest(raw),byte_count=len(raw),original_artifact_id=artifact['id'])]
+ else:
+  raw,url,audit=fetch(study['paper_url'])
+  if not raw[:1024].lstrip().startswith(b'%PDF-'):
+   landing=store.artifact(study['id'],actor,raw,uid('landing:'+digest(raw)),'text/html',dict(kind='paper-landing-original',requested_url=study['paper_url'],retrieved_url=url,transformation='none'))
+   store.append(study['id'],actor,'artifacts',landing)
+   parser=PDFLink();parser.feed(raw.decode('utf-8',errors='replace'))
+   if not parser.url: raise ValueError('The public page did not identify an accessible PDF. A full-text resource or lawful original artifact is required.')
+   raw,url,second=fetch(urljoin(url,parser.url));audit+=second
+  if not raw[:1024].lstrip().startswith(b'%PDF-'):raise ValueError('Retrieved response is not a full-text PDF.')
+  artifact=store.artifact(study['id'],actor,raw,uid('paper-original:'+digest(raw)),'application/pdf',dict(kind='paper-original',requested_url=study['paper_url'],retrieved_url=url,transformation='none',retrieval_attempts=audit))
+  store.append(study['id'],actor,'artifacts',artifact)
+ source=dict(id=uid('source:'+digest(raw)),citation=study['title'],source_url=study['paper_url'],retrieved_url=url,kind='main paper',role='Candidate claim extraction from accessible original bytes',retrieved_version=('Owner-uploaded original; SHA256 '+digest(raw)) if uploaded else 'Public response retrieved '+now(),sha256=digest(raw),byte_count=len(raw),access_status='retrieved',review_status='retrieved-unreviewed',
   review_definition='Complete review requires every section, figure, table, appendix and available supplement. Text extraction and model processing do not establish complete review.',examined='Original-byte retrieval only; linked text-packet artifacts record any later extraction. Candidate extraction is not substantive review.',unexamined='Figures, equations, tables, image/scanned content and supplements have not been substantively examined.',retrieval_attempts=audit,
   reviewer=dict(identity='Autonomous source retrieval and text extractor',type='AI',independence='Programmatic acquisition; no independent or human substantive review'),findings='No scientific finding established by retrieval or extraction.',limitations='Candidate claim inventory covers available extracted text only. Missing text and omitted visual/supplement evidence remain uncovered.')
  store.append(study['id'],actor,'sources',source)
