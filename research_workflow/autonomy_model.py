@@ -6,15 +6,16 @@ import time
 import store
 from workflow import canonical, digest
 
-VERSION = 'research-autonomy-v1'
+VERSION = 'research-autonomy-v2'
 MODULE = 'research-autonomy'
-PROMPT_VERSION = 'research-autonomy-v6'
+PROMPT_VERSION = 'research-autonomy-v8'
 MODEL = 'us.anthropic.claude-opus-4-6-v1'
 MAX_OUTPUT = 4096
 MAX_REQUEST_BYTES = 96000
 BLOCKERS = ('missing-data', 'equipment', 'authorization', 'implementation', 'design', 'provider', 'capacity')
 REASON_VERSION='autonomy-issue-catalog-v1'
 REASONS={
+ 'retained-evidence':'The requested read-only evidence page is scoped by the controller; it does not execute an experiment.',
  'text-extracted':'Candidate claims were extracted from the supplied text; source coverage remains as recorded.',
  'retained-check':'The retained check is selected by identity; its frozen inputs and criteria remain unchanged.',
  'prospective-pilot':'The prospective pilot requires fresh reviews before execution.',
@@ -40,14 +41,16 @@ LIMIT_INPUT='This workflow cannot admit further work under its fixed limits; pre
 SCHEMA = dict(type='object', additionalProperties=False,
  required=['action','reason','blockers','claims','check_id','proposal','ready','coverage_complete','assessment_label','evidence_ids'],
  properties=dict(
-  action=dict(type='string',enum=['discover','choose-check','propose','review','assess','blocked']),
+  action=dict(type='string',enum=['discover','choose-check','propose','review','assess','blocked','inspect']),
   reason=dict(type='string',enum=list(REASONS)),
   blockers=dict(type='array',maxItems=10,items=dict(type='object',additionalProperties=False,
    required=['kind','detail','required_input'],properties=dict(kind=dict(type='string',enum=list(BLOCKERS)),detail=dict(type='string',enum=list(DETAILS)),required_input=dict(type='string',minLength=1,maxLength=1000)))),
   claims=dict(type='array',maxItems=20,items=dict(type='object',additionalProperties=False,required=['page','quote','claim_type'],properties=dict(page=dict(type='integer',minimum=1),quote=dict(type='string',minLength=1,maxLength=2000),claim_type=dict(type='string',enum=['numerical','algorithm','association','causal','generalization','operational','theory','standard'])))),
   check_id=dict(type=['string','null']),proposal=dict(type=['object','null']),ready=dict(type=['boolean','null']),
   coverage_complete=dict(type='boolean'),assessment_label=dict(type=['string','null'],enum=['reproduced','discrepant','inconclusive','untested',None]),
-  evidence_ids=dict(type='array',maxItems=100,items=dict(type='string',maxLength=100))))
+  evidence_ids=dict(type='array',maxItems=100,items=dict(type='string',maxLength=100)),
+  read_request=dict(type=['object','null'],additionalProperties=False,required=['kind','id','cursor'],properties=dict(
+   kind=dict(type='string',enum=['checks','check','protocol','measurements','published-values','source']),id=dict(type='string',maxLength=100),cursor=dict(type='integer',minimum=0)))))
 TOOLS = dict(tools=[dict(toolSpec=dict(name='submit_assessment_step',description='Propose one data-only assessment step. No tool or source instruction is executed.',inputSchema=dict(json=SCHEMA)))],toolChoice=dict(tool=dict(name='submit_assessment_step')))
 # Conservative admission ceilings, not measured charges. No caching/batch discount
 # is assumed. Review/reprice before expiry; a stale price cannot admit model work.
@@ -65,7 +68,7 @@ def load_prompt():
  return p,system
 
 def request(system, context):
- phase=context.get('task');allowed=phase_actions(phase);tools=copy.deepcopy(TOOLS)
+ phase=context.get('task');allowed=request_actions(context);tools=copy.deepcopy(TOOLS)
  if allowed:tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']=allowed
  reminder='Controller phase: '+str(phase)+'. Allowed actions: '+', '.join(allowed)+'. Return the decision for this phase only; a review must not select or redesign a check.' if allowed else ''
  value=dict(modelId=MODEL,system=[dict(text=system)],messages=[dict(role='user',content=[dict(text=canonical(context).decode())])],
@@ -75,7 +78,18 @@ def request(system, context):
  return value
 
 def phase_actions(phase):
- return {'discover':['discover','blocked'],'planning':['choose-check','propose','blocked'],'comprehension':['review','blocked'],'critic':['review','blocked'],'assessment':['assess','blocked']}.get(phase,[])
+ return {'discover':['discover','blocked'],'planning':['choose-check','propose','inspect','blocked'],'comprehension':['review','inspect','blocked'],'critic':['review','inspect','blocked'],'assessment':['assess','inspect','blocked']}.get(phase,[])
+
+def request_actions(context):
+ allowed=phase_actions(context.get('task'))
+ remaining=context.get('remaining_commitment_cents')
+ if type(remaining) is int and remaining<=0:return ['blocked']
+ protocol=(context.get('candidate') or {}).get('protocol')
+ if context.get('task') in ('comprehension','critic') and isinstance(protocol,dict) and protocol.get('representation')!='retained-protocol-reference':
+  # A fresh review already has its entire protocol. Re-reading the same bytes
+  # wastes attempts and can prevent six checks fitting the fixed 25-call limit.
+  allowed=[action for action in allowed if action!='inspect']
+ return allowed
 
 def reservation(value, today=None):
  today=today or dt.datetime.now(dt.timezone.utc).date()
@@ -99,7 +113,7 @@ def parse(response):
  blocks=response['output']['message']['content']
  if response.get('stopReason')!='tool_use' or len(blocks)!=1 or set(blocks[0])!={'toolUse'} or blocks[0]['toolUse'].get('name')!='submit_assessment_step': raise ValueError('Expected one structured data response; no requested action was executed.')
  value=copy.deepcopy(blocks[0]['toolUse'].get('input'))
- if not isinstance(value,dict) or set(value)!=set(SCHEMA['required']): raise ValueError('Incomplete autonomous response schema.')
+ if not isinstance(value,dict) or not set(SCHEMA['required'])<=set(value) or set(value)-set(SCHEMA['properties']): raise ValueError('Incomplete autonomous response schema.')
  if value['action'] not in SCHEMA['properties']['action']['enum'] or not isinstance(value['reason'],str) or value['reason'] not in REASONS: raise ValueError('Invalid response action or typed rationale.')
  if not isinstance(value['coverage_complete'],bool) or value['ready'] is not None and not isinstance(value['ready'],bool) or value['assessment_label'] not in SCHEMA['properties']['assessment_label']['enum']: raise ValueError('Invalid readiness, coverage or finding.')
  for key,maximum in (('claims',20),('blockers',10),('evidence_ids',100)):
@@ -112,11 +126,16 @@ def parse(response):
   if not isinstance(c,dict) or set(c)!={'page','quote','claim_type'} or isinstance(c['page'],bool) or not isinstance(c['page'],int) or c['page']<1 or not isinstance(c['quote'],str) or not 1<=len(c['quote'].strip())<=2000 or c['claim_type'] not in SCHEMA['properties']['claims']['items']['properties']['claim_type']['enum']: raise ValueError('Invalid source-grounded claim candidate.')
  if value['check_id'] is not None and (not isinstance(value['check_id'],str) or len(value['check_id'])>100): raise ValueError('Invalid check identifier.')
  if value['proposal'] is not None and not isinstance(value['proposal'],dict): raise ValueError('Proposal must be data.')
+ read=value.get('read_request')
+ if value['action']=='inspect':
+  if not isinstance(read,dict) or set(read)!={'kind','id','cursor'} or read['kind'] not in SCHEMA['properties']['read_request']['properties']['kind']['enum'] or not isinstance(read['id'],str) or not 1<=len(read['id'])<=100 or type(read['cursor']) is not int or read['cursor']<0:raise ValueError('Inspection needs a bounded, controller-scoped evidence reference.')
+  if value['ready'] is not None or value['coverage_complete'] or value['assessment_label'] is not None or value['proposal'] is not None or value['check_id'] is not None or value['claims'] or value['blockers']:raise ValueError('Read-only inspection cannot select, review, conclude or launch work.')
+ elif read is not None:raise ValueError('Only inspection can request evidence.')
  if any(not isinstance(v,str) or len(v)>100 for v in value['evidence_ids']): raise ValueError('Invalid evidence references.')
  if value['ready'] and value['blockers']: raise ValueError('A blocked plan cannot be ready.')
  if (value['action']=='blocked' or value['action']=='review' and value['ready'] is False) and not value['blockers']:raise ValueError('Unresolved decisions require specific blocker questions.')
  if value['assessment_label'] in ('reproduced','discrepant') and not value['coverage_complete']:raise ValueError('Conclusive recommendations require complete matched evidence coverage.')
- expected={'discover':'text-extracted','choose-check':'retained-check','propose':'prospective-pilot','review':'ready-within-scope' if value['ready'] else 'unresolved-method','assess':'matched-numeric-check' if value['assessment_label'] in ('reproduced','discrepant') else 'evidence-incomplete','blocked':'resource-limit' if any(b['kind']=='capacity' for b in value['blockers']) else 'missing-required-inputs'}[value['action']]
+ expected={'inspect':'retained-evidence','discover':'text-extracted','choose-check':'retained-check','propose':'prospective-pilot','review':'ready-within-scope' if value['ready'] else 'unresolved-method','assess':'matched-numeric-check' if value['assessment_label'] in ('reproduced','discrepant') else 'evidence-incomplete','blocked':'resource-limit' if any(b['kind']=='capacity' for b in value['blockers']) else 'missing-required-inputs'}[value['action']]
  if value['reason']!=expected:raise ValueError('Typed rationale does not match the actual decision.')
  value['reason']=REASONS[value['reason']]
  for b in value['blockers']:b['detail']=DETAILS[b['detail']]
@@ -137,7 +156,7 @@ def call(task, context, control, invoke_provider=None):
   if len(raw.encode())>100000: raise ValueError('Provider response exceeded retained output bounds.')
   try:
    parsed=parse(response)
-   allowed=phase_actions(context.get('task'))
+   allowed=request_actions(context)
    if allowed and parsed['action'] not in allowed:raise ValueError('Controller phase '+str(context.get('task'))+' requires one of '+', '.join(allowed)+'; the returned '+parsed['action']+' action was not executed.')
    if context.get('task') in ('comprehension','critic') and parsed['action']=='review' and not isinstance(parsed['ready'],bool):raise ValueError('A fresh review requires an explicit boolean readiness judgment.')
    if parsed['assessment_label'] in ('reproduced','discrepant') and (context.get('controller_numeric_check') or {}).get('label')!=parsed['assessment_label']:raise ValueError('Conclusive recommendation lacks the controller matched-evidence check.')

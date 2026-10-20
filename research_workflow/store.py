@@ -73,6 +73,10 @@ def rows(kind, params=None, public=False):
     else:
         raise ValueError("Unsupported research relation.")
     query = {"select": projection, "order": "created_at.asc,study_id.asc" if kind == 'autonomy_workflows' else "created_at.asc,id.asc", "limit": 1000, **(params or {})}
+    if kind in ('measurements','published_values'):
+        # Cast inside Postgres, before JSON decoding can round a decimal to a
+        # binary float. A null remains null; zero remains an exact text value.
+        query['select']=','.join('value::text' if field=='value' else field for field in query['select'].split(','))
     if kind == "study_owners": query.pop("order", None)
     result = request("/rest/v1/" + table + "?" + urllib.parse.urlencode(query), public=public)
     if kind in ('measurements', 'published_values'):
@@ -81,6 +85,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name in ('research_autonomy_resume_context','research_autonomy_context_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_initialize_claim_design', 'research_reuse_claim_packet', 'research_autonomy_control'): return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name not in ("research_create_study", "research_append", "research_append_bundle", "research_publish", "research_queue_enqueue", "research_queue_claim", "research_queue_finish", "research_queue_action", "research_queue_snapshot", "research_prepare_plan", "research_save_idea_packet", "research_accept_idea_plan", "research_prepare_idea_campaign", "research_network_begin", "research_network_pending", "research_network_cancel", "research_network_launch", "research_network_update", "research_network_token"): raise ValueError("Unsupported research operation.")
     return request("/rest/v1/rpc/" + name, "POST", payload)

@@ -1,0 +1,28 @@
+{
+  "version": "autonomy-experiment-costs-v2",
+  "currency": "USD",
+  "quotes": [],
+  "bounded_tcp": {
+    "version": "bounded-tcp-costs-20261019-v1",
+    "runner": "bounded-tcp-v1",
+    "region": "us-east-1",
+    "memory_mb": 128,
+    "timeout_seconds": 5,
+    "maximum_cents": 1,
+    "checked_at": "2026-10-19",
+    "valid_until": "2026-11-19T00:00:00Z",
+    "compute_usd_per_gb_second_ceiling": "0.000020",
+    "request_usd_ceiling": "0.000001",
+    "maximum_output_bytes": 32000,
+    "maximum_payload_bytes": 65536,
+    "maximum_exchanges": 16,
+    "remote_network_bytes": 0,
+    "ec2_instances": 0,
+    "sources": [
+      "https://aws.amazon.com/lambda/pricing/",
+      "https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html"
+    ],
+    "scope": "One synchronous immutable Lambda invocation; no retries, remote traffic, EC2, NAT, provisioned concurrency or extra ephemeral storage. Conservative compute/request ceiling plus headroom, not measured charges. Shared orchestration and storage use the separate paper overhead commitment; lifetime storage, taxes and invoice totals are not independently capped."
+  },
+  "limitations": "Other networking runners remain unapproved. A model or browser cannot add prices. Bounded TCP needs a deployed immutable version and a matching server-owned policy hash; local checks do not verify the deployed configuration."
+}

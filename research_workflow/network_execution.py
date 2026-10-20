@@ -15,7 +15,49 @@ import store
 import network_spec
 from workflow import canonical, digest, identifier, now, validate_record
 
-FUNCTIONS = {'emulated-netem-v1':'NETWORK_EMULATED_FUNCTION','real-world-iperf-v1':'NETWORK_REAL_WORLD_FUNCTION','custom-package-v1':'NETWORK_PACKAGE_FUNCTION'}
+FUNCTIONS = {'bounded-tcp-v1':'NETWORK_BOUNDED_FUNCTION','emulated-netem-v1':'NETWORK_EMULATED_FUNCTION','real-world-iperf-v1':'NETWORK_REAL_WORLD_FUNCTION','custom-package-v1':'NETWORK_PACKAGE_FUNCTION'}
+
+def bounded_response(job,state,spec):
+    """Claim one synchronous attempt durably; unknown responses never relaunch."""
+    import datetime as dt
+    import autonomy_costs
+    if state['phase'] in ('completed','failed','cancelled'):return state['data']
+    deadline=dt.datetime.fromisoformat(state['deadline'].replace('Z','+00:00'))
+    expired=dt.datetime.now(dt.timezone.utc)>=deadline
+    if state['cancel_requested'] or expired:
+        data=dict(status='cancelled' if state['cancel_requested'] else 'failed',started_at=state['started_at'],ended_at=now(),
+            output=None,reason='Execution stopped or its one bounded invocation ended without a confirmed response; no replay.',
+            resources=dict(experiment_instances=0,remote_network_bytes=0,watchdog='Immutable Lambda five-second timeout'))
+        store.rpc('research_network_update',dict(p_job=job['id'],p_phase=data['status'],p_data=data,p_ingest_hash=None))
+        return data
+    if state['phase']!='pending':return dict(status='launch-unconfirmed')
+    quote=autonomy_costs.bounded_quote(canonical(spec))
+    # A failed acknowledgement leaves dispatching, never another provider call.
+    claimed=store.rpc('research_network_launch',dict(p_job=job['id'],p_runner=spec['runner'],p_claim=True))
+    if not claimed:return dict(status='launch-unconfirmed')
+    import boto3
+    from botocore.config import Config
+    client=boto3.client('lambda',region_name='us-east-1',config=Config(connect_timeout=2,read_timeout=10,retries=dict(total_max_attempts=1,mode='standard')))
+    target=quote['quote']['function_version']
+    configuration=client.get_function_configuration(FunctionName=target)
+    if configuration['MemorySize']!=128 or configuration['Timeout']!=5 or configuration.get('EphemeralStorage',{}).get('Size',512)!=512 or configuration.get('VpcConfig',{}).get('VpcId') or configuration.get('Runtime')!='python3.12' or configuration.get('Handler')!='index.handler':
+        raise ValueError('Deployed TCP resource configuration differs from the approved cost envelope; no experiment invoked.')
+    response=client.invoke(FunctionName=target,InvocationType='RequestResponse',Payload=canonical(dict(version=spec['runner'],config=spec['config'])))
+    original=response['Payload'].read(32001)
+    # Preserve both successful and failed original response bytes before parsing.
+    owner=store.rows('study_owners',{'study_id':'eq.'+job['study_id'],'limit':1})[0]['owner_id']
+    artifact=store.artifact(job['study_id'],owner,original,str(uuid.uuid5(uuid.UUID(job['id']),'bounded-original-response')),'application/json',dict(kind='bounded-tcp-original-lambda-response',transformation='none; original synchronous Lambda payload bytes' if len(original)<=32000 else 'Unmodified captured prefix; full response unavailable after transport bound.',complete=len(original)<=32000,spec_sha256=digest(canonical(spec))))
+    store.append(job['study_id'],owner,'artifacts',artifact)
+    if len(original)>32000:raise ValueError('TCP executor output exceeded its approved transport bound; retained prefix is not complete output.')
+    failed=bool(response.get('FunctionError'))
+    result=None if failed else json.loads(original)
+    data=dict(status='failed' if failed or result.get('provenance',{}).get('failure') else 'completed',started_at=state['started_at'],ended_at=now(),output=result,
+        reason='Bounded executor failed; original response retained.' if failed else result.get('provenance',{}).get('failure'),
+        artifacts=[dict(id=artifact['id'],sha256=artifact['sha256'])],
+        resources=dict(function_version=target,memory_mb=128,timeout_seconds=5,experiment_instances=0,remote_network_bytes=0,cleanup='Invocation ended; no provisioned experiment machines.',
+                       original_response_sha256=digest(original),reserved_cents=quote['cents'],measured_charges_usd=None))
+    store.rpc('research_network_update',dict(p_job=job['id'],p_phase=data['status'],p_data=data,p_ingest_hash=None))
+    return data
 
 def capabilities():
     return dict(version=network_spec.VERSION, runners=[dict(id=k, **v, enabled=bool(os.environ.get(FUNCTIONS[k]))) for k,v in network_spec.RUNNERS.items()], max_jobs=network_spec.MAX_JOBS,
@@ -105,12 +147,14 @@ def advance(job, campaign, protocol, raw):
     spec=validate_input(job['study_id'],protocol,raw)
     # Insert once under the queue lease; this records an attempt before cloud I/O.
     state=store.rpc('research_network_begin',dict(p_job=job['id'],p_token=job['lease_token'],p_spec=spec,p_sha=digest(raw)))
-    if state['phase']=='pending':
+    if spec['runner']=='bounded-tcp-v1':
+        response=bounded_response(job,state,spec)
+    elif state['phase']=='pending':
         try: invoke(spec,job['id'],'launch')
         except Exception:
             # Launch acknowledgement may be lost; query the stable external ID.
             pass
-    response=state['data'] if state['phase'] in ('completed','failed','cancelled') else invoke(spec,job['id'],'cancel' if state['cancel_requested'] else 'status')
+    if spec['runner']!='bounded-tcp-v1':response=state['data'] if state['phase'] in ('completed','failed','cancelled') else invoke(spec,job['id'],'cancel' if state['cancel_requested'] else 'status')
     if response['status'] not in ('completed','failed','cancelled'):
         return dict(status='running',job_id=job['id'],external_status=response['status'])
     if state['phase'] not in ('completed','failed','cancelled'):

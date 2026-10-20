@@ -12,11 +12,13 @@ from workflow import canonical, digest, identifier
 
 VERSION = "network-execution-v1"
 RUNNERS = {
+    "bounded-tcp-v1": dict(name="Bounded host-local TCP", mode="emulated", module="research-verification", maximum_instances=1),
     "emulated-netem-v1": dict(name="Emulated networking", mode="emulated", module="congestion-control-emulated", maximum_instances=1),
     "real-world-iperf-v1": dict(name="Real-world networking", mode="real-world", module="congestion-control-real-world", maximum_instances=18),
     "custom-package-v1": dict(name="Versioned experiment package", mode="package", module="research-verification", maximum_instances=1),
 }
 BUILTIN_METRICS = {
+    'bounded-tcp-v1': {'round_trip_time_ms':'ms','received_bytes':'bytes'},
     'emulated-netem-v1': {'flow_completion_time_ms':'ms'},
     'real-world-iperf-v1': {'throughput_mbit_s':'Mbit/s','received_bytes':'bytes','duration_seconds':'s','rtt_median_ms':'ms','retransmits':'count'},
 }
@@ -42,7 +44,11 @@ def placement(value):
 
 def config(runner, value):
     if not isinstance(value, dict): raise ValueError("test_config must be an object.")
-    if runner == 'emulated-netem-v1':
+    if runner == 'bounded-tcp-v1':
+        from bounded_network import validate
+        validate(value)
+        instances = 1  # One isolated invocation; zero provisioned EC2 instances.
+    elif runner == 'emulated-netem-v1':
         allowed = {'num_clients', 'client_delays_ms', 'client_ccas', 'client_file_sizes_mbytes', 'client_start_delays_ms', 'loss_pct', 'snapshot_interval_ms', 'script', 'topology', 'bottleneck_rates_mbit', 'bottleneck_buffers_kbytes', 'client_groups', 'bottleneck_all_client_rate_mbit', 'bottleneck_buffer_kbytes', 'snapshot_metrics_source'}
         if set(value) - allowed: raise ValueError("Unsupported emulated test fields.")
         n = integer(value.get('num_clients'), 'num_clients', 1, 10)
@@ -121,6 +127,11 @@ def specs(document, verify_hashes=True):
     for index, configuration in enumerate(document['configurations']):
         test = configuration['details'].get('test_config')
         if config(execution['runner'],test) > limits['max_instances']: raise ValueError('Requested topology exceeds instance budget.')
+        if execution['runner']=='bounded-tcp-v1':
+            if limits['wall_seconds']!=60 or limits['max_output_bytes']<32000 or limits['max_network_bytes']<2*test['payload_bytes']*test['exchanges']:
+                raise ValueError('TCP execution requires a 60-second queue deadline, 32-KB output allowance and the complete bidirectional payload budget. Actual Lambda execution is capped at five seconds.')
+            if any(m.get('planned_observations')!=test['exchanges'] for m in document['metrics']):
+                raise ValueError('TCP planned observations must equal exchanges for every metric.')
         for replica in range(replicas):
             output.append(dict(version=VERSION,runner=execution['runner'],configuration_index=index,configuration_identity=configuration['identity'],replication=replica,config=copy.deepcopy(test),limits=copy.deepcopy(limits),metrics=metrics))
     if len(output) > MAX_JOBS or document.get('planned_units') != len(output): raise ValueError('planned_units must equal configurations × replications, at most 32 invocations.')

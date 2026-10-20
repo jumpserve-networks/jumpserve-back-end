@@ -1,6 +1,6 @@
 """Durable autonomous claim orchestration; progress and scientific findings differ."""
 from concurrent.futures import ThreadPoolExecutor
-from decimal import Decimal,InvalidOperation
+from decimal import Decimal,InvalidOperation,localcontext
 import copy
 import datetime as dt
 import json
@@ -10,13 +10,15 @@ from pathlib import Path
 import uuid
 import autonomy_model as model
 import autonomy_sources as sources
+import autonomy_evidence as evidence
+import autonomy_costs
 import network_spec
 import preparation
 import scheduler
 import store
 from workflow import canonical,digest,identifier,now,paper_details,protocol_record,validate_protocol
 
-VERSION='research-autonomy-v1'
+VERSION='research-autonomy-v2'
 DEFAULTS=dict(maximum_spend_usd=100,elapsed_days=7,attempts_per_claim=25,parallel_claims_per_paper=2,global_parallel_claims=4)
 REVIEWER=dict(identity='Autonomous evidence controller with fresh AI reviews',type='AI',independence='Shared model and inputs; primary implementation is not independent or human scientific review.')
 EXTERNAL={'missing-data','equipment','authorization','implementation','provider'}
@@ -55,7 +57,7 @@ def one(kind,study,value):
 def overview(studies):
  ids=[s['id'] for s in studies]
  workflows=store.rows('autonomy_workflows',{'study_id':'in.('+','.join(ids)+')','limit':101}) if ids else []
- tasks=store.rows('autonomy_tasks',{'study_id':'in.('+','.join(ids)+')','select':'id,study_id,claim_id,stage,status,label,attempts,reason,required_inputs,next_at,created_at,updated_at','limit':20001}) if workflows else []
+ tasks=store.rows('autonomy_tasks',{'study_id':'in.('+','.join(ids)+')','select':'id,study_id,claim_id,stage,status,label,attempts,reason,required_inputs,evidence_progress:context->evidence_progress,next_at,created_at,updated_at','limit':20001}) if workflows else []
  if len(workflows)>100 or len(tasks)>20000:raise store.StoreError('Autonomous coverage exceeds the interactive bound; use paginated study records.')
  # Full prompts are fetched only for the selected task, never loaded for every poll.
  claim_ids=[t['claim_id'] for t in tasks if t['claim_id']]
@@ -76,8 +78,12 @@ def history(study,task_id,before=None):
  return dict(version=VERSION,study_id=study,task_id=task['id'],turns=turns,next_before=min((r['number'] for r in turns),default=None) if len(turns)==10 else None,coverage=dict(returned=len(turns),total=task['attempts']),access='owner-private')
 
 def advance(task,status,stage=None,context=None,reason=None,label=None,delay=0):
+ context=context if context is not None else task['context']
+ if task.get('claim_id') and context.get('prepared_id'):
+  required=inventory(dict(task,context=context));examined=set(context.get('completed_job_ids',[])+(context.get('job_ids',[]) if status=='resolved' else []))
+  context=dict(context,evidence_progress=dict(required_checks=len(required),completed_checks=sum(j['id'] in examined for j in required),scope='Execution/check coverage only; complete scientific coverage follows the frozen claim criterion.'))
  usage=dict(controller_wall_seconds=max(0,time.monotonic()-task['_tick']) if '_tick' in task else None,hosting_configured_memory_mb=os.environ.get('AWS_LAMBDA_FUNCTION_MEMORY_SIZE'),measured_charges_usd=None,estimated_charges_usd=None)
- return control(task,'advance',dict(status=status,stage=stage or task['stage'],context=context if context is not None else task['context'],reason=reason or status,label=label,delay_seconds=delay,usage=usage))
+ return control(task,'advance',dict(status=status,stage=stage or task['stage'],context=context,reason=reason or status,label=label,delay_seconds=delay,usage=usage))
 
 def seed(task,claims,context):
  return control(task,'seed',dict(claims=[dict(id=uid(task['study_id'],'autonomous-claim:'+c['id']),claim_id=c['id'],context=copy.deepcopy(context)) for c in claims]))
@@ -133,6 +139,7 @@ def check_context(job,study,selection=False):
  if selection:
   document=copy.deepcopy(document)
   document['configurations']=[dict(identity=c['identity'],details_sha256=digest(canonical(c['details']))) for c in document['configurations']]
+  document={k:document[k] for k in ('hypotheses','metrics','configurations') if k in document}
  result=dict(id=job['id'],title=job['title'],execution_mode=job['execution_mode'],campaign=campaign,protocol=document,
   protocol_reference=dict(id=record['id'],document_sha256=digest(canonical(record['document'])),view='selection-index; full configuration details retained for the selected fresh review' if selection else 'full-selected-document'))
  raw=job['request'].get('raw_input')
@@ -190,6 +197,64 @@ def evidence_records(packet):
   result.append(record)
  return result
 
+def retained_jobs(task):
+ ids=list(dict.fromkeys(task['context'].get('job_ids',[])+task['context'].get('completed_job_ids',[])))
+ jobs=rows('queue_jobs',task['study_id'],id='in.('+','.join(ids)+')',limit=1000) if ids else []
+ if {j['id'] for j in jobs}!=set(ids):raise ValueError('Retained experiment identity coverage is incomplete.')
+ return jobs
+
+def inventory(task):
+ if not task['context'].get('prepared_id'):return []
+ _,available=choices(task['study_id'],task['claim_id'],task['context']['prepared_id'])
+ return available
+
+def coverage_manifest(task):
+ required=inventory(task);jobs=retained_jobs(task);completed=[]
+ runs=[]
+ for job in jobs:
+  if job.get('run_id'):
+   run=one('runs',task['study_id'],job['run_id']);runs.append({k:run.get(k) for k in ('id','campaign_id','status','reason','input_sha256','output_sha256')})
+   if run['status']=='complete':completed.append(job['id'])
+ expected={j['id'] for j in required};covered=expected&set(completed)
+ return dict(version=evidence.VERSION,required_checks=[dict(id=j['id'],title=j['title'],execution_mode=j['execution_mode']) for j in required[:8]],next_check_cursor=8 if len(required)>8 else None,
+  completed_check_ids=sorted(covered),remaining_check_ids=sorted(expected-covered),runs=runs[:8],run_count=len(runs),inline_run_count=min(8,len(runs)),
+  required_count=len(expected),completed_count=len(covered),complete=bool(expected) and expected==covered,
+  inventory_sha256=digest(canonical([dict(id=j['id'],request=j['request']) for j in required])),
+  scope='Original frozen claim/check links only. Execution coverage is not a scientific verdict or whole-paper review.')
+
+def inspect_evidence(task,request):
+ kind=request['kind'];record_id=identifier(request['id']);cursor=request['cursor'];study=task['study_id']
+ claim=one('claims',study,task['claim_id']);available=inventory(task);jobs=retained_jobs(task)
+ if kind=='source':
+  if record_id!=claim['source_id']:raise ValueError('Source is outside this claim.')
+  result=evidence.page([one('sources',study,record_id)],cursor)
+ elif kind in ('checks','check','protocol'):
+  allowed={j['id']:j for j in available}
+  selected=task['context'].get('selected_check_id')
+  if task['stage'] in ('comprehension','critic'):allowed={k:v for k,v in allowed.items() if k==selected}
+  if kind=='checks':
+   if record_id!=task['claim_id']:raise ValueError('Check inventory is outside this claim.')
+   result=evidence.page([dict(id=j['id'],title=j['title'],execution_mode=j['execution_mode'],campaign_id=j['campaign_id']) for j in allowed.values()],cursor)
+  elif kind=='check':
+   if record_id not in allowed:raise ValueError('Check is outside the authorized claim/candidate.')
+   result=evidence.page([check_context(allowed[record_id],study,selection=True)],cursor)
+  else:
+   protocols={one('campaigns',study,j['campaign_id'])['protocol_id'] for j in allowed.values()}
+   if task['context'].get('proposal'):
+    raise ValueError('Prospective protocols are already supplied in full; no unrelated protocol is readable.')
+   if record_id not in protocols:raise ValueError('Protocol is outside the authorized claim/candidate.')
+   result=evidence.document_page(one('protocols',study,record_id)['document'],cursor)
+ elif kind in ('measurements','published-values'):
+  if task['stage'] in ('comprehension','critic'):raise ValueError('Fresh design reviews cannot inspect earlier experiment verdicts.')
+  if record_id not in {j.get('run_id') for j in jobs}:raise ValueError('Run is outside this claim.')
+  records=evidence.collect(rows,'measurements',study,run_id='eq.'+record_id)
+  if kind=='published-values':
+   records=[one('published_values',study,p) for p in sorted({r['published_id'] for r in records if r.get('published_id')})]
+  result=evidence.page(records,cursor)
+ else:raise ValueError('Unsupported read-only evidence kind.')
+ return dict(version=evidence.VERSION,request=request,result=result,result_sha256=digest(canonical(result)),
+  scope='Study/claim/candidate-scoped server read; retained in the next versioned prompt. No writes or execution.')
+
 def build_context(task):
  claim=one('claims',task['study_id'],task['claim_id']);source=one('sources',task['study_id'],claim['source_id']);context=task['context']
  value=dict(task=task['stage'],initial_prompt=task['workflow']['initial_prompt'],claim=claim,source=source,attempt_number=task['attempts']+1,limits=DEFAULTS,
@@ -198,25 +263,28 @@ def build_context(task):
  if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
-  value['registered_checks']=[check_context(j,task['study_id'],selection=True) for j in available if j['id'] not in context.get('tried_check_ids',[])] if task['stage']=='planning' else []
- if context.get('proposal'):value['candidate']=context['proposal']
- if context.get('selected_check_id'):
+  eligible=[j for j in available if j['id'] not in context.get('tried_check_ids',[])]
+  value['registered_checks']=[check_context(j,task['study_id'],selection=True) for j in eligible[:8]] if task['stage']=='planning' else []
+  value['eligible_check_count']=len(eligible)
+ if context.get('proposal') and task['stage'] in ('comprehension','critic'):value['candidate']=context['proposal']
+ if context.get('selected_check_id') and task['stage'] in ('comprehension','critic'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id']);job=next(j for j in available if j['id']==context['selected_check_id'])
   selected=check_context(job,task['study_id']);value['candidate']=dict(registered_job_id=selected['id'],**{k:selected[k] for k in ('campaign','protocol','protocol_reference')},**({'retained_input_inventory':selected['retained_input_inventory']} if 'retained_input_inventory' in selected else {}))
+  raw=canonical(selected['protocol'])
+  if len(raw)>32000:
+   value['candidate']['protocol']=dict(representation='retained-protocol-reference',byte_count=len(raw),sha256=digest(raw),required_read='Inspect every canonical JSON fragment using the protocol_reference.id before declaring readiness.')
  if task['stage'] in ('comprehension','critic'):
   # Fresh reviews receive the candidate/source only, no earlier AI verdict/history.
   value.pop('prior_attempts');value.pop('previous_feedback');value.pop('attempt_number')
   value['review_role']=task['stage']
- job_ids=list(dict.fromkeys(context.get('job_ids',[])+context.get('completed_job_ids',[])))
- if job_ids:
-  run_ids=[r['run_id'] for r in rows('queue_jobs',task['study_id'],id='in.('+','.join(job_ids)+')',limit=1000) if r.get('run_id')]
-  value['runs']=rows('runs',task['study_id'],id='in.('+','.join(run_ids)+')',limit=1000) if run_ids else []
-  measurements=rows('measurements',task['study_id'],run_id='in.('+','.join(run_ids)+')',limit=1001) if run_ids else []
-  if len(measurements)>1000:raise ValueError('Evidence context exceeds the interactive measurement bound; retain unresolved status without truncation.')
-  value['measurements']=evidence_packet(measurements)
+ if task['stage'] not in ('comprehension','critic'):
+  value['evidence_coverage']=coverage_manifest(task)
+  value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source'],page_byte_limit=evidence.READ_BYTES,
+   instructions='Use supplied check/protocol/run/source IDs only. Pages explicitly identify omitted records; calculations use the complete frozen data. Inspection consumes a model attempt.')
+ if context.get('evidence_read'):value['evidence_read']=context['evidence_read']
  if task['stage']=='assessment':
   finding=numeric_finding(task)
-  value['controller_numeric_check']=dict(label=finding[0],evidence=finding[1],coverage=finding[2],scope='Exact matched recorded cells under frozen conditions only; shared inputs, not independent scientific validation.') if finding else None
+  value['controller_numeric_check']=dict(label=finding[0],coverage=finding[2],evidence_manifest_sha256=digest(canonical(finding[1])),evidence_count=len(finding[1]),scope='Complete exact matched recorded cells under frozen conditions only; shared inputs, not independent scientific validation. Individual records are available through scoped evidence reads.') if finding else None
  return value
 
 def validate_proposal(task,proposal):
@@ -239,7 +307,9 @@ def price(job,protocol):
  if protocol['document'].get('execution') is None:
   return dict(cents=1,quote=dict(version='bounded-arithmetic-overhead-v1',kind='conservative-reservation',compute='Existing 10-second/512-MB bounded arithmetic; paper overhead separately reserved.',measured_charges_usd=None))
  # Cost envelopes are operator-owned configuration, never model/user output.
- path=Path(__file__).parent/'policies/autonomy-experiment-costs-v1.json'
+ bounded=autonomy_costs.bounded_quote(job['raw_input'].encode())
+ if bounded:return bounded
+ path=Path(__file__).parent/'policies/autonomy-experiment-costs-v2.json'
  catalog=json.loads(path.read_bytes());spec_hash=digest(job['raw_input'].encode())
  selected=next((q for q in catalog['quotes'] if q['spec_sha256']==spec_hash),None)
  if not selected or selected.get('currency')!='USD' or selected.get('hard_resource_bounds_verified') is not True or dt.datetime.fromisoformat(selected['valid_until'].replace('Z','+00:00'))<=dt.datetime.now(dt.timezone.utc):
@@ -294,39 +364,102 @@ def enqueue(task):
 def numeric_finding(task):
  """Independent Decimal check of recorded matched cells; never trust an AI label."""
  claim=one('claims',task['study_id'],task['claim_id']);context=task['context']
- if claim['claim_type']!='numerical' or not claim['metrics'] or len(context.get('reviews',[]))!=2 or {r['role'] for r in context['reviews']}!={'comprehension','critic'} or not all(r['coverage_complete'] for r in context['reviews']):return None
- for review in context['reviews']:
+ required=inventory(task);registered=bool(required)
+ if claim['claim_type']!='numerical' or not registered and not claim['metrics']:return None
+ groups=[context.get('reviews',[])]
+ required_cells={}
+ if registered:
+  expected={j['id']:j for j in required}
+  if any(j['execution_mode']!='automatic' for j in required):return None
+  compiled,_=choices(task['study_id'],task['claim_id'],context['prepared_id'])
+  documents={r['record']['id']:r['record']['document'] for r in compiled['records'] if r['kind']=='protocols'}
+  campaigns={r['record']['id']:r['record'] for r in compiled['records'] if r['kind']=='campaigns'}
+  cell_key=lambda r:(r['observation_id'],r['configuration_identity'],r['metric'],r['units'])
+  for definition in required:
+   campaign=campaigns[definition['campaign_id']]
+   if campaign['adapter']!='matched-numeric-v1':return None
+   document=documents[campaign['protocol_id']];metrics={m['name']:m for m in document['metrics']}
+   for row in json.loads(definition['request']['raw_input'],parse_float=Decimal)['published']:
+    if row['source_id']!=claim['source_id'] or row['status']!='recorded' or row['metric'] not in metrics:return None
+    key=cell_key(row);criterion=(Decimal(str(row['value'])),row['source_id'],Decimal(str(metrics[row['metric']]['tolerance_absolute'])))
+    if key in required_cells and required_cells[key]!=criterion:return None
+    required_cells[key]=criterion
+  completed=context.get('completed_reviews',{})
+  current=context.get('selected_check_id')
+  examined=set(context.get('completed_job_ids',[])+context.get('job_ids',[]))
+  groups=[context.get('reviews',[]) if key==current else completed.get(key,[]) for key in expected if key in examined]
+ if any(len(group)!=2 or {r['role'] for r in group}!={'comprehension','critic'} for group in groups):return None
+ if not registered and not all(r['coverage_complete'] for r in groups[0]):return None
+ for review in [r for group in groups for r in group]:
   recorded=one('autonomy_turns',task['study_id'],review['turn_id'])
   if recorded['task_id']!=task['id'] or recorded['status']!='complete' or recorded['stage']!=review['role'] or recorded['output'].get('ready') is not True:return None
- labels=[];evidence=[];coverage=dict(decision_runs=0,prior_partial_or_failed_runs=0,prior_other_methods=0)
- current=set(context['job_ids']);all_jobs=list(dict.fromkeys(context['job_ids']+context.get('completed_job_ids',[])))
+ labels=[];citations=[];coverage=dict(decision_runs=0,prior_partial_or_failed_runs=0,prior_other_methods=0)
+ current=set(context.get('job_ids',[]));all_jobs=list(dict.fromkeys(context.get('job_ids',[])+context.get('completed_job_ids',[])))
  jobs=rows('queue_jobs',task['study_id'],id='in.('+','.join(all_jobs)+')',limit=1000)
  if {j['id'] for j in jobs}!=set(all_jobs):return None
+ inventories=[];covered_cells=set()
  for job in jobs:
   if not job.get('run_id'):return None
   run=one('runs',task['study_id'],job['run_id']);campaign=one('campaigns',task['study_id'],job['campaign_id']);protocol=one('protocols',task['study_id'],campaign['protocol_id'])
-  evidence.extend([dict(kind='runs',id=run['id']),dict(kind='protocols',id=protocol['id'])])
-  if run['status']!='complete' or campaign['adapter']!='matched-numeric-v1':
+  citations.extend([dict(kind='runs',id=run['id']),dict(kind='protocols',id=protocol['id'])])
+  partial=registered and run['status']=='partial' and campaign['adapter']=='matched-numeric-v1'
+  if run['status']!='complete' and not partial or campaign['adapter']!='matched-numeric-v1':
    if job['id'] in current:return None
    coverage['prior_partial_or_failed_runs' if run['status']!='complete' else 'prior_other_methods']+=1
    continue
   coverage['decision_runs']+=1
-  metrics={m['name']:m for m in protocol['document']['metrics']};measurements=rows('measurements',task['study_id'],run_id='eq.'+run['id'],limit=1001)
-  if not measurements or len(measurements)>1000:return None
+  metrics={m['name']:m for m in protocol['document']['metrics']};measurements=evidence.collect(rows,'measurements',task['study_id'],run_id='eq.'+run['id'])
+  if not measurements:return None
   claimed={m.get('name') if isinstance(m,dict) else m for m in claim['metrics']}
-  if claimed!=set(metrics):return None
+  if registered:
+   if job['id'] not in expected:return None
+   definition=expected[job['id']];raw=definition['request']['raw_input'].encode()
+   if run.get('input_sha256')!=digest(raw) or job['campaign_id']!=definition['campaign_id']:return None
+   if canonical(protocol['document'])!=canonical(documents[campaigns[job['campaign_id']]['protocol_id']]):return None
+   original=json.loads(raw,parse_float=Decimal)
+   originals=original['published'];keys=lambda r:(r['observation_id'],r['configuration_identity'],r['metric'],r['units'])
+   expected_keys=[keys(r) for r in originals]
+   original_by_key={keys(r):r for r in originals}
+   if len(expected_keys)!=len(set(expected_keys)) or {keys(r) for r in measurements}!=set(expected_keys) or len(measurements)!=len(originals):return None
+   if any(r['status']!='recorded' or r['source_id']!=claim['source_id'] for r in originals):return None
+   planned={name:sum(r['metric']==name for r in originals) for name in metrics}
+  else:
+   if claimed!=set(metrics):return None
+   planned={name:m.get('planned_observations') for name,m in metrics.items()}
   for name,m in metrics.items():
-   if m.get('planned_observations') is None or sum(r['metric']==name for r in measurements)!=m['planned_observations']:return None
+   if planned[name] is None or planned[name]<1 or sum(r['metric']==name for r in measurements)!=planned[name]:return None
+  inventories.append(dict(run_id=run['id'],**evidence.manifest(measurements)))
+  # One paginated query per run, rather than a remote lookup for every cell.
+  published_ids={r['published_id'] for r in measurements if r.get('published_id')}
+  published_records=[];ordered_ids=sorted(published_ids)
+  for start in range(0,len(ordered_ids),100):
+   published_records.extend(evidence.collect(rows,'published_values',task['study_id'],id='in.('+','.join(ordered_ids[start:start+100])+')'))
+  published_by_id={r['id']:r for r in published_records}
+  if set(published_by_id)!=published_ids:return None
   for r in measurements:
-   if r['status']!='recorded' or not r.get('published_id'):return None
-   p=one('published_values',task['study_id'],r['published_id']);m=metrics[r['metric']]
+   if not r.get('published_id'):return None
+   p=published_by_id[r['published_id']];m=metrics[r['metric']]
    if p['status']!='recorded' or p['source_id']!=claim['source_id'] or any(r[k]!=p[k] for k in ('observation_id','configuration_identity','metric','units')) or r['units']!=m['units']:return None
+   if r['status']!='recorded':
+    if not partial or r['value'] is not None:return None
+    citations.extend([dict(kind='measurements',id=r['id']),dict(kind='published_values',id=p['id'])])
+    continue
    try:
     observed=Decimal(str(r['value']));published=Decimal(str(p['value']));tolerance=Decimal(str(m['tolerance_absolute']))
     if not all(v.is_finite() for v in (observed,published,tolerance)) or tolerance<0:return None
+    if registered and published!=Decimal(str(original_by_key[keys(r)]['value'])):return None
    except (InvalidOperation,KeyError):return None
-   labels.append('reproduced' if abs(observed-published)<=tolerance else 'discrepant');evidence.extend([dict(kind='measurements',id=r['id']),dict(kind='published_values',id=p['id'])])
- unique={(r['kind'],r['id']):r for r in evidence}
+   precision=max(len(x.as_tuple().digits) for x in (observed,published,tolerance))+max(x.as_tuple().exponent for x in (observed,published,tolerance))-min(x.as_tuple().exponent for x in (observed,published,tolerance))+4
+   if precision>10000:return None
+   with localcontext() as arithmetic:
+    arithmetic.prec=max(50,precision)
+    matched=abs(observed-published)<=tolerance
+   labels.append('reproduced' if matched else 'discrepant');citations.extend([dict(kind='measurements',id=r['id']),dict(kind='published_values',id=p['id'])])
+   if registered:covered_cells.add(cell_key(r))
+ if registered:
+  if covered_cells!=set(required_cells):return None
+  coverage.update(required_checks=len(expected),completed_checks=coverage['decision_runs'],required_cells=len(required_cells),covered_cells=len(covered_cells),record_inventories=inventories,criterion='Union of original frozen published cell identities and per-cell absolute tolerances; compatible alternative checks may cover the same cells. No population inference.')
+ unique={(r['kind'],r['id']):r for r in citations}
  return ('discrepant' if 'discrepant' in labels else 'reproduced',list(unique.values()),coverage) if labels else None
 
 def step(task):
@@ -343,6 +476,11 @@ def step(task):
  if answer['status']!='complete':return advance(task,'queued',context=dict(context,last_feedback=answer['reason'],last_response_error=answer['reason']),reason='Invalid answer retained; next prompt addresses the exact failure.')
  context.pop('last_response_error',None)
  output=answer['output'];context['last_turn_id']=answer['id']
+ if output['action']=='inspect':
+  read=inspect_evidence(task,output['read_request']);context['evidence_read']=dict(read,requested_by_turn_id=answer['id'])
+  if output['read_request']['kind']=='protocol' and task['stage'] in ('comprehension','critic'):
+   context.setdefault('protocol_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
+  return advance(task,'queued',context=context,reason='Read-only evidence page retained; the next numbered prompt includes its provenance.')
  if output['action']=='blocked' or any(b['kind'] in EXTERNAL for b in output['blockers']):return blocked(dict(task,context=context),output)
  if task['stage']=='planning':
   if output['action']=='choose-check':
@@ -363,15 +501,25 @@ def step(task):
   fingerprint=digest(canonical(semantic))
   if fingerprint in context.get('prior_design_hashes',[]):return advance(task,'blocked',context=dict(context,last_feedback=output['reason']),reason='The same design was proposed again without addressing the retained evidence gap. A new input or method is required.')
   context['prior_design_hashes']=context.get('prior_design_hashes',[])+[fingerprint];context['reviews']=[]
+  context.pop('evidence_read',None);context.pop('protocol_reads',None)
   context.pop('blockers',None)
   return advance(task,'queued',stage='comprehension',context=context,reason='Candidate retained; fresh comprehension and critic reviews are pending.')
  if task['stage'] in ('comprehension','critic'):
   if output['action']!='review':raise ValueError('Fresh review must return a review judgment only.')
+  if output['ready'] and context.get('selected_check_id'):
+   job=next(j for j in inventory(task) if j['id']==context['selected_check_id']);selected=check_context(job,task['study_id'])
+   if len(canonical(selected['protocol']))>32000:
+    cursor=0;seen=context.get('protocol_reads',{})
+    while str(cursor) in seen and seen[str(cursor)] is not None:cursor=seen[str(cursor)]
+    if str(cursor) not in seen or seen[str(cursor)] is not None:
+     return advance(task,'queued',context=dict(context,last_response_error='Read every retained protocol fragment before readiness; the original protocol is not fully examined.'),reason='Protocol review coverage is incomplete; no execution admitted.')
   if output['ready'] is not True:
    context.update(last_feedback=output['reason'],blockers=output['blockers'])
    return advance(task,'queued',stage='planning',context=context,reason='Review finding retained; next planning prompt includes the specific design gap.')
   context['reviews']=context.get('reviews',[])+[dict(turn_id=answer['id'],role=task['stage'],coverage_complete=output['coverage_complete'],reason=output['reason'])]
-  if task['stage']=='comprehension':return advance(task,'queued',stage='critic',context=context,reason='Comprehension recorded; fresh critic review pending.')
+  if task['stage']=='comprehension':
+   context.pop('protocol_reads',None);context.pop('evidence_read',None)
+   return advance(task,'queued',stage='critic',context=context,reason='Comprehension recorded; fresh critic review pending.')
   task['context']=context;return enqueue(task)
  if task['stage']=='assessment':
   if output['action']!='assess':raise ValueError('Assessment requires an evidence judgment, not another action.')
@@ -380,6 +528,10 @@ def step(task):
    return advance(task,'queued',stage='assessment',context=dict(context,last_feedback=output['reason']+' The independent matched-cell calculation is '+finding[0]+'. Reassess coverage and the retained evidence under the original criterion; no replacement experiment or favorable-result search is authorized.'),reason='Model interpretation disagrees with the recorded numerical check; retry assessment using the same evidence.',label='inconclusive')
   if finding and output['coverage_complete'] and output['assessment_label']==finding[0]:
    label,evidence,coverage=finding
+   evidence_raw=canonical(evidence)
+   artifact=store.artifact(task['study_id'],task['actor_id'],evidence_raw,uid(answer['id'],'decision-evidence'),'application/json',dict(kind='complete-decision-evidence-index',version=VERSION,records=len(evidence),transformation='Canonical references to every checked record; full-data arithmetic, no model summary.'))
+   store.append(task['study_id'],task['actor_id'],'artifacts',artifact)
+   evidence=[r for r in evidence if r['kind'] in ('runs','protocols')]+[dict(kind='artifacts',id=artifact['id'])]
    prior=rows('assessments',task['study_id'],claim_id='eq.'+task['claim_id'],order='created_at.desc',limit=1)
    assessment=dict(id=uid(answer['id'],'assessment'),claim_id=task['claim_id'],campaign_id=context['campaign_ids'][-1],supersedes_id=prior[0]['id'] if prior else None,label=label,
     tested_conditions=dict(scope='Matched recorded numerical cells under the exact frozen criterion; no broader inference. Earlier valid comparable discrepancies remain part of the decision; prior partial/failed and other-method runs remain referenced separately.',protocols=[one('campaigns',task['study_id'],c)['protocol_id'] for c in context['campaign_ids']],coverage=coverage,automatic_controller=VERSION),evidence=evidence,
@@ -388,7 +540,10 @@ def step(task):
    return advance(task,'resolved',context=dict(context,assessment_id=assessment['id']),reason=output['reason'],label=label)
   context.update(last_feedback=output['reason']+' The recorded evidence does not meet the controller\'s frozen full-coverage criterion; no conclusive label was assigned.',blockers=output['blockers'])
   context['completed_job_ids']=list(dict.fromkeys(context.get('completed_job_ids',[])+context.get('job_ids',[])))
-  if context.get('selected_check_id'):context['tried_check_ids']=context.get('tried_check_ids',[])+[context['selected_check_id']]
+  if context.get('selected_check_id'):
+   selected=context['selected_check_id'];context['tried_check_ids']=context.get('tried_check_ids',[])+[selected]
+   context.setdefault('completed_reviews',{})[selected]=context.get('reviews',[])
+  context.pop('selected_check_id',None);context.pop('proposal',None);context.pop('evidence_read',None)
   context.pop('job_ids',None);context.pop('campaign_ids',None)
   return advance(task,'queued',stage='planning',context=context,reason='Evidence remains inconclusive; next prompt targets the remaining gap.',label='inconclusive')
  raise ValueError('Unsupported durable claim stage.')
@@ -404,6 +559,15 @@ def process(task):
   except Exception:return dict(status='unconfirmed',task_id=task['id'],reason='Lease/evidence persistence must be reconciled; no retry was dispatched.')
 
 def handler(event,context=None):
+ recovery=[]
+ if os.environ.get('RESEARCH_AUTONOMY_CONTEXT_RECOVERY')==evidence.VERSION:
+  # Publication must be verified before resuming any older paused task.
+  model.load_prompt()
+  for candidate in store.rpc('research_autonomy_context_candidates',{}):
+   try:
+    result=store.rpc('research_autonomy_resume_context',dict(p_study=candidate['study_id'],p_actor=candidate['owner_id'],p_task=candidate['id'],p_version=evidence.VERSION))
+    recovery.append(dict(task_id=candidate['id'],status=result['status']))
+   except store.StoreError:recovery.append(dict(task_id=candidate['id'],status='retained-blocker'))
  def slot():
   task=store.rpc('research_autonomy_control',dict(p_operation='lease',p_actor=None,p_study=None,p_payload={}))
   return process(task) if task else dict(status='idle')
@@ -413,4 +577,4 @@ def handler(event,context=None):
   for future in futures:
    try:r=future.result();results.append({k:r.get(k) for k in ('id','status','reason')})
    except Exception as error:results.append(dict(status='unconfirmed',error_type=type(error).__name__))
- return dict(version=VERSION,slots=2,outcomes=results)
+ return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery)

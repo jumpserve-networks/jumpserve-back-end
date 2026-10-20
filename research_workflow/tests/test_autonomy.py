@@ -50,7 +50,7 @@ class Autonomy(unittest.TestCase):
  def test_each_phase_request_binds_actions_without_mutating_other_requests(self):
   planning=model.request('System',{'task':'planning'});review=model.request('System',{'task':'critic'})
   schema=lambda r:r['toolConfig']['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']
-  self.assertEqual(schema(review),['review','blocked']);self.assertEqual(schema(planning),['choose-check','propose','blocked'])
+  self.assertEqual(schema(review),['review','inspect','blocked']);self.assertEqual(schema(planning),['choose-check','propose','inspect','blocked'])
   self.assertIn('discover',model.SCHEMA['properties']['action']['enum']);self.assertIn('Controller phase: critic',review['system'][-1]['text'])
  def test_confirmed_wrong_phase_answer_is_retained_invalid_and_can_receive_a_numbered_correction(self):
   t=task('comprehension');events=[];v=answer('choose-check');v.update(reason='retained-check',check_id='original-check')
@@ -171,7 +171,7 @@ class Autonomy(unittest.TestCase):
   t=task('assessment');claim=dict(id=t['claim_id'],source_id=str(uuid.uuid4()),description='Exact original')
   finding=('discrepant',[dict(kind='runs',id='recorded-run')],dict(decision_runs=1))
   with patch.object(autonomy,'one',side_effect=[claim,{'id':claim['source_id']}]),patch.object(autonomy,'rows',return_value=[]),patch.object(autonomy,'numeric_finding',return_value=finding):v=autonomy.build_context(t)
-  self.assertEqual(v['controller_numeric_check']['label'],'discrepant');self.assertEqual(v['controller_numeric_check']['evidence'],finding[1]);self.assertIn('shared inputs',v['controller_numeric_check']['scope'])
+  self.assertEqual(v['controller_numeric_check']['label'],'discrepant');self.assertEqual(v['controller_numeric_check']['evidence_manifest_sha256'],workflow.digest(workflow.canonical(finding[1])));self.assertEqual(v['controller_numeric_check']['evidence_count'],1);self.assertIn('shared inputs',v['controller_numeric_check']['scope'])
  def test_interpretation_disagreement_reuses_existing_evidence_without_new_experiments(self):
   for covered,label in ((True,'reproduced'),(False,'inconclusive')):
    t=task('assessment');t['context']={'job_ids':['original-job'],'campaign_ids':['original-campaign']}
@@ -189,6 +189,8 @@ class Autonomy(unittest.TestCase):
    records['published_values',job]=dict(id=job,status='recorded',source_id='source',value='10',observation_id=job,configuration_identity=job,metric='latency',units='ms')
   def rows(kind,study,**params):
    if kind=='queue_jobs':return [dict(id=j,run_id=j,campaign_id=j) for j in ('new','old','partial')]
+   if params.get('and'):return []
+   if kind=='published_values':return [records['published_values',j] for j in params['id'][4:-1].split(',')]
    job=params['run_id'][3:];return [dict(records['published_values',job],published_id=job,value='12' if job=='old' else '10')]
   with patch.object(autonomy,'one',side_effect=lambda kind,study,key:records[kind,key]),patch.object(autonomy,'rows',side_effect=rows):
    label,evidence,coverage=autonomy.numeric_finding(t)
