@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import io
+import os
+import subprocess
 import uuid
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import importer, workflow, intake
@@ -56,4 +58,23 @@ class ExternalEvidence(unittest.TestCase):
             self.assertEqual(failure['status'],'failed');self.assertEqual(failure['original_sha256'],workflow.digest(pdf.read_bytes()))
             self.assertIsNone(failure['measured_charges_usd']);self.assertFalse(output.exists())
             with self.assertRaises(ValueError):intake.text_packet(pdf,output)
+    def test_parser_subprocess_inherits_parent_only_dependency_directory(self):
+        # Dependency-discovery regression, not a PDF parser correctness fixture.
+        # The separate integration campaign uses the actual pinned pypdf bytes.
+        with tempfile.TemporaryDirectory() as directory:
+            layer=Path(directory)/'python';package=layer/'pypdf';package.mkdir(parents=True)
+            (layer/'jumpserve_parent_path_only.py').write_text('VALUE = 1\n')
+            (package/'__init__.py').write_text("import jumpserve_parent_path_only\n__version__='parent-path-only-fixture'\nclass Page:\n def extract_text(self): return 'Dependency path control'\nclass PdfReader:\n def __init__(self, stream):\n  self.is_encrypted=False\n  self.pages=[Page()]\n")
+            pdf=Path(directory)/'input.pdf';pdf.write_bytes(b'%PDF-1.4\nDependency discovery control only')
+            output=Path(directory)/'packet.json'
+            with patch.dict(os.environ),patch.object(sys,'path',[str(layer),*sys.path]):
+                os.environ.pop('PYTHONPATH',None)
+                baseline=subprocess.run([sys.executable,'-B','-c','import jumpserve_parent_path_only'],capture_output=True,timeout=5)
+                self.assertNotEqual(baseline.returncode,0)
+                result=intake.text_packet(pdf,output)
+            packet=json.loads(output.read_bytes())
+            self.assertEqual(result['pages'],1)
+            self.assertEqual(packet['tool_version'],'parent-path-only-fixture')
+            self.assertEqual(packet['pages'][0]['text'],'Dependency path control')
+            self.assertEqual(packet['original_sha256'],workflow.digest(pdf.read_bytes()))
 if __name__=='__main__':unittest.main()
