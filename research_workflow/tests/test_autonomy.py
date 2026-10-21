@@ -200,6 +200,24 @@ class Autonomy(unittest.TestCase):
    with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=dict(id='turn',status='complete',output=v)),patch.object(autonomy,'numeric_finding',return_value=('discrepant',['original-evidence'],{})),patch.object(autonomy,'advance',return_value={}) as advance,patch.object(autonomy,'enqueue') as enqueue:
     autonomy.step(t)
    self.assertEqual(advance.call_args.kwargs['stage'],'assessment');self.assertEqual(advance.call_args.kwargs['context']['job_ids'],['original-job']);self.assertIn('no replacement experiment',advance.call_args.kwargs['context']['last_feedback']);enqueue.assert_not_called()
+ def test_partial_missing_result_assessment_continues_retained_automatic_checks(self):
+  t=task('assessment');t['context']=dict(prepared_id='frozen-plan',job_ids=['fourth'],campaign_ids=['campaign-four'],completed_job_ids=['first','second','third'],selected_check_id='fourth',reviews=[dict(role='comprehension'),dict(role='critic')])
+  v=answer('assess');v.update(assessment_label='inconclusive',blockers=[dict(kind='missing-data',detail='missing-source-data',required_input='Provide the remaining two frozen panel results.')])
+  with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=dict(id='actual-partial-answer',status='complete',output=v)),patch.object(autonomy,'numeric_finding',return_value=None),patch.object(autonomy,'inventory',return_value=[dict(id=j,execution_mode='automatic') for j in ('first','second','third','fourth','fifth','sixth')]),patch.object(autonomy,'advance',return_value={}) as advance,patch.object(autonomy,'blocked') as blocked,patch.object(autonomy,'enqueue') as enqueue:
+   autonomy.step(t)
+  blocked.assert_not_called();enqueue.assert_not_called();self.assertEqual(advance.call_args.args[1],'queued');self.assertEqual(advance.call_args.kwargs['stage'],'planning');self.assertEqual(advance.call_args.kwargs['label'],'inconclusive')
+  context=advance.call_args.kwargs['context'];self.assertEqual(context['completed_job_ids'],['first','second','third','fourth']);self.assertEqual(context['last_turn_id'],'actual-partial-answer');self.assertEqual(context['blockers'],v['blockers']);self.assertNotIn('selected_check_id',context)
+ def test_partial_assessment_without_remaining_executable_evidence_keeps_external_pause(self):
+  t=task('assessment');t['context']=dict(prepared_id='frozen-plan',job_ids=['done'],campaign_ids=['campaign'],selected_check_id='done',reviews=[])
+  v=answer('assess');v.update(assessment_label='inconclusive',blockers=[dict(kind='missing-data',detail='missing-source-data',required_input='Original unavailable packet traces')])
+  with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=dict(id='answer',status='complete',output=v)),patch.object(autonomy,'numeric_finding',return_value=None),patch.object(autonomy,'inventory',return_value=[dict(id='manual',execution_mode='manual')]),patch.object(autonomy,'blocked',return_value={}) as blocked:
+   autonomy.step(t)
+  self.assertEqual(blocked.call_args.args[0]['context']['completed_job_ids'],['done']);self.assertEqual(blocked.call_args.args[1]['blockers'],v['blockers'])
+ def test_capacity_pause_is_not_overridden_by_remaining_assessment_checks(self):
+  t=task('assessment');v=answer('assess');v['blockers']=[dict(kind='capacity',detail='resource-exhausted',required_input=model.LIMIT_INPUT)]
+  with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=dict(id='answer',status='complete',output=v)),patch.object(autonomy,'blocked',return_value={}) as blocked,patch.object(autonomy,'numeric_finding') as finding:
+   autonomy.step(t)
+  blocked.assert_called_once();finding.assert_not_called()
  def test_earlier_valid_discrepancy_cannot_be_hidden_by_later_agreement(self):
   t=task('assessment');t['context']=dict(job_ids=['new'],completed_job_ids=['old','partial'],reviews=[dict(turn_id=r,role=r,coverage_complete=True) for r in ('comprehension','critic')])
   records={('claims',t['claim_id']):dict(claim_type='numerical',metrics=['latency'],source_id='source')}

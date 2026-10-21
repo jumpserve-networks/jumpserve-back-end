@@ -492,7 +492,10 @@ def step(task):
   if output['read_request']['kind']=='protocol' and task['stage'] in ('comprehension','critic'):
    context.setdefault('protocol_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
   return advance(task,'queued',context=context,reason='Read-only evidence page retained; the next numbered prompt includes its provenance.')
- if output['action']=='blocked' or any(b['kind'] in EXTERNAL for b in output['blockers']):return blocked(dict(task,context=context),output)
+ external=any(b['kind'] in EXTERNAL for b in output['blockers'])
+ # A partial assessment can name results a retained check has yet to collect.
+ # Account for evidence and remaining executable checks before pausing it.
+ if output['action']=='blocked' or any(b['kind']=='capacity' for b in output['blockers']) or external and task['stage']!='assessment':return blocked(dict(task,context=context),output)
  if task['stage']=='planning':
   if output['action']=='choose-check':
    if not context.get('prepared_id'):raise ValueError('No retained checks exist for this claim.')
@@ -556,6 +559,8 @@ def step(task):
    context.setdefault('completed_reviews',{})[selected]=context.get('reviews',[])
   context.pop('selected_check_id',None);context.pop('proposal',None);context.pop('evidence_read',None)
   context.pop('job_ids',None);context.pop('campaign_ids',None)
+  remaining=[j for j in inventory(dict(task,context=context)) if j['execution_mode']=='automatic' and j['id'] not in set(context.get('tried_check_ids',[])+context.get('completed_job_ids',[]))] if external and context.get('prepared_id') else []
+  if external and not remaining:return blocked(dict(task,context=context),output)
   return advance(task,'queued',stage='planning',context=context,reason='Evidence remains inconclusive; next prompt targets the remaining gap.',label='inconclusive')
  raise ValueError('Unsupported durable claim stage.')
 
