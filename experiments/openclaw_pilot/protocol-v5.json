@@ -1,0 +1,72 @@
+{
+  "id": "openclaw-ipv6-subscription-pilot-v5",
+  "stage": "exposed-development-pilot",
+  "question": "Can pinned OpenClaw supply schema-valid subscription-backed OpenAI decisions to the existing controller through the six archived IPv6 checks?",
+  "design": "One new model/provider trajectory, not a matched Claude comparison, independent scientific replication, held-out evaluation or framework ranking. Earlier protocols, results and commitments remain unchanged. Fresh local study/task identities distinguish this new configuration; earlier attempts are reported separately, not erased.",
+  "source": {
+    "paper": "How I learned to stop worrying and love IPv6",
+    "sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+    "claim": "Published absolute folded metrics",
+    "location": "Figures 13–15 a/b, PDF pages 17–19",
+    "checks": 6,
+    "planned_cells": 1152,
+    "data_origin": "archived-reanalysis"
+  },
+  "configuration": {
+    "openclaw": "2026.10.5",
+    "node": "24.16.0",
+    "model": "gpt-6.1-sol",
+    "model_selection": "Exact documented model; must appear in the signed-in account catalog. Unavailable means pause, never substitute.",
+    "billing": "chatgpt-subscription",
+    "auth": "OpenClaw Sign in with ChatGPT (SIWC), with resource.invoke and chatgpt.tokens.use.direct granted",
+    "endpoint": "https://api.openai.com/v1/responses",
+    "prompt": "research-autonomy-v8 plus retained OpenClaw runtime instructions and the logical decision schema",
+    "seed": null,
+    "temperature": null,
+    "reasoning_effort": "medium",
+    "requested_output_tokens": null,
+    "control_limitations": "SIWC rejects temperature and max_output_tokens. Bound client HTTP response collection and wall time; output tokens are observed where available, not prospectively capped. Closing a stream does not establish provider-side cancellation. No exact model snapshot or deterministic seed is exposed. OpenClaw's loopback catalog requires numeric cost fields; its zero placeholders are not subscription charges and are excluded from cost summaries.",
+    "stream": true,
+    "store": false,
+    "tools": "No provider tools or OpenClaw tools/plugins, Tool Search or Code Mode. Existing controller alone executes registered archived checks.",
+    "paid_api_fallback": false,
+    "model_fallback": false,
+    "automatic_provider_retries": 0,
+    "supabase_project": "regphejnlvfpyokpniny",
+    "aws_account": "395567831870"
+  },
+  "limits": {
+    "maximum_aggregate_committed_cents": 10000,
+    "local_overhead_reserved_cents": 1000,
+    "orchestration_reserve_cents_per_turn": 100,
+    "maximum_provider_calls": 25,
+    "maximum_controller_attempts_per_claim": 25,
+    "maximum_elapsed_seconds": 2700,
+    "maximum_controller_cycles": 120,
+    "maximum_provider_request_bytes": 96000,
+    "maximum_response_bytes": 1048576,
+    "provider_timeout_seconds": 120,
+    "maximum_experiment_instances": 0,
+    "same_request_replay": false,
+    "minimum_provider_start_spacing_seconds": 5
+  },
+  "costs": "Carry forward original results-v4 commitments ($27.15, verified from its original ledger). New per-turn cents are conservative orchestration reserves, not API prices or measured charges. Subscription cost allocation, marginal charge, compute/storage cost and unavailable usage remain null. No API-key, Bedrock, other model or account fallback is implemented. User can additionally manage app allowance in ChatGPT Settings > Usage.",
+  "stopping": "Pause all new model requests on quota exhaustion, unavailable usage, authentication failure, incomplete stream, uncertain transport outcome, invalid output, budget/deadline/call limit or source drift. Preserve raw bytes and the shared commitments. No automatic restart or same-request replay; recovery requires a separate versioned follow-up without resetting counters or paper deadlines.",
+  "criteria": {
+    "feasibility_pass": "Actual subscription-authorized completed responses with valid decisions; controller resolves the scoped claim using six complete archived checks and all 1152 matched cells; retained raw provider SSE bytes and request hashes verify after database retrieval; no paid fallback.",
+    "numerical_agreement": "Original frozen per-cell tolerances and observation/configuration/metric/unit identities. Separate Decimal arithmetic check shares archived inputs and is not independent validation of the source measurements.",
+    "software_gate": "Before inference, pass synthetic tests for real CLI transport, HTTP and in-stream quota pauses, incomplete/malformed streams, credential rejection, no repeated dispatch, schema rejection, missing versus zero usage, SQL immutability and browser access denial.",
+    "uncertainty": "One exposed claim/configuration; report counts and descriptive measurements only. No inferential intervals, causal conclusions or general superiority claims.",
+    "review": "Primary AI implementer, not independent or human review. Development cases are reused regressions, not held-out validation. No production prompt publication."
+  },
+  "persistence": "Actual local Postgres, controller, queue and archived arithmetic. Google identity, HTTP/Storage transport and local activation of the existing published core prompt are fixtures. Record exact model in controller turns. Preserve each logical request, OpenClaw transport body, actual Responses request and original SSE response bytes in private SQL with verified hashes. Credential database is private, excluded from artifacts/exports and never copied into per-turn workspaces. Remote Supabase and website integration are not exercised.",
+  "coverage_limits": "No new Internet or physical networking measurements, full-paper verification, fresh literature review, parallel OpenClaw agents, public-site integration or isolation validation. Scientific gaps remain gaps.",
+  "documentation": [
+    "https://learn.chatgpt.com/docs/sign-in-with-chatgpt",
+    "https://learn.chatgpt.com/docs/models",
+    "https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference.md",
+    "https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations.md",
+    "https://developers.openai.com/siwc/token-sharing-open-source/errors-and-recovery.md",
+    "https://docs.openclaw.ai/providers/openai/authentication"
+  ]
+}

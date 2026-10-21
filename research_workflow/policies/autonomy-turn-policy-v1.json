@@ -1,0 +1,7 @@
+{
+  "version": "autonomy-turn-policy-v1",
+  "attempts_per_claim": null,
+  "maximum_spend_usd": 100,
+  "elapsed_days": 7,
+  "instruction": "Trusted controller resource policy autonomy-turn-policy-v1: there is no limit on the number of AI turns per claim, including paper intake. This policy supersedes references to a 25-attempt ceiling or fixed attempt limits in historical prompt text, initial requests and prior feedback. Attempt numbers are cumulative audit counters, never stopping criteria. Continue informative authorized work while the controller admits it within the original USD100 aggregate paper commitments and seven-day deadline. Never reset commitments, deadlines, turn numbers or prior evidence. Missing inputs, unconfirmed provider outcomes, unavailable authorization and exhausted subscription allowance still require their specific honest blockers; removing the turn cap does not authorize replaying uncertain calls, paid fallback or repeated sampling for a preferred finding. The controller alone admits each call and experiment. Scientific criteria and evidence coverage remain unchanged."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "openclaw-ipv6-subscription-pilot-v7",
+  "base": "protocol-v5.json",
+  "amendment": "Preserve v5's failed fixture preparation and v6's frozen, unused study plus its preflight rejection. Native OpenClaw SIWC login succeeded, but v6 read the empty per-agent auth table instead of the native shared state cell. V7 reads both documented-by-installed-source locations within the dedicated private auth root, requires exactly one SIWC profile in total and preserves API-key/alternate-account denial. Add a regression using the exact native SQLite layout. The v6 model-patch scoping correction remains. No scientific input, prompt, numerical criterion or model is retuned; no subscription model request was made in v5/v6.",
+  "previous_protocols": ["protocol-v5.json", "protocol-v6.json"],
+  "prior_local_preparation_reserved_cents": 2000,
+  "prior_costs": "Original Bedrock commitments $27.15 plus v5 and v6 preparation reserves of $10 each: $47.15 carried forward. V7 reserves another $10 local overhead and $1 per admitted turn under the unchanged $100 aggregate cap. These are conservative commitments, not measured charges.",
+  "identity": "A fresh local study and new configuration preserve the unused v6 study separately. V5/v6 made zero inference attempts; earlier Bedrock attempts remain in the original independent trajectory and shared aggregate budget.",
+  "auth_limitation": "SIWC credentials remain native, private and outside exported evidence. Account credit-spending settings and remaining allowance are not observable to this adapter; manage them in ChatGPT Settings > Usage. No paid API, model, provider or account fallback is implemented.",
+  "tls": "During exploratory model-catalog preflight, Python 3.13 had no default CA file and rejected TLS verification before any HTTP response or inference. Preserve the pre-correction source and tests. Use a hash-frozen copy of the host's /etc/ssl/cert.pem public trusted CA bundle with create_default_context, CERT_REQUIRED and hostname checks retained; TLS key logging is disabled. This changes setup before main campaign admission, not scientific criteria."
+}

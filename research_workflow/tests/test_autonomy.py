@@ -61,7 +61,7 @@ class Autonomy(unittest.TestCase):
   receipt=events[-1][1];self.assertEqual(receipt['status'],'invalid-output');self.assertIsNone(receipt['output']);self.assertIn('choose-check',receipt['raw_response'])
   with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=result),patch.object(autonomy,'advance',return_value={}) as advance:
    autonomy.step(t)
-  self.assertEqual(advance.call_args.args[1],'queued');self.assertIn('requires one of review',advance.call_args.kwargs['context']['last_response_error'])
+   self.assertEqual(advance.call_args.args[1],'queued');self.assertRegex(advance.call_args.kwargs['context']['last_response_error'],'requires one of review|only applicable to planning')
  def test_protocol_feedback_survives_fresh_review_without_prior_ai_verdicts(self):
   t=task('critic');t['context']['last_response_error']='Controller phase critic requires review; choose-check was not executed.';claim=dict(id=t['claim_id'],source_id=str(uuid.uuid4()))
   with patch.object(autonomy,'one',side_effect=[claim,{'id':claim['source_id']}]),patch.object(autonomy,'rows',return_value=[]):value=autonomy.build_context(t)
@@ -71,7 +71,7 @@ class Autonomy(unittest.TestCase):
   with patch.object(store,'rpc',return_value={'id':body['request_id']}) as rpc,patch.object(autonomy,'wake',return_value={'status':'deferred'}):
    autonomy.start(str(uuid.uuid4()),body)
    payload=rpc.call_args.args[1]['p_payload'];initial=json.loads(payload['initial_prompt'])
-   self.assertEqual(initial['defaults']['maximum_spend_usd'],100);self.assertEqual(initial['defaults']['elapsed_days'],7);self.assertEqual(initial['defaults']['attempts_per_claim'],25)
+   self.assertEqual(initial['defaults']['maximum_spend_usd'],100);self.assertEqual(initial['defaults']['elapsed_days'],7);self.assertIsNone(initial['defaults']['attempts_per_claim'])
    with self.assertRaises(ValueError):autonomy.start(str(uuid.uuid4()),dict(body,max_spend=1000))
  def test_prompt_precedes_provider_and_failure_counts_and_is_retained(self):
   t=task();events=[];system='Server-owned prompt';prompt=dict(id=str(uuid.uuid4()))
@@ -123,10 +123,31 @@ class Autonomy(unittest.TestCase):
  def test_model_cannot_invent_a_cloud_price(self):
   with self.assertRaisesRegex(ValueError,'cost envelope'):
    autonomy.price(dict(raw_input='{}'),dict(document={'execution':{}}))
- def test_attempt_limit_stops_before_more_prompts(self):
-  t=task();t['attempts']=25
-  with patch.object(model,'call') as call,patch.object(autonomy,'advance',return_value={}) as advance:
-   autonomy.step(t);call.assert_not_called();self.assertEqual(advance.call_args.args[1],'attempt-limit')
+ def test_turn_count_does_not_stop_work_but_budget_denial_still_does(self):
+  for attempts in (25,26,1000):
+   t=task();t['attempts']=attempts
+   with patch.object(autonomy,'build_context',return_value={}),patch.object(model,'call',return_value=dict(denied='budget')) as call,patch.object(autonomy,'advance') as advance:
+    autonomy.step(t);call.assert_called_once();self.assertEqual(advance.call_args.args[1],'budget')
+ def test_history_paginates_beyond_the_former_limit_and_rejects_invalid_cursors(self):
+  t=task();t['attempts']=1000
+  with patch.object(autonomy,'one',return_value=t),patch.object(autonomy,'rows',return_value=[dict(number=n) for n in range(990,980,-1)]) as rows:
+   result=autonomy.history(t['study_id'],t['id'],991)
+   self.assertEqual(rows.call_args.kwargs['number'],'lt.991');self.assertEqual(result['next_before'],981)
+   self.assertEqual(result['coverage']['total'],1000)
+   for cursor in (0,-1,'1.5',1002,'NaN','９９１'):
+    with self.assertRaises(ValueError):autonomy.history(t['study_id'],t['id'],cursor)
+ def test_current_controller_policy_overrides_historical_prompt_ceiling_without_rewriting_it(self):
+  system='Historical prompt: every invocation counts toward 25 attempts per claim.'
+  value=model.request(system,dict(task='planning',attempt_number=101))
+  self.assertEqual(value['system'][0]['text'],system)
+  self.assertIn('no limit on the number of AI turns',value['system'][1]['text'])
+  self.assertIsNone(model.TURN_POLICY['attempts_per_claim'])
+  self.assertEqual(model.TURN_POLICY['maximum_spend_usd'],autonomy.DEFAULTS['maximum_spend_usd'])
+  self.assertEqual(model.TURN_POLICY['elapsed_days'],autonomy.DEFAULTS['elapsed_days'])
+ def test_count_stop_recovery_requires_a_verified_published_prompt_before_sql_mutation(self):
+  with patch.object(model,'load_prompt',side_effect=ValueError('Unpublished prompt')),patch.object(store,'rpc') as rpc:
+   with self.assertRaisesRegex(ValueError,'Unpublished'):autonomy.handler({})
+  rpc.assert_not_called()
  def test_reviews_omit_prior_verdicts_and_use_exact_candidate(self):
   t=task('critic');t['context']['proposal']={'protocol':{'hypotheses':'Exact original'}}
   claim=dict(id=t['claim_id'],source_id=str(uuid.uuid4()),description='Exact original')

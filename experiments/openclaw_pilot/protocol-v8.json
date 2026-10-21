@@ -1,0 +1,12 @@
+{
+  "id": "openclaw-ipv6-subscription-pilot-v8",
+  "base": "protocol-v7.json",
+  "amendment": "The first v7 inference endpoint request was explicitly rejected HTTP 400 because JSON mode requires the word JSON in an input message, not only instructions. Its original request, response, controller failure, missing usage and $1 commitment remain immutable. Add one developer input instruction to return JSON. Continue the same study, task, pilot and ledger at the next numbered attempt under an append-only, narrowly validated rejection receipt. No uncertain invocation is replayed and no scientific input or decision schema is changed.",
+  "original_rejection_sha256": "ecf2e171318b64e4c0f8e63370f53b30ac7f4ecf822de68896b5d29e1c9e9401",
+  "additional_overhead_reserved_cents": 1000,
+  "limits": "Original $100 shared cap, 25 total provider requests including the rejected request, 25 controller attempts, original paper deadline and original 45-minute campaign admission window remain unchanged. Additional $10 conservative follow-up overhead is retained. This leaves at most 24 new provider requests; no counter or deadline reset.",
+  "software_gate": "Before follow-up inference, pass development tests for JSON input instruction without mutating original context, rejection specificity, immutable local SQL receipt/browser denial and preservation of the original counter/budget guards. These are exposed regressions, not held-out evaluation.",
+  "stopping": "Any new provider error, unknown outcome, invalid answer, source drift or original resource limit stops admission. No further recovery is automatic.",
+  "reviewer": {"identity":"Codex primary implementer","type":"AI","independent":false,"human":false},
+  "interpretation": "A corrected, exposed feasibility follow-up on the same claim. Preserving the failed request does not establish that it generated a model answer or incurred zero usage/cost."
+}

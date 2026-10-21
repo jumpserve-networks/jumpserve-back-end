@@ -1,0 +1,9 @@
+{
+  "id": "openclaw-ipv6-subscription-pilot-v6",
+  "base": "protocol-v5.json",
+  "amendment": "V5 failed during local activation of the original v8 prompt fixture, before a model request. Preserve its original source, inputs, database, failure receipt and $10 conservative local overhead reservation. V6 scopes the OpenAI model and subscription accounting patch to inference only; the original prompt fixture is generated and validated with its unchanged Claude identity. No publication guard, scientific input, criteria or core prompt is weakened. This remains one exposed new-model/provider trajectory.",
+  "prior_preparation_receipt": "artifacts/v5/preparation-failure.json",
+  "prior_local_preparation_reserved_cents": 1000,
+  "prior_costs": "Carry forward $27.15 original Bedrock commitments plus $10 conservative v5 preparation overhead, for $37.15 prior commitments. No subscription model request has yet been sent. Failed preparation costs remain unmeasured.",
+  "local_identity": "Use a database identifier shorter than PostgreSQL's 63-byte identifier limit. Actual target is loopback Postgres only; no remote database/AWS changes."
+}

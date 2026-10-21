@@ -298,3 +298,69 @@ The additive migrations, frozen evaluation protocols, actual development-answer
 reports and release order are recorded in jumpserve-infra's README and
 `docs/research-ideas-protocol-v1.json`. No production deployment is implied by
 local implementation or fixture publication.
+
+## Autonomous AI turns
+
+The `research-autonomy-v3` application defaults are $100 in aggregate paper
+commitments and seven elapsed days, with **no AI turn-count limit**. A null
+`attempts_per_claim` / `max_attempts` means unlimited turns, not missing usage or
+zero allowed calls. Intake and per-claim planning, reviews, reads and assessments
+continue while the existing resource and dependency gates admit useful work.
+Turn numbers remain cumulative; every request, failure and response stays in
+owner-private, paginated history. Parallel claim and experiment capacity is
+unchanged. Removing the count limit does not guarantee a conclusive finding.
+
+The versioned `policies/autonomy-turn-policy-v1.json` controller instruction is
+retained in every complete request. It explicitly supersedes obsolete count
+ceilings in the immutable historical published prompt and initial requests.
+Budget/deadline authorization, scientific criteria, subscription pauses and
+uncertain-call reconciliation remain in force. Original prompts are not edited.
+
+Deploy the matching infrastructure migration
+`202610200008_remove_autonomy_turn_cap.sql` before enabling this worker. It stores
+an immutable policy-change event for existing papers without resetting costs,
+deadlines or evidence. The corrected worker can resume eligible historical
+`attempt-limit` stops at their retained stage; expired, exhausted, cancelled,
+externally blocked or uncertain work is not revived by that recovery gate.
+
+Earlier OpenClaw/Bedrock protocols, results and trajectory-evaluation policies
+are historical experiments with their own frozen ceilings. They remain intact;
+this application change does not replay them or overwrite their findings. A
+future pilot continuation needs a new versioned protocol within retained paper
+resources. Local validation and release gaps are documented in
+`jumpserve-infra/docs/autonomy-turn-policy-validation-v1.md`.
+
+## OpenClaw subscription worker
+
+`RESEARCH_AI_RUNTIME=openclaw-production-v1` selects the separately deployed,
+SSM-managed worker with OpenClaw 2026.10.5, Node 24.16.0 and `gpt-6.1-sol`.
+The host has its own native Sign in with ChatGPT grant and explicit plan-use
+consent. Its grant is never copied from a developer machine, sent to the browser
+or inherited by the per-turn OpenClaw process. API-key and Bedrock fallback are
+disabled for this configuration. Quota/authentication pauses remain visible.
+
+The controller first reserves paper resources and saves the complete numbered
+turn. A private SQL dispatch binds that exact request to one fenced worker lease.
+OpenClaw executes a fresh data-only turn through a private loopback bridge; the
+bridge admits at most one actual provider request. Tool execution stays with the
+existing reviewed networking/measurement adapters. An uncertain provider outcome
+requires reconciliation and is never retried automatically under a new identity.
+
+Original logical/native/provider request and response bytes, native CLI output,
+typed controller response, available usage and transformation provenance are
+stored as private hash-verified artifacts. Missing usage and subscription cost
+allocation remain unknown. The $1 per-turn reserve is a conservative orchestration
+commitment, not a measured inference price. Numeric zeros in OpenClaw's internal
+model cost catalog are adapter placeholders and must not become reported charges.
+
+The phase contract is checked on actual output: reviews cannot issue findings,
+planning cannot declare evidence coverage, and evidence references belong to
+assessment. Candidate v9 failed substantive AI inspection and is preserved;
+candidate v10 has its own sixteen-answer evaluation. The evaluator and reviewer
+are the same AI implementer, not human or independent reviewers. These software
+checks do not reproduce a paper's scientific claims.
+
+Deployment order, immutable evaluation/publication guards, host setup and release
+evidence are in `jumpserve-infra/docs/openclaw-production-protocol-v1.json` and its
+versioned amendments. Native host authorization and deployed authenticated
+execution must be verified before announcing the subscription path as available.

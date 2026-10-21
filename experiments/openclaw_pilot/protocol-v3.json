@@ -1,0 +1,9 @@
+{
+  "id": "openclaw-ipv6-runtime-pilot-v3",
+  "base": "protocol-v2.json",
+  "amendment": "Continue the same two v2 studies after the original CLI bytes establish one explicit ThrottlingException rejection with an empty response. Retain all original prompts, outputs, failed calls, unknown charges and commitments. Reconcile that rejection with an append-only receipt, then permit only a new numbered turn. The OpenClaw task had no actual provider dispatch and may resume its next numbered controller turn. Preserve attempts, contexts, reviews, measurements, deadlines, configurations and all scientific criteria. This is an exposed operational follow-up, not an independent replication.",
+  "minimum_provider_start_spacing_seconds": 30,
+  "deadline": "Original v2 campaign start plus 2700 seconds; no reset.",
+  "limits": "Original shared $100 reservation ceiling and 25 actual calls per arm remain. The application also retains each claim's original 25-attempt limit, including failed logical turns. No automatic reconciliation of another failure or unknown outcome is authorized by this protocol.",
+  "reviewer": {"identity": "Codex primary AI implementer", "type": "AI", "independent": false, "human": false}
+}

@@ -39,7 +39,7 @@ class PaperUploads(unittest.TestCase):
  def test_verified_bytes_are_retained_before_atomic_workflow_start(self):
   events=[];value=row()
   def artifact(*args):events.append('artifact-hash-verified');self.assertEqual(args[2],RAW);return dict(id=str(uuid.uuid4()),sha256=workflow.digest(RAW),byte_count=len(RAW))
-  def rpc(name,payload):events.append('atomic-start');self.assertEqual(payload['p_payload']['paper'],value['paper']);initial=json.loads(payload['p_payload']['initial_prompt']);self.assertEqual(initial['defaults']['attempts_per_claim'],25);return dict(id=ID)
+  def rpc(name,payload):events.append('atomic-start');self.assertEqual(payload['p_payload']['paper'],value['paper']);initial=json.loads(payload['p_payload']['initial_prompt']);self.assertIsNone(initial['defaults']['attempts_per_claim']);return dict(id=ID)
   with patch.object(store,'rows',return_value=[value]),patch.object(store,'request',return_value=RAW),patch.object(store,'artifact',side_effect=artifact),patch.object(store,'rpc',side_effect=rpc),patch.object(autonomy,'wake',return_value={}):
    paper_uploads.submit(ACTOR,dict(action='start',request_id=ID))
   self.assertEqual(events,['artifact-hash-verified','atomic-start'])

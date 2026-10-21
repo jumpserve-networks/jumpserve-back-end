@@ -1,0 +1,9 @@
+{
+  "id": "openclaw-ipv6-runtime-pilot-v4",
+  "base": "protocol-v3.json",
+  "amendment": "V3 preparation was excluded when the original 45-minute v2 campaign window expired before recovery. Preserve that exclusion and the original v2 failure. This separate exposed operational follow-up gets its own prospective 45-minute evaluation window starting at admission. The original seven-day PAPER deadlines, 25-attempt claim counters, aggregate provider counters, all commitments and the shared $100 ceiling remain unchanged. Continue the same SQL study/task identities and archived inputs. No original campaign deadline or scientific criterion is rewritten.",
+  "evaluation_window_seconds": 2700,
+  "minimum_provider_start_spacing_seconds": 30,
+  "same_turn_replay": false,
+  "scope": "A separately versioned operational follow-up; not independent validation or a fresh scientific replication."
+}

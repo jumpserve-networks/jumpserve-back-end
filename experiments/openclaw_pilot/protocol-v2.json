@@ -1,0 +1,7 @@
+{
+  "id": "openclaw-ipv6-runtime-pilot-v2",
+  "base": "protocol-v1.json",
+  "amendment": "Correct the preparation loop's arm-name shadowing and validate both exact arm identities before admission. Original v1 protocol, frozen code/inputs, local studies and failed report remain preserved. No scientific input, comparison criterion, model or prompt has been retuned. V1 made zero paid provider calls; its conservative overhead reservation is retained in this campaign's aggregate ceiling.",
+  "prior_campaign": "artifacts/v1/report.json",
+  "prior_reserved_cents": 1000
+}

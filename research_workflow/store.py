@@ -87,6 +87,9 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name == 'research_model_dispatch':return request('/rest/v1/rpc/'+name,'POST',payload)
+    if name == 'research_autonomy_resume_turns':return request('/rest/v1/rpc/'+name,'POST',payload)
+    if name in ('research_autonomy_budget_candidates','research_autonomy_resume_budget'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name == 'research_paper_upload': return request('/rest/v1/rpc/' + name, 'POST', payload)
     if name in ('research_autonomy_resume_context','research_autonomy_context_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_initialize_claim_design', 'research_reuse_claim_packet', 'research_autonomy_control'): return request('/rest/v1/rpc/' + name, 'POST', payload)

@@ -2,16 +2,22 @@
 import copy
 import datetime as dt
 import math
+from pathlib import Path
+import json
+import os
 import time
 import store
 from workflow import canonical, digest
 
 VERSION = 'research-autonomy-v2'
 MODULE = 'research-autonomy'
-PROMPT_VERSION = 'research-autonomy-v8'
-MODEL = 'us.anthropic.claude-opus-4-6-v1'
+OPENCLAW = os.environ.get('RESEARCH_AI_RUNTIME') == 'openclaw-production-v1'
+PROMPT_VERSION = 'research-autonomy-v10' if OPENCLAW else 'research-autonomy-v8'
+MODEL = 'gpt-6.1-sol' if OPENCLAW else 'us.anthropic.claude-opus-4-6-v1'
 MAX_OUTPUT = 4096
 MAX_REQUEST_BYTES = 96000
+CONTEXT_BUDGET_VERSION = 'autonomy-context-budget-v1'
+TURN_POLICY = json.loads((Path(__file__).parent/'policies/autonomy-turn-policy-v1.json').read_bytes())
 BLOCKERS = ('missing-data', 'equipment', 'authorization', 'implementation', 'design', 'provider', 'capacity')
 REASON_VERSION='autonomy-issue-catalog-v1'
 REASONS={
@@ -70,15 +76,49 @@ def load_prompt():
 def request(system, context):
  phase=context.get('task');allowed=request_actions(context);tools=copy.deepcopy(TOOLS)
  if allowed:tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']=allowed
+ properties=tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']
+ if allowed:
+  if phase!='discover':properties['claims']['maxItems']=0
+  if phase!='assessment':properties['evidence_ids']['maxItems']=0;properties['assessment_label']['enum']=[None]
+  if phase not in ('comprehension','critic'):properties['ready']['enum']=[None]
+  if phase in ('discover','planning'):properties['coverage_complete']['enum']=[False]
+  if phase!='planning':properties['check_id']['enum']=[None];properties['proposal']['enum']=[None]
  reminder='Controller phase: '+str(phase)+'. Allowed actions: '+', '.join(allowed)+'. Return the decision for this phase only; a review must not select or redesign a check.' if allowed else ''
- value=dict(modelId=MODEL,system=[dict(text=system)],messages=[dict(role='user',content=[dict(text=canonical(context).decode())])],
+ if allowed:reminder+=' Evidence_ids must be empty outside assessment. Claims must be empty outside discovery. Use null for every field inapplicable to this phase, even when unrelated IDs or prior verdicts occur in the input.'
+ # The historical published prompt and initial requests remain immutable. The
+ # versioned controller policy supersedes their obsolete turn-count ceiling;
+ # its exact text is retained as part of every numbered request.
+ value=dict(modelId=MODEL,system=[dict(text=system),dict(text=TURN_POLICY['instruction'])],messages=[dict(role='user',content=[dict(text=canonical(context).decode())])],
   inferenceConfig=dict(maxTokens=MAX_OUTPUT,temperature=0),toolConfig=tools)
  if reminder:value['system'].append(dict(text=reminder))
+ if len(canonical(value))>MAX_REQUEST_BYTES and phase=='planning' and context.get('registered_checks'):
+  # Planning selects identities. The complete selected protocol still goes to
+  # fresh reviews, and every indexed check remains available to scoped reads.
+  compact=copy.deepcopy(context);indexes=[]
+  for check in context['registered_checks']:
+   indexes.append(dict(id=check['id'],title=check['title'],execution_mode=check['execution_mode'],
+    campaign_id=check['campaign']['id'],protocol_reference=check['protocol_reference'],
+    selection_details=dict(representation='retained-check-reference',sha256=digest(canonical(check)),byte_count=len(canonical(check)),
+     read_request=dict(kind='check',id=check['id'],cursor=0),scope='Full selection details retained; inspect the bounded canonical JSON fragments. This index is not a completed review.')))
+  compact['registered_checks']=indexes
+  compact['context_transport']=dict(version=CONTEXT_BUDGET_VERSION,original_context_sha256=digest(canonical(context)),
+   original_context_bytes=len(canonical(context)),indexed_checks=len(indexes),
+   scope='Only inline check selection details are replaced by hash-bound scoped references. Original protocols, configurations, inputs, prior answers and measurements are unchanged.')
+  value['messages'][0]['content'][0]['text']=canonical(compact).decode()
  if len(canonical(value))>MAX_REQUEST_BYTES: raise ValueError('Autonomous context exceeds 96 KB; retain explicit coverage rather than truncate evidence.')
  return value
 
 def phase_actions(phase):
  return {'discover':['discover','blocked'],'planning':['choose-check','propose','inspect','blocked'],'comprehension':['review','inspect','blocked'],'critic':['review','inspect','blocked'],'assessment':['assess','inspect','blocked']}.get(phase,[])
+
+def validate_phase(value,context):
+ phase=context.get('task')
+ if not phase_actions(phase):return
+ if phase!='assessment' and (value['evidence_ids'] or value['assessment_label'] is not None):raise ValueError('Evidence citations and findings are only applicable to assessment.')
+ if phase!='discover' and value['claims']:raise ValueError('Claim extraction is only applicable to discovery.')
+ if phase not in ('comprehension','critic') and value['ready'] is not None:raise ValueError('Readiness is only applicable to fresh review.')
+ if phase in ('discover','planning') and value['coverage_complete']:raise ValueError('Discovery/planning cannot establish complete scientific coverage.')
+ if phase!='planning' and (value['check_id'] is not None or value['proposal'] is not None):raise ValueError('Check selection/proposals are only applicable to planning.')
 
 def request_actions(context):
  allowed=phase_actions(context.get('task'))
@@ -87,11 +127,14 @@ def request_actions(context):
  protocol=(context.get('candidate') or {}).get('protocol')
  if context.get('task') in ('comprehension','critic') and isinstance(protocol,dict) and protocol.get('representation')!='retained-protocol-reference':
   # A fresh review already has its entire protocol. Re-reading the same bytes
-  # wastes attempts and can prevent six checks fitting the fixed 25-call limit.
+  # wastes calls and shared paper commitments without adding evidence.
   allowed=[action for action in allowed if action!='inspect']
  return allowed
 
 def reservation(value, today=None):
+ if OPENCLAW:
+  if value['modelId']!=MODEL:raise ValueError('Unexpected subscription model; no fallback.')
+  return 100
  today=today or dt.datetime.now(dt.timezone.utc).date()
  if today>dt.date.fromisoformat(PRICING['valid_until']) or value['modelId']!=PRICING['model_id']: raise ValueError('The versioned model cost ceiling needs renewal; no unpriced call was made.')
  # A byte-based input ceiling plus fixed framing allowance is deliberately more
@@ -100,6 +143,7 @@ def reservation(value, today=None):
  return max(1,math.ceil((input_ceiling*PRICING['input_usd_per_million']+MAX_OUTPUT*PRICING['output_usd_per_million'])/10000))
 
 def estimate(usage):
+ if OPENCLAW:return None
  if not isinstance(usage,dict) or any(isinstance(usage.get(k),bool) or not isinstance(usage.get(k),int) or usage[k]<0 for k in ('inputTokens','outputTokens')): return None
  return math.ceil((usage['inputTokens']*PRICING['input_usd_per_million']+usage['outputTokens']*PRICING['output_usd_per_million'])/10000)
 
@@ -150,12 +194,16 @@ def call(task, context, control, invoke_provider=None):
  if attempt['replayed']: raise ValueError('Retained model invocation must be reconciled, never blindly repeated.')
  tick=time.monotonic(); raw=None; parsed=None; usage={}; status='failed'; reason=None
  try:
-  response=(invoke_provider or invoke)(value)
+  if OPENCLAW and invoke_provider is None:
+   import model_dispatch
+   response=model_dispatch.invoke(task,str(turn_id),value)
+  else:response=(invoke_provider or invoke)(value)
   usage=response.get('usage',{})
   raw=canonical(response['output']['message']).decode()
   if len(raw.encode())>100000: raise ValueError('Provider response exceeded retained output bounds.')
   try:
    parsed=parse(response)
+   validate_phase(parsed,context)
    allowed=request_actions(context)
    if allowed and parsed['action'] not in allowed:raise ValueError('Controller phase '+str(context.get('task'))+' requires one of '+', '.join(allowed)+'; the returned '+parsed['action']+' action was not executed.')
    if context.get('task') in ('comprehension','critic') and parsed['action']=='review' and not isinstance(parsed['ready'],bool):raise ValueError('A fresh review requires an explicit boolean readiness judgment.')
@@ -163,13 +211,18 @@ def call(task, context, control, invoke_provider=None):
    status='complete'
   except (ValueError,KeyError,TypeError) as error: parsed=None;status='invalid-output';reason=str(error)
  except Exception as error:
-  reason='Provider call failed or its outcome is unconfirmed ('+type(error).__name__+'); reserved cost is retained.'
+  reason=getattr(error,'public_reason',None) or 'Provider call failed or its outcome is unconfirmed ('+type(error).__name__+'); reserved cost is retained.'
+  if getattr(error,'provenance',None):usage['research_runtime']=error.provenance
   if raw is not None and len(raw.encode())>100000: raw=None
  receipt=dict(id=str(turn_id),status=status,raw_response=raw,output=parsed,reason=reason,
   estimated_cents=estimate(usage),usage=dict(tokens=usage,wall_seconds=max(0,time.monotonic()-tick),pricing=PRICING,
   measured_charges_usd=None,estimated_cost_usd=estimate(usage)/100 if estimate(usage) is not None else None,
   response_scope='Original canonical SDK message retained; typed issue codes rendered from the versioned catalog. Original provider HTTP bytes unavailable.',automatic_retries=0))
  receipt['usage']['response_processing']=REASON_VERSION
+ receipt['usage']['turn_policy']=TURN_POLICY['version']
+ if OPENCLAW:
+  receipt['usage']['research_runtime']=usage.get('research_runtime')
+  receipt['usage']['pricing']=dict(version='chatgpt-subscription-unallocated-v1',model_id=MODEL,billing='ChatGPT subscription',subscription_allocation_usd=None,estimated_cost_usd=None,orchestration_reserve_cents=100,paid_fallback=False)
  control(task,'finish',receipt)
  task['attempts']+=1
  if status=='failed': raise ValueError(reason)

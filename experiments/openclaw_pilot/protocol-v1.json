@@ -1,0 +1,56 @@
+{
+  "id": "openclaw-ipv6-runtime-pilot-v1",
+  "stage": "development-pilot",
+  "question": "Can a pinned OpenClaw headless runtime supply valid model decisions to the existing JumpServe controller through completion of the archived absolute folded metrics claim?",
+  "arms": ["jumpserve-direct", "openclaw-runtime"],
+  "design": "Paired fixed-input software feasibility comparison. Both arms use the same current local JumpServe controller, original archived plan, model, structured decision schema and frozen numerical criteria. Each model turn in the OpenClaw arm has a fresh workspace/session to preserve the existing fresh-review boundaries. The transport renders the actual Bedrock structured tool answer as JSON assistant text; OpenClaw tools are disabled. This does not test replacing the controller, OpenClaw native tool execution, persistent conversational autonomy or parallel OpenClaw subagents.",
+  "source": {
+    "paper": "How I learned to stop worrying and love IPv6",
+    "sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b",
+    "claim": "Published absolute folded metrics",
+    "location": "Figures 13–15 a/b, PDF pages 17–19",
+    "checks": 6,
+    "planned_cells": 1152,
+    "data_origin": "archived-reanalysis",
+    "limits": "Frozen archived observations and rounded published cells; no new Internet measurements, historical packet-parser validation, causal or operational validation."
+  },
+  "metrics": ["terminal claim label", "covered matched cells", "matched measurement equality", "valid and invalid controller turns", "actual provider calls", "input/output tokens", "elapsed seconds", "conservative committed cents", "estimated model cents", "unavailable usage count"],
+  "criteria": {
+    "feasibility_pass": "Both arms resolve reproduced with six complete frozen checks and 1152 matched cells, retain canonical SDK request and original CLI response bytes and hashes plus OpenClaw's HTTP request body, and satisfy resource and controller guards. Provider HTTP response wire bytes are unavailable.",
+    "numerical_agreement": "Use each original protocol's unchanged absolute tolerance and exact observation/configuration/metric/units identities. Independently recompute differences with Decimal from the parsed recorded values.",
+    "failure": "Retain invalid answers, provider errors, missing usage, all failed runs and any unresolved outcome. No prompt tuning, changed experiment inputs or favorable-result retries in this campaign.",
+    "uncertainty": "One known, exposed claim with one trajectory per runtime. Counts, differences and elapsed/cost observations are descriptive; no confidence intervals, causal performance attribution or general framework ranking.",
+    "review": "Deterministic checks plus primary AI implementer inspection; no human or independent review. No new prompt publication or production deployment."
+  },
+  "limits": {
+    "maximum_aggregate_committed_cents": 10000,
+    "local_overhead_reserved_cents": 1000,
+    "maximum_provider_calls_per_arm": 25,
+    "maximum_controller_attempts_per_claim": 25,
+    "maximum_elapsed_seconds": 2700,
+    "maximum_provider_request_bytes": 96000,
+    "maximum_output_tokens": 4096,
+    "provider_timeout_seconds": 120,
+    "maximum_controller_cycles_per_arm": 120,
+    "maximum_experiment_instances": 0,
+    "provider_retries": 0,
+    "same_request_replay": false
+  },
+  "configuration": {
+    "openclaw": "2026.10.5",
+    "node": "24.16.0",
+    "model": "us.anthropic.claude-opus-4-6-v1",
+    "temperature": 0,
+    "prompt": "research-autonomy-v8",
+    "aws_account": "395567831870",
+    "aws_region": "us-east-1",
+    "supabase_project": "regphejnlvfpyokpniny",
+    "seed": null,
+    "seed_reason": "The provider interface used here does not expose a seed. Temperature zero is not a determinism guarantee.",
+    "arm_order": "jumpserve-direct followed by openclaw-runtime; order is not randomized and latency can be affected by provider time/load."
+  },
+  "persistence": "Fresh isolated local Postgres databases replay the original Supabase migrations. Actual controller/queue/measurement algorithms execute; Google identity, HTTP transport, prompt activation and Storage are explicit local fixtures. Versioned pilot SQL retains every actual provider prompt/response before/after calls. Production Supabase import and web integration require a later release.",
+  "stopping": "Stop at the first unconfirmed provider outcome, fixed budget/deadline/attempt cap, source drift or invalid target. Never replay uncertain work. An arm may end unresolved; this is retained evidence about this configuration.",
+  "exclusions": "Other paper claims and empirical experiments are outside this pilot; they are not fabricated as passing checks.",
+  "followups": "Preserve this frozen protocol and all outcomes. Amendments require a new version and identify prior exposure."
+}

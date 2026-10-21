@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "status": "local-controls-pass-live-comparison-incomplete",
+  "software": {
+    "scoped_unit_and_actual_sql_controls": 7,
+    "passed": 7,
+    "actual_openclaw_cli_synthetic_transport_smoke": "passed",
+    "actual_local_database_migrations": "passed",
+    "stored_provider_byte_records_verified_after_retrieval": 26,
+    "stored_provider_calls_linked_to_original_controller_prompts": 13,
+    "failed_and_excluded_attempts_preserved": true,
+    "original_paper_deadlines_attempts_and_commitments_preserved_on_recovery": true,
+    "git_diff_check": "passed"
+  },
+  "scientific_coverage": {
+    "data_origin": "archived-reanalysis",
+    "unmodelled_preflight_checks": 6,
+    "unmodelled_preflight_cells": 1152,
+    "live_controller_complete_checks": 3,
+    "live_controller_matched_cells": 576,
+    "live_controller_agreeing_cells": 576,
+    "live_controller_planned_cells": 1152,
+    "direct_claim_label": "inconclusive",
+    "openclaw_claim_label": "untested",
+    "openclaw_actual_model_calls": 0,
+    "interpretation": "Partial numerical agreement for the retained cells; no complete paired feasibility assessment, framework ranking or broader paper validation. The preflight shares the original numerical engine and is not extra independent scientific evidence."
+  },
+  "actual_provider_calls": {
+    "total": 13,
+    "complete": 11,
+    "explicit_throttling_rejection": 1,
+    "read_timeout_with_unconfirmed_outcome": 1,
+    "unknown_charge_calls": 2,
+    "same_turn_replays": 0
+  },
+  "resources": {
+    "aggregate_commitment_ceiling_cents": 10000,
+    "aggregate_conservative_reserved_cents": 2715,
+    "known_conservative_estimated_model_cents": 135,
+    "measured_charges_usd": null,
+    "local_compute_cost_usd": null,
+    "local_storage_cost_usd": null,
+    "experiment_instances": 0,
+    "raw_manifest_files": 545,
+    "raw_manifest_logical_bytes": 333649386,
+    "interpretation": "Reservations and estimates are distinct from charges. Missing usage and unallocated local resources are not measured zero. The manifest is a point-in-time snapshot."
+  },
+  "release_status": {
+    "production_mutations": 0,
+    "new_prompt_publications": 0,
+    "production_deployments": 0,
+    "frontend_changes": 0,
+    "production_supabase_result_import": "not performed",
+    "public_web_integration": "not implemented in this lab pilot",
+    "public_site_isolation": "deferred at user request",
+    "openclaw_live_publication_criteria": "not met"
+  },
+  "evidence": {
+    "results": "results-v4.json",
+    "raw_artifact_manifest": "artifacts-manifest-v4.json",
+    "protocols": ["protocol-v1.json", "protocol-v2.json", "protocol-v3.json", "protocol-v4.json"],
+    "original_v1_failure": "artifacts/v1/report.json",
+    "original_v2_failure": "artifacts/v2/report.json",
+    "excluded_v3_preparation": "artifacts/v3/excluded-preparation.json",
+    "v4_followup": "artifacts/v4/report.json",
+    "database_original_byte_export": "artifacts/v4/database-original-byte-export.json",
+    "migration_files": ["jumpserve-infra/database/202610200003_runtime_pilot_audit.sql", "jumpserve-infra/database/202610200004_runtime_pilot_rejections.sql"]
+  },
+  "reviewer": {
+    "identity": "Codex primary AI implementer",
+    "type": "AI",
+    "independent": false,
+    "human": false,
+    "judgment": "Local controls passed; insufficient live evidence to validate the OpenClaw arm. Eleven received structured decisions were inspected for phase, readiness and incomplete-coverage handling. No outcome was forced to reproduced or discrepant."
+  },
+  "review_limits": [
+    "Known, exposed development cases; no held-out or independent evaluation.",
+    "Original stored-byte verification is separate from substantive content review. The full paper and its bibliography were not newly reviewed for this runtime pilot.",
+    "Provider HTTP response wire bytes are unavailable. Canonical SDK requests and original CLI stdout are preserved.",
+    "Exact augmented OpenClaw HTTP bodies for calls denied before provider admission are not in the pilot-call table; their logical controller requests, CLI state and workspace instructions remain retained. No model dispatch occurred for those denied calls.",
+    "Some failed shell/pre-admission diagnostics are only available in the conversation tool transcript; this report does not claim local original-byte hashes for those unavailable streams.",
+    "Actual remote Supabase Storage and authenticated web flows were outside this local CLI pilot."
+  ]
+}

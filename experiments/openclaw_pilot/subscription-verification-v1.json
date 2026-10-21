@@ -1,0 +1,57 @@
+{
+  "version": "subscription-post-campaign-verification-v1",
+  "campaign": "openclaw-ipv6-subscription-pilot-v9",
+  "reviewer": {"identity":"Codex primary implementer","type":"AI","independent":false,"human":false},
+  "checks": {
+    "scoped_development_checks_passed":27,
+    "original_call_byte_records_verified_after_sql_retrieval":100,
+    "frozen_input_files_verified":132,
+    "manifest_files_verified_after_export":1189,
+    "manifest_logical_bytes":749632367,
+    "recorded_measurements":1152,
+    "unique_observation_configuration_metric_unit_keys":1152,
+    "complete_archived_runs":6,
+    "units":["percent"],
+    "measurement_statuses":["recorded"],
+    "per_cell_comparison_labels":["reproduced"],
+    "independent_decimal_difference_and_tolerance_check":true,
+    "git_diff_whitespace_checks":true
+  },
+  "model": {
+    "id":"gpt-6.1-sol",
+    "billing":"ChatGPT subscription through native OpenClaw SIWC consent",
+    "provider_request_attempts":25,
+    "accepted_adapter_responses":23,
+    "earlier_completed_response_reconstructed_separately":1,
+    "explicit_http_400_rejections":1,
+    "known_input_tokens":309988,
+    "known_output_tokens":2012,
+    "known_total_tokens":312000,
+    "requests_with_missing_usage":1,
+    "paid_api_fallback":false,
+    "actual_billed_allocation_usd":null
+  },
+  "budget": {
+    "conservative_aggregate_committed_cents":9215,
+    "maximum_committed_cents":10000,
+    "interpretation":"Includes preserved earlier Bedrock and setup commitments plus conservative local orchestration reserves. This is not an invoice or measured charge.",
+    "subscription_allocation_usd":null,
+    "local_compute_storage_charges_usd":null
+  },
+  "outcomes": {
+    "subscription_inference_and_archived_execution":"demonstrated",
+    "scoped_numerical_result":"1152/1152 recorded cells match the frozen archived comparison criteria",
+    "controller_status":"attempt-limit",
+    "retained_controller_claim_label":"inconclusive",
+    "whole_frozen_workflow_feasibility_pass":false,
+    "reason":"The two retained adapter failures consumed attempts. All six archived jobs completed, but attempt 25 was the last critic review, so the final assessment was not reached. No counter, deadline or conclusion was reset or forced."
+  },
+  "limits":[
+    "One exposed archived claim and new model/provider; no matched framework comparison or general reliability claim.",
+    "Decimal checks share the archived inputs and do not independently validate historical measurements, causal claims, standards compliance or operational effectiveness.",
+    "Quota handling was tested with synthetic pre-stream and mid-stream errors; the real account allowance was not deliberately exhausted.",
+    "No independent human or held-out adversarial review. Full installed dependency tree was not independently byte-verified.",
+    "Data and migrations remain local. Remote Supabase persistence, website integration, public-site isolation and production deployment are not verified by this pilot."
+  ],
+  "release_status":"Local lab implementation and live pilot only; production remains unchanged."
+}

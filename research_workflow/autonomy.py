@@ -18,8 +18,8 @@ import scheduler
 import store
 from workflow import canonical,digest,identifier,now,paper_details,protocol_record,validate_protocol
 
-VERSION='research-autonomy-v2'
-DEFAULTS=dict(maximum_spend_usd=100,elapsed_days=7,attempts_per_claim=25,parallel_claims_per_paper=2,global_parallel_claims=4)
+VERSION='research-autonomy-v3'
+DEFAULTS=dict(maximum_spend_usd=100,elapsed_days=7,attempts_per_claim=None,parallel_claims_per_paper=2,global_parallel_claims=4)
 REVIEWER=dict(identity='Autonomous evidence controller with fresh AI reviews',type='AI',independence='Shared model and inputs; primary implementation is not independent or human scientific review.')
 EXTERNAL={'missing-data','equipment','authorization','implementation','provider'}
 
@@ -49,7 +49,13 @@ def wake():
  except Exception:pass
  return dict(status='deferred',reason='Notification unconfirmed; the scheduled controller can resume the retained request.')
 
-def capability():return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',prompt_module=model.MODULE,attempt_definition='One model invocation, including failures; polling does not consume an attempt.',limit_kind='Conservative aggregate commitments; unknown charges are retained, not zero.')
+def runtime_health():
+ if model.OPENCLAW:
+  import model_dispatch
+  return model_dispatch.health()
+ return dict(runtime='bedrock',model_id=model.MODEL,status='configured')
+
+def capability():return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',prompt_module=model.MODULE,runtime=runtime_health(),attempt_definition='One model invocation, including failures; polling does not consume an attempt.',limit_kind='Conservative aggregate commitments; unknown charges are retained, not zero.')
 
 def rows(kind,study,**params):return store.rows(kind,dict(study_id='eq.'+study,**params))
 def one(kind,study,value):
@@ -69,13 +75,13 @@ def overview(studies):
  if set(claim_ids)!=set(names):raise store.StoreError('Autonomous claim identity coverage is incomplete.')
  for task in tasks:
   task.pop('context',None);task['claim_title']=names.get(task['claim_id'])
- return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',workflows=workflows,tasks=tasks,coverage=dict(workflows=len(workflows),tasks=len(tasks)))
+ return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',runtime=runtime_health(),workflows=workflows,tasks=tasks,coverage=dict(workflows=len(workflows),tasks=len(tasks)))
 
 def history(study,task_id,before=None):
  task=one('autonomy_tasks',study,identifier(task_id))
  params=dict(task_id='eq.'+task['id'],order='number.desc',limit=10)
  if before is not None:
-  if not str(before).isdigit() or not 1<=int(before)<=26:raise ValueError('Turn cursor must be an attempt number.')
+  if not str(before).isascii() or not str(before).isdigit() or not 1<=int(before)<=task['attempts']+1:raise ValueError('Turn cursor must be a retained attempt number.')
   params['number']='lt.'+str(int(before))
  turns=rows('autonomy_turns',study,**params)
  return dict(version=VERSION,study_id=study,task_id=task['id'],turns=turns,next_before=min((r['number'] for r in turns),default=None) if len(turns)==10 else None,coverage=dict(returned=len(turns),total=task['attempts']),access='owner-private')
@@ -240,7 +246,10 @@ def inspect_evidence(task,request):
    result=evidence.page([dict(id=j['id'],title=j['title'],execution_mode=j['execution_mode'],campaign_id=j['campaign_id']) for j in allowed.values()],cursor)
   elif kind=='check':
    if record_id not in allowed:raise ValueError('Check is outside the authorized claim/candidate.')
-   result=evidence.page([check_context(allowed[record_id],study,selection=True)],cursor)
+   document=check_context(allowed[record_id],study,selection=True)
+   # An individual check can exceed a record page. Return explicit, hash-bound
+   # fragments instead of making a referenced check impossible to inspect.
+   result=evidence.document_page(document,cursor) if len(canonical(document))>8000 else evidence.page([document],cursor)
   else:
    protocols={one('campaigns',study,j['campaign_id'])['protocol_id'] for j in allowed.values()}
    if task['context'].get('proposal'):
@@ -473,7 +482,6 @@ def step(task):
   if len(jobs)!=len(context['job_ids']):raise ValueError('Queue identity coverage is incomplete; do not create replacement jobs.')
   if any(j['status'] in ('queued','running','manual') for j in jobs):return advance(task,'waiting',reason='Original experiment identities are still pending; no replacement invocation.',delay=30)
   return advance(task,'queued',stage='assessment',reason='Recorded experiment outcomes are ready for evidence assessment.',label='inconclusive')
- if task['attempts']>=25:return advance(task,'attempt-limit',reason='25 attempts reached; unresolved evidence retained.')
  answer=model.call(task,build_context(task),control)
  if answer.get('denied'):return advance(task,answer['denied'],reason='Paper admission stopped by '+answer['denied']+'.')
  if answer['status']!='complete':return advance(task,'queued',context=dict(context,last_feedback=answer['reason'],last_response_error=answer['reason']),reason='Invalid answer retained; next prompt addresses the exact failure.')
@@ -562,8 +570,31 @@ def process(task):
   except Exception:return dict(status='unconfirmed',task_id=task['id'],reason='Lease/evidence persistence must be reconciled; no retry was dispatched.')
 
 def handler(event,context=None):
+ if model.OPENCLAW:
+  health=runtime_health()
+  if health['status']!='ready':return dict(version=VERSION,slots=0,outcomes=[],runtime=health,reason='The subscription worker is paused; retained requests are waiting without new AI turns.')
+ # Called by this runtime, never by the migration or a browser. Resumption only
+ # removes historical count stops; SQL retains budget, deadline and uncertainty
+ # gates, original turn numbering, labels and experiment identities.
+ model.load_prompt()
+ turn_recovery=store.rpc('research_autonomy_resume_turns',dict(p_policy=model.TURN_POLICY['version']))
  recovery=[]
- if os.environ.get('RESEARCH_AUTONOMY_CONTEXT_RECOVERY')==evidence.VERSION:
+ recovery_version=os.environ.get('RESEARCH_AUTONOMY_CONTEXT_RECOVERY')
+ if recovery_version==model.CONTEXT_BUDGET_VERSION:
+  # A newer runtime may fit a request that an older version paused. Verify the
+  # actual current request before allowing the service-only, once-per-version
+  # recovery gate to queue it. No model calls or counter resets in preflight.
+  _,system=model.load_prompt()
+  for candidate in store.rpc('research_autonomy_budget_candidates',{}):
+   try:
+    task=one('autonomy_tasks',candidate['study_id'],candidate['id'])
+    task['workflow']=rows('autonomy_workflows',candidate['study_id'],limit=1)[0]
+    request=model.request(system,build_context(task))
+    result=store.rpc('research_autonomy_resume_budget',dict(p_study=candidate['study_id'],p_actor=candidate['owner_id'],p_task=candidate['id'],
+     p_request_sha256=digest(canonical(request)),p_request_bytes=len(canonical(request))))
+    recovery.append(dict(task_id=candidate['id'],status=result['status']))
+   except (ValueError,store.StoreError,IndexError,KeyError,TypeError):recovery.append(dict(task_id=candidate['id'],status='retained-blocker'))
+ elif recovery_version==evidence.VERSION:
   # Publication must be verified before resuming any older paused task.
   model.load_prompt()
   for candidate in store.rpc('research_autonomy_context_candidates',{}):
@@ -580,4 +611,4 @@ def handler(event,context=None):
   for future in futures:
    try:r=future.result();results.append({k:r.get(k) for k in ('id','status','reason')})
    except Exception as error:results.append(dict(status='unconfirmed',error_type=type(error).__name__))
- return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery)
+ return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery,turn_limit_recovery=turn_recovery)

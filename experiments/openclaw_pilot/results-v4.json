@@ -1,0 +1,191 @@
+{
+  "version": "openclaw-ipv6-runtime-pilot-results-v4",
+  "completed_at": "2026-10-20T14:39:50.377751+00:00",
+  "comparison_status": "incomplete-or-failed-feasibility",
+  "question": "Can a pinned OpenClaw headless runtime supply valid model decisions to the existing JumpServe controller through completion of the archived absolute folded metrics claim?",
+  "data_origin": "archived-reanalysis",
+  "source": {
+    "checks": 6,
+    "claim": "Published absolute folded metrics",
+    "data_origin": "archived-reanalysis",
+    "limits": "Frozen archived observations and rounded published cells; no new Internet measurements, historical packet-parser validation, causal or operational validation.",
+    "location": "Figures 13\u201315 a/b, PDF pages 17\u201319",
+    "paper": "How I learned to stop worrying and love IPv6",
+    "planned_cells": 1152,
+    "sha256": "f6378fb3de19aa8d3204f4d3a2028f95497f334862a5298aa6678ef1b816290b"
+  },
+  "runtime": {
+    "arm_order": "jumpserve-direct followed by openclaw-runtime; order is not randomized and latency can be affected by provider time/load.",
+    "aws_account": "395567831870",
+    "aws_region": "us-east-1",
+    "model": "us.anthropic.claude-opus-4-6-v1",
+    "node": "24.16.0",
+    "openclaw": "2026.10.5",
+    "prompt": "research-autonomy-v8",
+    "seed": null,
+    "seed_reason": "The provider interface used here does not expose a seed. Temperature zero is not a determinism guarantee.",
+    "supabase_project": "regphejnlvfpyokpniny",
+    "temperature": 0
+  },
+  "baseline": "Current local JumpServe controller, including the uncommitted context-budget correction, not a byte-identical production deployment.",
+  "design": "Paired fixed-input software feasibility comparison. Both arms use the same current local JumpServe controller, original archived plan, model, structured decision schema and frozen numerical criteria. Each model turn in the OpenClaw arm has a fresh workspace/session to preserve the existing fresh-review boundaries. The transport renders the actual Bedrock structured tool answer as JSON assistant text; OpenClaw tools are disabled. This does not test replacing the controller, OpenClaw native tool execution, persistent conversational autonomy or parallel OpenClaw subagents.",
+  "targets": {
+    "aws_account": "395567831870",
+    "database": "postgres",
+    "supabase_project": "regphejnlvfpyokpniny",
+    "supabase_project_identity_verified": true
+  },
+  "criteria": {
+    "jumpserve-direct": {
+      "complete_cells": false,
+      "decimal_oracle": true,
+      "label": false,
+      "resolved": false
+    },
+    "matched_measurements_equal": false,
+    "openclaw-runtime": {
+      "complete_cells": false,
+      "decimal_oracle": false,
+      "label": false,
+      "resolved": false
+    }
+  },
+  "original_bytes_after_retrieval": {
+    "byte_records_verified": 26,
+    "original_controller_prompt_links_verified": true,
+    "passed": true,
+    "provider_calls": 13,
+    "provider_http_response_wire_available": false
+  },
+  "arms": [
+    {
+      "name": "jumpserve-direct",
+      "status": "complete",
+      "terminal_task_status": "blocked",
+      "claim_label": "inconclusive",
+      "controller_attempts": 13,
+      "provider_calls": 13,
+      "complete_runs": 3,
+      "matched_measurements": 576,
+      "measurement_statuses": {
+        "recorded": 576
+      },
+      "recorded_units": [
+        "percent"
+      ],
+      "comparison_labels": {
+        "reproduced": 576
+      },
+      "input_output_usage": {
+        "inputTokens": {
+          "known_sum": 149925,
+          "missing_calls": 2
+        },
+        "outputTokens": {
+          "known_sum": 2585,
+          "missing_calls": 2
+        },
+        "totalTokens": {
+          "known_sum": 152510,
+          "missing_calls": 2
+        }
+      },
+      "recorded_execution_wall_seconds": 149.69279983395245,
+      "workflow_max_attempts": 25,
+      "workflow_max_spend_cents": 10000,
+      "paper_deadline_at": "2026-10-26T21:58:45.960717-05:00",
+      "workflow_committed_cents": 1303,
+      "conservative_reserved_model_cents": 715,
+      "known_conservative_estimated_model_cents": 135
+    },
+    {
+      "name": "openclaw-runtime",
+      "status": "complete",
+      "terminal_task_status": "blocked",
+      "claim_label": "untested",
+      "controller_attempts": 2,
+      "provider_calls": 0,
+      "complete_runs": 0,
+      "matched_measurements": 0,
+      "measurement_statuses": {},
+      "recorded_units": [],
+      "comparison_labels": {},
+      "input_output_usage": {
+        "inputTokens": {
+          "known_sum": 0,
+          "missing_calls": 0
+        },
+        "outputTokens": {
+          "known_sum": 0,
+          "missing_calls": 0
+        },
+        "totalTokens": {
+          "known_sum": 0,
+          "missing_calls": 0
+        }
+      },
+      "recorded_execution_wall_seconds": 31.047923374921083,
+      "workflow_max_attempts": 25,
+      "workflow_max_spend_cents": 10000,
+      "paper_deadline_at": "2026-10-26T21:58:48.014058-05:00",
+      "workflow_committed_cents": 663,
+      "conservative_reserved_model_cents": 0,
+      "known_conservative_estimated_model_cents": 0
+    }
+  ],
+  "aggregate": {
+    "actual_provider_calls": 13,
+    "provider_statuses": {
+      "complete": 11,
+      "rejected": 1,
+      "failed": 1
+    },
+    "conservative_reserved_cents": 2715,
+    "maximum_reserved_cents": 10000,
+    "known_conservative_estimated_model_cents": 135,
+    "missing_usage_calls": 2,
+    "measured_charges_usd": null,
+    "local_compute_charges_usd": null,
+    "local_storage_charges_usd": null,
+    "experiment_instances": 0,
+    "production_mutations": 0
+  },
+  "operational_history": [
+    {
+      "protocol": "v1",
+      "outcome": "Stopped by invalid arm identity before a paid provider call; original snapshots retained."
+    },
+    {
+      "protocol": "v2",
+      "outcome": "Eight valid decisions and two numerical checks; ninth provider request explicitly throttled. Paired comparison stopped."
+    },
+    {
+      "protocol": "v3",
+      "outcome": "Preparation excluded after the original evaluation window expired; no recovery or model call."
+    },
+    {
+      "protocol": "v4",
+      "outcome": "Separate paced follow-up on the same tasks, with original seven-day paper deadlines, attempts and all shared commitments retained."
+    }
+  ],
+  "evaluator": {
+    "identity": "Codex primary AI implementer",
+    "type": "AI",
+    "independent": false,
+    "human": false
+  },
+  "evidence_report_sha256": "0f515db185eef5773405e6d606069fe24a714f1bdf62fab27f0c7f49d80692f1",
+  "frozen_inputs_sha256": "1ffcd4e6df57cb39c3dca6fa32fd575cb771b32098881cf876e514bf4367341d",
+  "limitations": [
+    "One previously exposed claim and one continued trajectory per runtime; no independent or held-out validation.",
+    "The same controller and archived inputs are shared. Decimal checks share those inputs; original historical measurements are not independently validated.",
+    "Only bounded structured model decisions are evaluated. OpenClaw native tools, persistent conversational autonomy, parallel subagents and natural-language chat answers are not tested.",
+    "Runtime-specific system instructions differ. Costs and elapsed times describe these configurations and cannot establish a causal framework ranking.",
+    "Recorded execution wall times include pacing and exclude the gap between separately declared evaluation windows. Calendar elapsed time also includes the authentication interruption.",
+    "Provider HTTP response wire bytes are unavailable; canonical SDK requests, original CLI response bytes and submitted OpenClaw HTTP bodies are retained.",
+    "Local Google identity, Storage/HTTP transport and prompt activation are explicit fixtures. Remote Supabase persistence, real user authentication and web integration remain unverified.",
+    "No new adversarial prompt-injection evaluation or prompt publication. Public-site isolation remains deferred.",
+    "Missing usage and measured charges remain unknown. Conservative reservations and estimates are not invoice charges.",
+    "Scientific agreement covers the frozen numerical check only; other paper claims and complete literature/packet/causal/operational coverage remain outside the pilot."
+  ]
+}

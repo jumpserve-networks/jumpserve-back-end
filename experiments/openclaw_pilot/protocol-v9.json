@@ -1,0 +1,12 @@
+{
+  "id":"openclaw-ipv6-subscription-pilot-v9",
+  "base":"protocol-v8.json",
+  "amendment":"The second request completed HTTP 200 with a valid planning JSON decision and reported usage. Its response.completed event had output:[], while response.output_item.done contained the final message. Preserve the original invalid-output adapter status and bytes, and record a separate derived parser review. Reconstruct completed output items with item/index and text-delta consistency checks. Continue at attempt 3 with fresh controller context; do not reuse the earlier answer as a new model response, overwrite it or reset counters.",
+  "original_stream_sha256":"4f8223fdd0ce705119c837d57940489cf34ec3058861a5f1f4e1891dd8ce3025",
+  "additional_overhead_reserved_cents":0,
+  "cost_rationale":"This parser correction is covered by v8's existing $10 follow-up overhead reserve; all prior setup and call commitments remain. No new cloud resources. Unknown subscription allocation is not zero.",
+  "limits":"Original $100 shared cap, 25 total controller attempts/provider requests including failures, original seven-day paper deadline and original 45-minute admission window. At most 23 new calls remain. No limit is reset or extended.",
+  "software_gate":"Before inference, verify reconstruction from actual retained SSE and synthetic streams, reject conflicting identities/text, retain incomplete-stream failure behavior, and run the existing SQL/CLI/admission regressions. Exposed development checks only.",
+  "reviewer":{"identity":"Codex primary implementer","type":"AI","independent":false,"human":false},
+  "interpretation":"A demonstrated adapter parsing defect, not an invalid model decision. Actual subscription inference is established by the completed response and usage; complete scientific coverage remains to be evaluated."
+}
