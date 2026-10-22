@@ -1,4 +1,4 @@
-"""Public published snapshots and Google-authenticated, owner-scoped drafts."""
+"""Public snapshots and shared queue status; Google-authenticated owner drafts."""
 import json
 import os
 import urllib.error
@@ -107,6 +107,10 @@ def dispatch(event, actor=None):
     parts = path.split("/")
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])
+    if len(parts) == 5 and parts[4] == 'queue' and method == 'GET' and query.get('public') == '1':
+        data = scheduler.public_snapshot(study_id)
+        if data is None: raise HttpError(404, 'Paper queue not found.')
+        return data
     owner = bool(actor and store.owns(study_id, actor))
     if len(parts)==5 and parts[4]=='autonomy':
         if not owner: raise HttpError(404 if actor else 401,'Sign in as this paper owner to view autonomous progress.')

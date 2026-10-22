@@ -6,6 +6,7 @@ import network_execution
 from workflow import canonical, digest, identifier, text
 
 VERSION = "research-queue-v1"
+PUBLIC_VERSION = "research-public-queue-v1"
 LIMITS = dict(global_jobs=4, study_jobs=2, invocation_jobs=2, lease_seconds=600,
               input_bytes=256000, observations=1000, algorithm_wall_seconds=10,
               study_queue_jobs=1000, automatic_retries=0)
@@ -164,6 +165,95 @@ def overview(actor):
                   coverage=dict(studies=len(studies), jobs=len(jobs)),
                   limitations='Your paper studies only. Status is recorded execution progress, not scientific validation. Detailed event history remains in each private study queue. Missing run status is unknown.')
     if len(canonical(result)) > 4_000_000: raise store.StoreError('Queue overview exceeds its byte budget; no truncated status is returned.')
+    return result
+
+def public_snapshot(study_id):
+    """Explicit status-only projection for a shared paper link, never a draft export.
+
+    Backend service reads retain RLS/browser write denial. No public study listing,
+    owners, prompts, uploaded files, raw inputs, resource identities or free-form
+    error/requirement text are exposed by this endpoint.
+    """
+    study_id = identifier(study_id)
+    studies = store.rows('studies', {'id': 'eq.' + study_id, 'select': 'id,title,study_kind', 'limit': 1})
+    if not studies or studies[0].get('study_kind', 'paper') != 'paper': return None
+    if len(studies) != 1 or studies[0].get('id') != study_id: raise store.StoreError('Shared paper identity is invalid.')
+
+    def records(kind, select, maximum, **filters):
+        # Continue to an empty page, including when PostgREST caps a page below
+        # the requested limit. Never turn a server row cap into complete coverage.
+        result = []
+        while True:
+            page = store.rows(kind, dict(study_id='eq.' + study_id, select=select,
+                limit=min(200, maximum + 1 - len(result)), offset=len(result), **filters))
+            if not page: break
+            if any(r.get('study_id') != study_id for r in page): raise store.StoreError('Shared queue study coverage is invalid.')
+            result.extend(page)
+            if len(result) > maximum: raise store.StoreError('Shared queue exceeds its coverage budget; no truncated status was returned.')
+        keys = [r.get('id', r.get('study_id')) for r in result]
+        if len(set(keys)) != len(keys): raise store.StoreError('Shared queue identities changed during retrieval; retry the status read.')
+        return result
+
+    def linked(kind, select, ids):
+        result = []
+        for offset in range(0, len(ids), 100):
+            chunk = ids[offset:offset + 100]
+            page = records(kind, select, len(chunk), id='in.(' + ','.join(chunk) + ')')
+            if any(r['id'] not in chunk for r in page): raise store.StoreError('Shared queue linked identities are invalid.')
+            result.extend(page)
+        return result
+
+    jobs = records('queue_jobs', 'id,study_id,status,execution_mode,run_id,created_at,updated_at', 1000)
+    runs = linked('runs', 'id,study_id,status', sorted({j['run_id'] for j in jobs if j.get('run_id')}))
+    run_status = {r['id']: r['status'] for r in runs}
+    public_jobs = [dict({k: j[k] for k in ('id', 'study_id', 'status', 'execution_mode', 'created_at', 'updated_at')},
+                        run_status=run_status.get(j.get('run_id'))) for j in jobs]
+    workflows = records('autonomy_workflows', 'study_id,max_spend_cents,max_attempts,committed_cents,status,created_at,deadline_at,updated_at', 1)
+    tasks = records('autonomy_tasks', 'id,study_id,claim_id,stage,status,label,attempts,evidence_progress:context->evidence_progress,created_at,updated_at', 1000) if workflows else []
+    claim_ids = sorted({t['claim_id'] for t in tasks if t.get('claim_id')})
+    claims = linked('claims', 'id,study_id,description', claim_ids)
+    titles = {c['id']: c['description'] for c in claims}
+    if set(titles) != set(claim_ids): raise store.StoreError('Shared claim inventory coverage is incomplete.')
+    task_reasons = {
+        'queued': 'Waiting for a worker and available capacity.', 'running': 'A worker has started this stage.',
+        'waiting': 'Waiting for recorded checks or a later controller turn.',
+        'resolved': 'A finding has been recorded under the tested conditions.',
+        'finished': 'Preparation finished within its recorded scope; this does not establish complete source review.',
+        'blocked': 'Paused. The study owner can inspect the recorded requirements or failure details.',
+        'attempt-limit': 'Stopped at a retained attempt limit.', 'budget': 'No further work admitted within the paper commitment budget.',
+        'deadline': 'The elapsed-time limit was reached.', 'cancelled': 'Cancelled; previous records are retained.',
+    }
+    workflow_reasons = {
+        'running': 'Background preparation and claim checks are in progress.',
+        'completed': 'The recorded claim tasks have finished under their tested conditions.',
+        'completed-with-blockers': 'The workflow stopped with unresolved claims or unavailable requirements.',
+        'budget': task_reasons['budget'], 'deadline': task_reasons['deadline'], 'cancelled': task_reasons['cancelled'],
+    }
+    public_tasks = []
+    for task in tasks:
+        row = {k: task[k] for k in ('id', 'study_id', 'claim_id', 'stage', 'status', 'label', 'attempts', 'created_at', 'updated_at')}
+        row.update(claim_title=titles.get(task['claim_id']), reason=task_reasons.get(task['status'], 'Recorded status is unavailable.'))
+        progress = task.get('evidence_progress')
+        if progress is not None:
+            required, completed = progress.get('required_checks'), progress.get('completed_checks')
+            if type(required) is not int or type(completed) is not int or not 0 <= completed <= required <= 1000:
+                raise store.StoreError('Shared recorded-check coverage is invalid.')
+            row['evidence_progress'] = dict(required_checks=required, completed_checks=completed,
+                scope='Recorded check coverage only; scientific coverage depends on the frozen claim criterion.')
+        public_tasks.append(row)
+    public_workflows = [dict({k: w[k] for k in ('study_id', 'max_spend_cents', 'max_attempts', 'committed_cents', 'status', 'created_at', 'deadline_at', 'updated_at')},
+                             reason=workflow_reasons.get(w['status'], 'Recorded status is unavailable.')) for w in workflows]
+    import autonomy
+    health = autonomy.runtime_health()
+    runtime = {k: health[k] for k in ('runtime', 'model_id', 'status', 'updated_at') if k in health}
+    result = dict(version=PUBLIC_VERSION, access='public-read-only', study={k: studies[0][k] for k in ('id', 'title')},
+        jobs=public_jobs, workers_enabled=os.environ.get('RESEARCH_QUEUE_WORKERS_ENABLED') == 'true',
+        autonomy=dict(version=autonomy.VERSION, access='public-read-only', defaults={k: autonomy.DEFAULTS[k] for k in ('maximum_spend_usd', 'elapsed_days', 'attempts_per_claim', 'parallel_claims_per_paper', 'global_parallel_claims')},
+            enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED') == 'true', runtime=runtime,
+            workflows=public_workflows, tasks=public_tasks, coverage=dict(workflows=len(workflows), tasks=len(public_tasks))),
+        coverage=dict(jobs=len(public_jobs)),
+        limitations='Public recorded status for this paper only. Counts come from bounded separate reads and can change during retrieval. Candidate inventory and scientific coverage may be incomplete. Execution is not scientific validation. Prompts, requirements, raw inputs, uploaded PDFs, owner information and private event history are omitted; status explanations are general summaries.')
+    if len(canonical(result)) > 4_000_000: raise store.StoreError('Shared queue exceeds its byte budget; no truncated status was returned.')
     return result
 
 def action(study_id, actor, body):

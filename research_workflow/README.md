@@ -4,6 +4,20 @@ Shared evidence records and bounded execution for `/module/research-verification
 The framework supports domain-specific studies; it does not automatically verify
 every paper. Scientific findings require appropriate checks and declared review.
 
+Shared paper queue links now use the anonymous read-only status projection at
+`GET /research/studies/{id}/queue?public=1`, including before assessment
+publication. It returns paper/claim titles, recorded workflow/task/job statuses,
+attempts, timestamps, check coverage and commitments. It omits owners, prompts,
+responses, uploads, raw inputs, artifact paths, resource names, private events and
+free-form failure details. Unpublished ideas and anonymous study enumeration are
+not exposed. Existing queue reads without `public=1`, history, writes and
+execution controls keep their authentication/ownership checks. RLS/grants and the
+schema are unchanged; the backend serves an explicit bounded projection.
+Deploy the matching pinned backend before the frontend after an explicit release
+request. See the frontend `docs/public-experiment-queue-v1.md` protocol and run
+`npm run verify:research:public-queue` there for the fixed anonymous browser →
+actual API handler → synthetic-store development campaign.
+
 ## Automatic networking execution
 
 An unpublished idea can contain a `network-execution-v1` declaration. Expand
