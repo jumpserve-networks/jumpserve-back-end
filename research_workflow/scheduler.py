@@ -3,6 +3,7 @@ import uuid
 import os
 import store
 import network_execution
+import paper_titles
 from workflow import canonical, digest, identifier, text
 
 VERSION = "research-queue-v1"
@@ -133,7 +134,7 @@ def snapshot(study_id, actor):
     if len(canonical(result)) > 4_000_000: raise store.StoreError("Queue export exceeds the byte budget; history was not truncated.")
     return result
 
-def overview(actor):
+def overview(actor, title_study_id=None):
     """Owner-only paper queue, bounded across studies; no silent truncation."""
     owners = store.rows('study_owners', {'owner_id': 'eq.' + actor, 'limit': 101})
     if len(owners) > 100: raise store.StoreError('Queue study coverage exceeds 100; use an operator export.')
@@ -141,6 +142,9 @@ def overview(actor):
     studies = store.rows('studies', {'id': 'in.(' + ','.join(ids) + ')', 'limit': 101}) if ids else []
     if {s['id'] for s in studies} != set(ids): raise store.StoreError('Queue ownership coverage is incomplete.')
     studies = [s for s in studies if s.get('study_kind', 'paper') == 'paper']
+    if title_study_id is not None:
+        title_study_id = identifier(title_study_id)
+        studies = [dict(s, title=paper_titles.display_title(s)) if s['id'] == title_study_id else s for s in studies]
     ids = [s['id'] for s in studies]
     jobs = store.rows('queue_jobs', {'study_id': 'in.(' + ','.join(ids) + ')', 'limit': 1001}) if ids else []
     if len(jobs) > 1000: raise store.StoreError('Queue job coverage exceeds 1000; no truncated status is returned.')
@@ -175,7 +179,7 @@ def public_snapshot(study_id):
     error/requirement text are exposed by this endpoint.
     """
     study_id = identifier(study_id)
-    studies = store.rows('studies', {'id': 'eq.' + study_id, 'select': 'id,title,study_kind', 'limit': 1})
+    studies = store.rows('studies', {'id': 'eq.' + study_id, 'select': 'id,title,study_kind,paper_upload', 'limit': 1})
     if not studies or studies[0].get('study_kind', 'paper') != 'paper': return None
     if len(studies) != 1 or studies[0].get('id') != study_id: raise store.StoreError('Shared paper identity is invalid.')
 
@@ -246,7 +250,7 @@ def public_snapshot(study_id):
     import autonomy
     health = autonomy.runtime_health()
     runtime = {k: health[k] for k in ('runtime', 'model_id', 'status', 'updated_at') if k in health}
-    result = dict(version=PUBLIC_VERSION, access='public-read-only', study={k: studies[0][k] for k in ('id', 'title')},
+    result = dict(version=PUBLIC_VERSION, access='public-read-only', study=dict(id=study_id, title=paper_titles.display_title(studies[0])),
         jobs=public_jobs, workers_enabled=os.environ.get('RESEARCH_QUEUE_WORKERS_ENABLED') == 'true',
         autonomy=dict(version=autonomy.VERSION, access='public-read-only', defaults={k: autonomy.DEFAULTS[k] for k in ('maximum_spend_usd', 'elapsed_days', 'attempts_per_claim', 'parallel_claims_per_paper', 'global_parallel_claims')},
             enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED') == 'true', runtime=runtime,

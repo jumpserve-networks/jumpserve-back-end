@@ -11,8 +11,10 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import api
 import autonomy
+import paper_titles
 import scheduler
 import store
+from workflow import canonical, digest
 original_rows = store.rows
 
 STUDY = '11111111-1111-4111-8111-111111111111'
@@ -92,6 +94,30 @@ class PublicStatus(unittest.TestCase):
             self.data['autonomy_tasks'][0].update(claim_id=CLAIM, stage='assessment', label=label, status=status)
             task = scheduler.public_snapshot(STUDY)['autonomy']['tasks'][0]
             self.assertEqual((task['label'], task['status']), (label, status))
+
+    def test_uploaded_paper_name_is_public_but_private_file_metadata_and_artifacts_are_not(self):
+        paper_titles.retained_title.cache_clear()
+        self.addCleanup(paper_titles.retained_title.cache_clear)
+        upload = dict(filename='PRIVATE-CANARY-camera-ready.pdf', sha256='a' * 64)
+        self.data['studies'][0].update(title=upload['filename'][:-4], paper_upload=upload)
+        raw = canonical(dict(original_sha256=upload['sha256'], pages=[dict(page=1,
+            text='A Source Grounded Paper Title\nJane Smith ✉\nColumbia University\nAbstract\nBody')]))
+        record = dict(id=OTHER, study_id=STUDY, sha256=digest(raw), byte_count=len(raw),
+            provenance=dict(kind='derived-pdf-text', original_sha256=upload['sha256']))
+        def rows(kind, params):
+            if kind != 'artifacts': return self.rows(kind, params)
+            self.assertEqual(params['study_id'], 'eq.' + STUDY)
+            self.assertEqual(params['provenance->>original_sha256'], 'eq.' + upload['sha256'])
+            return [record]
+        with patch.object(store, 'rows', side_effect=rows), patch.object(store, 'artifact_bytes', return_value=raw):
+            response = api.handler(self.event())
+        self.assertEqual(response['statusCode'], 200)
+        result = json.loads(response['body'])
+        self.assertEqual(result['study'], dict(id=STUDY, title='A Source Grounded Paper Title'))
+        for private in ('PRIVATE-CANARY', 'paper_upload', 'document_metadata', 'provenance', upload['sha256'], digest(raw)):
+            self.assertNotIn(private, response['body'])
+        self.assertEqual(result['coverage'], dict(jobs=1))
+        self.assertEqual(self.data['studies'][0]['title'], upload['filename'][:-4])
 
     def test_missing_studies_and_unpublished_ideas_are_not_public_paper_queues(self):
         for studies in ([], [dict(id=STUDY, title=SECRET, study_kind='idea')]):

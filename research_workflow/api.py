@@ -103,7 +103,7 @@ def dispatch(event, actor=None):
             return store.rpc("research_create_study", dict(p_actor=actor, p_id=identifier(body.get("request_id")), p_document=paper_details(body.get("paper"))))
     if path == '/research/queue' and method == 'GET':
         if not actor: raise HttpError(401, 'Sign in to view your experiment queue.')
-        return scheduler.overview(actor)
+        return scheduler.overview(actor, query.get('title_study')) if query.get('title_study') else scheduler.overview(actor)
     parts = path.split("/")
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])

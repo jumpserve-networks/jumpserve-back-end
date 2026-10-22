@@ -18,6 +18,22 @@ request. See the frontend `docs/public-experiment-queue-v1.md` protocol and run
 `npm run verify:research:public-queue` there for the fixed anonymous browser →
 actual API handler → synthetic-store development campaign.
 
+Selected paper queues display an extracted paper title when the original study
+title was seeded from the upload filename. `paper_titles.py` uses the existing
+hash-verified text packet for that exact uploaded PDF: corroborated PDF metadata
+when available, otherwise a first-page title block with an identifiable byline
+and affiliation. New text packets also retain optional PDF title metadata. Older
+packets work without it. Scanned, unusual or ambiguous layouts can show **Paper
+title unavailable**; filenames are not treated as bibliographic evidence. Explicit
+study titles remain unchanged. This display-only lookup neither edits the study,
+original files or initial prompt nor invokes a model, resumes work or writes
+records. It reads at most one 8 MB text packet, caches for up to 30 seconds, and
+enriches only the selected owned paper in `GET /research/queue?title_study={id}`.
+The shared projection still exposes only the title, never upload metadata or
+artifact bytes. Unit and browser fixtures are development cases, not validation
+of title extraction across all publishers. A future explicitly requested release
+must include `paper_titles.py` in the pinned runtime manifest before deploying.
+
 ## Automatic networking execution
 
 An unpublished idea can contain a `network-execution-v1` declaration. Expand

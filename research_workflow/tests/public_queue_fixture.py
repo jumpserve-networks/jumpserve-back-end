@@ -12,13 +12,19 @@ from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_public_queue import fixture, STUDY, TASK, CLAIM, JOB, STAMP, SECRET
+from test_paper_titles import uploaded_study, packet, artifact
 import api
 import autonomy
+import paper_titles
 import store
+from workflow import canonical
 
 mode = 'normal'
+title_packet = canonical(packet())
 def data():
     value = fixture()
+    value['studies'][0] = uploaded_study()
+    value['artifacts'] = [] if mode == 'title-missing' else [artifact(title_packet)]
     for index, label in enumerate(('reproduced', 'discrepant', 'inconclusive'), 7):
         claim = str(index) * 8 + '-1111-4111-8111-111111111111'
         task = str(index) * 8 + '-2222-4222-8222-222222222222'
@@ -66,12 +72,12 @@ class Handler(BaseHTTPRequestHandler):
         global mode
         if self.path != '/fixture/mode': return self.reply(405, dict(error='Fixture does not accept research writes.'))
         request = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
-        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable'): return self.reply(400, dict(error='Fixed fixture states only.'))
-        mode = request['mode']; self.reply(200, dict(mode=mode))
+        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing'): return self.reply(400, dict(error='Fixed fixture states only.'))
+        mode = request['mode']; paper_titles.retained_title.cache_clear(); self.reply(200, dict(mode=mode))
 
 if __name__ == '__main__':
     if len(sys.argv) != 1: raise SystemExit('Fixed fixture only; no external address or commands.')
-    with patch.object(store, 'rows', side_effect=rows), patch.object(autonomy, 'runtime_health', return_value=dict(
+    with patch.object(store, 'rows', side_effect=rows), patch.object(store, 'artifact_bytes', return_value=title_packet), patch.object(autonomy, 'runtime_health', return_value=dict(
         runtime='openclaw-production-v1', model_id='explicit-software-fixture', status='ready')):
         server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
         print(json.dumps(dict(fixture='public-queue-synthetic-store-v1', port=server.server_port, study=STUDY)), flush=True)
