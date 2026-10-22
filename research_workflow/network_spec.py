@@ -128,6 +128,8 @@ def specs(document, verify_hashes=True):
         test = configuration['details'].get('test_config')
         if config(execution['runner'],test) > limits['max_instances']: raise ValueError('Requested topology exceeds instance budget.')
         if execution['runner']=='bounded-tcp-v1':
+            if {m['name'] for m in metrics}!=set(BUILTIN_METRICS['bounded-tcp-v1']) or document['resource_limits']['max_observations']<2*test['exchanges']:
+                raise ValueError('TCP always emits received_bytes (bytes) and round_trip_time_ms (ms) for each exchange. Declare both metrics and budget at least two observations per exchange; do not discard diagnostic output.')
             if limits['wall_seconds']!=60 or limits['max_output_bytes']<32000 or limits['max_network_bytes']<2*test['payload_bytes']*test['exchanges']:
                 raise ValueError('TCP execution requires a 60-second queue deadline, 32-KB output allowance and the complete bidirectional payload budget. Actual Lambda execution is capped at five seconds.')
             if any(m.get('planned_observations')!=test['exchanges'] for m in document['metrics']):

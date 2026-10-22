@@ -57,7 +57,10 @@ def manifest(records):
                 scope='Complete retained record inventory, not a statistical estimate or source review.')
 
 
-def page(records, offset):
+def page(records, offset, byte_budget=None):
+    byte_budget = READ_BYTES if byte_budget is None else byte_budget
+    if type(byte_budget) is not int or not 1 <= byte_budget <= READ_BYTES:
+        raise ValueError('Evidence page byte budget is outside the reader bound.')
     if type(offset) is not int or offset < 0 or offset > len(records):
         raise ValueError('Evidence cursor is outside the authorized record set.')
     def envelope(selected):
@@ -68,7 +71,7 @@ def page(records, offset):
                     limitation='A page is an explicit subset. Full-data calculations do not sample this page.')
     selected = []
     for row in records[offset:offset + 20]:
-        if len(canonical(envelope(selected + [row]))) > READ_BYTES:
+        if len(canonical(envelope(selected + [row]))) > byte_budget:
             if not selected:
                 raise ValueError('This evidence row exceeds the bounded reader; use its original private artifact.')
             break

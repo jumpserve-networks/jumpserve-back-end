@@ -12,6 +12,7 @@ import autonomy_model as model
 import autonomy_sources as sources
 import autonomy_evidence as evidence
 import autonomy_costs
+import autonomy_inputs as inputs
 import network_spec
 import preparation
 import scheduler
@@ -236,7 +237,12 @@ def inspect_evidence(task,request):
  claim=one('claims',study,task['claim_id']);available=inventory(task);jobs=retained_jobs(task)
  if kind=='source':
   if record_id!=claim['source_id']:raise ValueError('Source is outside this claim.')
-  result=evidence.page([one('sources',study,record_id)],cursor)
+  source=one('sources',study,record_id);material,records=inputs.source_text(task,claim,source,one)
+  extracted=material['representation']!='metadata-only'
+  envelope=dict(source_material={k:v for k,v in material.items() if k!='inline_passage'},record_kind='extracted-paper-text' if extracted else 'source-metadata-only')
+  result=evidence.page(records if extracted else [source],cursor,byte_budget=evidence.READ_BYTES-len(canonical(envelope))-64)
+  result.update(envelope)
+  if len(canonical(result))>evidence.READ_BYTES:raise ValueError('Source page and provenance exceed the bounded reader; no text was silently truncated.')
  elif kind in ('checks','check','protocol'):
   allowed={j['id']:j for j in available}
   selected=task['context'].get('selected_check_id')
@@ -272,6 +278,12 @@ def build_context(task):
  value=dict(task=task['stage'],initial_prompt=task['workflow']['initial_prompt'],claim=claim,source=source,attempt_number=task['attempts']+1,limits=DEFAULTS,
   source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
   prior_attempts=[{k:r.get(k) for k in ('number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
+ value['source_material']=inputs.source_text(task,claim,source,one)[0]
+ if task['stage']=='planning':
+  value['runner_contracts']=inputs.runner_contracts();value['proposal_contract']=inputs.protocol_contract()
+ elif task['stage'] in ('comprehension','critic') and context.get('proposal'):
+  runner=context['proposal']['protocol'].get('execution',{}).get('runner')
+  value['runner_contracts']={runner:inputs.runner_contracts()[runner]} if runner in network_spec.RUNNERS else {}
  if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
@@ -489,6 +501,7 @@ def step(task):
  output=answer['output'];context['last_turn_id']=answer['id']
  if output['action']=='inspect':
   read=inspect_evidence(task,output['read_request']);context['evidence_read']=dict(read,requested_by_turn_id=answer['id'])
+  inputs.retain_source_delivery(dict(task,context=context),read)
   if output['read_request']['kind']=='protocol' and task['stage'] in ('comprehension','critic'):
    context.setdefault('protocol_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
   return advance(task,'queued',context=context,reason='Read-only evidence page retained; the next numbered prompt includes its provenance.')
