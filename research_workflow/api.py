@@ -15,6 +15,7 @@ import network_spec
 import gap_queue
 import autonomy
 import paper_uploads
+import paper_catalog
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -77,6 +78,14 @@ def dispatch(event, actor=None):
     path = event.get("rawPath", "").rstrip("/")
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
+    if path == '/research/papers' and method == 'GET':
+        return paper_catalog.papers(query.get('before'))
+    if path.startswith('/research/papers/') and method == 'GET':
+        parts = path.split('/')
+        if len(parts) != 5 or parts[4] != 'title': raise HttpError(404, 'Paper endpoint not found.')
+        result = paper_catalog.title(parts[3])
+        if result is None: raise HttpError(404, 'Paper not found.')
+        return result
     if path == '/research/paper-uploads' and method == 'POST':
         if not actor: raise HttpError(401, 'Sign in to upload a private paper.')
         if os.environ.get('RESEARCH_AUTONOMY_ENABLED') != 'true': raise HttpError(503, 'Autonomous paper assessment is temporarily unavailable. No upload was admitted.')

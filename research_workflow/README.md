@@ -34,6 +34,31 @@ artifact bytes. Unit and browser fixtures are development cases, not validation
 of title extraction across all publishers. A future explicitly requested release
 must include `paper_titles.py` in the pinned runtime manifest before deploying.
 
+`/research-verification/previous-assessments` lists all successfully created paper
+assessments, including submitted, running, stopped and cancelled work and earlier
+published imports. There is one entry per retained assessment identity, so repeat
+submissions of a paper remain distinct. Pending/rejected upload reservations are
+not created studies. Unpublished ideas remain in their separate pathway. The old
+`/research-verification/test-results` URL and its `/module` and `/modules` aliases
+redirect permanently with query parameters preserved.
+
+The anonymous `GET /research/papers` catalogue serves only ID, optional paper title,
+creation timestamp, recorded workflow status (null when unavailable) and current
+publication membership. Its 10-row keyset pages have no global first-100 cutoff;
+server-side page caps are exhausted, and invalid coverage fails explicitly. Public
+snapshot membership is checked through the existing anonymous RLS policy, including
+withdrawals. No draft scope, source URL, owner, prompt, upload metadata or artifacts
+are listed. Original filename-based titles are omitted; the UI resolves them with
+at most two concurrent `GET /research/papers/{id}/title` requests using the existing
+hash-verified resolver. These reads never start, resume or assess work. Catalogue
+visibility does not publish an assessment or change source review status.
+
+Development uses the existing queue browser verifier with explicit synthetic
+store data and the actual API handler. Production is unchanged on editing turns.
+A future authorized release must pin `paper_catalog.py` and the changed API bytes,
+stage that exact runtime, and deploy the two GET API Gateway routes with the
+backend before releasing the frontend. No schema/RLS migration is required.
+
 ## Automatic networking execution
 
 An unpublished idea can contain a `network-execution-v1` declaration. Expand

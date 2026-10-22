@@ -13,17 +13,26 @@ from urllib.parse import parse_qs, urlsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_public_queue import fixture, STUDY, TASK, CLAIM, JOB, STAMP, SECRET
 from test_paper_titles import uploaded_study, packet, artifact
+from test_paper_catalog import fixture as paper_fixture
 import api
 import autonomy
 import paper_titles
 import store
-from workflow import canonical
+from workflow import PUBLIC_KINDS, canonical
 
 mode = 'normal'
 title_packet = canonical(packet())
 def data():
     value = fixture()
-    value['studies'][0] = uploaded_study()
+    value['studies'][0] = dict(uploaded_study(), created_at='2026-10-22T00:00:01+00:00')
+    extra = paper_fixture()[:12]
+    extra[2] = dict(id=extra[2]['id'], created_at=extra[2]['created_at'], study_kind='paper',
+        title='Synthetic published paper assessment', paper_url='https://example.org/paper.pdf',
+        domain='Networking', scope='Synthetic software fixture; no scientific validation.', origin_module=None, paper_upload=None)
+    value['studies'].extend(extra)
+    value['studies'].append(dict(extra[0], id='dddddddd-1111-4111-8111-111111111111', study_kind='idea', title=SECRET))
+    for paper, status in zip(extra, ('budget', 'cancelled', 'completed', 'completed-with-blockers', 'deadline')):
+        value['autonomy_workflows'].append(dict(value['autonomy_workflows'][0], study_id=paper['id'], status=status))
     value['artifacts'] = [] if mode == 'title-missing' else [artifact(title_packet)]
     for index, label in enumerate(('reproduced', 'discrepant', 'inconclusive'), 7):
         claim = str(index) * 8 + '-1111-4111-8111-111111111111'
@@ -35,18 +44,37 @@ def data():
         claim_id=None, stage='intake', status='queued', label=None))
     value['queue_jobs'].append(dict(value['queue_jobs'][0], id='bbbbbbbb-1111-4111-8111-111111111111',
         run_id=None, status='queued'))
+    for kind in PUBLIC_KINDS: value.setdefault(kind, [])
+    published = extra[2]['id']
+    public_claim = dict(id='cccccccc-1111-4111-8111-111111111111', study_id=published, created_at=STAMP,
+        description='Synthetic published claim', location='Software fixture', claim_type='numerical')
+    value['claims'].append(public_claim)
+    value['publications'].append(dict(id='eeeeeeee-1111-4111-8111-111111111111', study_id=published,
+        created_at=STAMP, version=1, status='published', record_ids={kind: [public_claim['id']] if kind == 'claims' else [] for kind in PUBLIC_KINDS}))
     if mode == 'empty':
         value['queue_jobs'] = []
         value['autonomy_tasks'] = value['autonomy_tasks'][:1]
     if mode == 'running': value['queue_jobs'][1]['status'] = 'running'
+    if mode == 'catalog-empty': value['studies'] = []
     return value
 
-def rows(kind, params):
+def rows(kind, params, public=False):
     value = data()[kind]
     if kind == 'studies':
-        if params.get('id') != 'eq.' + STUDY: return []
-    elif params.get('study_id') != 'eq.' + STUDY:
-        raise AssertionError('Fixture requires exact study scope.')
+        if public:
+            value = [p for p in value if p['id'] == paper_fixture()[2]['id']]
+            if params.get('select') == 'id': value = [dict(id=p['id']) for p in value]
+        if params.get('study_kind'): value = [p for p in value if p.get('study_kind') == 'paper']
+        if params.get('id', '').startswith('eq.'): value = [p for p in value if p['id'] == params['id'][3:]]
+        if 'or' in params:
+            boundary = params['or']; stamp=boundary.split('created_at.lt.')[1].split(',')[0]; identity=boundary.split('id.lt.')[1].split(')')[0]
+            from paper_catalog import timestamp
+            value = [p for p in value if (timestamp(p['created_at']),p['id']) < (timestamp(stamp),identity)]
+    elif params.get('study_id', '').startswith('eq.'):
+        value = [r for r in value if r['study_id'] == params['study_id'][3:]]
+    elif params.get('study_id', '').startswith('in.'):
+        ids=params['study_id'][4:-1].split(',');value=[r for r in value if r['study_id'] in ids]
+    else: raise AssertionError('Fixture requires explicit study scope.')
     if params.get('id', '').startswith('in.'):
         ids = params['id'][4:-1].split(','); value = [r for r in value if r['id'] in ids]
     offset = params.get('offset', 0)
@@ -67,12 +95,13 @@ class Handler(BaseHTTPRequestHandler):
             headers={k.lower(): v for k, v in self.headers.items()}, requestContext={'http': {'method': 'GET'}}))
         result = json.loads(response['body'])
         if mode == 'invalid' and response['statusCode'] == 200: result['coverage']['jobs'] += 1
+        if mode == 'catalog-invalid' and response['statusCode'] == 200 and parsed.path == '/research/papers': result['coverage']['papers'] += 1
         self.reply(response['statusCode'], result)
     def do_POST(self):
         global mode
         if self.path != '/fixture/mode': return self.reply(405, dict(error='Fixture does not accept research writes.'))
         request = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
-        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing'): return self.reply(400, dict(error='Fixed fixture states only.'))
+        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid'): return self.reply(400, dict(error='Fixed fixture states only.'))
         mode = request['mode']; paper_titles.retained_title.cache_clear(); self.reply(200, dict(mode=mode))
 
 if __name__ == '__main__':
