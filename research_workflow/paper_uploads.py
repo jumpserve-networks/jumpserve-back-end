@@ -5,13 +5,14 @@ import autonomy
 import store
 from workflow import digest, identifier, paper_details
 
-VERSION = 'research-paper-upload-v1'
+VERSION = 'research-paper-upload-v2'
+REVIEW_VERSION = 'research-paper-review-v1'
 BUCKET = 'research-paper-uploads'
 MAX_BYTES = 10_000_000
 
 
 def capability():
-    return dict(version=VERSION, maximum_bytes=MAX_BYTES, media_type='application/pdf')
+    return dict(version=VERSION, review_version=REVIEW_VERSION, maximum_bytes=MAX_BYTES, media_type='application/pdf', confirmation_required=True)
 
 
 def owned(actor, request_id):
@@ -21,6 +22,8 @@ def owned(actor, request_id):
 
 
 def completed(actor, row):
+    reviews=store.rows('paper_reviews',dict(study_id='eq.'+row['id'],limit=1))
+    if reviews: return dict(id=row['id'],review_version=REVIEW_VERSION,status=reviews[0]['status'])
     if not store.rows('autonomy_workflows',dict(study_id='eq.'+row['id'],limit=1)):
         raise ValueError('This request ID already identifies a private paper workspace. Use its existing workflow.')
     return autonomy.start(actor, dict(request_id=row['id'], paper=row['paper'], autonomous=True))
@@ -43,12 +46,24 @@ def create_private_study(actor, target, paper, source_study):
 def submit(actor, body):
     request_id = identifier(body.get('request_id')); actor = identifier(actor)
     action = body.get('action')
+    if action in ('review','confirm'):
+        if not store.owns(request_id,actor): raise ValueError('Private paper review not found.')
+        if action=='review':
+            if set(body)!={'action','request_id'}: raise ValueError('Supply the retained review identity.')
+        else:
+            if set(body)!={'action','request_id','title','domain','claim_ids','revision'}: raise ValueError('Confirm title, research domain, selected claims and review revision.')
+            if not isinstance(body['title'],str) or not 1<=len(body['title'].strip())<=300 or not isinstance(body['domain'],str) or not 1<=len(body['domain'].strip())<=5000 or type(body['revision']) is not int or body['revision']<1: raise ValueError('Invalid paper review fields.')
+            if not isinstance(body['claim_ids'],list) or not 1<=len(body['claim_ids'])<=200: raise ValueError('Select at least one extracted claim.')
+            payload=dict(title=body['title'],domain=body['domain'],revision=body['revision'],claim_ids=[identifier(c) for c in body['claim_ids']])
+            store.rpc('research_paper_review',dict(p_operation='confirm',p_actor=actor,p_study=request_id,p_payload=payload))
+            autonomy.wake()
+        return review(actor,request_id)
     if action == 'reserve':
-        if set(body) != {'action','request_id','filename','sha256','byte_count','domain','scope'}: raise ValueError('Supply one PDF identity, research domain and assessment scope.')
+        if set(body) != {'action','request_id','filename','sha256','byte_count'}: raise ValueError('Supply one PDF identity. Paper details are reviewed after extraction.')
         filename = body['filename']
         title = filename[:-4].strip() if isinstance(filename,str) else ''
         paper = paper_details(dict(title=title or 'Uploaded paper', paper_url=None,
-            paper_upload={key:body[key] for key in ('filename','sha256','byte_count')}, domain=body['domain'], scope=body['scope'], study_kind='paper', origin_module=None))
+            paper_upload={key:body[key] for key in ('filename','sha256','byte_count')}, domain='Pending paper review', scope='Assess owner-confirmed claims under their documented conditions; retain uncovered claims and evidence gaps.', study_kind='paper', origin_module=None))
         row = store.rpc('research_paper_upload',dict(p_operation='reserve',p_actor=actor,p_id=request_id,p_payload=paper))
         if row['status'] == 'started': return dict(version=VERSION,id=request_id,status='started',result=completed(actor,row))
         if row['status'] != 'pending': raise ValueError(row.get('reason') or 'This original upload was rejected; preserve it and submit a new file.')
@@ -59,7 +74,7 @@ def submit(actor, body):
             raise store.StoreError('Storage returned an invalid scoped upload permission.')
         # Returned only to its authenticated owner, never to prompts or logs.
         return dict(version=VERSION,id=request_id,status='pending',bucket=BUCKET,path=path,token=tokens[0],sha256=paper['paper_upload']['sha256'],byte_count=paper['paper_upload']['byte_count'],maximum_bytes=MAX_BYTES)
-    if action != 'start' or set(body) != {'action','request_id'}: raise ValueError('Choose reserve or start for the retained PDF upload.')
+    if action != 'prepare' or set(body) != {'action','request_id'}: raise ValueError('Upload the paper, prepare its details, then confirm before starting the assessment.')
     row = owned(actor,request_id)
     if row['status'] == 'started': return completed(actor,row)
     if row['status'] != 'pending': raise ValueError(row.get('reason') or 'This upload cannot start an assessment.')
@@ -74,6 +89,29 @@ def submit(actor, body):
     original = store.artifact(request_id,actor,raw,str(uuid.uuid5(uuid.UUID(request_id),'paper-original:'+meta['sha256'])),'application/pdf',
         dict(kind='paper-original-upload',input_origin='owner-upload',transformation='none; exact original uploaded PDF bytes',upload_id=request_id,sha256=meta['sha256']))
     payload = dict(autonomy.start_payload(request_id,row['paper']),artifact=original)
-    result = store.rpc('research_paper_upload',dict(p_operation='start',p_actor=actor,p_id=request_id,p_payload=payload))
-    result['dispatch'] = autonomy.wake()
-    return result
+    store.rpc('research_paper_upload',dict(p_operation='prepare',p_actor=actor,p_id=request_id,p_payload=payload))
+    autonomy.wake()
+    return dict(id=request_id,review_version=REVIEW_VERSION,status='preparing')
+
+
+def review(actor, study):
+    if not store.owns(study,actor): raise ValueError('Private paper review not found.')
+    records=store.rows('paper_reviews',dict(study_id='eq.'+study,limit=1))
+    if len(records)!=1: raise ValueError('Private paper review not found.')
+    r=records[0]; workflow=store.rows('autonomy_workflows',dict(study_id='eq.'+study,limit=1))[0]
+    claims=store.rows('claims',dict(study_id='eq.'+study,order='created_at.asc,id.asc',limit=201))
+    if len(claims)>200: raise ValueError('Paper review exceeds the bounded claim inventory.')
+    reason=r['reason'];status=r['status']
+    if status=='preparing' and workflow['status']!='running': status='failed';reason=workflow['reason']
+    allowed={s['claim_id'] for s in r['seeds']}
+    can_start=status=='ready' and workflow['status'] not in ('cancelled','budget','deadline') and workflow['committed_cents']+5<=workflow['max_spend_cents']
+    from datetime import datetime, timezone
+    can_start=can_start and datetime.fromisoformat(workflow['deadline_at'].replace('Z','+00:00')).timestamp()>datetime.now(timezone.utc).timestamp()+180
+    tasks=store.rows('autonomy_tasks',dict(study_id='eq.'+study,claim_id='is.null',limit=1))
+    progress=tasks[0]['reason'] if tasks else 'Waiting for paper preparation.'
+    runtime=autonomy.runtime_health()
+    if status=='preparing' and runtime.get('status') not in ('ready','configured'): progress='Paper preparation is waiting for its AI worker: '+str(runtime.get('status','unavailable'))+'. No claim experiments have started.'
+    return dict(version=REVIEW_VERSION,id=study,status=status,revision=r['revision'],title=r['title'],domain=r['domain'],metadata=r['metadata'],progress=progress,
+        claims=[{k:c[k] for k in ('id','description','claim_type','location','source_id')} for c in claims if c['id'] in allowed],
+        coverage=r['coverage'],reason=reason,can_start=can_start,confirmation=r['confirmation'],
+        limits=dict(max_spend_cents=workflow['max_spend_cents'],committed_cents=workflow['committed_cents'],deadline_at=workflow['deadline_at']),access='owner-private')

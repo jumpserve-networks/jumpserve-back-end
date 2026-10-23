@@ -88,8 +88,9 @@ def dispatch(event, actor=None):
         return result
     if path == '/research/paper-uploads' and method == 'POST':
         if not actor: raise HttpError(401, 'Sign in to upload a private paper.')
-        if os.environ.get('RESEARCH_AUTONOMY_ENABLED') != 'true': raise HttpError(503, 'Autonomous paper assessment is temporarily unavailable. No upload was admitted.')
-        return paper_uploads.submit(actor, parse_body(event))
+        body=parse_body(event)
+        if body.get('action')!='review' and os.environ.get('RESEARCH_AUTONOMY_ENABLED') != 'true': raise HttpError(503, 'Autonomous paper assessment is temporarily unavailable. No upload was admitted.')
+        return paper_uploads.submit(actor, body)
     if path == "/research/capabilities" and method == "GET":
         return dict(autonomy=autonomy.capability(), paper_uploads=paper_uploads.capability(), version=VERSION, ideas=dict(version=ideas.VERSION, paper_required=False, packet_bytes=ideas.MAX_PACKET_BYTES), networking=network_execution.capabilities(), adapters=list(runner.ADAPTERS), preparation=dict(version=preparation.VERSION, gap_queue_version=gap_queue.VERSION, claim_design_version=claim_design.VERSION, source_grounded_plans=True, automatic_claim_extraction=False, uploaded_plan_bytes=preparation.MAX_UPLOADED_BYTES), queue=dict(version=scheduler.VERSION, overview_version="research-queue-overview-v1", limits=scheduler.LIMITS, workers_enabled=os.environ.get("RESEARCH_QUEUE_WORKERS_ENABLED") == "true", claim_labels_automatic=False), body_bytes=MAX_BODY, interactive_observations=1000, interactive_wall_seconds=10, labels=LABELS, arbitrary_code_execution=False, generic_ai_prompt="not enabled; requires independent module evaluation and publication" )
     if path == "/research/studies":
@@ -101,6 +102,8 @@ def dispatch(event, actor=None):
                 ids = [r["study_id"] for r in owners]
                 studies = store.rows("studies", {"id": "in.(" + ",".join(ids) + ")", "limit": 100}) if ids else []
                 designs = {row['study_id'] for row in store.rows('claim_designs', {'study_id': 'in.(' + ','.join(ids) + ')', 'select': 'study_id', 'limit': 101})} if ids else set()
+                reviews = {row['study_id']:row for row in store.rows('paper_reviews', {'study_id':'in.('+','.join(ids)+')','select':'study_id,status,title,domain','limit':101})} if ids else {}
+                studies = [dict(row,paper_review_status=reviews[row['id']]['status'],title=reviews[row['id']]['title'] or row['title'],domain=reviews[row['id']]['domain'] or row['domain']) if row['id'] in reviews else row for row in studies]
                 return {"studies": [dict(row, claim_design=True) if row['id'] in designs else row for row in studies], "access": "owner-drafts"}
             records = store.rows("studies", {"limit": 101}, public=True)
             return {"studies": records[:100], "has_more": len(records) > 100, "access": "published"}

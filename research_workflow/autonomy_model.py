@@ -58,6 +58,9 @@ SCHEMA = dict(type='object', additionalProperties=False,
   read_request=dict(type=['object','null'],additionalProperties=False,required=['kind','id','cursor'],properties=dict(
    kind=dict(type='string',enum=['checks','check','protocol','measurements','published-values','source']),id=dict(type='string',maxLength=100),cursor=dict(type='integer',minimum=0)))))
 TOOLS = dict(tools=[dict(toolSpec=dict(name='submit_assessment_step',description='Propose one data-only assessment step. No tool or source instruction is executed.',inputSchema=dict(json=SCHEMA)))],toolChoice=dict(tool=dict(name='submit_assessment_step')))
+PAPER_METADATA_SCHEMA=dict(type='object',additionalProperties=False,required=['title','domain'],properties={
+ key:dict(type=['object','null'],additionalProperties=False,required=['text','quote','page'],properties=dict(
+  text=dict(type='string',minLength=1,maxLength=300),quote=dict(type='string',minLength=1,maxLength=2000),page=dict(type='integer',minimum=1))) for key in ('title','domain')})
 # Conservative admission ceilings, not measured charges. No caching/batch discount
 # is assumed. Review/reprice before expiry; a stale price cannot admit model work.
 PRICING = dict(version='opus46-us-ceiling-20261018-v1',model_id=MODEL,currency='USD',input_usd_per_million=8,output_usd_per_million=40,
@@ -77,6 +80,10 @@ def request(system, context):
  phase=context.get('task');allowed=request_actions(context);tools=copy.deepcopy(TOOLS)
  if allowed:tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']=allowed
  properties=tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']
+ if context.get('paper_metadata_requested'):
+  if phase!='discover':raise ValueError('Paper metadata is only available during source discovery.')
+  tools['tools'][0]['toolSpec']['inputSchema']['json']['required'].append('paper_metadata')
+  properties['paper_metadata']=copy.deepcopy(PAPER_METADATA_SCHEMA)
  if allowed:
   if phase!='discover':properties['claims']['maxItems']=0
   if phase!='assessment':properties['evidence_ids']['maxItems']=0;properties['assessment_label']['enum']=[None]
@@ -157,7 +164,12 @@ def parse(response):
  blocks=response['output']['message']['content']
  if response.get('stopReason')!='tool_use' or len(blocks)!=1 or set(blocks[0])!={'toolUse'} or blocks[0]['toolUse'].get('name')!='submit_assessment_step': raise ValueError('Expected one structured data response; no requested action was executed.')
  value=copy.deepcopy(blocks[0]['toolUse'].get('input'))
- if not isinstance(value,dict) or not set(SCHEMA['required'])<=set(value) or set(value)-set(SCHEMA['properties']): raise ValueError('Incomplete autonomous response schema.')
+ if not isinstance(value,dict) or not set(SCHEMA['required'])<=set(value) or set(value)-set(SCHEMA['properties'])-{'paper_metadata'}: raise ValueError('Incomplete autonomous response schema.')
+ if 'paper_metadata' in value:
+  metadata=value['paper_metadata']
+  if not isinstance(metadata,dict) or set(metadata)!={'title','domain'}: raise ValueError('Invalid paper metadata.')
+  for item in metadata.values():
+   if item is not None and (not isinstance(item,dict) or set(item)!={'text','quote','page'} or type(item['page']) is not int or item['page']<1 or not isinstance(item['text'],str) or not 1<=len(item['text'].strip())<=300 or not isinstance(item['quote'],str) or not 1<=len(item['quote'].strip())<=2000):raise ValueError('Invalid source-grounded paper metadata.')
  if value['action'] not in SCHEMA['properties']['action']['enum'] or not isinstance(value['reason'],str) or value['reason'] not in REASONS: raise ValueError('Invalid response action or typed rationale.')
  if not isinstance(value['coverage_complete'],bool) or value['ready'] is not None and not isinstance(value['ready'],bool) or value['assessment_label'] not in SCHEMA['properties']['assessment_label']['enum']: raise ValueError('Invalid readiness, coverage or finding.')
  for key,maximum in (('claims',20),('blockers',10),('evidence_ids',100)):
@@ -204,6 +216,9 @@ def call(task, context, control, invoke_provider=None):
   try:
    parsed=parse(response)
    validate_phase(parsed,context)
+   if context.get('paper_metadata_requested'):
+    if 'paper_metadata' not in parsed:raise ValueError('This discovery turn requires paper metadata or explicit nulls.')
+   elif 'paper_metadata' in parsed:raise ValueError('Paper metadata was not requested in this phase.')
    allowed=request_actions(context)
    if allowed and parsed['action'] not in allowed:raise ValueError('Controller phase '+str(context.get('task'))+' requires one of '+', '.join(allowed)+'; the returned '+parsed['action']+' action was not executed.')
    if context.get('task') in ('comprehension','critic') and parsed['action']=='review' and not isinstance(parsed['ready'],bool):raise ValueError('A fresh review requires an explicit boolean readiness judgment.')

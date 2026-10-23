@@ -12,6 +12,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin,urlsplit
 import intake
+import paper_titles
 import store
 from workflow import canonical,digest,now,public_url
 
@@ -143,3 +144,19 @@ def candidates(study_id,source_id,chunk,values):
   identity=source_id+':'+str(value['page'])+':'+value['quote']
   entries.append(dict(id=str(uuid.uuid5(uuid.UUID(study_id),identity)),source_id=source_id,location='PDF page '+str(value['page']),description=value['quote'],claim_type=value['claim_type'],scope=dict(origin='AI candidate extracted from original page text; substantive source review incomplete',source_page=value['page'],exact_quote=value['quote'],source_text_offset=chunk['offset']),metrics=[],priority=3))
  return entries
+
+
+def paper_metadata(packet,chunk,values):
+ """Source-bound suggestions, never filename fallbacks or review judgments."""
+ if not isinstance(values,dict) or set(values)!={'title','domain'}:raise ValueError('Paper metadata requires explicit title and domain suggestions or nulls.')
+ extracted={}
+ for key,item in values.items():
+  if item is None:continue
+  if not isinstance(item,dict) or set(item)!={'page','text','quote'} or type(item['page']) is not int or item['page']!=chunk['page'] or not isinstance(item['quote'],str) or not 1<=len(item['quote'])<=2000 or item['quote'] not in chunk['text']:
+   raise ValueError('Paper metadata quote is absent from this exact page chunk.')
+  if not isinstance(item['text'],str) or not 1<=len(item['text'].strip())<=300:raise ValueError('Invalid bounded paper metadata text.')
+  if key=='title' and (paper_titles.clean(item['text'])!=paper_titles.clean(item['quote']) or not paper_titles.valid(item['text'])):raise ValueError('Paper title must faithfully match the source title quote.')
+  extracted[key]=paper_titles.clean(item['text'])
+ fallback=paper_titles.extract_title(packet)
+ if 'title' not in extracted and fallback:extracted['title']=fallback['title']
+ return dict(title=extracted.get('title'),domain=extracted.get('domain'),suggestions=values,title_fallback=fallback)
