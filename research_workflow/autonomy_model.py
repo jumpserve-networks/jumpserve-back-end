@@ -7,6 +7,7 @@ import json
 import os
 import time
 import store
+import paper_selection
 from workflow import canonical, digest
 
 VERSION = 'research-autonomy-v2'
@@ -84,11 +85,15 @@ def request(system, context):
   if phase!='discover':raise ValueError('Paper metadata is only available during source discovery.')
   tools['tools'][0]['toolSpec']['inputSchema']['json']['required'].append('paper_metadata')
   properties['paper_metadata']=copy.deepcopy(PAPER_METADATA_SCHEMA)
+ if context.get('paper_review_selection_requested'):
+  if phase!='paper-review-selection':raise ValueError('Review grouping is only available during paper organization.')
+  tools['tools'][0]['toolSpec']['inputSchema']['json']['required'].append('paper_review_selection')
+  properties['paper_review_selection']=copy.deepcopy(paper_selection.SCHEMA)
  if allowed:
   if phase!='discover':properties['claims']['maxItems']=0
   if phase!='assessment':properties['evidence_ids']['maxItems']=0;properties['assessment_label']['enum']=[None]
   if phase not in ('comprehension','critic'):properties['ready']['enum']=[None]
-  if phase in ('discover','planning'):properties['coverage_complete']['enum']=[False]
+  if phase in ('discover','planning','paper-review-selection'):properties['coverage_complete']['enum']=[False]
   if phase!='planning':properties['check_id']['enum']=[None];properties['proposal']['enum']=[None]
  reminder='Controller phase: '+str(phase)+'. Allowed actions: '+', '.join(allowed)+'. Return the decision for this phase only; a review must not select or redesign a check.' if allowed else ''
  if allowed:reminder+=' Evidence_ids must be empty outside assessment. Claims must be empty outside discovery. Use null for every field inapplicable to this phase, even when unrelated IDs or prior verdicts occur in the input.'
@@ -116,7 +121,7 @@ def request(system, context):
  return value
 
 def phase_actions(phase):
- return {'discover':['discover','blocked'],'planning':['choose-check','propose','inspect','blocked'],'comprehension':['review','inspect','blocked'],'critic':['review','inspect','blocked'],'assessment':['assess','inspect','blocked']}.get(phase,[])
+ return {'discover':['discover','blocked'],'paper-review-selection':['discover','blocked'],'planning':['choose-check','propose','inspect','blocked'],'comprehension':['review','inspect','blocked'],'critic':['review','inspect','blocked'],'assessment':['assess','inspect','blocked']}.get(phase,[])
 
 def validate_phase(value,context):
  phase=context.get('task')
@@ -124,7 +129,7 @@ def validate_phase(value,context):
  if phase!='assessment' and (value['evidence_ids'] or value['assessment_label'] is not None):raise ValueError('Evidence citations and findings are only applicable to assessment.')
  if phase!='discover' and value['claims']:raise ValueError('Claim extraction is only applicable to discovery.')
  if phase not in ('comprehension','critic') and value['ready'] is not None:raise ValueError('Readiness is only applicable to fresh review.')
- if phase in ('discover','planning') and value['coverage_complete']:raise ValueError('Discovery/planning cannot establish complete scientific coverage.')
+ if phase in ('discover','planning','paper-review-selection') and value['coverage_complete']:raise ValueError('Discovery/planning cannot establish complete scientific coverage.')
  if phase!='planning' and (value['check_id'] is not None or value['proposal'] is not None):raise ValueError('Check selection/proposals are only applicable to planning.')
 
 def request_actions(context):
@@ -164,7 +169,7 @@ def parse(response):
  blocks=response['output']['message']['content']
  if response.get('stopReason')!='tool_use' or len(blocks)!=1 or set(blocks[0])!={'toolUse'} or blocks[0]['toolUse'].get('name')!='submit_assessment_step': raise ValueError('Expected one structured data response; no requested action was executed.')
  value=copy.deepcopy(blocks[0]['toolUse'].get('input'))
- if not isinstance(value,dict) or not set(SCHEMA['required'])<=set(value) or set(value)-set(SCHEMA['properties'])-{'paper_metadata'}: raise ValueError('Incomplete autonomous response schema.')
+ if not isinstance(value,dict) or not set(SCHEMA['required'])<=set(value) or set(value)-set(SCHEMA['properties'])-{'paper_metadata','paper_review_selection'}: raise ValueError('Incomplete autonomous response schema.')
  if 'paper_metadata' in value:
   metadata=value['paper_metadata']
   if not isinstance(metadata,dict) or set(metadata)!={'title','domain'}: raise ValueError('Invalid paper metadata.')
@@ -219,6 +224,11 @@ def call(task, context, control, invoke_provider=None):
    if context.get('paper_metadata_requested'):
     if 'paper_metadata' not in parsed:raise ValueError('This discovery turn requires paper metadata or explicit nulls.')
    elif 'paper_metadata' in parsed:raise ValueError('Paper metadata was not requested in this phase.')
+   if context.get('paper_review_selection_requested'):
+    if 'paper_review_selection' not in parsed:raise ValueError('This organization turn requires explicit review groups.')
+    allowed_ids={c['id'] for c in context['candidates']}|{c['claim_id'] for name in paper_selection.GROUPS for c in context['prior_shortlist'].get(name,[])}
+    paper_selection.validate(parsed['paper_review_selection'],allowed_ids)
+   elif 'paper_review_selection' in parsed:raise ValueError('Review grouping was not requested in this phase.')
    allowed=request_actions(context)
    if allowed and parsed['action'] not in allowed:raise ValueError('Controller phase '+str(context.get('task'))+' requires one of '+', '.join(allowed)+'; the returned '+parsed['action']+' action was not executed.')
    if context.get('task') in ('comprehension','critic') and parsed['action']=='review' and not isinstance(parsed['ready'],bool):raise ValueError('A fresh review requires an explicit boolean readiness judgment.')

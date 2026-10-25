@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urlsplit
 import uuid
 import autonomy
 import store
+import paper_selection
 from workflow import digest, identifier, paper_details
 
 VERSION = 'research-paper-upload-v2'
@@ -12,7 +13,7 @@ MAX_BYTES = 10_000_000
 
 
 def capability():
-    return dict(version=VERSION, review_version=REVIEW_VERSION, maximum_bytes=MAX_BYTES, media_type='application/pdf', confirmation_required=True)
+    return dict(version=VERSION, review_version=REVIEW_VERSION, selection_version=paper_selection.VERSION, maximum_bytes=MAX_BYTES, media_type='application/pdf', confirmation_required=True)
 
 
 def owned(actor, request_id):
@@ -46,15 +47,22 @@ def create_private_study(actor, target, paper, source_study):
 def submit(actor, body):
     request_id = identifier(body.get('request_id')); actor = identifier(actor)
     action = body.get('action')
-    if action in ('review','confirm'):
+    if action in ('review','confirm','organize'):
         if not store.owns(request_id,actor): raise ValueError('Private paper review not found.')
-        if action=='review':
+        if action in ('review','organize'):
             if set(body)!={'action','request_id'}: raise ValueError('Supply the retained review identity.')
+            if action=='organize':
+                store.rpc('research_paper_review',dict(p_operation='organize',p_actor=actor,p_study=request_id,p_payload={}))
+                autonomy.wake()
         else:
-            if set(body)!={'action','request_id','title','domain','claim_ids','revision'}: raise ValueError('Confirm title, research domain, selected claims and review revision.')
+            if set(body) not in ({'action','request_id','title','domain','claim_ids','revision'},{'action','request_id','title','domain','claim_ids','revision','selection'}): raise ValueError('Confirm title, research domain, selected claims and review revision.')
             if not isinstance(body['title'],str) or not 1<=len(body['title'].strip())<=300 or not isinstance(body['domain'],str) or not 1<=len(body['domain'].strip())<=5000 or type(body['revision']) is not int or body['revision']<1: raise ValueError('Invalid paper review fields.')
             if not isinstance(body['claim_ids'],list) or not 1<=len(body['claim_ids'])<=200: raise ValueError('Select at least one extracted claim.')
             payload=dict(title=body['title'],domain=body['domain'],revision=body['revision'],claim_ids=[identifier(c) for c in body['claim_ids']])
+            if 'selection' in body:
+                selected=paper_selection.selection_ids(body['selection'],payload['claim_ids'])
+                if set(selected)!=set(payload['claim_ids']) or len(selected)!=len(payload['claim_ids']):raise ValueError('Selected groups must match the selected assessment statements.')
+                payload['selection']=body['selection']
             store.rpc('research_paper_review',dict(p_operation='confirm',p_actor=actor,p_study=request_id,p_payload=payload))
             autonomy.wake()
         return review(actor,request_id)
@@ -111,7 +119,11 @@ def review(actor, study):
     progress=tasks[0]['reason'] if tasks else 'Waiting for paper preparation.'
     runtime=autonomy.runtime_health()
     if status=='preparing' and runtime.get('status') not in ('ready','configured'): progress='Paper preparation is waiting for its AI worker: '+str(runtime.get('status','unavailable'))+'. No claim experiments have started.'
-    return dict(version=REVIEW_VERSION,id=study,status=status,revision=r['revision'],title=r['title'],domain=r['domain'],metadata=r['metadata'],progress=progress,
+    selection=r['metadata'].get('selection')
+    organization=dict(version=paper_selection.VERSION,status='unorganized',central_claims=[],testable_findings=[],candidate_count=len(allowed),cursor=0)
+    if selection:organization=dict(organization,**selection)
+    confirmation=dict(r['confirmation'],selection=r['metadata']['owner_selection']) if r['confirmation'] and r['metadata'].get('owner_selection') else r['confirmation']
+    return dict(version=REVIEW_VERSION,id=study,status=status,revision=r['revision'],title=r['title'],domain=r['domain'],metadata=r['metadata'],progress=progress,organization=organization,
         claims=[{k:c[k] for k in ('id','description','claim_type','location','source_id')} for c in claims if c['id'] in allowed],
-        coverage=r['coverage'],reason=reason,can_start=can_start,confirmation=r['confirmation'],
+        coverage=r['coverage'],reason=reason,can_start=can_start,confirmation=confirmation,
         limits=dict(max_spend_cents=workflow['max_spend_cents'],committed_cents=workflow['committed_cents'],deadline_at=workflow['deadline_at']),access='owner-private')
