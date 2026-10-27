@@ -97,7 +97,7 @@ class NetworkingContract(unittest.TestCase):
             self.assertEqual(run['status'],status);self.assertTrue(run['reason']);self.assertEqual(summaries[0]['missing'],3)
 
 class PackageRuntime(unittest.TestCase):
-    def test_cloud_dispatch_is_single_host_without_credentials_or_metadata(self):
+    def test_cloud_dispatch_has_no_iam_profile_and_blocks_metadata_after_cloud_init(self):
         spec=network_spec.specs(document('custom-package-v1'))[0]
         n=dict(job_id=JOB,study_id=STUDY,spec=spec,spec_sha256=workflow.digest(workflow.canonical(spec)),deadline='2099-01-01T00:00:00+00:00',started_at='2026-01-01T00:00:00Z',phase='dispatching',data={},cancel_requested=False)
         ec2=Mock();ec2.describe_instances.return_value={'Reservations':[{'Instances':[{'InstanceId':'i-fixed','State':{'Name':'running'}}]}]}
@@ -106,7 +106,9 @@ class PackageRuntime(unittest.TestCase):
             result=network_package.handler(dict(source='jumpserve.network-execution',job_id=JOB,action='launch'))
         args=ec2.run_instances.call_args.kwargs
         self.assertEqual(args['ClientToken'],JOB);self.assertEqual(args['MaxCount'],1);self.assertNotIn('IamInstanceProfile',args)
-        self.assertEqual(args['MetadataOptions']['HttpEndpoint'],'disabled');self.assertTrue(args['UserData'].startswith('#!/bin/bash'))
+        self.assertEqual(args['MetadataOptions'],dict(HttpEndpoint='enabled',HttpTokens='required',HttpPutResponseHopLimit=1,HttpProtocolIpv6='disabled'))
+        self.assertTrue(args['UserData'].startswith('#!/bin/bash'))
+        self.assertLess(args['UserData'].index('ip route replace blackhole 169.254.169.254/32'),args['UserData'].index('JUMPSERVE_DRIVER'))
         self.assertEqual(args['CreditSpecification']['CpuCredits'],'standard');self.assertEqual(result['status'],'running')
     def test_lost_acknowledgement_only_polls_original_machine(self):
         spec=network_spec.specs(document('custom-package-v1'))[0]

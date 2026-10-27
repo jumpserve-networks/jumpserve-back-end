@@ -75,6 +75,10 @@ with urllib.request.urlopen(req,timeout=30) as response:response.read(4096)
 '''
     encoded=base64.b64encode(canonical(settings)).decode()
     script='#!/bin/bash\nset -euo pipefail\ntrap "/sbin/shutdown -h now" EXIT\n'
+    # cloud-init must fetch user-data via IMDS before this script can run.
+    # Keep no instance IAM profile, require IMDSv2 at launch, then block the
+    # metadata route before any downloaded/generated program is executed.
+    script+='ip route replace blackhole 169.254.169.254/32\n'
     seconds=max(1,int(settings['deadline']-time.time()))
     script+=f'systemd-run --unit jumpserve-deadline --on-active={seconds}s /sbin/shutdown -h now\n'
     script+="install -d -m 700 /var/lib/jumpserve-experiment\npython3 - '"+driver+"' <<'JUMPSERVE_DRIVER'\nimport base64,json,pathlib,sys,zlib\nfor name,source in json.loads(zlib.decompress(base64.b64decode(sys.argv[1]))).items():\n pathlib.Path('/opt/jumpserve-'+name.replace('_','-') if name=='package_runtime.py' else '/var/lib/jumpserve-experiment/'+name).write_text(source)\nJUMPSERVE_DRIVER\n"
@@ -103,7 +107,7 @@ def handler(event,context=None):
         private_inputs={name:dict(url=sign_artifact(n['study_id'],item['artifact_id'],int(n['spec']['limits']['wall_seconds'])+300),sha256=item['sha256']) for name,item in n['spec']['config'].get('private_inputs',{}).items()}
         ec2.run_instances(ImageId=os.environ['NETWORK_PACKAGE_AMI'],InstanceType='t3.medium',MinCount=1,MaxCount=1,ClientToken=job,
             CreditSpecification={'CpuCredits':'standard'},BlockDeviceMappings=[{'DeviceName':'/dev/sda1','Ebs':{'VolumeSize':8,'VolumeType':'gp3','DeleteOnTermination':True}}],
-            InstanceInitiatedShutdownBehavior='terminate',MetadataOptions={'HttpTokens':'required','HttpEndpoint':'disabled'},
+            InstanceInitiatedShutdownBehavior='terminate',MetadataOptions={'HttpTokens':'required','HttpEndpoint':'enabled','HttpPutResponseHopLimit':1,'HttpProtocolIpv6':'disabled'},
             SubnetId=os.environ['NETWORK_PACKAGE_SUBNET'],SecurityGroupIds=[os.environ['NETWORK_PACKAGE_SECURITY_GROUP']],
             UserData=user_data(n,spec_url,source_url,token,private_inputs),
             TagSpecifications=[{'ResourceType':'instance','Tags':[{'Key':'Project','Value':'JumpServeNetworkPackage'},{'Key':'NetworkExecutionId','Value':job}]}])
