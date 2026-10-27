@@ -3,7 +3,7 @@
 No arbitrary command arguments, credentials, provider calls or AWS resources.
 Original requests, outputs and failed reports remain under .test-artifacts.
 """
-import datetime as dt,io,json,os,sys,uuid,zipfile
+import datetime as dt,io,json,os,subprocess,sys,uuid,zipfile
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -26,6 +26,19 @@ def sse(index,name=None,arguments=None):
     events.append(dict(type='response.completed',response=dict(id=rid,status='completed',model=runtime.MODEL,output=[item],usage=dict(input_tokens=100,output_tokens=20,total_tokens=120))))
     return b''.join(b'data: '+canonical(e)+b'\n\n' for e in events)
 def main():
+    # Use a Linux Docker volume, not macOS bind-mount permission emulation.
+    # Native root file tools create 0600 files that a nonroot worker must retain.
+    volume='js-builder-permissions-'+uuid.uuid4().hex
+    subprocess.run(['docker','volume','create',volume],capture_output=True,check=True)
+    mount=['--mount','type=volume,src='+volume+',dst=/workspace']
+    try:
+        subprocess.run(['docker','run','--rm','--network','none',*mount,IMAGE,'python3','-I','-c',"from pathlib import Path;p=Path('/workspace/private.py');p.write_bytes(b'original bytes');p.chmod(0o600)"],capture_output=True,check=True)
+        denied=subprocess.run(['docker','run','--rm','--network','none','--user','65534:65534',*mount,IMAGE,'python3','-I','-c',"open('/workspace/private.py','rb').read()"],capture_output=True)
+        assert denied.returncode!=0 and b'PermissionError' in denied.stderr
+        fixed=subprocess.run(['docker','run','--rm','--network','none',*mount,IMAGE,'python3','-I','-c',builder.NORMALIZE_WORKSPACE,'65534','65534'],capture_output=True,check=True)
+        assert json.loads(fixed.stdout)['bytes_unchanged'] is True
+        restored=subprocess.run(['docker','run','--rm','--network','none','--user','65534:65534',*mount,IMAGE,'python3','-I','-c',"assert open('/workspace/private.py','rb').read()==b'original bytes'"],capture_output=True,check=True)
+    finally:subprocess.run(['docker','volume','rm',volume],capture_output=True,check=True)
     directory=ROOT/'.test-artifacts/experiment-builder'/dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ');directory.mkdir(parents=True)
     job=dict(id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),actor_id=str(uuid.uuid4()),task_id=str(uuid.uuid4()),lease_token=str(uuid.uuid4()))
     artifacts={};by_id={};calls=[];events=[];requests=[];offset=0

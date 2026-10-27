@@ -32,6 +32,39 @@ PROVIDER_WINDOW_SECONDS = 65
 MAX_REQUEST = 256000
 TOOLS = ['read', 'write', 'edit', 'exec', 'process']
 ACTION_POLICY_PATH=Path(__file__).parent/'policies/experiment-action-policy-v1.json'
+NORMALIZE_WORKSPACE = '''import hashlib,json,os,stat,sys
+root='/workspace';uid=int(sys.argv[1]);gid=int(sys.argv[2]);records=[];total=0
+for directory,dirs,files in os.walk(root,followlinks=False):
+ for name in sorted(dirs+files):
+  path=os.path.join(directory,name);info=os.lstat(path)
+  if not (stat.S_ISREG(info.st_mode) or stat.S_ISDIR(info.st_mode)):raise ValueError('Unsupported workspace file type; original workspace retained')
+  if stat.S_ISREG(info.st_mode):
+   total+=info.st_size
+   if info.st_size>1000000 or total>4000000 or len(records)>=128:raise ValueError('Workspace checkpoint bound exceeded')
+   with open(path,'rb') as f:before=hashlib.sha256(f.read()).hexdigest()
+   records.append(dict(path=os.path.relpath(path,root),sha256=before,bytes=info.st_size,original_uid=info.st_uid,original_gid=info.st_gid,original_mode=stat.S_IMODE(info.st_mode)))
+  os.chown(path,uid,gid,follow_symlinks=False)
+  os.chmod(path,0o700 if stat.S_ISDIR(info.st_mode) or info.st_mode&0o111 else 0o600,follow_symlinks=False)
+  if stat.S_ISREG(info.st_mode):
+   with open(path,'rb') as f:assert hashlib.sha256(f.read()).hexdigest()==before
+print(json.dumps(dict(version='builder-workspace-metadata-v1',uid=uid,gid=gid,files=records,bytes_unchanged=True)))
+'''
+
+def normalize_workspace(workspace,image):
+    """Normalize root-created metadata inside a fixed, networkless container.
+
+    No generated code executes and no host path other than this workspace is
+    mounted. The stopped agent cannot race traversal; symlinks are rejected.
+    """
+    workspace=Path(workspace)
+    if workspace.is_symlink() or not workspace.is_absolute() or ',' in str(workspace):raise ValueError('Unsafe workspace mount.')
+    if not re.fullmatch(r'(?:[a-zA-Z0-9][a-zA-Z0-9./:_-]*@)?sha256:[a-f0-9]{64}',image):raise ValueError('Pinned normalization image required.')
+    command=['docker','run','--rm','--network','none','--read-only','--pids-limit','32','--memory','128m','--cpus','0.25','--cap-drop','ALL','--cap-add','CHOWN','--cap-add','FOWNER','--cap-add','DAC_OVERRIDE','--security-opt','no-new-privileges','--user','0:0',
+        '--mount','type=bind,src='+str(workspace)+',dst=/workspace',image,'timeout','15s','python3','-I','-c',NORMALIZE_WORKSPACE,str(os.getuid()),str(os.getgid())]
+    completed=subprocess.run(command,capture_output=True,check=True,timeout=20)
+    receipt=json.loads(completed.stdout)
+    if receipt.get('bytes_unchanged') is not True:raise ValueError('Workspace normalization lacks byte verification.')
+    return completed.stdout
 
 def action_policy():
     """Server-owned standing authority; source material cannot grant permissions."""
@@ -356,6 +389,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         if failures or in_flight: raise ValueError('Native provider outcome failed or needs reconciliation; retained calls cannot be replayed.')
         if not cleanup or cli.returncode not in (0, 2) and not result.get('slice_exhausted') and not result.get('admission_denied'): raise ValueError('Native worker failed before confirmed tool cleanup.')
         containers('stop')
+        (directory/'workspace-normalization.json').write_bytes(normalize_workspace(workspace,os.environ.get('OPENCLAW_BUILDER_IMAGE','')))
         (workspace/'native-tool-history.json').write_bytes(canonical(history))
         saved = retain(job, 'checkpoint.zip', checkpoint(workspace), 'builder-workspace-checkpoint')
         result.update(checkpoint=saved, build_state='checkpoint', status='complete')
@@ -379,7 +413,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
             except (ValueError,KeyError,TypeError) as error:output=decision();result.update(feedback=str(error),build_state='checkpoint')
         answer = dict(stopReason='tool_use', output=dict(message=dict(role='assistant', content=[dict(toolUse=dict(name='submit_assessment_step', input=output))])), usage={})
     except Exception as error:
-        result.update(status=failures[-1] if failures else 'unknown', feedback=str(error))
+        result.update(status=failures[-1] if failures else 'failed' if cleanup and not in_flight else 'unknown', feedback=str(error))
         result.setdefault('error_code','builder-'+type(error).__name__)
     finally:
         server.shutdown(); server.server_close(); thread.join(timeout=2)
@@ -393,6 +427,8 @@ def _execute(logical,directory,job,token_source,transport,task_root):
             result.update(container_cleanup='unknown', status='unknown'); answer = None
         if not result.get('checkpoint') and workspace.exists():
             try:
+                if not (directory/'workspace-normalization.json').exists():
+                    (directory/'workspace-normalization.json').write_bytes(normalize_workspace(workspace,os.environ.get('OPENCLAW_BUILDER_IMAGE','')))
                 (workspace/'native-tool-history.json').write_bytes(canonical(history))
                 result['checkpoint']=retain(job,'failed-checkpoint.zip',checkpoint(workspace),'builder-failed-workspace-checkpoint')
             except Exception as error:result['checkpoint_failure']=type(error).__name__
