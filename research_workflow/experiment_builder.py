@@ -27,7 +27,8 @@ from workflow import canonical, digest
 VERSION = 'experiment-builder-v1'
 MODULE = 'research-experiment-builder'
 PROMPT_VERSION = 'research-experiment-builder-v1'
-SLICE_SECONDS = 60
+SLICE_SECONDS = 90
+PROVIDER_WINDOW_SECONDS = 65
 MAX_REQUEST = 256000
 TOOLS = ['read', 'write', 'edit', 'exec', 'process']
 ACTION_POLICY_PATH=Path(__file__).parent/'policies/experiment-action-policy-v1.json'
@@ -239,7 +240,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         '\nWork in /workspace. Install dependencies in /tmp or /opt; keep only bounded source and evidence files in /workspace. A previous checkpoint may be present. Read its actual files before continuing. Write candidate.json only after running checks. If required external data, equipment, authorization or scientific design is unavailable, write blocker.json with exactly {blockers:[{kind,detail,required_input}]}, using the supplied issue codes; this pauses the claim without a scientific verdict. Otherwise keep working files to continue the next slot. Do not run the main research campaign here.')
     bridge_token = secrets.token_hex(32); lock = threading.Lock(); failures = []; in_flight = set(); responses = {};call_usages=[]
     began = time.monotonic()
-    transport=transport or (lambda method,url,token,body:runtime.http_request(method,url,token,body,timeout_seconds=max(1,min(40,int(SLICE_SECONDS-(time.monotonic()-began)-5)))))
+    transport=transport or (lambda method,url,token,body:runtime.http_request(method,url,token,body,timeout_seconds=PROVIDER_WINDOW_SECONDS))
     prefix='js-build-'+task_id.replace('-','')+'-'
     def containers(action):return container_action(task_id,action)
     def inference(received):
@@ -252,7 +253,9 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         # Preserve every input/reasoning/call-id item without converting to chat.
         request.update(store=False, stream=True, model=runtime.MODEL)
         body = canonical(request); key = digest(body)
-        if time.monotonic()-began>SLICE_SECONDS-15:
+        # Leave a complete provider window before admitting another charged
+        # request. A worker slot boundary must not knowingly cut inference short.
+        if time.monotonic()-began>SLICE_SECONDS-PROVIDER_WINDOW_SECONDS:
             result['slice_exhausted']=True
             raise ValueError('Worker slot ended before another provider request; no call was admitted or sent.')
         with lock:

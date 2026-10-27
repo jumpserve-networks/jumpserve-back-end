@@ -56,7 +56,7 @@ def read_terminal_stream(response, sink, deadline, maximum):
             raise StreamFailure('provider-wall-limit', observed_usage=observed_usage)
         connection = getattr(getattr(getattr(response, 'fp', None), 'raw', None), '_sock', None)
         if connection is not None:
-            connection.settimeout(min(30, remaining))
+            connection.settimeout(min(65, remaining))
         chunk = response.read1(min(4096, maximum - size + 1))
         if not chunk:
             break
