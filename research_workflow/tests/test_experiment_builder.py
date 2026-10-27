@@ -12,6 +12,21 @@ def project(root):
     for name,raw in {'experiment.py':b'print(1)\n','requirements.lock':b'','system-packages.lock.json':b'[]','build-evidence.json':b'{"commands":[],"checks":[],"limitations":[]}'}.items():(root/name).write_bytes(raw)
 
 class Packages(unittest.TestCase):
+    def test_slot_continuation_keeps_native_calls_and_results_without_repeating_history(self):
+        call=dict(type='function_call',call_id='call-1',name='exec',arguments='{"command":"python3 --version"}')
+        output=dict(type='function_call_output',call_id='call-1',output='Python 3.10.12')
+        original=[call]
+        resumed=builder.merge_tool_history(original,[dict(role='user',content='A fresh native session.'),call,output])
+        self.assertEqual(original,[call]);self.assertEqual(resumed,[call,output])
+        self.assertEqual(builder.merge_tool_history(resumed,[call,output]),resumed)
+    def test_continuation_rejects_changed_tool_results_without_overwriting_original(self):
+        original=[dict(type='function_call_output',call_id='call-1',output='connection refused')]
+        with self.assertRaises(ValueError):builder.merge_tool_history(original,[dict(original[0],output='success')])
+        self.assertEqual(original[0]['output'],'connection refused')
+    def test_continuation_bound_does_not_silently_drop_earlier_evidence(self):
+        original=[dict(type='function_call_output',call_id='call-1',output='x'*999900)]
+        with self.assertRaises(ValueError):builder.merge_tool_history(original,[dict(type='function_call_output',call_id='call-2',output='y'*200)])
+        self.assertEqual(len(original),1)
     def test_standing_authority_is_hash_bound_and_does_not_claim_unavailable_capabilities(self):
         policy=builder.action_policy()
         self.assertEqual(policy['sha256'],autonomy.digest(builder.ACTION_POLICY_PATH.read_bytes()))
