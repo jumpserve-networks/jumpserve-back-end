@@ -6,6 +6,7 @@ from workflow import canonical,digest
 VERSION='openclaw-production-v1'
 MODEL='gpt-6.1-sol'
 WAIT_SECONDS=125
+BUILDER_WAIT_SECONDS=260
 
 class DispatchError(ValueError):
  def __init__(self,result):
@@ -23,7 +24,7 @@ def invoke(task,turn_id,request):
  raw=canonical(request).decode()
  admitted=rpc('enqueue',dict(id=turn_id,study_id=task['study_id'],task_id=task['id'],request_raw=raw,request_sha256=digest(raw.encode()),runtime=VERSION))
  if admitted.get('replayed'):raise ValueError('Retained model dispatch must be reconciled, never replayed.')
- until=time.monotonic()+WAIT_SECONDS
+ until=time.monotonic()+(BUILDER_WAIT_SECONDS if task.get('stage')=='building' else WAIT_SECONDS)
  while time.monotonic()<until:
   result=rpc('result',dict(id=turn_id,study_id=task['study_id']))
   if result['status']=='complete':
