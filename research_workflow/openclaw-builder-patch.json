@@ -1,0 +1,10 @@
+{
+  "version": "openclaw-builder-container-sudo-v1",
+  "upstream_version": "2026.10.5",
+  "path": "dist/docker-B04g0Plp.mjs",
+  "original_sha256": "95fb7bfab09a44b401a37ec11cec5c65a5716a59d0e5aa944dd54c6207c1a3d0",
+  "corrected_sha256": "a244471e9b4cbc3e3d99cb62504b8547a1d2c5c337d5e161212d9e7feabe4625",
+  "before": "\targs.push(\"--security-opt\", \"no-new-privileges\");",
+  "after": "\targs.push(\"--security-opt\", process.env.JUMPSERVE_LAB_SANDBOX_SUDO === \"1\" ? \"no-new-privileges=false\" : \"no-new-privileges\");",
+  "rationale": "Pinned upstream unconditionally sets no-new-privileges and blocks container-only sudo. A separate builder-only package copy permits sudo only with the trusted CLI environment JUMPSERVE_LAB_SANDBOX_SUDO=1. Container user matches worker UID:GID so 0600 file-tool readback succeeds. Original package bytes remain unchanged; default behavior retains no-new-privileges. No host execution or credentials added."
+}

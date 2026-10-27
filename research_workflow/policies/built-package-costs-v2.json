@@ -1,0 +1,30 @@
+{
+  "version": "built-package-costs-v2",
+  "currency": "USD",
+  "kind": "conservative-reservation",
+  "maximum_cents": 1000,
+  "valid_until": "2026-11-26T00:00:00Z",
+  "instance_type": "t3.medium",
+  "max_instances": 1,
+  "max_wall_seconds": 1800,
+  "root_volume_gib": 8,
+  "cpu_credits": "standard",
+  "max_network_bytes": 10000000000,
+  "max_output_bytes": 3000000,
+  "basis": "Ten-dollar reservation for one disposable 30-minute host, 8-GiB root and at most 10 decimal GB sampled guest traffic; original paper overhead is separate. Exact immutable executor, server wrapper and runtime policy must match.",
+  "enforcement": "Independent deadline reaper and host watchdog; 50-ms sampled guest output/traffic guard can overshoot. Generated Python runs on a credential-free disposable VM. This lab policy is not adversarial metering or a guaranteed AWS invoice cap.",
+  "sources": [
+    "https://aws.amazon.com/ec2/pricing/on-demand/",
+    "https://aws.amazon.com/ebs/pricing/"
+  ],
+  "measured_charges_usd": null,
+  "hard_resource_bounds_verified": false,
+  "approved_for_lab_execution": true,
+  "limitation": "Deployment is disabled by default. Validate runtime configuration, deadline cleanup, egress behavior and this conservative policy before enabling the lab builder. Physical equipment, large data and arbitrary paid services are not covered.",
+  "approval_scope": "Trusted Columbia lab fixed disposable executor; production activation remains separately gated.",
+  "approval_review_sha256": "4931318f436736e890eb53d51b0e8818a9742c5bf7177b9388d5a6a67600ed28",
+  "approved_by": "Primary Codex AI implementer under user-authorized lab scope; nonindependent, not human review",
+  "illustrative_allowance_usd": "1.847552380952380952380952381",
+  "price_manifest_sha256": "b0edb37e67dfb87065389cf2556e1019ff72db7e581ce79914a0ec3723c17a6a",
+  "wrapper_sha256": "4f02af4ece4023bd0534dc7e616754bb5c1498dccdfbb6312bb240d82e9385aa"
+}

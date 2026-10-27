@@ -1,5 +1,5 @@
 """Builder development cases; no credentials, provider calls or cloud changes."""
-import io,json,sys,tempfile,unittest,uuid,zipfile
+import io,json,os,sys,tempfile,unittest,uuid,zipfile
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -55,7 +55,17 @@ class Packages(unittest.TestCase):
             builder.execute(logical,Path(tmp)/'slice',job,token_source=token,transport=transport)
         token.assert_not_called();transport.assert_not_called()
     def test_unvalidated_cloud_policy_cannot_admit_a_generated_experiment(self):
-        with self.assertRaisesRegex(ValueError,'awaits operational validation'):autonomy_costs.builtin_quote(b'{"runner":"built-package-v1"}')
+        with patch.object(autonomy_costs,'BUILT_POLICY_PATH',Path(autonomy_costs.__file__).parent/'policies/built-package-costs-v1.json'):
+            with self.assertRaisesRegex(ValueError,'awaits operational validation'):autonomy_costs.builtin_quote(b'{"runner":"built-package-v1"}')
+    def test_lab_policy_quote_requires_exact_executor_policy_and_resource_envelope(self):
+        policy=json.loads(autonomy_costs.BUILT_POLICY_PATH.read_bytes());spec=dict(runner='built-package-v1',config=dict(package=dict(sha256=policy['wrapper_sha256'])),limits=dict(max_instances=1,wall_seconds=1800,max_network_bytes=10000000000,max_output_bytes=3000000))
+        env=dict(NETWORK_BUILT_PACKAGE_FUNCTION='arn:aws:lambda:us-east-1:395567831870:function:FixedLabExecutor:1',NETWORK_BUILT_PACKAGE_POLICY_SHA256=autonomy.digest(autonomy.canonical(policy)))
+        with patch.dict(os.environ,env):
+            quote=autonomy_costs.builtin_quote(autonomy.canonical(spec));self.assertEqual(quote['cents'],1000);self.assertIsNone(quote['quote']['measured_charges_usd']);self.assertFalse(quote['quote']['hard_resource_bounds_verified'])
+            spec['limits']['max_instances']=2
+            with self.assertRaisesRegex(ValueError,'exceeds'):autonomy_costs.builtin_quote(autonomy.canonical(spec))
+        with patch.dict(os.environ,dict(env,NETWORK_BUILT_PACKAGE_POLICY_SHA256='0'*64)):
+            with self.assertRaisesRegex(ValueError,'matching server-owned'):autonomy_costs.builtin_quote(autonomy.canonical(spec))
     def test_frozen_project_is_deterministic_and_requires_actual_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)/'project';project(root);first=package.freeze(root)
@@ -78,7 +88,14 @@ class Packages(unittest.TestCase):
         self.assertEqual(config['models']['providers']['lab']['api'],'openai-responses')
         self.assertEqual(config['tools']['allow'],builder.TOOLS);self.assertEqual(config['tools']['exec']['host'],'sandbox');self.assertFalse(config['tools']['elevated']['enabled'])
         self.assertEqual(config['agents']['defaults']['sandbox']['workspaceAccess'],'rw');self.assertEqual(config['agents']['defaults']['model']['fallbacks'],[])
+        self.assertEqual(config['agents']['defaults']['sandbox']['docker']['user'],str(os.getuid())+':'+str(os.getgid()))
         with self.assertRaises(ValueError):builder.config(Path('/tmp/a'),Path('/tmp/b'),'url','token','ubuntu:latest','x')
+    def test_clean_executor_contract_identifies_file_paths_and_original_wrapper(self):
+        contract=builder.execution_contract()
+        self.assertEqual(contract['wrapper_sha256'],autonomy.digest(Path(package.__file__).read_bytes()))
+        self.assertIn('NOT inline JSON',contract['environment']['JUMPSERVE_SPEC'])
+        self.assertIn("Path(os.environ['JUMPSERVE_SPEC']).read_text",contract['spec_loader'])
+        self.assertIn('sudo -n',contract['workspace_user'])
     def test_only_implementation_blockers_enter_builder(self):
         task={'stage':'planning'}
         with patch.dict('os.environ',RESEARCH_BUILDER_ENABLED='true'):

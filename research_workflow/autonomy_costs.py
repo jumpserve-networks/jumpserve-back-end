@@ -5,20 +5,24 @@ import os
 from pathlib import Path
 import re
 import bounded_network
+import generated_package
 from workflow import canonical, digest
 
 POLICY_PATH = Path(__file__).parent / 'policies/autonomy-experiment-costs-v2.json'
+BUILT_POLICY_PATH = Path(__file__).parent / 'policies/built-package-costs-v2.json'
 
 def builtin_quote(raw,today=None):
     spec=json.loads(raw)
     if spec.get('runner')=='source-arithmetic-v1':
         return dict(cents=1,quote=dict(version='source-arithmetic-reservation-v1',kind='conservative-reservation',spec_sha256=digest(raw),experiment_instances=0,measured_charges_usd=None))
     if spec.get('runner')=='built-package-v1':
-        policy=json.loads((Path(__file__).parent/'policies/built-package-costs-v1.json').read_bytes())
+        policy=json.loads(BUILT_POLICY_PATH.read_bytes())
         if policy.get('approved_for_lab_execution') is not True:raise ValueError('Built package cost envelope awaits operational validation and explicit server-side lab approval; no cloud experiment admitted.')
         today=today or dt.datetime.now(dt.timezone.utc)
         if today>=dt.datetime.fromisoformat(policy['valid_until'].replace('Z','+00:00')): raise ValueError('Built package cost envelope expired.')
         if not re.fullmatch(r'arn:aws:lambda:us-east-1:395567831870:function:[A-Za-z0-9_-]+:[1-9][0-9]*',os.environ.get('NETWORK_BUILT_PACKAGE_FUNCTION','')) or os.environ.get('NETWORK_BUILT_PACKAGE_POLICY_SHA256')!=digest(canonical(policy)): raise ValueError('Built packages need an immutable executor and matching server-owned cost policy.')
+        if policy.get('wrapper_sha256')!=digest(Path(generated_package.__file__).read_bytes()) or spec.get('config',{}).get('package',{}).get('sha256')!=policy['wrapper_sha256']:
+            raise ValueError('Built package wrapper differs from the reviewed cost envelope.')
         limits=spec['limits']
         if limits['max_instances']!=1 or limits['wall_seconds']>policy['max_wall_seconds'] or limits['max_network_bytes']>policy['max_network_bytes'] or limits['max_output_bytes']>policy['max_output_bytes']: raise ValueError('Built package exceeds its reserved resource envelope.')
         return dict(cents=policy['maximum_cents'],quote=dict(policy,spec_sha256=digest(raw),function_version=os.environ['NETWORK_BUILT_PACKAGE_FUNCTION'],policy_sha256=digest(canonical(policy))))

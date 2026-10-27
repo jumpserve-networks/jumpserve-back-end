@@ -158,6 +158,25 @@ class PackageRuntime(unittest.TestCase):
             # concurrently; the sleeping process still hits a real deadline.
             result=package_runtime.run(root,time.time()+1,allow_container=False)
             self.assertEqual(result['termination_reason'],'Wall deadline exceeded.');self.assertIsNotNone(result['exit_code']);self.assertTrue((root/'runtime-receipt.json').is_file());self.assertIn(b'started',(root/'stdout.bin').read_bytes())
+    def test_output_guard_stops_actual_writer_and_preserves_sampled_overshoot(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);source=b'import os,time\nwhile True:\n os.write(1,b"x"*1024)\n time.sleep(.005)\n'
+            spec=network_spec.specs(document('custom-package-v1'))[0];spec['config']['package']['sha256']=workflow.digest(source);spec['limits']['max_output_bytes']=8192
+            (root/'spec.json').write_bytes(workflow.canonical(spec));(root/'package.py').write_bytes(source)
+            result=package_runtime.run(root,time.time()+5,allow_container=False)
+            self.assertEqual(result['termination_reason'],'Output byte budget exceeded.')
+            self.assertIsNotNone(result['exit_code']);self.assertGreater((root/'stdout.bin').stat().st_size,0)
+            self.assertIn('overshoot',result['enforcement_scope'])
+    def test_network_guard_with_controlled_counter_is_algorithm_check_not_billed_traffic(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);source=b'import time\nprint("waiting",flush=True)\ntime.sleep(5)\n'
+            spec=network_spec.specs(document('custom-package-v1'))[0];spec['config']['package']['sha256']=workflow.digest(source);spec['limits']['max_network_bytes']=100
+            (root/'spec.json').write_bytes(workflow.canonical(spec));(root/'package.py').write_bytes(source)
+            with patch.object(package_runtime,'network_bytes',side_effect=[10,150,150]):
+                result=package_runtime.run(root,time.time()+5,allow_container=False)
+            self.assertEqual(result['termination_reason'],'Network byte budget exceeded.')
+            self.assertEqual(result['network_bytes'],140)
+            self.assertIn('not billed traffic',result['network_counter_scope'])
     def test_corrupt_source_is_rejected_before_running(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);spec=network_spec.specs(document('custom-package-v1'))[0]
