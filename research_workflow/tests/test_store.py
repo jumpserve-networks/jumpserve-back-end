@@ -24,6 +24,15 @@ class StorageIntegrity(unittest.TestCase):
         with self.assertRaises(ValueError):store.rows('study_owners',public=True)
         # Artifacts have an operator-only allowlist, never a snapshot/export kind.
         self.assertNotIn('artifacts',PUBLIC_KINDS)
+        for kind in ('profiles','audit_events'):
+            with self.assertRaises(ValueError):store.rows(kind,public=True)
+
+    def test_profile_names_use_the_private_profiles_table_and_minimal_columns(self):
+        with patch.object(store,'request',return_value=[]) as request:
+            store.rows('profiles',dict(id='in.(11111111-1111-4111-8111-111111111111)',limit=2))
+        path=request.call_args.args[0]
+        self.assertTrue(path.startswith('/rest/v1/profiles?'));self.assertIn('first_name',path);self.assertIn('last_name',path)
+        self.assertNotIn('email',path);self.assertNotIn('timezone',path);self.assertNotIn('created_at',path);self.assertFalse(request.call_args.kwargs['public'])
     def test_concurrent_original_upload_rechecks_bytes_after_conflict(self):
         with patch.object(store,'request',side_effect=[store.StoreError('HTTP 404'),store.StoreError('HTTP 409'),b'abc']),patch.object(store,'rows',return_value=[]):
             row=store.artifact(str(uuid.uuid4()),str(uuid.uuid4()),b'abc',str(uuid.uuid4()),'text/plain',{})

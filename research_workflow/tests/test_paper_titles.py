@@ -43,6 +43,22 @@ class PaperTitles(unittest.TestCase):
         self.assertEqual(result['page'], 1); self.assertEqual(result['version'], paper_titles.VERSION)
         self.assertEqual(value, before)
 
+    def test_tcp88_revised_title_and_dagger_byline_keep_source_text_unchanged(self):
+        # Exact first-page heading layout from Princeton TCP88.pdf, Nov. 1988.
+        front = 'Congestion Avoidance and Control∗\nVan Jacobson†\nLawrence Berkeley Laboratory\nMichael J. Karels‡\nUniversity of California at Berkeley\nNovember, 1988\nIntroduction\n'
+        value = dict(document_metadata=dict(title='congsum.dvi'), pages=[dict(page=1, text=front)])
+        before = copy.deepcopy(value)
+        result = paper_titles.extract_title(value)
+        self.assertEqual(result['title'], 'Congestion Avoidance and Control')
+        self.assertEqual(result['page'], 1)
+        self.assertEqual(value, before)
+        authors = paper_titles.extract_authors(value)
+        self.assertEqual(authors['names'], ['Van Jacobson', 'Michael J. Karels'])
+        self.assertEqual(authors['page'], 1)
+        # A marker alone is not a byline/affiliation boundary.
+        value['pages'][0]['text'] = 'Congestion Avoidance and Control∗\nIntroduction\nNo identifiable author'
+        self.assertIsNone(paper_titles.extract_title(value))
+
     def test_metadata_is_corroborated_and_boilerplate_or_body_only_metadata_is_rejected(self):
         value = dict(document_metadata=dict(title='A Reliable Network Study'),
             pages=[dict(page=1, text='A Reliable\nNetwork Study\nAn unusual multi-author byline\nAbstract\nBody')])
@@ -127,5 +143,30 @@ class PaperTitles(unittest.TestCase):
             self.assertEqual(result['original_sha256'], digest(b'%PDF-test-double'))
             self.assertEqual(result['document_metadata']['title'], TITLE if metadata else None)
             self.assertEqual(result['review_status'], 'retrieved-unreviewed')
+
+    def test_retained_author_names_preserve_source_order_and_share_the_verified_title_read(self):
+        raw = canonical(packet())
+        with patch.object(store, 'rows', return_value=[artifact(raw)]), patch.object(store, 'artifact_bytes', return_value=raw) as read:
+            self.assertEqual(paper_titles.display_authors(uploaded_study()), ['Cyrus Illick', 'Michael Roger'])
+            self.assertEqual(paper_titles.display_title(uploaded_study()), TITLE)
+            read.assert_called_once()
+
+    def test_author_metadata_needs_source_corroboration_and_affiliations_are_not_names(self):
+        value = packet(); value['document_metadata'] = dict(title=TITLE, author='Unrelated Document Creator')
+        self.assertEqual(paper_titles.extract_authors(value)['names'], ['Cyrus Illick', 'Michael Roger'])
+        self.assertEqual(paper_titles.byline_names('María José de la Cruz; Anne O’Connor'), ['María José de la Cruz', 'Anne O’Connor'])
+        for line in ('Columbia University', 'Department of Computer Science', 'mail@example.edu', 'Introduction', 'line\nbreak'):
+            self.assertIsNone(paper_titles.byline_names(line))
+        self.assertIsNone(paper_titles.extract_authors(dict(pages=[dict(page=1,text='Scanned image without a byline')],document_metadata=dict(author='Private Account Owner'))))
+
+    def test_pdf_author_metadata_is_retained_privately_and_invalid_source_hashes_do_not_supply_authors(self):
+        page = SimpleNamespace(extract_text=lambda: FRONT)
+        reader = SimpleNamespace(is_encrypted=False, pages=[page], metadata=SimpleNamespace(title=TITLE, author='Cyrus Illick; Michael Roger'))
+        with patch.dict(sys.modules,pypdf=SimpleNamespace(PdfReader=lambda _: reader,__version__='explicit-test-double')):
+            result=intake._extract(b'%PDF-fixture')
+        self.assertEqual(result['document_metadata']['author'],'Cyrus Illick; Michael Roger')
+        raw=canonical(packet())
+        with patch.object(store,'rows',return_value=[dict(artifact(raw),sha256='0'*64)]),patch.object(store,'artifact_bytes',return_value=raw):
+            self.assertIsNone(paper_titles.display_authors(uploaded_study()))
 
 if __name__ == '__main__': unittest.main()

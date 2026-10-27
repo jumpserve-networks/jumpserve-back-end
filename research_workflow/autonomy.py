@@ -16,6 +16,7 @@ import autonomy_inputs as inputs
 import network_spec
 import preparation
 import paper_selection
+import paper_titles
 import scheduler
 import store
 from workflow import canonical,digest,identifier,now,paper_details,protocol_record,validate_protocol
@@ -86,7 +87,23 @@ def history(study,task_id,before=None):
   if not str(before).isascii() or not str(before).isdigit() or not 1<=int(before)<=task['attempts']+1:raise ValueError('Turn cursor must be a retained attempt number.')
   params['number']='lt.'+str(int(before))
  turns=rows('autonomy_turns',study,**params)
- return dict(version=VERSION,study_id=study,task_id=task['id'],turns=turns,next_before=min((r['number'] for r in turns),default=None) if len(turns)==10 else None,coverage=dict(returned=len(turns),total=task['attempts']),access='owner-private')
+ calls=rows('builder_calls',study,**params) if os.environ.get('RESEARCH_BUILDER_ENABLED')=='true' or task['stage']=='building' or task.get('context',{}).get('builder_checkpoint') else []
+ numbers=sorted({r['number'] for r in turns+calls},reverse=True)[:10];cutoff=min(numbers,default=0)
+ more=len(turns)==10 or len(calls)==10
+ turns=[r for r in turns if r['number']>=cutoff];calls=[r for r in calls if r['number']>=cutoff]
+ return dict(version=VERSION,study_id=study,task_id=task['id'],turns=turns,builder_calls=calls,next_before=cutoff if more and cutoff else None,coverage=dict(returned=len(turns),builder_calls_returned=len(calls),total=task['attempts']),access='owner-private')
+
+def builder_evidence(study,task_id,call_id,kind,cursor):
+ task=one('autonomy_tasks',study,identifier(task_id));call=one('builder_calls',study,identifier(call_id))
+ if call['task_id']!=task['id'] or kind not in ('request','response'):raise ValueError('Native evidence is outside the selected claim or kind.')
+ artifact_id=call[kind+'_artifact_id'];sha=call[kind+'_sha256']
+ identity=dict(study_id=study,task_id=task_id,call_id=call_id,kind=kind)
+ if not artifact_id:return dict(identity,version='builder-evidence-v1',status='missing',fragment=None,next_cursor=None,original_sha256=None,reason='No original provider response was received or retained; missing is not zero.')
+ raw=store.artifact_bytes(study,artifact_id,maximum=1048577)
+ if digest(raw)!=sha:raise ValueError('Native evidence original-byte hash differs.')
+ if not str(cursor).isascii() or not str(cursor).isdigit():raise ValueError('Native evidence cursor is invalid.')
+ document=evidence.document_page(dict(text=raw.decode('utf-8',errors='replace'),kind=kind,original_sha256=sha,byte_count=len(raw)),int(cursor))
+ return dict(document,**identity,version='builder-evidence-v1',status='recorded',original_sha256=sha,reason='Character fragment of a derived JSON text view; original bytes and tool-call identities remain retained.')
 
 def advance(task,status,stage=None,context=None,reason=None,label=None,delay=0):
  context=context if context is not None else task['context']
@@ -146,7 +163,7 @@ def intake(task):
   claims=sources.candidates(study['id'],context['source_id'],chunks[index],output['claims']) if not context.get('prepared_id') else []
   if prompt_context.get('paper_metadata_requested'):
    metadata=sources.paper_metadata(packet,chunks[index],output['paper_metadata'])
-   store.rpc('research_paper_review',dict(p_operation='metadata',p_actor=task['actor_id'],p_study=study['id'],p_payload=dict(task_id=task['id'],token=task['lease_token'],title=metadata['title'],domain=metadata['domain'],metadata=dict(version='research-paper-review-v1',turn_id=answer['id'],source_id=context['source_id'],text_artifact_id=context['text_artifact_id'],suggestions=metadata['suggestions'],title_fallback=metadata['title_fallback'],reviewer=dict(type='AI',identity=model.MODEL,independence='Same extraction model; not independent or human review')))))
+   store.rpc('research_paper_review',dict(p_operation='metadata',p_actor=task['actor_id'],p_study=study['id'],p_payload=dict(task_id=task['id'],token=task['lease_token'],title=metadata['title'],domain=metadata['domain'],metadata=dict(version='research-paper-review-v1',turn_id=answer['id'],source_id=context['source_id'],text_artifact_id=context['text_artifact_id'],suggestions=metadata['suggestions'],title_fallback=metadata['title_fallback'],authors=paper_titles.extract_authors(packet),reviewer=dict(type='AI',identity=model.MODEL,independence='Same extraction model; not independent or human review')))))
    context['metadata_examined']=True
  except ValueError as error:
   return advance(task,'queued',context=dict(context,last_failure=str(error),last_turn_id=answer['id']),reason='Source grounding failed; the next prompt includes the exact rejected quote/page error.')
@@ -292,6 +309,25 @@ def inspect_evidence(task,request):
   result=evidence.page(records if extracted else [source],cursor,byte_budget=evidence.READ_BYTES-len(canonical(envelope))-64)
   result.update(envelope)
   if len(canonical(result))>evidence.READ_BYTES:raise ValueError('Source page and provenance exceed the bounded reader; no text was silently truncated.')
+ elif kind=='package':
+  import experiment_builder
+  if task['stage']=='planning':
+   record=one('builder_packages',study,record_id)
+   if record['source_id']!=claim['source_id']:raise ValueError('Catalog package belongs to another source.')
+   proposal=json.loads(store.artifact_bytes(study,record['candidate_artifact_id'],maximum=100000))
+   document=dict(candidate=proposal,project=experiment_builder.project_document(proposal,study),scope='Unreviewed source-specific implementation candidate; fresh claim-specific reviews are required.')
+  else:
+   document=experiment_builder.project_document(task['context'].get('proposal',{}),study)
+   if document is None or record_id!=document['archive']['artifact_id']:raise ValueError('Package is outside this exact candidate.')
+  result=evidence.document_page(document,cursor)
+ elif kind=='acquisition':
+  if task['stage']!='planning':raise ValueError('Shared acquisition discovery is planning-only; fresh reviews receive their own complete candidate.')
+  acquisition=one('shared_campaigns',study,record_id)
+  if acquisition['acquisition'].get('source_id')!=claim['source_id']:raise ValueError('Shared acquisition belongs to a different source.')
+  result=evidence.document_page(acquisition['acquisition'],cursor)
+ elif kind=='protocol' and task['context'].get('proposal'):
+  if record_id!=task['id']:raise ValueError('Prospective protocol reference is outside this exact candidate.')
+  result=evidence.document_page(task['context']['proposal']['protocol'],cursor)
  elif kind in ('checks','check','protocol'):
   allowed={j['id']:j for j in available}
   selected=task['context'].get('selected_check_id')
@@ -328,18 +364,46 @@ def build_context(task):
   source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
   prior_attempts=[{k:r.get(k) for k in ('number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
- if task['stage']=='planning':
+ if task['stage'] in ('planning','building','comprehension','critic'):
+  import experiment_builder
+  value['execution_authority']=experiment_builder.action_policy()
+ if task['stage']=='building':
+  for prior in value['prior_attempts']:
+   output=prior.pop('output',None)
+   prior['output_reference']=dict(sha256=digest(canonical(output)),scope='Original complete output remains in the numbered controller history. Working files and exact review feedback are supplied separately; this reference is not a completed review.')
+ if task['stage'] in ('planning','building'):
   value['runner_contracts']=inputs.runner_contracts();value['proposal_contract']=inputs.protocol_contract()
+  import shared_campaigns
+  value['shared_acquisitions']=shared_campaigns.available(task,lambda kind,**params:rows(kind,task['study_id'],**params))
+  value['shared_acquisition_coverage']=dict(catalog_window=8,total_retained=None,limitation='At most eight recent retained acquisitions are indexed. Full records remain retained; use supplied acquisition read references for omitted inline fields.')
+  value['acquisition_guidance']='Prefer one complete source-specified acquisition grid for overlapping claims. Reuse the exact physical test_config, execution, metrics, resources and actual input hashes from an applicable shared acquisition in your own full protocol. Acquisition configurations are normalized test_config objects, not complete protocol configuration records; choose labels explicitly. Retain this claim and its own comparison criterion. Reuse never establishes statistical independence. Source arithmetic is numerical consistency only.'
+  if task['stage']=='building':
+   value['builder_feedback']=context.get('builder_feedback') or context.get('blockers')
+   value['blocker_contract']=dict(kinds=list(model.BLOCKERS),details=list(model.DETAILS),capacity_required_input=model.LIMIT_INPUT)
+  import experiment_builder
+  if experiment_builder.enabled():value['available_built_packages']=experiment_builder.catalog(task['study_id'],claim['source_id'])
  elif task['stage'] in ('comprehension','critic') and context.get('proposal'):
   runner=context['proposal']['protocol'].get('execution',{}).get('runner')
   value['runner_contracts']={runner:inputs.runner_contracts()[runner]} if runner in network_spec.RUNNERS else {}
  if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
+ if context.get('runtime_retry'):value['runtime_retry']=context['runtime_retry']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
   eligible=[j for j in available if j['id'] not in context.get('tried_check_ids',[])]
   value['registered_checks']=[check_context(j,task['study_id'],selection=True) for j in eligible[:8]] if task['stage']=='planning' else []
   value['eligible_check_count']=len(eligible)
- if context.get('proposal') and task['stage'] in ('comprehension','critic'):value['candidate']=context['proposal']
+ if context.get('proposal') and task['stage'] in ('comprehension','critic'):
+  value['candidate']=copy.deepcopy(context['proposal'])
+  raw=canonical(context['proposal']['protocol'])
+  if len(raw)>16000:
+   value['candidate']['protocol']=dict(representation='retained-protocol-reference',byte_count=len(raw),sha256=digest(raw),required_read='Inspect every prospective protocol fragment before readiness.')
+   value['candidate']['protocol_reference']=dict(id=task['id'],document_sha256=digest(raw),view='Complete prospective protocol retained in this candidate context and its original numbered response.')
+ if context.get('proposal') and task['stage'] in ('comprehension','critic'):
+  import experiment_builder
+  document=experiment_builder.project_document(context['proposal'],task['study_id'])
+  if document is not None:
+   original=canonical(document)
+   value['candidate_package']=document if len(original)<=16000 else dict(representation='retained-package-reference',sha256=digest(original),byte_count=len(original),read_request=dict(kind='package',id=document['archive']['artifact_id'],cursor=0),required_read='Inspect every package fragment before readiness; code and locked dependencies are part of the method.')
  if context.get('selected_check_id') and task['stage'] in ('comprehension','critic'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id']);job=next(j for j in available if j['id']==context['selected_check_id'])
   selected=check_context(job,task['study_id']);value['candidate']=dict(registered_job_id=selected['id'],**{k:selected[k] for k in ('campaign','protocol','protocol_reference')},**({'retained_input_inventory':selected['retained_input_inventory']} if 'retained_input_inventory' in selected else {}))
@@ -352,7 +416,7 @@ def build_context(task):
   value['review_role']=task['stage']
  if task['stage'] not in ('comprehension','critic'):
   value['evidence_coverage']=coverage_manifest(task)
-  value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source'],page_byte_limit=evidence.READ_BYTES,
+  value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source','acquisition'],page_byte_limit=evidence.READ_BYTES,
    instructions='Use supplied check/protocol/run/source IDs only. Pages explicitly identify omitted records; calculations use the complete frozen data. Inspection consumes a model attempt.')
  if context.get('evidence_read'):value['evidence_read']=context['evidence_read']
  if task['stage']=='assessment':
@@ -364,13 +428,22 @@ def validate_proposal(task,proposal):
  if not isinstance(proposal,dict) or set(proposal)!={'protocol','experiment_type'}:raise ValueError('Networking proposals need protocol and experiment_type only; recorded values cannot be model supplied.')
  claim=one('claims',task['study_id'],task['claim_id']);p=proposal['protocol']
  if p.get('hypotheses')!=claim['description']:raise ValueError('The original claim cannot be changed or weakened.')
- if p.get('stage')!='pilot' or p.get('data_origin') not in ('simulation','new-empirical'):raise ValueError('New model proposals are scoped prospective pilots with explicit data origin.')
+ arithmetic=p.get('execution',{}).get('runner')=='source-arithmetic-v1'
+ if p.get('stage')!='pilot' or p.get('data_origin') not in (('archived-data',) if arithmetic else ('simulation','new-empirical')):raise ValueError('Source arithmetic uses archived-data; new networking pilots declare simulation or new-empirical.')
+ if arithmetic and (proposal['experiment_type']!='independent-check' or any(c['details']['test_config']['source_id']!=claim['source_id'] for c in p['configurations'])):raise ValueError('Arithmetic must be an independent check of this exact claim source.')
  if proposal['experiment_type'] not in ('new-measurement','independent-check','broader-validation'):raise ValueError('Choose an applicable networking method.')
  p=network_spec.bind_inputs(p)
  validate_protocol(p)
  if not network_spec.specs(p):raise ValueError('A registered executable networking specification is required.')
  if any(m.get('planned_observations') is None for m in p['metrics']):raise ValueError('Every metric needs explicit planned coverage.')
  source=one('sources',task['study_id'],claim['source_id'])
+ implementation=network_spec.implementation(p['execution']['runner'])
+ if implementation is not None:
+  implementation_sha=digest(implementation);artifact_id=uid(task['study_id'],'builtin-implementation:'+implementation_sha)
+  artifact=store.artifact(task['study_id'],task['actor_id'],implementation,artifact_id,'text/x-python',dict(kind='builtin-experiment-implementation',version=p['execution']['runner'],transformation='none; original registered implementation bytes'))
+  store.append(task['study_id'],task['actor_id'],'artifacts',artifact)
+  identity=p['execution']['runner']+':implementation'
+  p['input_versions']=[v for v in p['input_versions'] if v['identity']!=identity]+[dict(identity=identity,sha256=implementation_sha)]
  if source.get('sha256') not in [i['sha256'] for i in p['input_versions']]:raise ValueError('The exact retained paper source hash is required.')
  known={r['sha256'] for r in rows('artifacts',task['study_id'],limit=1000)}|{source['sha256']}|{digest(canonical(s)) for s in network_spec.specs(p)}
  if any(v['sha256'] not in known for v in p['input_versions']):raise ValueError('A claimed input has no retained source/artifact; no invented implementation or dataset hash is allowed.')
@@ -380,7 +453,7 @@ def price(job,protocol):
  if protocol['document'].get('execution') is None:
   return dict(cents=1,quote=dict(version='bounded-arithmetic-overhead-v1',kind='conservative-reservation',compute='Existing 10-second/512-MB bounded arithmetic; paper overhead separately reserved.',measured_charges_usd=None))
  # Cost envelopes are operator-owned configuration, never model/user output.
- bounded=autonomy_costs.bounded_quote(job['raw_input'].encode())
+ bounded=autonomy_costs.builtin_quote(job['raw_input'].encode()) or autonomy_costs.bounded_quote(job['raw_input'].encode())
  if bounded:return bounded
  path=Path(__file__).parent/'policies/autonomy-experiment-costs-v2.json'
  catalog=json.loads(path.read_bytes());spec_hash=digest(job['raw_input'].encode())
@@ -407,7 +480,14 @@ def frozen_jobs(task):
  for c in p['configurations']:records.append(dict(kind='configurations',record=dict(id=uid(campaign_id,c['identity']),identity=c['identity'],details=c['details'],input_versions=p['input_versions'],requested_resources=p['resource_limits'])))
  records.extend([dict(kind='campaigns',record=dict(id=campaign_id,protocol_id=protocol_id,followup_of=None,title='Autonomous pilot: '+one('claims',study,task['claim_id'])['description'][:200],stage='pilot',experiment_type=proposal['experiment_type'],adapter=network_spec.VERSION,planned_units=len(network_spec.specs(p)),coverage_limits=p['coverage_limits'])),
   dict(kind='claim_checks',record=dict(id=uid(campaign_id,'claim-check'),claim_id=task['claim_id'],campaign_id=campaign_id,method=proposal['experiment_type'],applicability='applicable',rationale='Prospective pilot reviewed in separate AI calls; original claim and inference limits remain unchanged.'))])
- store.append_bundle(study,actor,records)
+ import shared_campaigns
+ binding=shared_campaigns.register(task,proposal,records,campaign_id,protocol_id)
+ campaign_id=binding['campaign_id']
+ context['acquisition_reuse']=dict(version=shared_campaigns.VERSION,campaign_id=campaign_id,claim_protocol_id=protocol_id,reused=binding['shared'],
+  limitation='Shared jobs are the same observations, not independent replications. Claim-specific criteria and reviews remain separate.')
+ if binding['shared']:
+  original=one('campaigns',study,campaign_id);p=one('protocols',study,original['protocol_id'])['document']
+ context['acquisition_reuse']['configuration_mapping']=[dict(claim_configuration=c['identity'],acquisition_configurations=[o['identity'] for o in p['configurations'] if canonical(o['details']['test_config'])==canonical(c['details']['test_config'])]) for c in proposal['protocol']['configurations']]
  jobs=[]
  for i,spec in enumerate(network_spec.specs(p)):
   job_id=uid(campaign_id,'job:'+str(i));jobs.append(dict(id=job_id,campaign_id=campaign_id,title='Reviewed autonomous networking pilot',execution_mode='automatic',request=dict(request_id=job_id,campaign_id=campaign_id,execution_mode='automatic',priority=3,dependencies=[],exclusive_resources=p['execution'].get('exclusive_resources',[]),raw_input=canonical(spec).decode(),rationale='Exact prospective reviewed specification; automated acquisition does not decide the wider paper claim.',followup_of=None)))
@@ -545,20 +625,39 @@ def step(task):
   return advance(task,'queued',stage='assessment',reason='Recorded experiment outcomes are ready for evidence assessment.',label='inconclusive')
  answer=model.call(task,build_context(task),control)
  if answer.get('denied'):return advance(task,answer['denied'],reason='Paper admission stopped by '+answer['denied']+'.')
+ if task['stage']=='building' and (answer.get('runtime') or {}).get('checkpoint'):context['builder_checkpoint']=answer['runtime']['checkpoint']
  if answer['status']!='complete':return advance(task,'queued',context=dict(context,last_feedback=answer['reason'],last_response_error=answer['reason']),reason='Invalid answer retained; next prompt addresses the exact failure.')
  context.pop('last_response_error',None)
+ context.pop('runtime_retry',None)
  output=answer['output'];context['last_turn_id']=answer['id']
+ if task['stage']=='building':
+  runtime=answer.get('runtime') or {}
+  if runtime.get('checkpoint'):context['builder_checkpoint']=runtime['checkpoint']
+  context['builder_feedback']=runtime.get('feedback')
+  context['builder_progress']=dict(version='experiment-builder-v1',state=runtime.get('build_state'),last_dispatch_id=answer['id'],provider_calls=runtime.get('provider_calls'),wall_seconds=runtime.get('wall_seconds'),measured_charges_usd=runtime.get('measured_charges_usd'))
+  if runtime.get('admission_denied'):
+   status=runtime['admission_denied'] if runtime['admission_denied'] in ('budget','deadline','cancelled') else 'blocked'
+   return advance(task,status,context=context,reason='Original paper admission stopped further builder calls: '+runtime['admission_denied'])
+  if runtime.get('build_state')=='external-blocked':return blocked(dict(task,context=context),output)
+  if output['action']!='propose':return advance(task,'queued',stage='building',context=context,reason='Builder checkpoint retained; continuing from actual files and feedback within the original paper limits.',delay=5)
  if output['action']=='inspect':
   read=inspect_evidence(task,output['read_request']);context['evidence_read']=dict(read,requested_by_turn_id=answer['id'])
   inputs.retain_source_delivery(dict(task,context=context),read)
   if output['read_request']['kind']=='protocol' and task['stage'] in ('comprehension','critic'):
    context.setdefault('protocol_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
+  if output['read_request']['kind']=='package' and task['stage'] in ('comprehension','critic'):
+   context.setdefault('package_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
   return advance(task,'queued',context=context,reason='Read-only evidence page retained; the next numbered prompt includes its provenance.')
  external=any(b['kind'] in EXTERNAL for b in output['blockers'])
  # A partial assessment can name results a retained check has yet to collect.
  # Account for evidence and remaining executable checks before pausing it.
- if output['action']=='blocked' or any(b['kind']=='capacity' for b in output['blockers']) or external and task['stage']!='assessment':return blocked(dict(task,context=context),output)
- if task['stage']=='planning':
+ if output['action']=='blocked' or any(b['kind']=='capacity' for b in output['blockers']) or external and task['stage']!='assessment':
+  import experiment_builder
+  if experiment_builder.eligible(task,output):
+   context.update(blockers=output['blockers'],builder_feedback=output['reason'])
+   return advance(task,'queued',stage='building',context=context,reason='Preparing a versioned implementation with native file and Linux command tools; original claim, budget and deadline retained.')
+  return blocked(dict(task,context=context),output)
+ if task['stage'] in ('planning','building'):
   if output['action']=='choose-check':
    if not context.get('prepared_id'):raise ValueError('No retained checks exist for this claim.')
    _,available=choices(task['study_id'],task['claim_id'],context['prepared_id'])
@@ -567,7 +666,7 @@ def step(task):
   elif output['action']=='propose':
    try:context['proposal']=validate_proposal(task,output['proposal'])
    except (ValueError,KeyError,TypeError) as error:
-    return advance(task,'queued',stage='planning',context=dict(context,last_feedback=str(error),last_turn_id=answer['id']),reason='Candidate failed semantic validation; the next prompt must address that specific error without changing the claim.')
+    return advance(task,'queued',stage=task['stage'],context=dict(context,last_feedback=str(error),builder_feedback=str(error),last_turn_id=answer['id']),reason='Candidate failed semantic validation; the next prompt must address that specific error without changing the claim.')
    context.pop('selected_check_id',None)
   else:raise ValueError('Planning requires a source-bound check, explicit prospective pilot or blocker.')
   if context.get('proposal'):
@@ -577,11 +676,24 @@ def step(task):
   fingerprint=digest(canonical(semantic))
   if fingerprint in context.get('prior_design_hashes',[]):return advance(task,'blocked',context=dict(context,last_feedback=output['reason']),reason='The same design was proposed again without addressing the retained evidence gap. A new input or method is required.')
   context['prior_design_hashes']=context.get('prior_design_hashes',[])+[fingerprint];context['reviews']=[]
-  context.pop('evidence_read',None);context.pop('protocol_reads',None)
+  context.pop('evidence_read',None);context.pop('protocol_reads',None);context.pop('package_reads',None)
   context.pop('blockers',None)
   return advance(task,'queued',stage='comprehension',context=context,reason='Candidate retained; fresh comprehension and critic reviews are pending.')
  if task['stage'] in ('comprehension','critic'):
   if output['action']!='review':raise ValueError('Fresh review must return a review judgment only.')
+  if output['ready'] and context.get('proposal'):
+   if len(canonical(context['proposal']['protocol']))>16000:
+    cursor=0;seen=context.get('protocol_reads',{})
+    while str(cursor) in seen and seen[str(cursor)] is not None:cursor=seen[str(cursor)]
+    if str(cursor) not in seen or seen[str(cursor)] is not None:
+     return advance(task,'queued',context=dict(context,last_response_error='Read every original prospective protocol fragment before readiness.'),reason='Prospective protocol review is incomplete; no execution admitted.')
+   import experiment_builder
+   document=experiment_builder.project_document(context['proposal'],task['study_id'])
+   if document is not None and len(canonical(document))>16000:
+    cursor=0;seen=context.get('package_reads',{})
+    while str(cursor) in seen and seen[str(cursor)] is not None:cursor=seen[str(cursor)]
+    if str(cursor) not in seen or seen[str(cursor)] is not None:
+     return advance(task,'queued',context=dict(context,last_response_error='Read every original candidate package fragment before readiness; code review coverage is incomplete.'),reason='Package source/lock review is incomplete; no execution admitted.')
   if output['ready'] and context.get('selected_check_id'):
    job=next(j for j in inventory(task) if j['id']==context['selected_check_id']);selected=check_context(job,task['study_id'])
    if len(canonical(selected['protocol']))>32000:
@@ -591,10 +703,13 @@ def step(task):
      return advance(task,'queued',context=dict(context,last_response_error='Read every retained protocol fragment before readiness; the original protocol is not fully examined.'),reason='Protocol review coverage is incomplete; no execution admitted.')
   if output['ready'] is not True:
    context.update(last_feedback=output['reason'],blockers=output['blockers'])
+   if context.get('builder_checkpoint') and (context.get('proposal') or {}).get('protocol',{}).get('execution',{}).get('runner')=='built-package-v1' and all(b['kind'] in ('implementation','design','missing-data') for b in output['blockers']):
+    context['builder_feedback']=dict(role=task['stage'],reason=output['reason'],blockers=output['blockers'])
+    return advance(task,'queued',stage='building',context=context,reason='Fresh review rejected this candidate; builder will amend its retained code and method using the specific review findings.')
    return advance(task,'queued',stage='planning',context=context,reason='Review finding retained; next planning prompt includes the specific design gap.')
   context['reviews']=context.get('reviews',[])+[dict(turn_id=answer['id'],role=task['stage'],coverage_complete=output['coverage_complete'],reason=output['reason'])]
   if task['stage']=='comprehension':
-   context.pop('protocol_reads',None);context.pop('evidence_read',None)
+   context.pop('protocol_reads',None);context.pop('package_reads',None);context.pop('evidence_read',None)
    return advance(task,'queued',stage='critic',context=context,reason='Comprehension recorded; fresh critic review pending.')
   task['context']=context;return enqueue(task)
  if task['stage']=='assessment':
@@ -629,6 +744,16 @@ def step(task):
 def process(task):
  task['_tick']=time.monotonic()
  try:return step(task)
+ except model.ModelFailure as error:
+  import runtime_retry
+  context=copy.deepcopy(task['context'])
+  if task['stage']=='building' and (error.provenance or {}).get('checkpoint'):
+   context.update(builder_checkpoint=error.provenance['checkpoint'],builder_feedback=error.provenance.get('feedback'))
+  retry=runtime_retry.decision(error.provenance,context.get('runtime_retry'),task['workflow']['deadline_at'])
+  if retry:
+   context.update(runtime_retry=dict(retry,failed_turn_id=error.turn_id),last_feedback=retry['reason'],last_turn_id=error.turn_id)
+   return advance(task,'queued',context=context,reason=retry['reason'],delay=retry['delay_seconds'])
+  return advance(task,'blocked',context=context,reason=str(error))
  except Exception as error:
   # The stage/prompt/raw answer and original artifacts remain retained. No lost
   # launch or failed provider call is converted into a replacement invocation.

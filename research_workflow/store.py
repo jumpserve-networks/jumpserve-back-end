@@ -52,12 +52,21 @@ def rows(kind, params=None, public=False):
         projection = 'study_id,status,revision,title,domain,metadata,seeds,coverage,reason,confirmation,confirmed_at,created_at,updated_at'
     elif kind == "study_owners" and not public:
         projection = "study_id,owner_id"
+    elif kind == 'audit_events' and not public:
+        projection = 'id,study_id,actor_id,action,created_at'
+    elif kind == 'profiles' and not public:
+        table = 'profiles'
+        projection = 'id,first_name,last_name'
     elif kind == 'autonomy_workflows' and not public:
         projection = 'study_id,initial_prompt,initial_sha256,max_spend_cents,max_attempts,committed_cents,overhead_reservation_cents,status,reason,created_at,deadline_at,updated_at'
     elif kind == 'autonomy_tasks' and not public:
         projection = 'id,study_id,claim_id,stage,status,label,attempts,context,reason,required_inputs,next_at,created_at,updated_at'
     elif kind == 'autonomy_turns' and not public:
         projection = 'id,study_id,task_id,number,stage,prompt_version_id,model_id,request,request_raw,request_sha256,status,reserved_cents,estimated_cents,raw_response,response_sha256,output,usage,reason,created_at,ended_at'
+    elif kind == 'builder_calls' and not public:
+        projection = 'id,study_id,task_id,dispatch_id,number,prompt_version_id,model_id,request_artifact_id,request_sha256,request_bytes,status,reserved_cents,response_artifact_id,response_sha256,usage,response_received,http_status,reason,created_at,ended_at'
+    elif kind == 'builder_packages' and not public:
+        projection = 'id,study_id,task_id,source_id,project_artifact_id,wrapper_artifact_id,manifest_artifact_id,candidate_artifact_id,version,status,created_at'
     elif kind == "queue_jobs" and not public:
         projection = "id,study_id,campaign_id,input_artifact_id,followup_of,execution_mode,priority,dependencies,exclusive_resources,request,definition_sha256,status,reason,run_id,lease_until,created_at,updated_at"
     elif kind == "queue_events" and not public:
@@ -66,6 +75,10 @@ def rows(kind, params=None, public=False):
         projection = "id,study_id,plan_id,manifest_sha256,original_artifact_id,compiled_artifact_id,jobs,provenance,created_at"
     elif kind == "idea_packets" and not public:
         projection = "id,study_id,version,supersedes_id,document,raw_document,sha256,reason,created_at"
+    elif kind == 'shared_campaigns' and not public:
+        projection = 'id,study_id,campaign_id,acquisition_sha256,acquisition,created_at'
+    elif kind == 'shared_campaign_members' and not public:
+        projection = 'id,task_id,study_id,claim_id,campaign_id,protocol_id,created_at'
     elif kind == "claim_designs" and not public:
         projection = "id,study_id,document,raw_document,sha256,source_id,claim_id,created_at"
     elif kind == "idea_runs" and not public:
@@ -77,6 +90,7 @@ def rows(kind, params=None, public=False):
     else:
         raise ValueError("Unsupported research relation.")
     query = {"select": projection, "order": "created_at.asc,study_id.asc" if kind in ('autonomy_workflows','paper_reviews') else "created_at.asc,id.asc", "limit": 1000, **(params or {})}
+    if kind == 'profiles': query['order'] = (params or {}).get('order', 'id.asc')
     if kind in ('measurements','published_values'):
         # Cast inside Postgres, before JSON decoding can round a decimal to a
         # binary float. A null remains null; zero remains an exact text value.
@@ -89,6 +103,8 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name in ('research_builder_call','research_builder_package'):return request('/rest/v1/rpc/'+name,'POST',payload)
+    if name == 'research_shared_campaign_bind':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name == 'research_model_dispatch':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name == 'research_autonomy_resume_turns':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_autonomy_budget_candidates','research_autonomy_resume_budget'):return request('/rest/v1/rpc/'+name,'POST',payload)

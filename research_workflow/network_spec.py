@@ -8,6 +8,7 @@ import copy
 import hashlib
 import math
 import re
+from pathlib import Path
 from workflow import canonical, digest, identifier
 
 VERSION = "network-execution-v1"
@@ -16,13 +17,21 @@ RUNNERS = {
     "emulated-netem-v1": dict(name="Emulated networking", mode="emulated", module="congestion-control-emulated", maximum_instances=1),
     "real-world-iperf-v1": dict(name="Real-world networking", mode="real-world", module="congestion-control-real-world", maximum_instances=18),
     "custom-package-v1": dict(name="Versioned experiment package", mode="package", module="research-verification", maximum_instances=1),
+    "netem-iperf-v1": dict(name="Duration-based TCP loss sweep", mode="emulated", module="research-verification", maximum_instances=1),
+    "source-arithmetic-v1": dict(name="Source numerical consistency", mode="arithmetic", module="research-verification", maximum_instances=1),
+    "built-package-v1": dict(name="AI-built versioned experiment", mode="package", module="research-verification", maximum_instances=1),
 }
 BUILTIN_METRICS = {
     'bounded-tcp-v1': {'round_trip_time_ms':'ms','received_bytes':'bytes'},
     'emulated-netem-v1': {'flow_completion_time_ms':'ms'},
     'real-world-iperf-v1': {'throughput_mbit_s':'Mbit/s','received_bytes':'bytes','duration_seconds':'s','rtt_median_ms':'ms','retransmits':'count'},
+    'netem-iperf-v1': {'throughput_mbit_s':'Mbit/s','received_bytes':'bytes','duration_seconds':'s','idle_rtt_ms':'ms','retransmits':'count'},
 }
 MAX_JOBS = 32
+
+def implementation(runner):
+    name={'netem-iperf-v1':'netem_iperf.py','source-arithmetic-v1':'source_arithmetic.py'}.get(runner)
+    return (Path(__file__).parent/name).read_bytes() if name else None
 
 def integer(value, name, low, high):
     if type(value) is not int or not low <= value <= high:
@@ -44,7 +53,13 @@ def placement(value):
 
 def config(runner, value):
     if not isinstance(value, dict): raise ValueError("test_config must be an object.")
-    if runner == 'bounded-tcp-v1':
+    if runner == 'netem-iperf-v1':
+        from netem_iperf import validate
+        validate(value); instances = 1
+    elif runner == 'source-arithmetic-v1':
+        from source_arithmetic import validate
+        validate(value); instances = 1
+    elif runner == 'bounded-tcp-v1':
         from bounded_network import validate
         validate(value)
         instances = 1  # One isolated invocation; zero provisioned EC2 instances.
@@ -82,7 +97,7 @@ def config(runner, value):
         integer(value['buffer_kbytes'],'buffer_kbytes',2,10000)
         if not isinstance(value['notes'],str) or len(value['notes'])>4000: raise ValueError('Invalid notes.')
         instances = 2+len(value['receivers'])
-    elif runner == 'custom-package-v1':
+    elif runner in ('custom-package-v1','built-package-v1'):
         if set(value)-{'mode','package','arguments','parameters','private_inputs'} or not {'mode','package','arguments','parameters'}<=set(value) or value['mode'] not in ('emulated','real-world'): raise ValueError('A package needs mode, package, arguments and parameters.')
         inputs=value.get('private_inputs',{})
         if not isinstance(inputs,dict) or len(inputs)>8: raise ValueError('At most eight private input files are supported.')
@@ -97,6 +112,7 @@ def config(runner, value):
         elif package.get('kind') == 'container':
             if set(package) != {'kind','version','image'} or not re.fullmatch(r'(?:public\.ecr\.aws|docker\.io)/[a-z0-9._/-]+@sha256:[a-f0-9]{64}',str(package['image'])): raise ValueError('Use a public container image pinned by immutable sha256 digest.')
         else: raise ValueError('Choose a versioned Python script or container image.')
+        if runner=='built-package-v1' and (package['kind']!='python-script' or set(inputs)!={'project.zip'}): raise ValueError('Built packages require the server wrapper and a frozen project.zip input.')
         if not isinstance(package.get('version'),str) or not 1<=len(package['version'])<=200: raise ValueError('Declare package version.')
         if not isinstance(value['arguments'],list) or len(value['arguments'])>32 or any(not isinstance(v,str) or len(v)>1000 for v in value['arguments']): raise ValueError('Arguments must be at most 32 bounded strings, not a shell command.')
         if not isinstance(value['parameters'],dict): raise ValueError('Package parameters must be an object.')
@@ -116,7 +132,8 @@ def specs(document, verify_hashes=True):
     integer(limits['wall_seconds'],'wall_seconds',60,3600)
     integer(limits['max_instances'],'max_instances',1,RUNNERS[execution['runner']]['maximum_instances'])
     integer(limits['max_output_bytes'],'max_output_bytes',1024,10000000)
-    if execution['runner']=='custom-package-v1' and limits['max_output_bytes']>3000000: raise ValueError('Custom package output is bounded to 3 MB for the private ingestion transport.')
+    if execution['runner'] in ('custom-package-v1','built-package-v1') and limits['max_output_bytes']>3000000: raise ValueError('Custom package output is bounded to 3 MB for the private ingestion transport.')
+    if execution['runner']=='built-package-v1' and limits['wall_seconds']>1800: raise ValueError('Built packages have a 30-minute disposable-host ceiling.')
     integer(limits['max_network_bytes'],'max_network_bytes',1024,10000000000)
     if limits['wall_seconds'] > document['resource_limits']['wall_seconds']: raise ValueError('Execution exceeds reviewed protocol wall-time budget.')
     output=[]
@@ -127,6 +144,15 @@ def specs(document, verify_hashes=True):
     for index, configuration in enumerate(document['configurations']):
         test = configuration['details'].get('test_config')
         if config(execution['runner'],test) > limits['max_instances']: raise ValueError('Requested topology exceeds instance budget.')
+        if execution['runner']=='netem-iperf-v1':
+            import netem_iperf
+            if {m['name'] for m in metrics}!=set(netem_iperf.METRICS) or any(m.get('planned_observations')!=len(test['loss_levels_pct']) for m in document['metrics']): raise ValueError('Declare all five TCP sweep metrics, one observation per loss condition.')
+            if not netem_iperf.minimum_wall(test)<=limits['wall_seconds']<=1800 or limits['max_network_bytes']<netem_iperf.network_budget(test) or limits['max_output_bytes']<1000000 or limits['max_output_bytes']>3000000: raise ValueError('TCP sweep needs the complete bootstrap/trial wall budget (at most 1800s), interface-counter allowance and 1..3 MB output.')
+        if execution['runner']=='source-arithmetic-v1':
+            if replicas!=1 or limits['wall_seconds']!=60: raise ValueError('Deterministic source calculations use one invocation with a 60-second retrieval deadline.')
+            cells={c['id']:c for c in test['cells']}
+            expected={c['id']:('%' if c['operation']=='relative-percent-change' else 'boolean' if c['operation']=='strict-increase' else cells[c['inputs'][0]]['units']) for c in test['calculations']}
+            if {m['name']:m['units'] for m in metrics}!=expected or any(m.get('planned_observations')!=1 for m in document['metrics']): raise ValueError('Arithmetic metrics must match every calculation identity/unit, one observation each.')
         if execution['runner']=='bounded-tcp-v1':
             if {m['name'] for m in metrics}!=set(BUILTIN_METRICS['bounded-tcp-v1']) or document['resource_limits']['max_observations']<2*test['exchanges']:
                 raise ValueError('TCP always emits received_bytes (bytes) and round_trip_time_ms (ms) for each exchange. Declare both metrics and budget at least two observations per exchange; do not discard diagnostic output.')
@@ -135,7 +161,10 @@ def specs(document, verify_hashes=True):
             if any(m.get('planned_observations')!=test['exchanges'] for m in document['metrics']):
                 raise ValueError('TCP planned observations must equal exchanges for every metric.')
         for replica in range(replicas):
-            output.append(dict(version=VERSION,runner=execution['runner'],configuration_index=index,configuration_identity=configuration['identity'],replication=replica,config=copy.deepcopy(test),limits=copy.deepcopy(limits),metrics=metrics))
+            spec=dict(version=VERSION,runner=execution['runner'],configuration_index=index,configuration_identity=configuration['identity'],replication=replica,config=copy.deepcopy(test),limits=copy.deepcopy(limits),metrics=metrics)
+            original=implementation(execution['runner'])
+            if original is not None: spec['implementation_sha256']=digest(original)
+            output.append(spec)
     if len(output) > MAX_JOBS or document.get('planned_units') != len(output): raise ValueError('planned_units must equal configurations × replications, at most 32 invocations.')
     if verify_hashes:
         declared = {v['sha256'] for v in document['input_versions']}

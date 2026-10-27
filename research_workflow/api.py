@@ -16,6 +16,7 @@ import gap_queue
 import autonomy
 import paper_uploads
 import paper_catalog
+import paper_titles
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
 MAX_BODY = 512_000
@@ -74,16 +75,65 @@ def campaign_run(study_id, actor, body):
     return dict(run=result["run"], summaries=result["summaries"], comparisons=result["comparisons"], replayed=False,
       limitation="This is a numerical check, not an automatic claim assessment. Link and review the evidence before changing a claim label.")
 
+def assessment_statuses(studies):
+    """Small owner-only status projection; never send prompts or raw inputs."""
+    ids = {row['id'] for row in studies if row.get('study_kind') != 'idea'}
+    if not ids: return {}
+    query = {'study_id': 'in.(' + ','.join(sorted(ids)) + ')', 'limit': 101,
+             'select': 'study_id,status,updated_at'}
+    workflows = store.rows('autonomy_workflows', query)
+    if len(workflows) > 100 or len({w['study_id'] for w in workflows}) != len(workflows):
+        raise store.StoreError('Assessment notification coverage exceeds the interactive bound.')
+    states = ('running', 'completed', 'completed-with-blockers', 'budget', 'deadline', 'cancelled')
+    if any(w['study_id'] not in ids or w['status'] not in states for w in workflows):
+        raise store.StoreError('Assessment notification identities or status are invalid.')
+    if not workflows: return {}
+    workflow_ids = {w['study_id'] for w in workflows}
+    tasks, cursor = [], None
+    for _ in range(41):
+        params = {'study_id': 'in.(' + ','.join(sorted(workflow_ids)) + ')',
+            'select': 'id,study_id,claim_id,status,label', 'order': 'id.asc', 'limit': min(500, 20001 - len(tasks))}
+        if cursor: params['id'] = 'gt.' + cursor
+        page = store.rows('autonomy_tasks', params)
+        if not page: break
+        page_ids = [t['id'] for t in page]
+        if len(page) > params['limit'] or page_ids != sorted(page_ids) or (cursor is not None and any(value <= cursor for value in page_ids)):
+            raise store.StoreError('Assessment notification pagination is invalid.')
+        tasks.extend(page)
+        if len(tasks) > 20000: raise store.StoreError('Assessment notification coverage exceeds the interactive bound.')
+        cursor = page[-1]['id']
+    else:
+        raise store.StoreError('Assessment notification pagination exceeds the interactive bound.')
+    task_states = ('queued', 'running', 'waiting', 'resolved', 'finished', 'blocked', 'attempt-limit', 'budget', 'deadline', 'cancelled')
+    if len(tasks) > 20000 or len({t['id'] for t in tasks}) != len(tasks) or any(
+        t['study_id'] not in workflow_ids or t['status'] not in task_states or
+        (t['claim_id'] is not None and t['label'] not in LABELS) for t in tasks):
+        raise store.StoreError('Assessment notification claim coverage is invalid or exceeds the interactive bound.')
+    claim_ids = [(t['study_id'], t['claim_id']) for t in tasks if t['claim_id'] is not None]
+    if len(set(claim_ids)) != len(claim_ids): raise store.StoreError('Assessment notification claims are duplicated.')
+    result = {w['study_id']: dict(status=w['status'], updated_at=w['updated_at'],
+        counts=dict(total=0, finished=0, reproduced=0, discrepant=0, blocked=0, running=0, queued=0, waiting=0)) for w in workflows}
+    for task in tasks:
+        if task['claim_id'] is None: continue  # Intake is not a scientific claim.
+        counts = result[task['study_id']]['counts']
+        counts['total'] += 1
+        if task['status'] in ('resolved', 'finished'):
+            counts['finished'] += 1
+            if task['label'] in ('reproduced', 'discrepant'): counts[task['label']] += 1
+        if task['status'] in ('blocked', 'running', 'queued', 'waiting'): counts[task['status']] += 1
+    return result
+
+
 def dispatch(event, actor=None):
     path = event.get("rawPath", "").rstrip("/")
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
     if path == '/research/papers' and method == 'GET':
-        return paper_catalog.papers(query.get('before'))
+        return paper_catalog.papers(query.get('before'), include_authors=query.get('bibliography') == '1', include_initiator=query.get('initiator') == '1')
     if path.startswith('/research/papers/') and method == 'GET':
         parts = path.split('/')
         if len(parts) != 5 or parts[4] != 'title': raise HttpError(404, 'Paper endpoint not found.')
-        result = paper_catalog.title(parts[3])
+        result = paper_catalog.title(parts[3], include_authors=query.get('bibliography') == '1')
         if result is None: raise HttpError(404, 'Paper not found.')
         return result
     if path == '/research/paper-uploads' and method == 'POST':
@@ -100,11 +150,24 @@ def dispatch(event, actor=None):
                 owners = store.rows("study_owners", {"owner_id": "eq." + actor, "limit": 101})
                 if len(owners) > 100: raise HttpError(413, "Owner study listing exceeds 100 records; use operator pagination.")
                 ids = [r["study_id"] for r in owners]
-                studies = store.rows("studies", {"id": "in.(" + ",".join(ids) + ")", "limit": 100}) if ids else []
-                designs = {row['study_id'] for row in store.rows('claim_designs', {'study_id': 'in.(' + ','.join(ids) + ')', 'select': 'study_id', 'limit': 101})} if ids else set()
-                reviews = {row['study_id']:row for row in store.rows('paper_reviews', {'study_id':'in.('+','.join(ids)+')','select':'study_id,status,title,domain','limit':101})} if ids else {}
-                studies = [dict(row,paper_review_status=reviews[row['id']]['status'],title=reviews[row['id']]['title'] or row['title'],domain=reviews[row['id']]['domain'] or row['domain']) if row['id'] in reviews else row for row in studies]
-                return {"studies": [dict(row, claim_design=True) if row['id'] in designs else row for row in studies], "access": "owner-drafts"}
+                status_only = query.get('status') == '1'
+                study_query = {"id": "in.(" + ",".join(ids) + ")", "limit": 100}
+                if status_only: study_query['select'] = 'id,title,domain,study_kind'
+                studies = store.rows("studies", study_query) if ids else []
+                designs = {row['study_id'] for row in store.rows('claim_designs', {'study_id': 'in.(' + ','.join(ids) + ')', 'select': 'study_id', 'limit': 101})} if ids and not status_only else set()
+                review_select = 'study_id,status,title,domain' + ('' if status_only else ',authors:metadata->authors')
+                reviews = {row['study_id']:row for row in store.rows('paper_reviews', {'study_id':'in.('+','.join(ids)+')','select':review_select,'limit':101})} if ids else {}
+                studies = [dict(row,paper_review_status=reviews[row['id']]['status'],title=reviews[row['id']]['title'] or row['title'],domain=reviews[row['id']]['domain'] or row['domain'],
+                    **({'authors':paper_titles.saved_authors(reviews[row['id']].get('authors'))} if not status_only and row.get('study_kind') != 'idea' else {})) if row['id'] in reviews else row for row in studies]
+                studies = [dict(row, claim_design=True) if row['id'] in designs else row for row in studies]
+                if status_only:
+                    statuses = assessment_statuses(studies)
+                    projected = [dict(id=row['id'], title=row['title'], study_kind=row.get('study_kind', 'paper'),
+                        **({'paper_review_status': row['paper_review_status']} if 'paper_review_status' in row else {}),
+                        assessment_status=statuses.get(row['id'])) for row in studies if row.get('study_kind') != 'idea']
+                    return dict(studies=projected,
+                                access='owner-drafts', assessment_status_version='research-assessment-status-v1')
+                return {"studies": studies, "access": "owner-drafts"}
             records = store.rows("studies", {"limit": 101}, public=True)
             return {"studies": records[:100], "has_more": len(records) > 100, "access": "published"}
         if method == "POST":
@@ -120,13 +183,23 @@ def dispatch(event, actor=None):
     if len(parts) not in (4, 5) or parts[1:3] != ["research", "studies"]: raise HttpError(404, "Research endpoint not found.")
     study_id = identifier(parts[3])
     if len(parts) == 5 and parts[4] == 'queue' and method == 'GET' and query.get('public') == '1':
-        data = scheduler.public_snapshot(study_id)
+        data = scheduler.public_records(study_id, query['records'], query.get('after'), query.get('limit','25')) if query.get('records') else scheduler.public_snapshot(study_id, include_diagnostics=query.get('diagnostics') == '1')
         if data is None: raise HttpError(404, 'Paper queue not found.')
+        return data
+    if len(parts) == 5 and parts[4] == 'autonomy' and method == 'GET' and query.get('public') == '1' and query.get('task'):
+        if query.get('builder_call'):
+            if scheduler.shared_paper(study_id) is None:raise HttpError(404,'Paper task evidence not found.')
+            data=autonomy.builder_evidence(study_id,query['task'],query['builder_call'],query.get('kind','request'),query.get('cursor','0'))
+            value,projection=scheduler.shared_document(data)
+            return dict(value,access='public-read-only',projection=projection)
+        data = scheduler.public_history(study_id, query['task'], query.get('before'))
+        if data is None: raise HttpError(404, 'Paper task history not found.')
         return data
     owner = bool(actor and store.owns(study_id, actor))
     if len(parts)==5 and parts[4]=='autonomy':
         if not owner: raise HttpError(404 if actor else 401,'Sign in as this paper owner to view autonomous progress.')
         if method=='GET':
+            if query.get('task') and query.get('builder_call'):return autonomy.builder_evidence(study_id,query['task'],query['builder_call'],query.get('kind','request'),query.get('cursor','0'))
             if query.get('task'): return autonomy.history(study_id,query['task'],query.get('before'))
             return autonomy.overview([{'id':study_id}])
         if method=='POST' and parse_body(event)=={'action':'cancel'}:

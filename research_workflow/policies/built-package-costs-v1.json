@@ -1,0 +1,10 @@
+{
+ "version":"built-package-costs-v1","currency":"USD","kind":"conservative-reservation","maximum_cents":1000,
+ "valid_until":"2026-11-26T00:00:00Z","instance_type":"t3.medium","max_instances":1,"max_wall_seconds":1800,
+ "root_volume_gib":8,"cpu_credits":"standard","max_network_bytes":10000000000,"max_output_bytes":3000000,
+ "basis":"Ten-dollar reservation for one disposable 30-minute host, 8-GiB root and at most 10 decimal GB sampled guest traffic; original paper overhead is separate. Exact immutable executor, server wrapper and runtime policy must match.",
+ "enforcement":"Independent deadline reaper and host watchdog; 50-ms sampled guest output/traffic guard can overshoot. Generated Python runs on a credential-free disposable VM. This lab policy is not adversarial metering or a guaranteed AWS invoice cap.",
+ "sources":["https://aws.amazon.com/ec2/pricing/on-demand/","https://aws.amazon.com/ebs/pricing/"],
+ "measured_charges_usd":null,"hard_resource_bounds_verified":false,"approved_for_lab_execution":false,
+ "limitation":"Deployment is disabled by default. Validate runtime configuration, deadline cleanup, egress behavior and this conservative policy before enabling the lab builder. Physical equipment, large data and arbitrary paid services are not covered."
+}

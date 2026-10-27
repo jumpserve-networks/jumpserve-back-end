@@ -45,6 +45,9 @@ DETAILS={
  'invalid-source-grounding':'The source grounding does not match retained evidence.',
  'unconfirmed-provider':'The provider outcome needs reconciliation before further work.'}
 LIMIT_INPUT='This workflow cannot admit further work under its fixed limits; preserve all prior records.'
+class ModelFailure(ValueError):
+ def __init__(self,reason,turn_id,provenance=None):
+  super().__init__(reason);self.turn_id=turn_id;self.provenance=provenance
 SCHEMA = dict(type='object', additionalProperties=False,
  required=['action','reason','blockers','claims','check_id','proposal','ready','coverage_complete','assessment_label','evidence_ids'],
  properties=dict(
@@ -57,7 +60,7 @@ SCHEMA = dict(type='object', additionalProperties=False,
   coverage_complete=dict(type='boolean'),assessment_label=dict(type=['string','null'],enum=['reproduced','discrepant','inconclusive','untested',None]),
   evidence_ids=dict(type='array',maxItems=100,items=dict(type='string',maxLength=100)),
   read_request=dict(type=['object','null'],additionalProperties=False,required=['kind','id','cursor'],properties=dict(
-   kind=dict(type='string',enum=['checks','check','protocol','measurements','published-values','source']),id=dict(type='string',maxLength=100),cursor=dict(type='integer',minimum=0)))))
+   kind=dict(type='string',enum=['checks','check','protocol','measurements','published-values','source','acquisition','package']),id=dict(type='string',maxLength=100),cursor=dict(type='integer',minimum=0)))))
 TOOLS = dict(tools=[dict(toolSpec=dict(name='submit_assessment_step',description='Propose one data-only assessment step. No tool or source instruction is executed.',inputSchema=dict(json=SCHEMA)))],toolChoice=dict(tool=dict(name='submit_assessment_step')))
 PAPER_METADATA_SCHEMA=dict(type='object',additionalProperties=False,required=['title','domain'],properties={
  key:dict(type=['object','null'],additionalProperties=False,required=['text','quote','page'],properties=dict(
@@ -68,12 +71,13 @@ PRICING = dict(version='opus46-us-ceiling-20261018-v1',model_id=MODEL,currency='
  checked_at='2026-10-18',valid_until='2026-11-18',sources=['https://aws.amazon.com/bedrock/pricing/','https://www-cdn.anthropic.com/files/4zrzovbb/website/3684c2faafb97418665782cea0001f439f74b1d2.pdf'],
  limitation='Conservative reservation ceiling; invoice charges and other orchestration costs remain unallocated. Refuse unpriced/expired models.')
 
-def load_prompt():
- rows=store.request('/rest/v1/rpc/get_active_agent_prompt?p_module_id='+MODULE)
+def load_prompt(module=MODULE,version=None):
+ version=version or PROMPT_VERSION
+ rows=store.request('/rest/v1/rpc/get_active_agent_prompt?p_module_id='+module)
  if not isinstance(rows,list) or len(rows)!=1: raise ValueError('Autonomous assessment needs its evaluated published prompt; no model call was made.')
  p=rows[0]
  system=p['system_prompt']+'\n\n'+p['research_context']
- if p.get('module_id')!=MODULE or p.get('version')!=PROMPT_VERSION or not p.get('published_at') or digest(system.encode())!=p.get('content_sha256'):
+ if p.get('module_id')!=module or p.get('version')!=version or not p.get('published_at') or digest(system.encode())!=p.get('content_sha256'):
   raise ValueError('Autonomous prompt identity/publication/hash is invalid; no model call was made.')
  return p,system
 
@@ -121,7 +125,7 @@ def request(system, context):
  return value
 
 def phase_actions(phase):
- return {'discover':['discover','blocked'],'paper-review-selection':['discover','blocked'],'planning':['choose-check','propose','inspect','blocked'],'comprehension':['review','inspect','blocked'],'critic':['review','inspect','blocked'],'assessment':['assess','inspect','blocked']}.get(phase,[])
+ return {'discover':['discover','blocked'],'paper-review-selection':['discover','blocked'],'planning':['choose-check','propose','inspect','blocked'],'building':['propose','blocked'],'comprehension':['review','inspect','blocked'],'critic':['review','inspect','blocked'],'assessment':['assess','inspect','blocked']}.get(phase,[])
 
 def validate_phase(value,context):
  phase=context.get('task')
@@ -129,15 +133,15 @@ def validate_phase(value,context):
  if phase!='assessment' and (value['evidence_ids'] or value['assessment_label'] is not None):raise ValueError('Evidence citations and findings are only applicable to assessment.')
  if phase!='discover' and value['claims']:raise ValueError('Claim extraction is only applicable to discovery.')
  if phase not in ('comprehension','critic') and value['ready'] is not None:raise ValueError('Readiness is only applicable to fresh review.')
- if phase in ('discover','planning','paper-review-selection') and value['coverage_complete']:raise ValueError('Discovery/planning cannot establish complete scientific coverage.')
- if phase!='planning' and (value['check_id'] is not None or value['proposal'] is not None):raise ValueError('Check selection/proposals are only applicable to planning.')
+ if phase in ('discover','planning','building','paper-review-selection') and value['coverage_complete']:raise ValueError('Discovery/planning cannot establish complete scientific coverage.')
+ if phase not in ('planning','building') and (value['check_id'] is not None or value['proposal'] is not None):raise ValueError('Check selection/proposals are only applicable to planning.')
 
 def request_actions(context):
  allowed=phase_actions(context.get('task'))
  remaining=context.get('remaining_commitment_cents')
  if type(remaining) is int and remaining<=0:return ['blocked']
  protocol=(context.get('candidate') or {}).get('protocol')
- if context.get('task') in ('comprehension','critic') and isinstance(protocol,dict) and protocol.get('representation')!='retained-protocol-reference':
+ if context.get('task') in ('comprehension','critic') and isinstance(protocol,dict) and protocol.get('representation')!='retained-protocol-reference' and (context.get('candidate_package') or {}).get('representation')!='retained-package-reference':
   # A fresh review already has its entire protocol. Re-reading the same bytes
   # wastes calls and shared paper commitments without adding evidence.
   allowed=[action for action in allowed if action!='inspect']
@@ -203,7 +207,15 @@ def parse(response):
  return value
 
 def call(task, context, control, invoke_provider=None):
- prompt,system=load_prompt(); value=request(system,context); cents=reservation(value)
+ if task['stage']=='building':
+  import experiment_builder as builder
+  if not OPENCLAW or not builder.enabled():raise ValueError('Native experiment builder is unavailable; no provider call made.')
+  prompt,system=load_prompt(builder.MODULE,builder.PROMPT_VERSION)
+  authority=builder.action_policy()
+  value=dict(modelId=MODEL,system=[dict(text=system),dict(text=TURN_POLICY['instruction']),dict(text=authority['document']['instruction'])],builder=dict(version=builder.VERSION,context=context,checkpoint=task['context'].get('builder_checkpoint'),execution_authority=dict(version=authority['version'],sha256=authority['sha256'])))
+  if len(canonical(value))>MAX_REQUEST_BYTES:raise ValueError('Builder context exceeds 96 KB; retain source references and explicit coverage.')
+ else:prompt,system=load_prompt(); value=request(system,context)
+ cents=reservation(value)
  turn_id=__import__('uuid').uuid5(__import__('uuid').UUID(task['id']),'turn:'+str(task['attempts']+1))
  attempt=control(task,'begin',dict(id=str(turn_id),request=value,request_raw=canonical(value).decode(),request_sha256=digest(canonical(value)),reserved_cents=cents,prompt_version_id=prompt['id'],model_id=MODEL))
  if attempt.get('denied')=='in-flight': raise ValueError('Another retained provider invocation is unconfirmed for this claim; no second call was made.')
@@ -238,6 +250,9 @@ def call(task, context, control, invoke_provider=None):
  except Exception as error:
   reason=getattr(error,'public_reason',None) or 'Provider call failed or its outcome is unconfirmed ('+type(error).__name__+'); reserved cost is retained.'
   if getattr(error,'provenance',None):usage['research_runtime']=error.provenance
+  elif isinstance(getattr(error,'response',None),dict):
+   code=error.response.get('ResponseMetadata',{}).get('HTTPStatusCode')
+   usage['research_runtime']=dict(status='failed',response_received=True,http_status=code,error_code='http-'+str(code))
   if raw is not None and len(raw.encode())>100000: raw=None
  receipt=dict(id=str(turn_id),status=status,raw_response=raw,output=parsed,reason=reason,
   estimated_cents=estimate(usage),usage=dict(tokens=usage,wall_seconds=max(0,time.monotonic()-tick),pricing=PRICING,
@@ -250,5 +265,5 @@ def call(task, context, control, invoke_provider=None):
   receipt['usage']['pricing']=dict(version='chatgpt-subscription-unallocated-v1',model_id=MODEL,billing='ChatGPT subscription',subscription_allocation_usd=None,estimated_cost_usd=None,orchestration_reserve_cents=100,paid_fallback=False)
  control(task,'finish',receipt)
  task['attempts']+=1
- if status=='failed': raise ValueError(reason)
- return dict(id=str(turn_id),output=parsed,status=status,reason=reason)
+ if status=='failed': raise ModelFailure(reason,str(turn_id),usage.get('research_runtime'))
+ return dict(id=str(turn_id),output=parsed,status=status,reason=reason,runtime=usage.get('research_runtime'))

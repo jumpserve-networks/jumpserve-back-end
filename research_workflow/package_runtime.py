@@ -15,14 +15,17 @@ import subprocess
 import time
 
 def run(directory, deadline, allow_container=True):
-    root=Path(directory).resolve();spec=json.loads((root/'spec.json').read_text());package=spec['config']['package']
+    root=Path(directory).resolve();spec=json.loads((root/'spec.json').read_text());builtin=spec.get('runner')=='netem-iperf-v1';package=spec['config'].get('package',{}) if builtin else spec['config']['package']
+    if builtin: package=dict(kind='builtin-netem-iperf',version='netem-iperf-v1')
     started=dt.datetime.now(dt.timezone.utc).isoformat();tick=time.monotonic();reason=None;process=None
     receipt=dict(version='network-package-runtime-v1',started_at=started,execution_kind=package['kind'],package_version=package['version'],exit_code=None,
         measured_charges_usd=None,process_wall_seconds=None,termination_reason=None,container_image=package.get('image'),network_bytes=None)
     # Run packages without parent credentials, report capabilities or cloud SDK env.
     env={'PATH':'/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin','LANG':'C.UTF-8','JUMPSERVE_SPEC':str(root/'spec.json'),'JUMPSERVE_OUTPUT':str(root/'output.json'),'JUMPSERVE_INPUTS':str(root/'inputs')}
-    arguments=spec['config']['arguments']
-    if package['kind']=='python-script':
+    arguments=spec['config'].get('arguments',[])
+    if builtin:
+        command=['python3',str(root/'netem_iperf.py')]
+    elif package['kind']=='python-script':
         raw=(root/'package.py').read_bytes()
         if hashlib.sha256(raw).hexdigest()!=package['sha256']: raise ValueError('Package original-byte hash differs on the experiment machine.')
         command=['python3',str(root/'package.py'),*arguments]
@@ -54,7 +57,7 @@ def run(directory, deadline, allow_container=True):
         final=network_bytes();receipt.update(ended_at=dt.datetime.now(dt.timezone.utc).isoformat(),process_wall_seconds=max(0,time.monotonic()-tick),termination_reason=reason,
             network_bytes=final-initial if initial is not None and final is not None and final>=initial else None,
             interface_counter_reset=initial is not None and final is not None and final<initial,
-            network_counter_scope='Sum of non-loopback Linux interface receive and transmit counters; forwarding can be counted multiple times. Unavailable or reset counters are missing, not zero. Not billed traffic.',
+            network_counter_scope='Non-loopback receive/transmit counters in the runtime network namespace. Child namespace counters remain in raw experiment diagnostics and are not included here. Forwarding can be counted multiple times. Unavailable/reset counters are missing, not zero; this is not billed traffic.',
             enforcement_scope='50-ms sampled output and network counters, with possible overshoot; wall timer and independent machine shutdown. Python is bounded by host capacity; container adds 1 CPU, 1 GiB and 256 PID limits.')
         (root/'runtime-receipt.json').write_text(json.dumps(receipt,sort_keys=True,allow_nan=False)+'\n')
     return receipt

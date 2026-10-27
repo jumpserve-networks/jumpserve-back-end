@@ -19,37 +19,49 @@ def environment(home):
 def verify_runtime():
  if subprocess.check_output([str(NODE),'--version'],text=True).strip()!='v24.16.0' or json.loads((PACKAGE/'package.json').read_bytes())['version']!='2026.10.5':raise ValueError('Pinned OpenClaw/Node runtime differs.')
 
-def credential():
- AUTH.mkdir(mode=0o700,parents=True,exist_ok=True);AUTH.chmod(0o700)
- with (AUTH/'refresh.lock').open('a') as lock:
-  fcntl.flock(lock,fcntl.LOCK_EX)
-  path=AUTH/'state/openclaw.sqlite'
-  def read():
+class CredentialFailure(ValueError):
+ def __init__(self,reason,status='unavailable',retry_after_seconds=0):
+  super().__init__(reason);self.reason=reason;self.status=status;self.retry_after_seconds=retry_after_seconds
+
+def credential(force_refresh=False):
+ """One host owner, including recovery/backoff checks before returning a token."""
+ try:
+  AUTH.mkdir(mode=0o700,parents=True,exist_ok=True);AUTH.chmod(0o700)
+  with (AUTH/'refresh.lock').open('a') as lock:
+   os.chmod(AUTH/'refresh.lock',0o600);fcntl.flock(lock,fcntl.LOCK_EX)
+   path=AUTH/'state/openclaw.sqlite'
+   command=[str(NODE),str(Path(__file__).with_name('openclaw_auth.mjs')),str(path),str(PACKAGE/'dist/extensions/openai/token-sharing-oauth.runtime.js')]
+   if force_refresh:command.append('--force')
+   try:result=subprocess.run(command,capture_output=True,timeout=75,env=environment(AUTH))
+   except subprocess.TimeoutExpired:raise CredentialFailure('refresh-unconfirmed') from None
+   try:state=json.loads(result.stdout)
+   except (ValueError,UnicodeError):raise CredentialFailure('refresh-unconfirmed') from None
+   reasons={'credential-missing','grant-invalid','client-configuration','permission-required','storage-unavailable','storage-low','refresh-temporary','refresh-unconfirmed','refresh-backoff','refresh-rejected','credential-size'}
+   if result.returncode or state.get('status')!='ready':
+    reason=state.get('reason');status=state.get('status');delay=state.get('retry_after_seconds',0)
+    if reason not in reasons or status not in ('auth-required','unavailable') or type(delay) is not int or not 0<=delay<=900:raise CredentialFailure('refresh-unconfirmed')
+    raise CredentialFailure(reason,status,delay)
    with sqlite3.connect(path.as_uri()+'?mode=ro',uri=True) as db:row=db.execute("select value_json from config_machine_state where state_key='authProfiles.store'").fetchone()
    values=list((json.loads(row[0]) if row else {}).get('profiles',{}).values())
-   if len(values)!=1:raise ValueError('Exactly one host-specific subscription grant required.')
+   if len(values)!=1:raise CredentialFailure('client-configuration')
    value=values[0];scopes=set((value.get('grantedScope') or '').split())
-   if value.get('type')!='oauth' or value.get('provider')!='openai' or value.get('authFlow')!='chatgpt-token-sharing' or value.get('issuer')!='https://auth.openai.com' or not {'resource.invoke','chatgpt.tokens.use.direct'}<=scopes or not isinstance(value.get('access'),str) or value['access'].startswith('sk-'):
-    raise ValueError('Native ChatGPT plan-use consent required; API-key fallback is disabled.')
-   return value
-  value=read()
-  if value.get('expires',0)<=time.time()*1000+90000:
-   result=subprocess.run([str(NODE),str(Path(__file__).with_name('openclaw_auth.mjs')),str(path),str(PACKAGE/'dist/extensions/openai/token-sharing-oauth.runtime.js')],capture_output=True,timeout=20,env=environment(AUTH))
-   if result.returncode:raise ValueError('Native ChatGPT authorization needs sign-in; no fallback.')
-   value=read()
-  if value.get('expires',0)<=time.time()*1000+30000:raise ValueError('Native subscription authorization is expired.')
-  return value['access']
+   if value.get('type')!='oauth' or value.get('provider')!='openai' or value.get('authFlow')!='chatgpt-token-sharing' or value.get('issuer')!='https://auth.openai.com' or not {'resource.invoke','chatgpt.tokens.use.direct'}<=scopes or not isinstance(value.get('access'),str) or value['access'].startswith('sk-'):raise CredentialFailure('client-configuration')
+   if value.get('expires',0)<=time.time()*1000+30000:raise CredentialFailure('refresh-backoff',retry_after_seconds=1)
+   return value['access']
+ except CredentialFailure:raise
+ except (OSError,sqlite3.Error,ValueError,KeyError,TypeError):raise CredentialFailure('storage-unavailable') from None
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise ValueError('Provider redirects are disabled.')
 
-def http_request(method,url,token,body=None):
+def http_request(method,url,token,body=None,timeout_seconds=65):
  if (method,url) not in {('GET','https://api.openai.com/v1/models'),('POST','https://api.openai.com/v1/responses')}:raise ValueError('Unexpected subscription endpoint.')
  ca='/etc/ssl/cert.pem' if Path('/etc/ssl/cert.pem').exists() else None
  context=ssl.create_default_context(cafile=ca);context.keylog_filename=None
  opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect(),urllib.request.HTTPSHandler(context=context))
  request=urllib.request.Request(url,data=body,method=method,headers={'Authorization':'Bearer '+token,'Content-Type':'application/json','Accept':'text/event-stream' if method=='POST' else 'application/json'})
- try:return opener.open(request,timeout=65)
+ if not 1<=timeout_seconds<=65:raise ValueError('Provider transport timeout is outside its bound.')
+ try:return opener.open(request,timeout=timeout_seconds)
  except urllib.error.HTTPError as response:return response
 
 def catalog(token):
@@ -76,7 +88,12 @@ def execute(logical,directory,token_source=credential,transport=http_request):
  """Return parsed answer plus original-byte directory; no database side effects."""
  directory=Path(directory);directory.mkdir(mode=0o700,parents=True,exist_ok=False)
  if logical['modelId']!=MODEL or len(canonical(logical))>96000:raise ValueError('Invalid complete logical request.')
- token=token_source();workspace=directory/'workspace';workspace.mkdir();state=directory/'state';state.mkdir()
+ (directory/'logical.json').write_bytes(canonical(logical))
+ try:token=token_source()
+ except CredentialFailure as error:
+  receipt=dict(runtime=VERSION,model_id=MODEL,status='paused-auth' if error.status=='auth-required' else 'failed',error_code=error.reason,credential_status=error.status,retry_after_seconds=error.retry_after_seconds,provider_request_sent=False,provider_calls=0,usage=None,paid_fallback=False,measured_charges_usd=None,subscription_allocation_usd=None)
+  (directory/'receipt.json').write_bytes(canonical(receipt));return None,receipt
+ workspace=directory/'workspace';workspace.mkdir();state=directory/'state';state.mkdir()
  (workspace/'AGENTS.md').write_text('\n\n'.join(b['text'] for b in logical['system'])+'\nReturn one JSON decision. No tools or shell access are available.\n')
  message=directory/'message.json';message.write_text(logical['messages'][0]['content'][0]['text'])
  (directory/'logical.json').write_bytes(canonical(logical))
@@ -146,14 +163,19 @@ def execute(logical,directory,token_source=credential,transport=http_request):
 
 def worker_loop():
  import model_dispatch as dispatch,store
+ from openclaw_health import WorkerAvailability
  from workflow import now
  os.umask(0o077);verify_runtime();spool=Path(os.environ.get('OPENCLAW_SPOOL','/var/lib/jumpserve-openclaw/spool'));spool.mkdir(mode=0o700,parents=True,exist_ok=True)
- paused=False
+ availability=WorkerAvailability(AUTH,spool,credential)
  def process(job):
-  nonlocal paused
   directory=spool/job['id']
   if directory.exists():raise ValueError('Original spool exists; reconcile retained request, never replay.')
-  answer,receipt=execute(json.loads(job['request_raw']),directory)
+  logical=json.loads(job['request_raw'])
+  if logical.get('builder'):
+   import experiment_builder
+   answer,receipt=experiment_builder.execute(logical,directory,job)
+  else:answer,receipt=execute(logical,directory)
+  availability.observe(receipt)
   artifacts=[];captured={}
   for path in sorted(directory.iterdir()):
    if path.is_file() and path.name not in ('config.json',):
@@ -166,16 +188,16 @@ def worker_loop():
    store.append(job['study_id'],job['actor_id'],'artifacts',record);response_sha=record['sha256']
   provenance=dict(receipt,artifacts=artifacts)
   dispatch.rpc('finish',dict(id=job['id'],token=job['lease_token'],status=receipt['status'],response_artifact_id=response_id,response_sha256=response_sha,provenance=provenance))
-  if receipt['status'] in ('paused-quota','paused-auth'):
-   paused=True;dispatch.rpc('heartbeat',dict(status='paused-quota' if receipt['status']=='paused-quota' else 'auth-required',configuration=dict(runtime=VERSION,paid_fallback=False)))
  with ThreadPoolExecutor(max_workers=2) as pool:
-  futures=[];last_health=0;ready=False
+  futures=[];last_health=0;last_builder_reap=0;ready=False
   while True:
    try:
+    if os.environ.get('RESEARCH_BUILDER_ENABLED')=='true' and time.monotonic()-last_builder_reap>60:
+     import experiment_builder
+     experiment_builder.reap(spool);last_builder_reap=time.monotonic()
     if time.monotonic()-last_health>5:
-     try:credential();ready=not paused
-     except Exception:ready=False
-     dispatch.rpc('heartbeat',dict(status='ready' if ready else 'paused-quota' if paused else 'auth-required',configuration=dict(runtime=VERSION,model_id=MODEL,paid_fallback=False,actual_cost_usd=None)));last_health=time.monotonic()
+     health=availability.check();ready=health['status']=='ready'
+     dispatch.rpc('heartbeat',dict(status=health['status'],configuration=dict(runtime=VERSION,model_id=MODEL,paid_fallback=False,actual_cost_usd=None,auth_recovery='openclaw-auth-recovery-v1',reason=health['reason'],retry_after_seconds=health['retry_after_seconds'])));last_health=time.monotonic()
     active=[]
     for future in futures:
      if future.done():
@@ -184,9 +206,19 @@ def worker_loop():
      else:active.append(future)
     futures=active
     if ready and len(futures)<2:
+     # A completed concurrent turn may have recorded a quota/provider pause
+     # since the periodic heartbeat. Check again before claiming more work.
+     admission=availability.check()
+     if admission['status']!='ready':ready=False;continue
      job=dispatch.rpc('claim',{})
      if job:futures.append(pool.submit(process,job))
    except Exception as error:print(json.dumps(dict(runtime=VERSION,status='unavailable',error_type=type(error).__name__)),flush=True)
    time.sleep(1)
 
-if __name__=='__main__':worker_loop()
+if __name__=='__main__':
+ import sys
+ if sys.argv[1:]==['--resume-quota']:
+  from openclaw_health import WorkerAvailability
+  print(json.dumps(WorkerAvailability(AUTH,Path(os.environ.get('OPENCLAW_SPOOL','/var/lib/jumpserve-openclaw/spool')),credential).resume_quota()))
+ elif sys.argv[1:]:raise SystemExit('Only --resume-quota or the worker loop is supported.')
+ else:worker_loop()

@@ -159,4 +159,56 @@ class PublicStatus(unittest.TestCase):
                     api.dispatch(self.event(path=path, query={'task': TASK}), OTHER)
                 self.assertEqual(denied.exception.status, 404)
 
+    def test_anonymous_read_exposes_recorded_diagnostics_but_not_credentials_or_original_private_fields(self):
+        self.data['autonomy_workflows'][0]['reason'] = 'Planner stopped after input validation.'
+        self.data['autonomy_tasks'][0].update(reason='Dataset version is unavailable; parser raised ValueError.',
+            required_inputs=['Supply the archived 1988 trace in CSV format.', 'Contact private-owner@example.org; API_KEY="private-short-key"'])
+        self.data['queue_jobs'][0]['reason'] = 'Executor timed out after 10 seconds.'
+        self.data['runs'][0]['reason'] = 'Only 2 of 3 observations were recorded. Token: Bearer private-token-12345'
+        original = copy.deepcopy(self.data)
+        response = api.handler(self.event(query={'public': '1', 'diagnostics': '1'}))
+        self.assertEqual(response['statusCode'], 200)
+        result = json.loads(response['body'])
+        self.assertIn('ValueError', result['autonomy']['tasks'][0]['reason'])
+        self.assertIn('1988 trace in CSV format', result['autonomy']['tasks'][0]['reason'])
+        self.assertEqual(result['autonomy']['workflows'][0]['reason'], 'Planner stopped after input validation.')
+        self.assertEqual(result['jobs'][0]['reason'], 'Executor timed out after 10 seconds.')
+        self.assertIn('Only 2 of 3 observations', result['jobs'][0]['run_reason'])
+        for secret in (SECRET, 'private-owner@example.org', 'private-short-key', 'private-token-12345', 'initial_prompt', 'required_inputs', 'lease_token', 'requested_resources'):
+            self.assertNotIn(secret, response['body'])
+        self.assertEqual(self.data, original)
+        for mock in self.mocks[2:]: mock.assert_not_called()
+        legacy = scheduler.public_snapshot(STUDY)
+        self.assertNotIn('reason', legacy['jobs'][0]); self.assertNotIn('run_reason', legacy['jobs'][0])
+        self.assertIn('ValueError', legacy['autonomy']['tasks'][0]['reason'])
+
+    def test_public_diagnostics_redact_common_secret_formats_and_bound_output_without_changing_originals(self):
+        secrets = [
+            'https://storage.example.org/private/file.pdf?token=short-secret',
+            's3://private-bucket/private/key', 'postgresql://user:password@privatehost/database',
+            '/Users/private-owner/workspace/input.csv', '/tmp/private-input.csv', r'C:\Users\private-owner\file.txt',
+            'arn:aws:lambda:us-east-1:395567831870:function:private-function', 'i-0123456789abcdef0',
+            '10.20.30.40', '2001:db8::abcd', 'AKIA1234567890ABCDEF', 'sk-privateToken1234567890',
+            'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZWNyZXQifQ.signature',
+            'password="short secret with spaces"', 'access_token=short-secret',
+        ]
+        for secret in secrets:
+            with self.subTest(secret=secret):
+                value = 'Execution failed: ' + secret
+                cleaned = scheduler.public_reason(value)
+                self.assertIn('Execution failed:', cleaned)
+                self.assertNotIn(secret, cleaned)
+                self.assertIn('[redacted]', cleaned)
+                self.assertEqual(value, 'Execution failed: ' + secret)
+        for value in ('Failure: {"initial_prompt":"PRIVATE-CANARY"}', 'Cookie: session=PRIVATE-CANARY',
+                      '-----BEGIN PRIVATE KEY-----\nPRIVATE-CANARY\n-----END PRIVATE KEY-----'):
+            self.assertNotIn('PRIVATE-CANARY', scheduler.public_reason(value))
+        self.assertIn('truncated', scheduler.public_reason('A useful error. ' * 1000))
+        self.assertLessEqual(len(scheduler.public_reason('A useful error. ' * 1000)), 4000)
+        self.assertIn('size limit', scheduler.public_reason('x' * 100001))
+        self.assertIsNone(scheduler.public_reason(None))
+        self.data['autonomy_tasks'][0].update(reason=None, required_inputs=[])
+        reason = scheduler.public_snapshot(STUDY)['autonomy']['tasks'][0]['reason']
+        self.assertEqual(reason, 'Paused. No failure details or requirements were recorded.')
+
 if __name__ == '__main__': unittest.main()

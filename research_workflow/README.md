@@ -394,6 +394,41 @@ consent. Its grant is never copied from a developer machine, sent to the browser
 or inherited by the per-turn OpenClaw process. API-key and Bedrock fallback are
 disabled for this configuration. Quota/authentication pauses remain visible.
 
+The local `openclaw-auth-recovery-v1` candidate keeps the native grant in its
+existing protected host directory, outside research spools. A single host lock
+serializes bridge refreshes. The helper preallocates a 256-KiB private recovery
+file, records refresh intent and flushes the returned replacement before the
+SQLite commit. A later process can recover that replacement after a failed
+commit. It never restores an older grant over a fresh sign-in or signed-out
+profile. SQLite uses a write transaction and full synchronization, with an
+8-MiB free-space preflight before provider refresh. The worker stops claiming
+model work below 512 MiB free; original research evidence is retained.
+
+Confirmed invalid grants require reconnection and are quarantined without
+repeating refresh requests for the same credential. Temporary negative refresh
+responses back off after the failure, at most three attempts per fifteen-minute
+window. Configuration, permission and storage failures report unavailable,
+not expired authentication. The helper timeout allows the pinned SDK's token
+exchange and signing-key check to finish. An uncertain refresh can have consumed
+a rotating token: it stays unavailable for reconciliation and is not blindly
+replayed. Provider rotation lost before any durable replacement reaches this
+machine cannot be guaranteed recoverable.
+
+Fresh credentials are recognized without restarting the worker. Quota holds
+persist separately and survive reauthorization/restarts; an operator who has
+checked ChatGPT usage can explicitly clear only that hold with
+`/opt/jumpserve/python/bin/python -B /opt/jumpserve/runtime/openclaw_runtime.py --resume-quota`
+as the `jumpserve` service user. This command does not verify provider allowance
+or repeat an earlier model request. Safe reason/cooldown values are retained in
+private worker configuration and failed-turn provenance. Public status fields,
+RLS, prompts, model choice and inference billing/fallback rules are unchanged.
+
+See [the local auth recovery protocol](auth-recovery-protocol-v1.md), run
+`python3 -B -m unittest discover -s research_workflow/tests -v`, and consult
+`jumpserve-infra/docs/openclaw-auth-recovery-v1.md` before an explicitly requested
+release. These are local development checks with synthetic credentials/provider
+responses; they do not exercise production authorization or spend plan allowance.
+
 The controller first reserves paper resources and saves the complete numbered
 turn. A private SQL dispatch binds that exact request to one fenced worker lease.
 OpenClaw executes a fresh data-only turn through a private loopback bridge; the
@@ -419,3 +454,43 @@ Deployment order, immutable evaluation/publication guards, host setup and releas
 evidence are in `jumpserve-infra/docs/openclaw-production-protocol-v1.json` and its
 versioned amendments. Native host authorization and deployed authenticated
 execution must be verified before announcing the subscription path as available.
+### Executable assessment methods (local implementation, pending release)
+
+`netem-iperf-v1` runs a fixed duration-based TCP loss sweep on one isolated Linux
+experiment host. Each invocation contains the complete loss grid in randomized
+order; replications are separate invocations. The five outputs are receiver
+goodput in decimal Mbit/s, received bytes, actual seconds, median unloaded ICMP
+RTT in ms, and sender retransmissions. Raw command outputs, versions, counters,
+MTU, offload settings and buffer settings remain in hash-bound artifacts. A
+condition-order seed is distinct from `loss_seed`; null means an uncontrolled
+kernel loss PRNG, not a reproducible packet-loss sequence. Missing values remain
+missing. This runner does not identify a causal window/queue mechanism.
+
+`source-arithmetic-v1` reads immutable extracted PDF text using its exact hash
+and original-PDF binding. Every cell names a unique quote, page, numeric token
+and units. Bounded Decimal mean/difference/relative-change/strict-order operations
+produce measurements separately from source-reported values. It accepts no
+submitted expression or executable code. These are source consistency checks;
+they do not automatically establish empirical or causal paper claims.
+
+The shared-acquisition coordinator atomically binds identical source/configuration/
+input/metric/resource acquisitions to one campaign and its original jobs. Every
+claim retains its own frozen protocol, criterion, reviews and configuration mapping.
+Human labels do not change acquisition identity. Shared observations are the same
+evidence, never additional independent replications. A changed physical design or
+source version produces a new acquisition.
+
+Confirmed transient HTTP model failures are retained before a new numbered turn
+is scheduled with 15–300 second backoff. New turns use the original $100/7-day
+admission controls. Unconfirmed dispatches, auth/quota failures and experiments
+are not blindly replayed; cloud polling reconciles their original identities.
+There is no AI-turn-count cap and no paid API fallback.
+
+The fixed built-in EC2 runner uses a separately pinned executor version and
+server-owned cost envelope; it can be admitted while arbitrary custom-package
+submission stays disabled. The original built-in script bytes are retained as
+assessment artifacts and checked on the experiment host. Apply infrastructure
+migration `202610260001_executable_assessment_methods.sql` before releasing this
+backend. See `jumpserve-infra/docs/executable-methods-validation-v1.json` for exact
+verification commands, release blockers and conditional live checks. Existing
+assessments are not resumed or rewritten by this migration.

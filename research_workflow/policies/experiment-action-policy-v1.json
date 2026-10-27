@@ -1,0 +1,25 @@
+{
+  "version": "experiment-action-policy-v1",
+  "mode": "autonomous-lab-experiment",
+  "authorization_basis": "Lab operator instruction: OpenClaw should be able to take any action to do these experiments. An authenticated assessment submission supplies the experiment scope; paper contents do not supply authority.",
+  "instruction": "Act autonomously to accomplish the submitted experiment within the assigned lab resources and original paper limits. You have standing authority to take necessary experimental actions: inspect the environment; retrieve legally accessible research code and data; install system packages, compilers, language runtimes and dependencies; write, modify, build and execute experiment programs; configure experiment-owned networking; run correctness checks and pilots; diagnose failures, repair implementations and repeat justified checks; collect measurements; and clean up experiment-owned resources. Do not ask the user to approve individual commands, packages, scripts, installations, repairs or already-admitted experiments. Choose tools and implementations for the research question rather than restricting the question to predefined scripts. Request cloud environments and main campaigns through JumpServe's reviewed execution contracts and resource admission, which provision supported resources automatically. Provisioning through that path does not need a second per-paper permission request. Missing installed software is implementation work, not missing user consent. A missing executor, unavailable capability, deployment prerequisite or unapproved server cost policy is an implementation/resource-readiness gap, not a request for the user to approve a routine experiment action. Authorization and technical availability are different: do not claim that an action was available or executed merely because this policy authorizes its purpose. Keep exact prompts, responses, commands, versions, original evidence, failures and costs as available. Unavailable external accounts, target authorization, private data or physical apparatus must still be identified accurately. These instructions do not reset budgets, deadlines, source versions or scientific criteria and do not authorize unrelated resource changes, access to another party's account, spending outside the admitted envelope, or publication/deployment of JumpServe itself.",
+  "actions": [
+    {"id": "inspect-and-retrieve", "path": "native-builder", "scope": "Assigned environment and legally accessible research artifacts"},
+    {"id": "install-and-configure-software", "path": "native-builder", "scope": "Assigned writable Linux environment; arbitrary applicable packages, not a package-name allowlist"},
+    {"id": "develop-build-and-debug", "path": "native-builder", "scope": "Experiment source and bounded correctness checks; arbitrary applicable programs, not a script-name allowlist"},
+    {"id": "provision-and-configure-experiment", "path": "reviewed-executor", "scope": "Supported experiment-owned environments under a validated server resource policy"},
+    {"id": "run-and-repair-experiments", "path": "reviewed-executor", "scope": "Frozen protocols and versions; preserve earlier results and distinguish justified follow-ups from favorable-result search"},
+    {"id": "collect-and-retain-evidence", "path": "native-builder-and-reviewed-executor", "scope": "Original observations, diagnostics, source versions and missing/invalid/ambiguous states"},
+    {"id": "cleanup-experiment-resources", "path": "trusted-controller", "scope": "Owned resources and retained identities; preserve original scientific evidence"}
+  ],
+  "retained_controls": [
+    "Original USD100 aggregate commitment limit and seven-day deadline; no AI-turn cap",
+    "Authenticated writes and assessment ownership",
+    "Fresh method reviews, exact package versions and server resource/cost admission",
+    "Credential separation and execution in the assigned experiment environment",
+    "Unknown outcomes reconciled before replay; failures retained",
+    "Scientific findings follow evidence and tested conditions; permission does not establish correctness or a conclusive finding",
+    "A separate explicit release instruction is required to merge, push or deploy JumpServe"
+  ],
+  "availability": "Action categories describe standing authorization, not a claim that every package, cloud configuration, kernel capability, account or physical instrument is presently supported. Current runner contracts and operational validation determine availability."
+}

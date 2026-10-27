@@ -152,7 +152,9 @@ class PackageRuntime(unittest.TestCase):
             root=Path(temp);source=b'import time\nprint("started",flush=True)\ntime.sleep(20)\n'
             spec=network_spec.specs(document('custom-package-v1'))[0];spec['config']['package']['sha256']=workflow.digest(source)
             (root/'spec.json').write_bytes(workflow.canonical(spec));(root/'package.py').write_bytes(source)
-            result=package_runtime.run(root,time.time()+.2,allow_container=False)
+            # Leave room for interpreter startup when native/Docker checks run
+            # concurrently; the sleeping process still hits a real deadline.
+            result=package_runtime.run(root,time.time()+1,allow_container=False)
             self.assertEqual(result['termination_reason'],'Wall deadline exceeded.');self.assertIsNotNone(result['exit_code']);self.assertTrue((root/'runtime-receipt.json').is_file());self.assertIn(b'started',(root/'stdout.bin').read_bytes())
     def test_corrupt_source_is_rejected_before_running(self):
         with tempfile.TemporaryDirectory() as temp:

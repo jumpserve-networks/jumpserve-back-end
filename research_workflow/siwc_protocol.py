@@ -7,8 +7,8 @@ import copy,json,time
 import autonomy_model as model
 from workflow import canonical
 MODEL='gpt-6.1-sol'
-LIMIT_CODES={'subscription_sharing_usage_limit_exceeded','subscription_sharing_usage_unavailable','subscription_sharing_user_unavailable','rate_limit_exceeded','insufficient_quota'}
-AUTH_CODES={'subscription_sharing_user_not_eligible','subscription_sharing_invalid_user','chatpass_v2_scope_not_authorized','chatpass_v2_invalid_authorization_context'}
+LIMIT_CODES={'subscription_sharing_usage_limit_exceeded','rate_limit_exceeded','insufficient_quota'}
+AUTH_CODES={'subscription_sharing_invalid_user'}
 
 def response_request(request):
     """Logical Bedrock-shaped controller data -> SIWC-compatible text request."""
@@ -40,7 +40,7 @@ class StreamFailure(ValueError):
 
 def failure(code, status=None, observed_usage=None):
     state = 'paused-quota' if code in LIMIT_CODES or status == 429 else (
-            'paused-auth' if code in AUTH_CODES or status in (401, 403) else 'failed')
+            'paused-auth' if code in AUTH_CODES or status == 401 else 'failed')
     return StreamFailure(code or 'provider-error', state, observed_usage)
 
 def read_terminal_stream(response, sink, deadline, maximum):

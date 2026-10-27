@@ -1,0 +1,16 @@
+{
+  "version": "netem-iperf-costs-v1",
+  "region": "us-east-1",
+  "account": "395567831870",
+  "instance_type": "t3.medium",
+  "cpu_credits": "standard",
+  "max_instances": 1,
+  "max_wall_seconds": 1800,
+  "root_gib": 8,
+  "maximum_cents": 100,
+  "valid_until": "2026-11-26T00:00:00Z",
+  "kind": "conservative-reservation",
+  "basis": "One <=30-minute t3.medium with standard CPU credits, one 8-GiB gp3 root deleted on termination, one public IPv4, bounded control-plane/input/output and fixed private-namespace traffic. One dollar is an admission reservation, not an invoice measurement or an absolute guarantee against failed cloud cleanup. Independent deadline reaper and guest shutdown are required.",
+  "sources": ["https://aws.amazon.com/ec2/pricing/on-demand/", "https://aws.amazon.com/ebs/pricing/", "https://aws.amazon.com/vpc/pricing/"],
+  "measured_charges_usd": null
+}
