@@ -135,19 +135,46 @@ def delivered_pages(context, history):
         call=calls.get(output.get('call_id'))
         if output.get('type')!='function_call_output' or not call or call.get('name')!='exec':continue
         try:
-            args=json.loads(call['arguments']);command=shlex.split(args['command']);record=json.loads(output['output'])
-            if len(command)!=5 or command[:3]!=['python3','/workspace/read-retained.py','context'] or command[3] not in context:continue
-            key=command[3];page=int(command[4]);raw=canonical(context[key]);parts=[];start=0
-            while start<len(raw):
-                end=min(start+6000,len(raw))
-                while True:
-                    try:part=raw[start:end].decode('utf-8');break
-                    except UnicodeDecodeError:end-=1
-                parts.append(part);start=end
-            if (type(record['page']) is not int or page<0 or page>=len(parts) or record['kind']!='context' or record['key']!=key or record['sha256']!=digest(raw) or record['bytes']!=len(raw) or record['page']!=page or record['pages']!=len(parts) or record['fragment']!=parts[page] or record['next_page']!=(page+1 if page+1<len(parts) else None)):continue
-            delivered.setdefault(key,{})[page]=dict(call_id=call['call_id'],native_output_sha256=digest(canonical(output)))
+            args=json.loads(call['arguments']);lexer=shlex.shlex(args['command'],posix=True,punctuation_chars=';&|');lexer.whitespace_split=True;lexer.commenters=''
+            segments=[[]]
+            for token in lexer:
+                if token in (';','&&'):segments.append([])
+                else:segments[-1].append(token)
+            requested=set()
+            for command in segments:
+                if len(command)!=5 or command[0]!='python3' or command[1] not in ('read-retained.py','./read-retained.py','/workspace/read-retained.py') or command[2]!='context' or command[3] not in context:break
+                requested.add((command[3],int(command[4])))
+            else:
+                for line in output['output'].splitlines():
+                    try:record=json.loads(line)
+                    except ValueError:continue
+                    if not isinstance(record,dict) or record.get('kind')!='context' or type(record.get('page')) is not int or (record.get('key'),record.get('page')) not in requested:continue
+                    key=record['key'];page=record['page'];raw=canonical(context[key]);parts=[];start=0
+                    while start<len(raw):
+                        end=min(start+6000,len(raw))
+                        while True:
+                            try:part=raw[start:end].decode('utf-8');break
+                            except UnicodeDecodeError:end-=1
+                        parts.append(part);start=end
+                    if (page<0 or page>=len(parts) or record.get('sha256')!=digest(raw) or record.get('bytes')!=len(raw) or record.get('pages')!=len(parts) or record.get('fragment')!=parts[page] or record.get('next_page')!=(page+1 if page+1<len(parts) else None)):continue
+                    delivered.setdefault(key,{})[page]=dict(call_id=call['call_id'],native_output_sha256=digest(canonical(output)))
         except (ValueError,TypeError,KeyError):continue  # Invalid/truncated outputs are not counted.
     return delivered
+
+def work_progress(workspace,context,history):
+    """Trusted inventory of changed work files and exact deliveries; not correctness."""
+    generated={'context-index.json','research-context.json','native-tool-history.json','runner-contract.json','read-retained.py','paper-text.json','paper-text-reference.json','progress.json'}
+    files=[]
+    for p in sorted(workspace.rglob('*')):
+        name=p.relative_to(workspace).as_posix()
+        if p.is_symlink():raise ValueError('Progress inventory cannot follow symlinks.')
+        if not p.is_file() or name in generated or name.startswith(('previous-','reference-implementations/')):continue
+        if p.stat().st_size>1000000:raise ValueError('Progress file exceeds checkpoint bounds.')
+        raw=p.read_bytes();files.append(dict(path=name,sha256=digest(raw),bytes=len(raw)))
+    pages=delivered_pages(context,history)
+    coverage={key:dict(sha256=digest(canonical(context[key])),pages=sorted(value)) for key,value in pages.items() if key in ('source_material','source','claim','proposal_contract','runner_contracts')}
+    record=dict(version='builder-work-progress-v1',files=files,delivered=coverage,scope='File changes and exact context transport, not substantive review, correctness or scientific completion.')
+    return dict(record,sha256=digest(canonical(record)))
 
 def bootstrap(logical, workspace, directory, history):
     """Deliver exact context by file instead of duplicating it in each session.
@@ -180,7 +207,7 @@ def bootstrap(logical, workspace, directory, history):
         if path.is_symlink():raise ValueError('Builder context delivery cannot replace a symlink.')
         path.write_bytes(raw)
     focus={}
-    for key in ('task','claim','remaining_commitment_cents','deadline_at','builder_feedback'):
+    for key in ('task','claim','remaining_commitment_cents','deadline_at','builder_feedback','builder_work_progress'):
         if key in context and len(canonical({key:context[key]}))<=3000 and len(canonical(focus))+len(canonical({key:context[key]}))<=4500:
             focus[key]=context[key]
     # Preserve every trusted system instruction in full, without duplicating the
@@ -504,8 +531,16 @@ def _execute(logical,directory,job,token_source,transport,task_root):
             if key in responses: return responses[key]
             if key in in_flight: raise ValueError('In-flight native call cannot be replayed.')
             index = len(responses) + 1; in_flight.add(key)
-        artifact = retain(job, 'call-' + str(index) + '-request.json', body)
-        call = rpc('begin', job, request_artifact_id=artifact['artifact_id'], request_sha256=artifact['sha256'], request_bytes=len(body))
+        try:
+            artifact = retain(job, 'call-' + str(index) + '-request.json', body)
+            call = rpc('begin', job, request_artifact_id=artifact['artifact_id'], request_sha256=artifact['sha256'], request_bytes=len(body))
+        except Exception:
+            # Admission/storage failed before token acquisition or transport.
+            # Its database outcome may need reconciliation, but no model call
+            # was sent by this process. Never claim unknown provider usage.
+            in_flight.remove(key)
+            result.update(provider_request_sent=False,admission_unconfirmed=True)
+            raise
         if call.get('denied'):
             in_flight.remove(key);result['admission_denied']=call['denied']
             raise ValueError('Builder admission refused: ' + call['denied'])
@@ -514,6 +549,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         try:
             token = token_source()
             result['provider_calls'] += 1
+            result['provider_request_sent']=True
             with transport('POST', 'https://api.openai.com/v1/responses', token, body) as response:
                 response_received = True; http_status = response.status
                 with raw_path.open('wb') as sink:
@@ -624,7 +660,9 @@ def _execute(logical,directory,job,token_source,transport,task_root):
                 (workspace/'native-tool-history.json').write_bytes(canonical(history))
                 result['checkpoint']=retain(job,'failed-checkpoint.zip',checkpoint(workspace),'builder-failed-workspace-checkpoint')
             except Exception as error:result['checkpoint_failure']=type(error).__name__
-        if result.get('checkpoint'):(task_root/'checkpoint-reference.json').write_bytes(canonical(result['checkpoint']))
+        if result.get('checkpoint'):
+            (task_root/'checkpoint-reference.json').write_bytes(canonical(result['checkpoint']))
+            result['work_progress']=work_progress(workspace,settings['context'],history)
         result.update(wall_seconds=max(0, time.monotonic() - began), native_tool_cleanup=cleanup,
                       usage=dict(calls=call_usages,scope='Per-call available provider token counts; missing entries and subscription allocation remain unknown.'),
                       catalog_cost_fields='Native zero cost fields are non-billing placeholders; subscription allocation and measured charges remain unknown.')

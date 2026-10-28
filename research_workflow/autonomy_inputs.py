@@ -5,7 +5,7 @@ import network_spec
 import store
 from workflow import canonical,digest,identifier
 
-VERSION='autonomy-planning-inputs-v5'
+VERSION='autonomy-planning-inputs-v6'
 FRAGMENT_CHARACTERS=1000
 ANCHOR_CHARACTERS=2500
 INLINE_SOURCE_BYTES=16000
@@ -139,6 +139,7 @@ def runner_contracts():
  constraints['bounded-tcp-v1'].append('Fixed output: BOTH received_bytes in bytes AND round_trip_time_ms in ms for every exchange. Both must be declared with planned_observations=exchanges; resource_limits.max_observations must be at least 2*exchanges. Treat RTT as descriptive diagnostic data when the hypothesis concerns byte counts. Undeclared diagnostics or a smaller observation budget cause ingestion failure; never drop actual output.')
  for runner,info in network_spec.RUNNERS.items():
   result[runner]=dict(id=runner,**info,executor_configured=enabled(runner),test_config_schema=schemas[runner],metrics=network_spec.BUILTIN_METRICS.get(runner,'Package-declared metrics must match the frozen output schema.'),constraints=constraints[runner],autonomous_admission='Requires fresh reviews, current server-approved cost bounds, original deadline and remaining paper budget. Executor configuration alone is not scientific applicability or permission to bypass these gates.')
+ result['netem-iperf-v1']['output_contract']=netem_iperf.observation_contract()
  return result
 
 def protocol_contract():

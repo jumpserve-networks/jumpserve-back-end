@@ -68,11 +68,21 @@ class OpenClaw(unittest.TestCase):
  def test_real_native_cli_matches_retained_provider_decision(self):
   package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
   if not node.exists():self.skipTest('Pinned local native OpenClaw runtime absent; required deployed equivalent remains a release gate.')
-  calls=[]
+  calls=[];logical=request()
   def transport(method,url,token,body):calls.append(json.loads(body));return Response(stream())
   with tempfile.TemporaryDirectory() as tmp,patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package):
-   answer,receipt=runtime.execute(request(),Path(tmp)/'turn',token_source=lambda:'synthetic-not-a-credential',transport=transport)
+   answer,receipt=runtime.execute(logical,Path(tmp)/'turn',token_source=lambda:'synthetic-not-a-credential',transport=transport)
    self.assertEqual(receipt['status'],'complete',receipt);self.assertEqual(model.parse(answer)['action'],'blocked');self.assertEqual(len(calls),1)
    self.assertEqual((Path(tmp)/'turn/provider-response.bin').read_bytes(),stream());self.assertFalse(receipt['paid_fallback'])
+   self.assertEqual(calls[0],wire.response_request(logical));self.assertEqual(receipt['provider_calls'],1);self.assertTrue(receipt['provider_request_sent'])
+
+ def test_real_cli_preflight_rejection_is_confirmed_zero_provider_calls(self):
+  package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
+  if not node.exists():self.skipTest('Pinned native CLI absent; equivalent native release check remains required.')
+  from unittest.mock import Mock
+  transport=Mock(side_effect=AssertionError('Provider must not be contacted'))
+  with tempfile.TemporaryDirectory() as tmp,patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package),patch.object(wire,'response_request',return_value={'oversize':'x'*96000}):
+   answer,receipt=runtime.execute(request(),Path(tmp)/'turn',token_source=lambda:'synthetic-not-a-credential',transport=transport)
+   self.assertIsNone(answer);self.assertEqual(receipt['status'],'failed');self.assertEqual(receipt['error_code'],'provider-request-byte-limit');self.assertEqual(receipt['provider_calls'],0);self.assertFalse(receipt['provider_request_sent']);transport.assert_not_called()
 
 if __name__=='__main__':unittest.main()

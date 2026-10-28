@@ -97,6 +97,12 @@ def validate(document, claim):
             raise ValueError('Decision observation identities must be unique and explicit.')
         if len(keys) > metrics[group['metric']]['planned_observations']:
             raise ValueError('Decision needs more observations than the frozen acquisition.')
+        if runner == 'netem-iperf-v1':
+            import netem_iperf
+            cfg=next(c for c in document['configurations'] if c['identity']==group['configuration'])['details']['test_config']
+            available=netem_iperf.observation_contract(cfg)
+            if not set(keys)<=set(r['observation_key'] for r in available['observations']) or group['metric'] not in netem_iperf.METRICS or group['units']!=netem_iperf.METRICS[group['metric']]:
+                raise ValueError('Decision keys/metric/units differ from the exact netem output contract: '+str(available))
     seen = set(); used = set()
     for rule in rules:
         if not isinstance(rule, dict) or set(rule) != {'id', 'operation', 'groups', 'target', 'tolerance_absolute'}:

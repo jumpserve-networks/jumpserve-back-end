@@ -365,6 +365,7 @@ def build_context(task):
   source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
   prior_attempts=[{k:r.get(k) for k in ('number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
+ value['resource_authorization']=dict(version='assessment-budget-amendment-v1',max_spend_cents=task['workflow']['max_spend_cents'],committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
  value['method_policy']=dict(version=methods.VERSION,sha256=digest(methods.INSTRUCTION.encode()))
  if task['stage'] in ('planning','building','comprehension','critic'):
   import experiment_builder
@@ -389,6 +390,7 @@ def build_context(task):
   value['runner_contracts']={runner:inputs.runner_contracts()[runner]} if runner in network_spec.RUNNERS else {}
  if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
  if context.get('runtime_retry'):value['runtime_retry']=context['runtime_retry']
+ if context.get('builder_work_progress'):value['builder_work_progress']=context['builder_work_progress']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
   eligible=[j for j in available if j['id'] not in context.get('tried_check_ids',[])]
@@ -677,7 +679,20 @@ def step(task):
    status=runtime['admission_denied'] if runtime['admission_denied'] in ('budget','deadline','cancelled') else 'blocked'
    return advance(task,status,context=context,reason='Original paper admission stopped further builder calls: '+runtime['admission_denied'])
   if runtime.get('build_state')=='external-blocked':return blocked(dict(task,context=context),output)
-  if output['action']!='propose':return advance(task,'queued',stage='building',context=context,reason='Builder checkpoint retained; continuing from actual files and feedback within the original paper limits.',delay=5)
+  if output['action']!='propose':
+   progress=runtime.get('work_progress') or {};fingerprint=progress.get('sha256')
+   if fingerprint:
+    previous=context.get('builder_work_progress',{})
+    stalled=previous.get('unchanged_slices',0)+1 if previous.get('sha256')==fingerprint else 0
+    context['builder_work_progress']=dict(sha256=fingerprint,unchanged_slices=stalled,version=progress['version'])
+    if stalled>=3:
+     reason='No implementation-file or exact context-delivery progress in three continuations. Reconsider the available runner and exact output contract using the retained commands and checkpoint; preserve the claim, method criteria, commitments and deadline.'
+     seen=context.get('builder_stalled_fingerprints',[])
+     context.update(last_feedback=reason,builder_feedback=reason)
+     if fingerprint in seen:return advance(task,'blocked',context=context,reason='Builder remained unchanged after targeted replanning. Recorded integration/implementation repair is required before further spending; original checkpoint retained.')
+     context['builder_stalled_fingerprints']=(seen+[fingerprint])[-32:]
+     return advance(task,'queued',stage='planning',context=context,reason=reason)
+   return advance(task,'queued',stage='building',context=context,reason='Builder checkpoint retained; continuing from actual files and feedback within the original paper limits.',delay=5)
  if output['action']=='inspect':
   read=inspect_evidence(task,output['read_request']);context['evidence_read']=dict(read,requested_by_turn_id=answer['id'])
   inputs.retain_source_delivery(dict(task,context=context),read)

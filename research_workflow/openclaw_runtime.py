@@ -100,7 +100,7 @@ def execute(logical,directory,token_source=credential,transport=http_request):
  (workspace/'AGENTS.md').write_text('\n\n'.join(b['text'] for b in logical['system'])+'\nReturn one JSON decision. No tools or shell access are available.\n')
  message=directory/'message.json';message.write_text(logical['messages'][0]['content'][0]['text'])
  (directory/'logical.json').write_bytes(canonical(logical))
- bridge_token=secrets.token_urlsafe(32);result={};lock=threading.Lock();started=False
+ bridge_token=secrets.token_urlsafe(32);result=dict(provider_request_sent=False,provider_calls=0);lock=threading.Lock();started=False
  def inference(raw):
   nonlocal started
   with lock:
@@ -109,10 +109,16 @@ def execute(logical,directory,token_source=credential,transport=http_request):
     raise ValueError('A provider operation is already retained; no retry.')
    started=True;result['request_hash']=digest(raw)
   (directory/'openclaw-http-body.bin').write_bytes(raw)
-  body=canonical(wire.response_request(translate(json.loads(raw),logical)))
-  if len(body)>96000:raise ValueError('Complete provider request exceeds 96000 bytes; no call.')
+  # OpenClaw adds its own bootstrap and schema wrapper. Forward the admitted
+  # logical request, not that duplicate wrapper, preserving its exact authority,
+  # context and decision schema once. Retain both original transports.
+  translate(json.loads(raw),logical)  # Reject unexpected roles/tools/models.
+  body=canonical(wire.response_request(logical))
+  if len(body)>96000:
+   result.update(status='failed',error_code='provider-request-byte-limit',provider_request_sent=False,provider_calls=0)
+   raise ValueError('Complete provider request exceeds 96000 bytes; no call.')
   (directory/'provider-request.json').write_bytes(body)
-  result.update(status='unknown',response_received=False,usage=None,provider_retries=0,paid_fallback=False)
+  result.update(status='unknown',response_received=False,usage=None,provider_retries=0,paid_fallback=False,provider_request_sent=True,provider_calls=1)
   with transport('POST','https://api.openai.com/v1/responses',token,body) as response:
    result.update(response_received=True,http_status=response.status,request_id=response.headers.get('x-request-id'))
    with (directory/'provider-response.bin').open('wb') as sink:
@@ -141,7 +147,9 @@ def execute(logical,directory,token_source=credential,transport=http_request):
      raw=b''.join(b'data: '+canonical(c)+b'\n\n' for c in chunks)+b'data: [DONE]\n\n';kind='text/event-stream'
     self.send_response(200);self.send_header('Content-Type',kind);self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw)
    except Exception as error:
-    result.update(status=getattr(error,'status','unknown'),error_code=getattr(error,'code','unconfirmed-'+type(error).__name__))
+    if result['provider_request_sent'] is False:
+     result.setdefault('status','failed');result.setdefault('error_code','local-pre-provider-'+type(error).__name__)
+    else:result.update(status=getattr(error,'status','unknown'),error_code=getattr(error,'code','unconfirmed-'+type(error).__name__))
     if getattr(error,'usage',None):result['usage']=error.usage
     self.send_error(400,'Retained model operation failed; no provider retry.')
  server=ThreadingHTTPServer(('127.0.0.1',0),Handler);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()

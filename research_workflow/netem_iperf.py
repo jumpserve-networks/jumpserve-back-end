@@ -39,6 +39,21 @@ def minimum_wall(config):
     return 300 + len(config['loss_levels_pct']) * (config['duration_seconds'] + config['ping_count'] + 20)
 
 
+def observation_key(loss):
+    # Preserve the historical representation, including 0 versus 0.0.
+    return 'loss:' + str(loss)
+
+
+def observation_contract(config=None):
+    return dict(version='netem-observation-identities-v1',
+        key_rule="'loss:' + str(loss_pct) using the original JSON number; 0 -> loss:0, 0.0 -> loss:0.0. Do not add replication to the key.",
+        metrics=METRICS, observations=None if config is None else [dict(observation_key=observation_key(loss),loss_pct=loss,metrics=list(METRICS)) for loss in validate(config)['loss_levels_pct']],
+        replication='Each host/run is a separate replication; the same condition key repeats across hosts. Select by configuration identity, metric and observation key.',
+        idle_rtt_ms='Median successful ICMP reply times, measured before the transfer on the same lossy path. Lost replies are not replaced; no successful replies means missing/null.',
+        missing='Every condition emits every metric. Missing or invalid values are null with status=missing and a reason; recorded zero remains zero.',
+        order='Conditions execute in seeded randomized order; identify them by key and loss_pct, never output position.')
+
+
 def network_budget(config):
     # Multiple veth interface counters count forwarded bytes repeatedly. This is
     # an enforcement allowance, not billed external traffic or predicted goodput.
@@ -112,7 +127,7 @@ def run(spec):
             command(['sysctl','-w','net.ipv4.tcp_congestion_control='+config['cca']],ns)
             command(['sysctl','net.ipv4.tcp_congestion_control','net.ipv4.tcp_rmem','net.ipv4.tcp_wmem'],ns)
         for loss in order:
-            key = 'loss:'+str(loss); metadata = dict(loss_pct=loss, replication=spec['replication'], requested_rtt_ms=2*config['one_way_delay_ms'])
+            key = observation_key(loss); metadata = dict(loss_pct=loss, replication=spec['replication'], requested_rtt_ms=2*config['one_way_delay_ms'])
             values = {}; reason = None
             try:
                 seed = ((config['loss_seed'] or 0) + spec['replication']*101 + config['loss_levels_pct'].index(loss)) % 2147483647
@@ -157,7 +172,7 @@ def run(spec):
         provenance['failure']=type(error).__name__+': '+str(error)
         for loss in order:
             if not any(r['metadata']['loss_pct']==loss for r in observations):
-                observations.extend(dict(observation_key='loss:'+str(loss),metric=m,units=u,value=None,status='missing',reason=provenance['failure'],metadata=dict(loss_pct=loss,replication=spec['replication'])) for m,u in METRICS.items())
+                observations.extend(dict(observation_key=observation_key(loss),metric=m,units=u,value=None,status='missing',reason=provenance['failure'],metadata=dict(loss_pct=loss,replication=spec['replication'])) for m,u in METRICS.items())
     finally:
         for ns in reversed(created): command(['ip','netns','del',ns],check=False)
     return dict(version='network-observations-v1',observations=observations,provenance=provenance,
