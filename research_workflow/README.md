@@ -4,6 +4,60 @@ Shared evidence records and bounded execution for `/module/research-verification
 The framework supports domain-specific studies; it does not automatically verify
 every paper. Scientific findings require appropriate checks and declared review.
 
+## Autonomous method completion
+
+Recoverable `design` blockers now join implementation work in the native builder.
+The versioned `autonomy-methods-v1` controller instruction is retained in the
+actual numbered model request, alongside the immutable published baseline prompt.
+It directs the planner to choose and justify prospective settings rather than
+request routine configuration from the user. Unreported original settings remain
+unknown, and external data/apparatus/authorization/provider gates remain intact.
+
+New autonomous protocols freeze a `recorded-decision-v1` object. Source arithmetic
+checks every declared calculation; empirical comparisons use explicit configuration,
+metric, unit and observation identities, with equal-weight whole-run means and
+descriptive fixed-target/difference/percentage/order comparisons. The controller
+verifies exact review candidates, claim-specific protocols, full run/observation
+counts, input/output hashes and retained raw output before allowing a numerical
+finding. Extracted claims need no invented prepopulated metric list. Shared
+acquisitions keep claim-specific criteria; later favorable results cannot silently
+replace earlier comparable runs. The admitted criterion stays locked, including
+after an unconfirmed queue acknowledgement. Unsupported causal or broader
+conclusions remain unresolved; descriptive diagnostics are still executable.
+
+Source-arithmetic reviewers see ordered expressions and original numeric operands.
+Both difference operations use `[baseline,treatment]`. Changing an erroneous
+configuration requires a new version; original outputs and prior-run references
+remain retained. This preview shares the existing source parser and is not an
+independent scientific check.
+
+Run `python3 -B -m unittest discover -s research_workflow/tests -v`. The protocol is
+[autonomy-methods-protocol-v1.md](autonomy-methods-protocol-v1.md). The separate
+infra command `python3 -B bin/replay-assessment-numerics.py --assessment <uuid>`
+performs a read-only independent arithmetic replay over public retained cell
+lexemes, with original response hashes, retrieval attempts and an explicit scope.
+It does not retrieve the protected PDF, execute a networking experiment or change
+the production assessment. An explicit release must qualify the augmented
+requests, pin the new `autonomy_methods.py` and changed runtime bytes, deploy them,
+and resume only reconciled tasks under their original budget and deadline.
+
+The data-only timing policy `data-only-window-v2` admits a 90-second total
+response stream, a 120-second CLI and a 130-second process timeout. Its dispatcher
+waits at most 250 seconds. Apply infrastructure migration
+`202610280001_data_only_model_window.sql` before activating that runtime: it
+requires 240 seconds of remaining task/paper time and fences dispatches at 235
+seconds. The controller task/Lambda bounds stay 300 seconds. The native builder
+keeps its separately bounded scheduling window. An earlier partial HTTP200 stream
+remains unknown; longer windows never replay or relabel an original provider call.
+
+The fixed netem runner's conservative 10x counter allowance does not admit a full
+five-level 30-second/100-Mbit/s grid under its 10-GB ceiling. A generated package
+needs correct, documented traffic accounting and its own reviewed method; dropping
+conditions, shortening transfers or raising limits silently is not a fix. Internal
+child-namespace counters and the runtime's non-loopback counter guard have different
+scopes. No full-grid acquisition or mechanism instrument was validated by the
+descriptive comparator's synthetic tests.
+
 Shared paper queue links now use the anonymous read-only status projection at
 `GET /research/studies/{id}/queue?public=1`, including before assessment
 publication. It returns paper/claim titles, recorded workflow/task/job statuses,

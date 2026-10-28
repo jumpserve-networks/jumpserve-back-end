@@ -1,5 +1,6 @@
 """Exposed OpenClaw protocol/dispatch regressions; synthetic provider, real CLI."""
 import io,json,os,sys,tempfile,unittest,uuid
+from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -16,6 +17,26 @@ def stream():
  text=json.dumps(decision());return b'data: '+json.dumps(dict(type='response.completed',response=dict(status='completed',model=runtime.MODEL,output=[dict(type='message',role='assistant',content=[dict(type='output_text',text=text)])],usage=dict(input_tokens=100,output_tokens=30,total_tokens=130)))).encode()+b'\n\n'
 
 class OpenClaw(unittest.TestCase):
+ def test_complete_stream_after_former_deadline_is_accepted_only_with_new_bounded_window(self):
+  class Slow(Response):
+   def __init__(self):
+    self.clock=0;self.timeout=0;self.frames=[b'data: {"type":"response.in_progress"}\n\n']*7+[stream()]
+    self.fp=SimpleNamespace(raw=SimpleNamespace(_sock=self))
+   def settimeout(self,seconds):self.timeout=seconds
+   def read1(self,n):
+    if not self.frames:return b''
+    if 10>self.timeout:raise TimeoutError('Controlled blocking-read timeout')
+    self.clock+=10
+    return self.frames.pop(0)
+  slow=Slow()
+  with patch.object(wire.time,'monotonic',side_effect=lambda:slow.clock):
+   with self.assertRaises(TimeoutError):wire.read_stream(slow,io.BytesIO(),65,10000)
+  slow=Slow();sink=io.BytesIO()
+  with patch.object(wire.time,'monotonic',side_effect=lambda:slow.clock):result=wire.read_stream(slow,sink,runtime.DATA_RESPONSE_SECONDS,10000)
+  self.assertEqual(result['status'],'completed');self.assertEqual(slow.clock,80)
+  self.assertIn(b'response.completed',sink.getvalue())
+  self.assertLess(runtime.DATA_RESPONSE_SECONDS,runtime.DATA_CLI_SECONDS)
+  self.assertLess(runtime.DATA_PROCESS_SECONDS,235);self.assertLess(235,dispatch.WAIT_SECONDS)
  def test_wire_has_explicit_json_input_and_never_requests_paid_keys_or_unsupported_fields(self):
   result=wire.response_request(request());self.assertEqual(result['input'][0]['role'],'developer');self.assertIn('JSON',result['input'][0]['content'])
   self.assertFalse(result['store']);self.assertTrue(result['stream']);self.assertEqual(result['tools'],[])

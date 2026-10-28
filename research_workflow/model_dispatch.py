@@ -5,7 +5,7 @@ from workflow import canonical,digest
 
 VERSION='openclaw-production-v1'
 MODEL='gpt-6.1-sol'
-WAIT_SECONDS=125
+WAIT_SECONDS=250
 BUILDER_WAIT_SECONDS=260
 
 class DispatchError(ValueError):

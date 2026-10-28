@@ -19,6 +19,23 @@ def source_fixture():
  return t,claim,source,raw,records,lookup,packet
 
 class PlanningInputs(unittest.TestCase):
+ def test_short_source_is_delivered_inline_with_hashes_and_role_specific_transport_coverage(self):
+  t,c,s,raw,records,lookup,packet=source_fixture()
+  packet['pages']=[dict(page=1,text=c['description']+' Methods: 256 bytes, two exchanges, 3 ms.')]
+  raw=workflow.canonical(packet);records['artifacts'][t['context']['text_artifact_id']]['sha256']=workflow.digest(raw)
+  with patch.object(store,'artifact_bytes',return_value=raw):material,fragments=inputs.source_text(t,c,s,lookup)
+  self.assertEqual(material['inline_fragments'],fragments)
+  self.assertEqual(material['inline_fragment_coverage']['sha256'],workflow.digest(workflow.canonical(fragments)))
+  self.assertFalse(material['complete_source_review']);self.assertEqual(material['delivery_progress']['delivered_fragments'],0)
+  inputs.retain_inline_delivery(t,material)
+  self.assertTrue(inputs.delivery_progress(t,material)['all_extracted_fragments_delivered'])
+  t['stage']='critic';self.assertEqual(inputs.delivery_progress(t,material)['delivered_fragments'],0)
+  bad=copy.deepcopy(material);bad['inline_fragments'][0]['text']='Changed text'
+  with self.assertRaisesRegex(ValueError,'Inline source delivery'):inputs.retain_inline_delivery(t,bad)
+ def test_long_source_keeps_pagination_instead_of_truncating_to_inline_limit(self):
+  t,c,s,raw,records,lookup,packet=source_fixture()
+  with patch.object(store,'artifact_bytes',return_value=raw):material,fragments=inputs.source_text(t,c,s,lookup)
+  self.assertNotIn('inline_fragments',material);self.assertGreater(len(workflow.canonical(fragments)),inputs.INLINE_SOURCE_BYTES)
  def test_tcp_protocol_must_accept_the_complete_fixed_executor_output(self):
   p=workflow.numerical_protocol('a'*64,'received_bytes','bytes',0,[dict(identity='local',details=dict(test_config=dict(payload_bytes=256,exchanges=2,application_delay_ms=3)))])
   p.update(planned_units=1,execution=dict(version=network_spec.VERSION,runner='bounded-tcp-v1',replications=1,limits=dict(wall_seconds=60,max_instances=1,max_output_bytes=32000,max_network_bytes=1024)),resource_limits=dict(wall_seconds=60,max_observations=4,max_input_bytes=100000),metrics=[dict(name='received_bytes',units='bytes',planned_observations=2),dict(name='round_trip_time_ms',units='ms',planned_observations=2)])

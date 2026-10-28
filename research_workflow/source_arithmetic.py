@@ -128,7 +128,25 @@ def contract():
                                   calculations=[dict(id='metric_name', operation=list(OPS), inputs=['baseline_cell', 'treatment_cell'], reported_cell='Source cell for reported answer; null only for strict-increase', decimal_places='Integer 0..12')]),
                 rules=['Read the original source text before selecting tokens. Never supply observed values.', 'Declare each calculation id as a metric, its actual units, planned_observations=1.',
                        'Use data_origin=archived-data and experiment_type=independent-check. This checks source arithmetic only. It cannot resolve an empirical, causal or generalization claim.',
+                       'difference and relative-percent-change BOTH use inputs=[baseline,treatment]. difference=treatment-baseline; relative-percent-change=100*(treatment-baseline)/baseline. Do not use ordinary left-minus-right order for difference.',
+                       'New autonomous decisions require a consistent baseline/treatment order for the same source-cell pair within one configuration. Intentionally different contrasts need separate justified configurations.',
+                       'Fresh reviewers must compare ordered operand identities and source values against the claimed calculation; a wrong expression is an implementation/configuration error, not a scientific discrepancy.',
                        'Both repeated/missing quotes and undefined arithmetic remain unavailable, never zero.'])
+
+
+def preview(config, raw, source_sha256):
+    """Explicit expression order for method review; never alters frozen inputs."""
+    rows = evaluate(config, raw, source_sha256)
+    result = []
+    for calc, row in zip(config['calculations'], rows):
+        ids = calc['inputs']; op = calc['operation']
+        expression = (ids[1]+' - '+ids[0] if op == 'difference' else
+                      '100 * ('+ids[1]+' - '+ids[0]+') / '+ids[0] if op == 'relative-percent-change' else
+                      ' < '.join(ids) if op == 'strict-increase' else 'mean('+', '.join(ids)+')')
+        result.append(dict(id=calc['id'], expression=expression, ordered_inputs=ids,
+            operands=[dict(id=c['id'], value=c['original_numeric_lexeme'], units=c['units'], status=c['status']) for c in row['cells'][:len(ids)]],
+            value=row['value'], reported=row['reported'], matched=row['matched'], status=row['status'], units=row['units']))
+    return dict(scope='Design preview from frozen source text. Review expression intent against the claim. Shares the source parser and arithmetic implementation; not independent evidence, empirical validation or an authorization to change original results.', calculations=result)
 
 def schema():
     def obj(properties): return dict(type='object',additionalProperties=False,required=list(properties),properties=properties)

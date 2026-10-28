@@ -13,6 +13,7 @@ import autonomy_sources as sources
 import autonomy_evidence as evidence
 import autonomy_costs
 import autonomy_inputs as inputs
+import autonomy_methods as methods
 import network_spec
 import preparation
 import paper_selection
@@ -364,6 +365,7 @@ def build_context(task):
   source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
   prior_attempts=[{k:r.get(k) for k in ('number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
+ value['method_policy']=dict(version=methods.VERSION,sha256=digest(methods.INSTRUCTION.encode()))
  if task['stage'] in ('planning','building','comprehension','critic'):
   import experiment_builder
   value['execution_authority']=experiment_builder.action_policy()
@@ -398,6 +400,9 @@ def build_context(task):
   if len(raw)>16000:
    value['candidate']['protocol']=dict(representation='retained-protocol-reference',byte_count=len(raw),sha256=digest(raw),required_read='Inspect every prospective protocol fragment before readiness.')
    value['candidate']['protocol_reference']=dict(id=task['id'],document_sha256=digest(raw),view='Complete prospective protocol retained in this candidate context and its original numbered response.')
+  if context['proposal']['protocol'].get('execution',{}).get('runner')=='source-arithmetic-v1':
+   import source_arithmetic
+   value['source_arithmetic_preview']=[dict(configuration=c['identity'],**source_arithmetic.preview(c['details']['test_config'],store.artifact_bytes(task['study_id'],c['details']['test_config']['text_artifact_id'],maximum=10_000_000),source['sha256'])) for c in context['proposal']['protocol']['configurations']]
  if context.get('proposal') and task['stage'] in ('comprehension','critic'):
   import experiment_builder
   document=experiment_builder.project_document(context['proposal'],task['study_id'])
@@ -428,6 +433,17 @@ def validate_proposal(task,proposal):
  if not isinstance(proposal,dict) or set(proposal)!={'protocol','experiment_type'}:raise ValueError('Networking proposals need protocol and experiment_type only; recorded values cannot be model supplied.')
  claim=one('claims',task['study_id'],task['claim_id']);p=proposal['protocol']
  if p.get('hypotheses')!=claim['description']:raise ValueError('The original claim cannot be changed or weakened.')
+ if not p.get('decision'):raise ValueError('New autonomous protocols require a frozen decision object before execution; see decision_contract. Never invent observations or change the original claim.')
+ methods.validate(p,claim)
+ decision_lock=task['context'].get('decision_lock')
+ frozen_protocol=task['context'].get('acquisition_reuse',{}).get('claim_protocol_id')
+ if not decision_lock and frozen_protocol:
+  # The claim protocol is retained before queue dispatch. Recover its lock even
+  # if an enqueue acknowledgement or the later context update was lost.
+  frozen_decision=one('protocols',task['study_id'],frozen_protocol)['document'].get('decision')
+  if frozen_decision:decision_lock=digest(canonical(frozen_decision))
+ if decision_lock and decision_lock!=digest(canonical(p['decision'])):
+  raise ValueError('The admitted decision criterion is frozen. Do not change a target, tolerance or group after observing results; retain evidence and request a separately reviewed methodological amendment.')
  arithmetic=p.get('execution',{}).get('runner')=='source-arithmetic-v1'
  if p.get('stage')!='pilot' or p.get('data_origin') not in (('archived-data',) if arithmetic else ('simulation','new-empirical')):raise ValueError('Source arithmetic uses archived-data; new networking pilots declare simulation or new-empirical.')
  if arithmetic and (proposal['experiment_type']!='independent-check' or any(c['details']['test_config']['source_id']!=claim['source_id'] for c in p['configurations'])):raise ValueError('Arithmetic must be an independent check of this exact claim source.')
@@ -512,10 +528,14 @@ def enqueue(task):
   if reservation.get('denied'):return advance(task,'budget',reason='Paper budget or elapsed limit prevents another experiment.')
   scheduler.enqueue(task['study_id'],task['actor_id'],job['request'])
  context=dict(task['context'],job_ids=[j['id'] for j in jobs],campaign_ids=list(dict.fromkeys(j['campaign_id'] for j in jobs)))
+ if context.get('proposal',{}).get('protocol',{}).get('decision'):
+  context['decision_lock']=digest(canonical(context['proposal']['protocol']['decision']))
  return advance(task,'waiting',stage='execution',context=context,reason='Frozen experiments queued; poll original identities without restarting them.',delay=30)
 
 def numeric_finding(task):
- """Independent Decimal check of recorded matched cells; never trust an AI label."""
+ """Controller Decimal check of frozen evidence; never trust an AI label alone."""
+ if task['context'].get('proposal',{}).get('protocol',{}).get('decision'):
+  return methods.finding(task,one,rows,evidence.collect,evidence.manifest)
  claim=one('claims',task['study_id'],task['claim_id']);context=task['context']
  required=inventory(task);registered=bool(required)
  if claim['claim_type']!='numerical' or not registered and not claim['metrics']:return None
@@ -623,10 +643,13 @@ def step(task):
   if len(jobs)!=len(context['job_ids']):raise ValueError('Queue identity coverage is incomplete; do not create replacement jobs.')
   if any(j['status'] in ('queued','running','manual') for j in jobs):return advance(task,'waiting',reason='Original experiment identities are still pending; no replacement invocation.',delay=30)
   return advance(task,'queued',stage='assessment',reason='Recorded experiment outcomes are ready for evidence assessment.',label='inconclusive')
- answer=model.call(task,build_context(task),control)
+ prompt_context=build_context(task)
+ answer=model.call(task,prompt_context,control)
  if answer.get('denied'):return advance(task,answer['denied'],reason='Paper admission stopped by '+answer['denied']+'.')
  if task['stage']=='building' and (answer.get('runtime') or {}).get('checkpoint'):context['builder_checkpoint']=answer['runtime']['checkpoint']
  if answer['status']!='complete':return advance(task,'queued',context=dict(context,last_feedback=answer['reason'],last_response_error=answer['reason']),reason='Invalid answer retained; next prompt addresses the exact failure.')
+ if prompt_context.get('source_material'):
+  inputs.retain_inline_delivery(dict(task,context=context),prompt_context['source_material'])
  context.pop('last_response_error',None)
  context.pop('runtime_retry',None)
  output=answer['output'];context['last_turn_id']=answer['id']
@@ -725,7 +748,7 @@ def step(task):
    evidence=[r for r in evidence if r['kind'] in ('runs','protocols')]+[dict(kind='artifacts',id=artifact['id'])]
    prior=rows('assessments',task['study_id'],claim_id='eq.'+task['claim_id'],order='created_at.desc',limit=1)
    assessment=dict(id=uid(answer['id'],'assessment'),claim_id=task['claim_id'],campaign_id=context['campaign_ids'][-1],supersedes_id=prior[0]['id'] if prior else None,label=label,
-    tested_conditions=dict(scope='Matched recorded numerical cells under the exact frozen criterion; no broader inference. Earlier valid comparable discrepancies remain part of the decision; prior partial/failed and other-method runs remain referenced separately.',protocols=[one('campaigns',task['study_id'],c)['protocol_id'] for c in context['campaign_ids']],coverage=coverage,automatic_controller=VERSION),evidence=evidence,
+    tested_conditions=dict(scope='Matched recorded numerical cells under the exact frozen criterion; no broader inference. Earlier valid comparable discrepancies remain part of the decision; prior partial/failed and other-method runs remain referenced separately.',protocols=list(dict.fromkeys([one('campaigns',task['study_id'],c)['protocol_id'] for c in context['campaign_ids']]+([context['acquisition_reuse']['claim_protocol_id']] if context.get('acquisition_reuse',{}).get('claim_protocol_id') else []))),coverage=coverage,automatic_controller=VERSION),evidence=evidence,
     justification=output['reason'],limitations='Separate AI reviews share model and inputs. Numerical agreement is not correctness, causality, compliance or generalization. Source review remains as recorded.',reviewer=REVIEWER)
    store.append(task['study_id'],task['actor_id'],'assessments',assessment)
    return advance(task,'resolved',context=dict(context,assessment_id=assessment['id']),reason=output['reason'],label=label)

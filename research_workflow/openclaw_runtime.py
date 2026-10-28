@@ -9,6 +9,9 @@ from workflow import canonical,digest
 
 VERSION='openclaw-production-v1'
 MODEL='gpt-6.1-sol'
+DATA_RESPONSE_SECONDS=90
+DATA_CLI_SECONDS=120
+DATA_PROCESS_SECONDS=130
 NODE=Path(os.environ.get('OPENCLAW_NODE','/opt/jumpserve/node/bin/node'))
 PACKAGE=Path(os.environ.get('OPENCLAW_PACKAGE','/opt/jumpserve/openclaw/node_modules/openclaw'))
 AUTH=Path(os.environ.get('OPENCLAW_AUTH_DIR','/var/lib/jumpserve-openclaw/auth'))
@@ -118,7 +121,7 @@ def execute(logical,directory,token_source=credential,transport=http_request):
      try:code=(json.loads(raw).get('error') or {}).get('code')
      except (ValueError,AttributeError):code=None
      raise wire.failure(code or 'http-'+str(response.status),response.status)
-    completed=wire.read_stream(response,sink,time.monotonic()+65,1048576)
+    completed=wire.read_stream(response,sink,time.monotonic()+DATA_RESPONSE_SECONDS,1048576)
   result['usage']=wire.usage(completed)
   try:answer=wire.structured_response(completed)
   except (ValueError,KeyError,TypeError):raise wire.StreamFailure('invalid-structured-decision','invalid-output',result['usage'])
@@ -146,7 +149,7 @@ def execute(logical,directory,token_source=credential,transport=http_request):
  config_path=directory/'config.json';config_path.write_bytes(canonical(config));env=environment(directory);env.update(OPENCLAW_CONFIG_PATH=str(config_path),OPENCLAW_STATE_DIR=str(state))
  began=time.monotonic()
  try:
-  cli=subprocess.run([str(NODE),str(PACKAGE/'openclaw.mjs'),'agent','exec','--config',str(config_path),'--state-dir',str(state),'--cwd',str(workspace),'--message-file',str(message),'--model','lab/'+MODEL,'--code-mode','direct','--thinking','off','--timeout','90','--json'],capture_output=True,timeout=100,env=env)
+  cli=subprocess.run([str(NODE),str(PACKAGE/'openclaw.mjs'),'agent','exec','--config',str(config_path),'--state-dir',str(state),'--cwd',str(workspace),'--message-file',str(message),'--model','lab/'+MODEL,'--code-mode','direct','--thinking','off','--timeout',str(DATA_CLI_SECONDS),'--json'],capture_output=True,timeout=DATA_PROCESS_SECONDS,env=env)
   (directory/'stdout.bin').write_bytes(cli.stdout);(directory/'stderr.bin').write_bytes(cli.stderr)
   if cli.returncode or not result.get('answer'):raise ValueError('OpenClaw CLI did not complete its retained turn.')
   envelope=json.loads(cli.stdout);payloads=envelope.get('payloads') or envelope.get('result',{}).get('payloads') or [];texts=[p['text'] for p in payloads if p.get('text')]
@@ -156,7 +159,7 @@ def execute(logical,directory,token_source=credential,transport=http_request):
   result.setdefault('status','unknown');result.setdefault('error_code','runtime-'+type(error).__name__)
  finally:
   server.shutdown();server.server_close();thread.join(timeout=2)
- result.update(runtime=VERSION,node_version='24.16.0',openclaw_version='2026.10.5',model_id=MODEL,wall_seconds=time.monotonic()-began,subscription_allocation_usd=None,measured_charges_usd=None,estimated_cost_usd=None,catalog_cost_fields='Numeric zeros required by the adapter are non-billing placeholders.',turn_policy=model.TURN_POLICY['version'])
+ result.update(runtime=VERSION,node_version='24.16.0',openclaw_version='2026.10.5',model_id=MODEL,wall_seconds=time.monotonic()-began,subscription_allocation_usd=None,measured_charges_usd=None,estimated_cost_usd=None,catalog_cost_fields='Numeric zeros required by the adapter are non-billing placeholders.',turn_policy=model.TURN_POLICY['version'],timing_policy=dict(version='data-only-window-v2',stream_seconds=DATA_RESPONSE_SECONDS,cli_seconds=DATA_CLI_SECONDS,process_seconds=DATA_PROCESS_SECONDS))
  answer=result.pop('answer',None)
  (directory/'receipt.json').write_bytes(canonical(result))
  return answer if result['status']=='complete' else None,result

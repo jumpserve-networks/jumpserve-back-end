@@ -8,6 +8,7 @@ import os
 import time
 import store
 import paper_selection
+import autonomy_methods
 from workflow import canonical, digest
 
 VERSION = 'research-autonomy-v2'
@@ -106,6 +107,8 @@ def request(system, context):
  # its exact text is retained as part of every numbered request.
  value=dict(modelId=MODEL,system=[dict(text=system),dict(text=TURN_POLICY['instruction'])],messages=[dict(role='user',content=[dict(text=canonical(context).decode())])],
   inferenceConfig=dict(maxTokens=MAX_OUTPUT,temperature=0),toolConfig=tools)
+ if phase in ('planning','comprehension','critic','assessment'):
+  value['system'].append(dict(text=autonomy_methods.INSTRUCTION))
  if reminder:value['system'].append(dict(text=reminder))
  if len(canonical(value))>MAX_REQUEST_BYTES and phase=='planning' and context.get('registered_checks'):
   # Planning selects identities. The complete selected protocol still goes to
@@ -212,7 +215,7 @@ def call(task, context, control, invoke_provider=None):
   if not OPENCLAW or not builder.enabled():raise ValueError('Native experiment builder is unavailable; no provider call made.')
   prompt,system=load_prompt(builder.MODULE,builder.PROMPT_VERSION)
   authority=builder.action_policy()
-  value=dict(modelId=MODEL,system=[dict(text=system),dict(text=TURN_POLICY['instruction']),dict(text=authority['document']['instruction'])],builder=dict(version=builder.VERSION,context=context,checkpoint=task['context'].get('builder_checkpoint'),execution_authority=dict(version=authority['version'],sha256=authority['sha256'])))
+  value=dict(modelId=MODEL,system=[dict(text=system),dict(text=TURN_POLICY['instruction']),dict(text=authority['document']['instruction']),dict(text=autonomy_methods.INSTRUCTION)],builder=dict(version=builder.VERSION,context=context,checkpoint=task['context'].get('builder_checkpoint'),execution_authority=dict(version=authority['version'],sha256=authority['sha256'])))
   if len(canonical(value))>MAX_REQUEST_BYTES:raise ValueError('Builder context exceeds 96 KB; retain source references and explicit coverage.')
  else:prompt,system=load_prompt(); value=request(system,context)
  cents=reservation(value)

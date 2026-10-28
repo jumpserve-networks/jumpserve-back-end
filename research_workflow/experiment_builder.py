@@ -19,6 +19,7 @@ import zipfile
 import io
 
 import generated_package
+import network_spec
 import openclaw_runtime as runtime
 import siwc_protocol as wire
 import store
@@ -171,7 +172,10 @@ def reap(spool):
 
 def eligible(task, output):
     blockers = output.get('blockers', [])
-    return enabled() and task['stage'] == 'planning' and bool(blockers) and all(b['kind'] in ('implementation', 'missing-data') for b in blockers)
+    # Unreported settings and missing instrumentation are autonomous method
+    # development, not a request for the user to supply the implementation.
+    # External apparatus/account/authorization and cost gates remain terminal.
+    return enabled() and task['stage'] == 'planning' and bool(blockers) and all(b['kind'] in ('implementation', 'missing-data', 'design') for b in blockers)
 
 def config(workspace, state, bridge_url, bridge_token, image, prefix):
     # The image must be installed/pinned by the release operator; never pull a
@@ -257,6 +261,10 @@ def freeze_candidate(job, workspace):
         if set(cfg) != {'mode', 'arguments', 'parameters'}: raise ValueError('Builder supplies mode, arguments, parameters only; the server supplies real artifacts.')
         cfg.update(package=dict(kind='python-script', **source), private_inputs={'project.zip': archive})
     p['input_versions'] = p.get('input_versions', []) + [dict(identity='built-project', sha256=archive['sha256']), dict(identity='built-wrapper', sha256=source['sha256'])]
+    # Reject invalid executable configurations here so the retained workspace
+    # receives actionable feedback before the candidate reaches method review.
+    # Binding adds only derived spec hashes, never scientific settings.
+    network_spec.bind_inputs(p)
     compiled=retain(job,'candidate-compiled.json',canonical(candidate),'builder-compiled-candidate')
     store.rpc('research_builder_package',dict(p_dispatch=job['id'],p_token=job['lease_token'],p_project=archive['artifact_id'],p_wrapper=source['artifact_id'],p_manifest=manifest['artifact_id'],p_candidate=compiled['artifact_id']))
     return candidate
@@ -290,6 +298,17 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     (directory/'action-policy.json').write_bytes(ACTION_POLICY_PATH.read_bytes())
     contract=canonical(execution_contract())
     (directory/'runner-contract.json').write_bytes(contract)
+    # An examined, exact starting point saves generated-code setup turns. It is
+    # a reference, not an exemption from resource accounting or fresh reviews.
+    reference=Path(__file__).with_name('netem_iperf.py').read_bytes()
+    reference_dir=workspace/'reference-implementations'
+    if reference_dir.is_symlink():raise ValueError('Builder reference directory cannot be a symlink.')
+    reference_dir.mkdir(exist_ok=True)
+    reference_path=reference_dir/('netem_iperf-'+digest(reference)+'.py')
+    if reference_path.is_symlink():raise ValueError('Builder reference file cannot be a symlink.')
+    if reference_path.exists() and reference_path.read_bytes()!=reference:raise ValueError('Builder reference implementation bytes changed.')
+    reference_path.write_bytes(reference)
+    (directory/'reference-implementations.json').write_bytes(canonical(dict(files=[dict(path=str(reference_path.relative_to(workspace)),sha256=digest(reference),bytes=len(reference))],scope='Versioned built-in source for inspection/adaptation; it does not establish a valid causal design or waive the clean executor contract.')))
     if (workspace/'runner-contract.json').exists() and (workspace/'runner-contract.json').read_bytes()!=contract:
         old=(workspace/'runner-contract.json').read_bytes()
         (workspace/('previous-runner-contract-'+digest(old)+'.json')).write_bytes(old)

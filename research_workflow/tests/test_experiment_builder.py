@@ -12,6 +12,21 @@ def project(root):
     for name,raw in {'experiment.py':b'print(1)\n','requirements.lock':b'','system-packages.lock.json':b'[]','build-evidence.json':b'{"commands":[],"checks":[],"limitations":[]}'}.items():(root/name).write_bytes(raw)
 
 class Packages(unittest.TestCase):
+    def test_invalid_execution_mode_is_retained_but_never_registered(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);project(root/'project')
+            candidate=dict(experiment_type='independent-check',protocol=dict(
+                configurations=[dict(identity='loopback',details=dict(test_config=dict(mode='loopback',arguments=[],parameters={})))],
+                execution=dict(version='network-execution-v1',runner='built-package-v1',replications=1,limits=dict(wall_seconds=60,max_instances=1,max_output_bytes=32000,max_network_bytes=1024)),
+                resource_limits=dict(wall_seconds=60,max_observations=1),metrics=[dict(name='bytes',units='bytes',planned_observations=1)],input_versions=[],planned_units=1))
+            original=json.dumps(candidate).encode();(root/'candidate.json').write_bytes(original)
+            retained=[]
+            def retain(job,name,raw,*args):
+                retained.append(name);return dict(artifact_id=str(uuid.uuid4()),sha256=autonomy.digest(raw),version=builder.VERSION)
+            with patch.object(builder,'retain',side_effect=retain),patch.object(builder.store,'rpc') as register:
+                with self.assertRaisesRegex(ValueError,'mode, package, arguments and parameters'):builder.freeze_candidate({},root)
+            self.assertEqual((root/'candidate.json').read_bytes(),original)
+            self.assertIn('candidate-original.json',retained);self.assertNotIn('candidate-compiled.json',retained);register.assert_not_called()
     def test_slot_continuation_keeps_native_calls_and_results_without_repeating_history(self):
         call=dict(type='function_call',call_id='call-1',name='exec',arguments='{"command":"python3 --version"}')
         output=dict(type='function_call_output',call_id='call-1',output='Python 3.10.12')
@@ -96,11 +111,13 @@ class Packages(unittest.TestCase):
         self.assertIn('NOT inline JSON',contract['environment']['JUMPSERVE_SPEC'])
         self.assertIn("Path(os.environ['JUMPSERVE_SPEC']).read_text",contract['spec_loader'])
         self.assertIn('sudo -n',contract['workspace_user'])
-    def test_only_implementation_blockers_enter_builder(self):
+    def test_recoverable_design_and_implementation_enter_builder_but_external_gates_do_not(self):
         task={'stage':'planning'}
         with patch.dict('os.environ',RESEARCH_BUILDER_ENABLED='true'):
             self.assertTrue(builder.eligible(task,{'blockers':[{'kind':'implementation'}]}))
-            for kind in ('equipment','authorization','capacity','provider','design'):
+            self.assertTrue(builder.eligible(task,{'blockers':[{'kind':'design'}]}))
+            self.assertTrue(builder.eligible(task,{'blockers':[{'kind':'implementation'},{'kind':'design'}]}))
+            for kind in ('equipment','authorization','capacity','provider'):
                 self.assertFalse(builder.eligible(task,{'blockers':[{'kind':'implementation'},{'kind':kind}]}))
     def test_controller_checkpoint_continues_original_claim_and_budget(self):
         task=dict(stage='building',id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),claim_id=str(uuid.uuid4()),context={},attempts=3)
