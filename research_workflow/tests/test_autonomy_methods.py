@@ -72,7 +72,8 @@ class Recorded:
                 request=dict(messages=[dict(content=[dict(text=canonical(dict(candidate=dict(protocol=self.protocol))).decode())])]))
         for spec in network_spec.specs(self.protocol):
             job_id = uid(); self.task['context']['job_ids'].append(job_id)
-            self.jobs.append(dict(id=job_id, status='awaiting-review', run_id=job_id, campaign_id=campaign, request=dict(raw_input=canonical(spec).decode())))
+            job=dict(id=job_id,study_id=self.study,status='awaiting-review',run_id=job_id,campaign_id=campaign)
+            self.save_input(job,spec);self.jobs.append(job)
             if arithmetic_mode:
                 output = arithmetic.envelope(cfg, text, 'a'*64)
             else:
@@ -88,6 +89,15 @@ class Recorded:
                     target = observation['metadata']['cells'][-1]; published = dict(id=uid(), source_id=self.claim['source_id'], status='recorded', value=str(arithmetic.decimal_token(target['original_numeric_lexeme'])), **{k:m[k] for k in ('observation_id','configuration_identity','metric','units')})
                     m['published_id'] = published['id']; self.data['published_values', published['id']] = published
                 self.measurements.append(m)
+
+    def save_input(self,job,spec):
+        # Match scheduler.definition's real persisted shape, not its POST body.
+        raw=canonical(spec);identity=str(uuid.uuid5(uuid.UUID(job['id']),'queue-input'))
+        self.bytes[identity]=raw
+        job.update(input_artifact_id=identity,request=dict(input_artifact_id=identity,input_sha256=digest(raw)))
+        job['definition_sha256']=digest(canonical(job['request']))
+
+    def input_spec(self,job):return json.loads(self.bytes[job['input_artifact_id']])
 
     def one(self, kind, study, identity):
         return self.data[kind, identity]
@@ -115,6 +125,33 @@ class MethodCompletion(unittest.TestCase):
         label, refs, coverage = db.finding()
         self.assertEqual(label, 'reproduced'); self.assertEqual(coverage['decision_runs'], 1)
         self.assertEqual(len([r for r in refs if r['kind']=='published_values']), 2)
+
+    def test_legacy_inline_original_is_still_supported_and_not_reserialized(self):
+        db=Recorded();job=db.jobs[0];raw=db.bytes[job.pop('input_artifact_id')]
+        job.pop('definition_sha256');job['request']={'raw_input':raw.decode()}
+        self.assertEqual(db.finding()[0],'reproduced')
+
+    def test_artifact_identity_definition_and_study_mismatches_never_produce_a_finding(self):
+        for mode in ('pointer','definition','hash','missing-hash','cross-assessment','conflicting-inline'):
+            with self.subTest(mode=mode):
+                db=Recorded();job=db.jobs[0]
+                if mode=='pointer':job['input_artifact_id']=uid()
+                elif mode=='definition':job['definition_sha256']='0'*64
+                elif mode=='cross-assessment':job['study_id']=uid()
+                else:
+                    if mode=='hash':job['request']['input_sha256']='0'*64
+                    elif mode=='missing-hash':job['request'].pop('input_sha256')
+                    else:job['request']['raw_input']='{}'
+                    job['definition_sha256']=digest(canonical(job['request']))
+                with self.assertRaises(ValueError):db.finding()
+
+    def test_unavailable_input_is_missing_and_never_imputed_as_zero(self):
+        db=Recorded();identity=db.jobs[0]['input_artifact_id']
+        def read(study,artifact,**kw):
+            if artifact==identity:raise store.StoreError('Original unavailable')
+            return db.bytes[artifact]
+        with patch.object(store,'artifact_bytes',side_effect=read):
+            self.assertIsNone(methods.finding(db.task,db.one,db.rows,db.collect,evidence.manifest))
 
     def test_source_order_preview_exposes_the_production_failure_without_changing_the_config(self):
         cfg, text = arithmetic_fixture(); cfg['calculations'][1]['inputs'].reverse()
@@ -171,8 +208,8 @@ class MethodCompletion(unittest.TestCase):
         acquisition['configurations'][0]['identity']='original-grid'
         db.data['protocols','shared']=dict(document=acquisition)
         db.data['campaigns',db.jobs[0]['campaign_id']]['protocol_id']='shared'
-        spec=json.loads(db.jobs[0]['request']['raw_input']); spec['configuration_identity']='original-grid'
-        db.jobs[0]['request']['raw_input']=canonical(spec).decode()
+        spec=db.input_spec(db.jobs[0]); spec['configuration_identity']='original-grid'
+        db.save_input(db.jobs[0],spec)
         acquisition['input_versions'].append(dict(identity='shared-spec',sha256=digest(canonical(spec))))
         db.data['runs',db.jobs[0]['id']]['input_sha256']=digest(canonical(spec))
         for m in db.measurements:m['configuration_identity']='original-grid'
@@ -212,7 +249,7 @@ class MethodCompletion(unittest.TestCase):
         cfg['calculations']=[dict(id='order',operation='strict-increase',inputs=['control','treatment'],reported_cell=None,decimal_places=0)]
         p['metrics']=[dict(name='order',units='boolean',planned_observations=1)]
         p.update(network_spec.bind_inputs(p)); spec=network_spec.specs(p)[0]; job=db.jobs[0]
-        job['request']['raw_input']=canonical(spec).decode()
+        db.save_input(job,spec)
         output=arithmetic.envelope(cfg,db.bytes[cfg['text_artifact_id']],'a'*64)
         artifact=str(uuid.uuid5(uuid.UUID(job['id']),'network-output')); db.bytes[artifact]=canonical(output)
         db.data['runs',job['id']].update(input_sha256=digest(canonical(spec)),output_sha256=digest(canonical(output)))
@@ -243,8 +280,8 @@ class MethodCompletion(unittest.TestCase):
         old=copy.deepcopy(db.protocol); old.pop('decision')
         old['configurations'][0]['details']['test_config']['calculations'][1]['inputs'].reverse()
         campaign=uid(); protocol=uid(); prior['campaign_id']=campaign
-        old_spec=json.loads(prior['request']['raw_input']); old_spec['config']=old['configurations'][0]['details']['test_config']
-        prior['request']['raw_input']=canonical(old_spec).decode()
+        old_spec=db.input_spec(prior); old_spec['config']=old['configurations'][0]['details']['test_config']
+        db.save_input(prior,old_spec)
         db.data['protocols',protocol]=dict(id=protocol,document=old)
         db.data['campaigns',campaign]=dict(id=campaign,protocol_id=protocol)
         db.data['queue_jobs',prior['id']]=prior

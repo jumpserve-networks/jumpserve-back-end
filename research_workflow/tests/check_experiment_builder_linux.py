@@ -3,15 +3,15 @@
 No arbitrary command arguments, credentials, provider calls or AWS resources.
 Original requests, outputs and failed reports remain under .test-artifacts.
 """
-import datetime as dt,io,json,os,subprocess,sys,uuid,zipfile
+import datetime as dt,io,json,os,subprocess,sys,traceback,uuid,zipfile
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-import experiment_builder as builder,openclaw_runtime as runtime
+import experiment_builder as builder,openclaw_runtime as runtime,autonomy_methods,autonomy_model
 from prepare_builder_vendor import prepare
 from workflow import canonical,digest
 ROOT=Path(__file__).resolve().parents[2]
-IMAGE=json.loads((ROOT/'.test-artifacts/builder-image/selected.json').read_bytes())['image']
+IMAGE=json.loads((ROOT/'.test-artifacts/builder-image/continuation-v1.json').read_bytes())['image']
 class Response(io.BytesIO):
     status=200;headers={}
     def read1(self,n):return self.read(n)
@@ -60,10 +60,19 @@ def main():
         if local_index<=len(steps):return Response(sse(index,*steps[local_index-1]))
         return Response(sse(index))
     authority=builder.action_policy()
-    logical=dict(modelId=runtime.MODEL,system=[dict(text='Synthetic development smoke; use the provided tools in the isolated workspace.')],builder=dict(version=builder.VERSION,context={'task':'building','question':'Write and run a tiny Python calculation, then read its result.'},checkpoint=None,execution_authority={k:authority[k] for k in ('version','sha256')}))
+    template=json.loads((ROOT/'.test-artifacts/builder-image/published-prompt-v2.json').read_bytes())
+    system=template['system_prompt']+'\n\n'+template['research_context']
+    assert template['id']=='dfab5ecb-b8b9-5ad3-8771-f28a06b53b27' and digest(system.encode())==template['content_sha256']
+    logical=dict(modelId=runtime.MODEL,system=[dict(text=system),dict(text=autonomy_model.TURN_POLICY['instruction']),dict(text=authority['document']['instruction']),dict(text=autonomy_methods.INSTRUCTION)],builder=dict(version=builder.VERSION,context={'task':'building','question':'Write and run a tiny Python calculation, then read its result.','large_source_fixture':'exact-retained-source-α;'*3200},checkpoint=None,execution_authority={k:authority[k] for k in ('version','sha256')}))
     package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
     corrected=prepare(package,ROOT/'.test-artifacts/builder-vendor/node_modules/openclaw',builder.PATCH_PATH)
-    report=dict(protocol='experiment-builder-validation-v1',kind='development-regression',provider_calls=0,measured_charges_usd=None,image=IMAGE,reviewer={'type':'AI','identity':'Codex','independent':False},status='failed')
+    protocol=ROOT/'research_workflow/policies/builder-continuation-validation-v2.json'
+    report=dict(protocol='builder-continuation-validation-v2',protocol_sha256=digest(protocol.read_bytes()),kind='development-regression',provider_calls=0,measured_charges_usd=None,image=IMAGE,prompt_content_sha256=template['content_sha256'],full_published_system_composition=True,reviewer={'type':'AI','identity':'Codex','independent':False},status='failed',live_provider_calls=0)
+    names=['experiment_builder.py','autonomy_methods.py','autonomy_model.py','openclaw_runtime.py','store.py','network_spec.py','generated_package.py','workflow.py','openclaw-builder-patch.json','policies/experiment-action-policy-v1.json','policies/autonomy-turn-policy-v1.json','policies/builder-continuation-validation-v1.json','policies/builder-continuation-validation-v2.json','experiment-builder.Dockerfile','tests/check_experiment_builder_linux.py']
+    report['source_files']={}
+    for name in names:
+        raw=(ROOT/'research_workflow'/name).read_bytes();dest=directory/'original-source'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
+        report['source_files'][name]=dict(sha256=digest(raw),bytes=len(raw))
     try:
         with patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package),patch.object(builder,'retain',side_effect=retain),patch.object(builder,'rpc',side_effect=rpc),patch.dict(os.environ,OPENCLAW_BUILDER_IMAGE=IMAGE,OPENCLAW_BUILDER_PACKAGE=str(corrected)):
             answer,receipt=builder.execute(logical,directory/'slice',job,token_source=lambda:'synthetic-not-a-credential',transport=transport)
@@ -78,7 +87,8 @@ def main():
         assert all(e['status']=='complete' for e in events if e['operation']=='finish')
         assert all(any(item.get('type')=='function_call_output' for item in r['input']) for r in requests[1:])
         offset=len(requests)
-        steps=[('exec',{'command':'test -f /opt/jumpserve-builder-marker && test -f /workspace/hello.py && /opt/jumpserve-builder-helper > /workspace/resumed-helper-version.txt && printf retained > /workspace/resumed.txt','timeoutSeconds':10}),('read',{'path':'/workspace/resumed.txt'})]
+        steps=[('exec',{'command':'test -f /opt/jumpserve-builder-marker && test -f /workspace/hello.py && /opt/jumpserve-builder-helper > /workspace/resumed-helper-version.txt && printf retained > /workspace/resumed.txt','timeoutSeconds':10})]
+        steps += [('exec',{'command':'python3 /workspace/read-retained.py context large_source_fixture '+str(page),'timeoutSeconds':10}) for page in range(12)]
         resumed_job=dict(job,id=str(uuid.uuid4()),lease_token=str(uuid.uuid4()))
         logical['builder']['checkpoint']=receipt['checkpoint'];logical['builder']['context']['question']='Continue the checkpoint and verify the retained installed-state marker.'
         with patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package),patch.object(builder,'retain',side_effect=retain),patch.object(builder,'rpc',side_effect=rpc),patch.object(builder.store,'artifact_bytes',side_effect=lambda study,identity,**kw:by_id[identity]),patch.dict(os.environ,OPENCLAW_BUILDER_IMAGE=IMAGE,OPENCLAW_BUILDER_PACKAGE=str(corrected)):
@@ -87,10 +97,38 @@ def main():
         assert resumed_receipt['status']=='complete',resumed_receipt
         with zipfile.ZipFile(io.BytesIO(artifacts['checkpoint.zip'])) as archive:
             assert archive.read('resumed.txt')==b'retained';assert archive.read('resumed-helper-version.txt')==b'helper-v1'
-        assert len(requests)==8 and len(calls)==8
+        assert resumed_receipt.get('context_checkpoint') is True,resumed_receipt
+        assert all(len(canonical(r))<=builder.CONTEXT_CHECKPOINT_BYTES for r in requests)
+        boundary_count=len(requests);offset=boundary_count
+        steps=[('exec',{'command':'test -f /opt/jumpserve-builder-marker && /opt/jumpserve-builder-helper > /workspace/third-helper-version.txt','timeoutSeconds':10}),('exec',{'command':'python3 /workspace/read-retained.py context question 0','timeoutSeconds':10}),('read',{'path':'/workspace/resumed.txt'})]
+        third_job=dict(job,id=str(uuid.uuid4()),lease_token=str(uuid.uuid4()))
+        logical['builder']['checkpoint']=resumed_receipt['checkpoint']
+        logical['builder']['context']['question']='Resume after the local context checkpoint; inspect retained evidence in pages.'
+        with patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package),patch.object(builder,'retain',side_effect=retain),patch.object(builder,'rpc',side_effect=rpc),patch.object(builder.store,'artifact_bytes',side_effect=lambda study,identity,**kw:by_id[identity]),patch.dict(os.environ,OPENCLAW_BUILDER_IMAGE=IMAGE,OPENCLAW_BUILDER_PACKAGE=str(corrected)):
+            third_answer,third_receipt=builder.execute(logical,directory/'third',third_job,token_source=lambda:'synthetic-not-a-credential',transport=transport)
+        report['third_receipt']=third_receipt;report['native_model_calls']=len(requests)
+        assert third_receipt['status']=='complete',third_receipt
+        assert len(requests)==boundary_count+4 and len(calls)==len(requests)
+        with zipfile.ZipFile(io.BytesIO(artifacts['checkpoint.zip'])) as archive:
+            assert archive.read('third-helper-version.txt')==b'helper-v1'
+            assert json.loads(archive.read('research-context.json'))==logical['builder']['context']
+            index=json.loads(archive.read('context-index.json'))
+            page_records=next(x for x in index['fields'] if x['key']=='large_source_fixture')['delivered_pages']
+            assert page_records and page_records[0]['page']==0
+            history=json.loads(archive.read('native-tool-history.json'))
+            assert len(canonical(history))>32000
+            assert any('call_id' in item for item in history)
+        for name in ('slice','resume','third'):
+            delivery=json.loads((directory/name/'context-delivery.json').read_bytes())
+            assert delivery['bootstrap_bytes']<=builder.BOOTSTRAP_BYTES
+        report.update(slots=3,retained_history_bytes=len(canonical(history)),maximum_provider_request_bytes=max(len(canonical(r)) for r in requests),context_boundary_before_provider_admission=True,verified_previous_page_deliveries=len(page_records),delivery_is_not_completed_review=True)
         report['status']='passed'
+    except Exception:
+        report['failure']=traceback.format_exc();raise
     finally:
         builder.container_action(job['task_id'],'remove')
+        if any(digest((ROOT/'research_workflow'/name).read_bytes())!=record['sha256'] for name,record in report['source_files'].items()):
+            report.update(status='failed',source_changed_during_check=True)
         (directory/'report.json').write_bytes(canonical(report));print(json.dumps({'status':report['status'],'report':str(directory/'report.json')}))
     if report['status']!='passed':raise SystemExit(1)
 if __name__=='__main__':main()

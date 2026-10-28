@@ -636,6 +636,21 @@ def numeric_finding(task):
  return ('discrepant' if 'discrepant' in labels else 'reproduced',list(unique.values()),coverage) if labels else None
 
 def step(task):
+ if task['stage']=='building':
+  # Another claim may finish reusable code while this one is checkpointed.
+  # Reconsider that exact package prospectively; never copy its verdict or
+  # bypass this claim's own immutable criterion, semantic checks or reviews.
+  import experiment_builder
+  source_id=task['context'].get('source_id')
+  if source_id:
+   packages=experiment_builder.catalog(task['study_id'],source_id)
+   tried=set(task['context'].get('builder_reuse_considered',[]))
+   fresh=[p for p in packages if p['id'] not in tried and p.get('task_id')!=task['id']]
+   if fresh:
+    context=copy.deepcopy(task['context'])
+    context['builder_reuse_considered']=list(dict.fromkeys(context.get('builder_reuse_considered',[])+[p['id'] for p in fresh]))
+    context['last_feedback']='A sibling claim completed a versioned package. Inspect its actual configuration, inputs and scope before continuing independent implementation. Reuse an applicable full acquisition with this original claim and its own frozen criterion; obtain fresh reviews. If incompatible, retain the reason and continue building from the saved checkpoint.'
+    return advance(task,'queued',stage='planning',context=context,reason='Reconsidering a newly retained package before duplicating implementation; the original claim, checkpoint, criteria and limits are preserved.')
  if task['stage']=='intake':return intake(task)
  context=copy.deepcopy(task['context'])
  if task['stage']=='execution':

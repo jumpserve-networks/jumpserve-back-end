@@ -23,8 +23,7 @@ def execute_job(job):
         actor = owners[0]["owner_id"]
         campaign = one("campaigns", study_id, job["campaign_id"])
         protocol = one("protocols", study_id, campaign["protocol_id"])
-        raw = store.artifact_bytes(study_id, job["input_artifact_id"])
-        if digest(raw) != job["request"]["input_sha256"]: raise ValueError("Job input hash differs from its immutable definition.")
+        raw = store.queue_input_bytes(study_id, job)
         limits = protocol["document"]["resource_limits"]
         if campaign['adapter']=='network-execution-v1':
             try: return network_execution.advance(job,campaign,protocol,raw)

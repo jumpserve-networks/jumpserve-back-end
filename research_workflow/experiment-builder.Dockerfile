@@ -6,6 +6,7 @@ ARG WORKSPACE_UID=1000
 ARG WORKSPACE_GID=1000
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates curl git python3 python3-venv python3-pip build-essential pkg-config sudo \
+    iproute2 iperf3 iputils-ping ethtool \
     && dpkg-query -W > /jumpserve-image-packages.txt && rm -rf /var/lib/apt/lists/*
 RUN test "${WORKSPACE_UID}" -gt 0 && test "${WORKSPACE_GID}" -gt 0 \
     && (getent group "${WORKSPACE_GID}" || groupadd --gid "${WORKSPACE_GID}" jumpserve) \

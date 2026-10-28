@@ -6,6 +6,51 @@ every paper. Scientific findings require appropriate checks and declared review.
 
 ## Autonomous method completion
 
+Builder continuation uses `builder-context-files-v1`. Each native slot receives
+the full trusted instructions and at most 16,000 startup bytes; exact research
+context and the retained native transcript are hash-bound workspace files.
+`context-index.json` and `read-retained.py` support bounded reads. Optional inline
+fields can move whole to these files; original numbered requests and checkpoints
+remain retained. Delivery, hashes and page reads do not establish complete review.
+The index cross-checks paired native read outputs against exact source fragments,
+so unchanged fields can continue from pages already delivered; generated working
+notes cannot assert delivery and changed fields cannot inherit old page coverage.
+Before a native request exceeds the conservative 72,000-byte context threshold,
+the worker checkpoints without admitting another provider call. Unknown/in-flight
+outcomes still require reconciliation. The native model window remains 32,000
+tokens; the byte threshold is a conservative operational heuristic, not a token
+counter. Existing history/workspace resource limits remain explicit.
+
+Workers and numerical decisions share `store.queue_input_bytes`: read the queue's
+original input artifact, verify the definition, pointers and content hash, and
+retain legacy inline inputs when consistent. Decisions record input provenance;
+missing or altered originals cannot produce a conclusive finding. An unfinished
+builder can reconsider a newly completed sibling package through planning and
+fresh claim-specific review. Exact compatible acquisitions still share one
+campaign; reuse does not make observations independent.
+
+The prepared image includes iproute2, iperf3, ping and ethtool once at build time,
+with its actual package inventory retained. Installed tools alone do not establish
+namespace/kernel capability. Run these local checks from their respective repos:
+
+```bash
+# jumpserve-infra: isolated Postgres/controller/worker and prompt fixture
+npm run test:research:executable-methods
+# jumpserve-back-end: local prepared image, synthetic-provider native tools
+python3 -B research_workflow/tests/prepare_builder_image.py
+python3 -B research_workflow/tests/check_experiment_builder_linux.py
+python3 -B -m unittest discover -s research_workflow/tests
+```
+
+The protocols are [v1](policies/builder-continuation-validation-v1.json) and its
+[v2 follow-up](policies/builder-continuation-validation-v2.json). Checks retain
+timestamped original source bytes, commands, requests, outputs, hashes and failed
+reports under `.test-artifacts`. They use synthetic review/provider answers and
+do not establish model planning quality or paper findings. The local image uses
+the host architecture; production linux/amd64 image qualification, bounded live
+evaluation, runtime activation and reconciled claim resumption belong to a
+separately requested release. Existing budgets, deadlines and evidence remain.
+
 Recoverable `design` blockers now join implementation work in the native builder.
 The versioned `autonomy-methods-v1` controller instruction is retained in the
 actual numbered model request, alongside the immutable published baseline prompt.

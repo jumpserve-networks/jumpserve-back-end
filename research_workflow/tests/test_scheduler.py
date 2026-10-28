@@ -117,6 +117,7 @@ class BoundedWorkers(unittest.TestCase):
         raw, protocol, campaign=fixture(); data=json.loads(raw); data['observed'][0]['value']=4
         raw=canonical(data); protocol['document']['input_versions'][0]['sha256']=digest(raw); protocol['sha256']=digest(canonical(protocol['document']))
         job=dict(id=str(uuid.uuid4()),study_id=STUDY,campaign_id=campaign['id'],input_artifact_id=str(uuid.uuid4()),request={'input_sha256':digest(raw)},definition_sha256='f'*64,dependencies=[],exclusive_resources=[],lease_token=str(uuid.uuid4()))
+        job['request']['input_artifact_id']=job['input_artifact_id'];job['definition_sha256']=digest(canonical(job['request']))
         def rows(kind,params):return [{'owner_id':ACTOR}] if kind=='study_owners' else [campaign] if kind=='campaigns' else [protocol]
         with patch.object(store,'rows',side_effect=rows),patch.object(store,'artifact_bytes',return_value=raw),patch.object(store,'artifact',return_value=dict(id=str(uuid.uuid4()),sha256='a'*64,byte_count=1,storage_path='private',media_type='application/json',provenance={},verified_at='2026-10-07T00:00:00Z')),patch.object(store,'rpc',return_value={'status':'awaiting-review'}) as rpc:
             worker.execute_job(job)

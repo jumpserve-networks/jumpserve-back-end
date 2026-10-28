@@ -1,0 +1,30 @@
+{
+  "version": "builder-continuation-validation-v1",
+  "stage": "development-regression",
+  "prior_exposure": "Designed after inspecting retained context_overflow and raw_input failures from assessment a3bad34f-a9b5-44bb-be46-e1800cf1cf89. These are development checks, not held-out scientific validation.",
+  "questions": [
+    "Can numerical decisions read the queue's actual immutable artifact-reference representation and reject missing or altered inputs?",
+    "Can a native builder continue for at least three slots without reinlining a growing research context or tool transcript, while preserving exact original bytes?",
+    "Can compatible claims reuse one acquisition while keeping separate reviewed decision criteria?",
+    "Can installed development tools persist across slots and be prepared once in a versioned image?"
+  ],
+  "criteria": [
+    "Both artifact-backed and legacy inline inputs give the same descriptive decision when original bytes and frozen hashes agree.",
+    "A missing input produces no conclusive finding; inconsistent pointers, hashes or source identity cannot yield a decision.",
+    "Full context and tool history remain hash-bound files, with an explicit delivery inventory; no omitted inline material is described as reviewed.",
+    "Initial builder bootstrap is at most 16000 UTF-8 bytes. Requests approaching the native window checkpoint before another provider admission.",
+    "A confirmed local context boundary preserves files and continues as a new recorded slot; unknown or in-flight provider outcomes are never replayed.",
+    "The real pinned native CLI and Docker pass a three-slot synthetic-provider check with large retained context and exact installed-state markers.",
+    "A local Postgres race produces one campaign, one job and one execution commitment for two compatible claims, with separate protocols and decisions."
+  ],
+  "controls": [
+    "Existing immutable history identity, checkpoint, path, budget, admission and cleanup regressions remain enabled.",
+    "Different source/configuration/seed/metric/resource identities remain distinct acquisitions.",
+    "No production writes, actual model calls, new AWS resources or assessment resumption during local verification."
+  ],
+  "resources": {"native_scheduling_seconds": 180, "native_bootstrap_bytes": 16000, "provider_request_bytes": 256000, "native_context_bytes_checkpoint_threshold": 72000, "native_smoke_slots": 3, "new_model_calls": 0, "new_cloud_instances": 0, "measured_charges_usd": null},
+  "uncertainty": "Pass/fail software assertions only. Synthetic provider answers do not validate model planning, paper conclusions, native Linux networking execution or production behavior.",
+  "reviewer": {"identity": "Implementing Codex assistant", "type": "AI", "independent": false},
+  "release_blockers": ["Relevant Python regressions", "Real native continuation smoke", "Artifact-backed Postgres/controller integration"],
+  "conditional_checks": ["Production worker architecture and image qualification", "Bounded live AI follow-up using the remaining original budget after an explicit release instruction"]
+}

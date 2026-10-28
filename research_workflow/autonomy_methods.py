@@ -4,6 +4,7 @@ No generated expressions execute here. Source checks share the source parser;
 this is a controller cross-check, not an independent scientific replication.
 """
 import json
+import store
 from decimal import Decimal, InvalidOperation, localcontext
 from pathlib import Path
 from workflow import canonical, digest, identifier
@@ -189,15 +190,22 @@ def finding(task, one, rows, collect, manifest):
     if len(configuration_by_spec) != len(document['configurations']):
         return None  # Repeated configurations need a separate multiplicity design.
     replicas = document['execution']['replications']; seen = set(); by_configuration = {}; references = [dict(kind='protocols', id=protocol_id)]
-    coverage = dict(decision_version=DECISION_VERSION, decision_implementation_sha256=digest(Path(__file__).read_bytes()), data_origin=document['data_origin'], decision_runs=0, required_runs=len(document['configurations']) * replicas, record_inventories=[], rules=[], prior_runs=[], scope=decision['rationale'], inference='Descriptive whole-run means only; no inferential interval or broader causal/generalization conclusion.', shared_inputs='Same acquisition, source parser and implementation assumptions; not an independent replication.')
+    coverage = dict(decision_version=DECISION_VERSION, decision_implementation_sha256=digest(Path(__file__).read_bytes()), input_reader_version='queue-input-bytes-v1', input_reader_implementation_sha256=digest(Path(store.__file__).read_bytes()), queue_inputs=[], data_origin=document['data_origin'], decision_runs=0, required_runs=len(document['configurations']) * replicas, record_inventories=[], rules=[], prior_runs=[], scope=decision['rationale'], inference='Descriptive whole-run means only; no inferential interval or broader causal/generalization conclusion.', shared_inputs='Same acquisition, source parser and implementation assumptions; not an independent replication.')
     for job in jobs:
         if job.get('status') not in ('awaiting-review', 'reviewed') or not job.get('run_id'):
             return None
         run = one('runs', study, job['run_id']); campaign = one('campaigns', study, job['campaign_id'])
         acquisition = one('protocols', study, campaign['protocol_id'])['document']
-        raw_input = job['request']['raw_input'].encode(); spec = json.loads(raw_input)
+        try:
+            raw_input = store.queue_input_bytes(study, job)
+        except store.StoreError:
+            return None  # Unavailable original input is not a recorded zero.
+        spec = json.loads(raw_input)
         if run['status'] != 'complete' or run.get('input_sha256') != digest(raw_input) or run['campaign_id'] != job['campaign_id'] or campaign['adapter'] != 'network-execution-v1':
             return None
+        input_id=job.get('input_artifact_id') or job['request'].get('input_artifact_id')
+        coverage['queue_inputs'].append(dict(job_id=job['id'],artifact_id=input_id,sha256=digest(raw_input),bytes=len(raw_input),representation='artifact-reference' if input_id else 'legacy-inline'))
+        if input_id:references.append(dict(kind='artifacts',id=input_id))
         configuration = configuration_by_spec.get(canonical(spec['config'])); replica = spec['replication']
         if configuration is None or type(replica) is not int or not 0 <= replica < replicas or (configuration, replica) in seen or spec['runner'] != document['execution']['runner']:
             return None
@@ -207,7 +215,6 @@ def finding(task, one, rows, collect, manifest):
             return None
         seen.add((configuration, replica))
         measurements = collect(rows, 'measurements', study, run_id='eq.' + run['id'])
-        import store
         artifact_id = str(__import__('uuid').uuid5(__import__('uuid').UUID(job['id']), 'network-output'))
         raw_output = store.artifact_bytes(study, artifact_id, maximum=12_000_000)
         if digest(raw_output) != run.get('output_sha256'):
@@ -269,7 +276,10 @@ def finding(task, one, rows, collect, manifest):
         run=one('runs',study,prior['run_id']); campaign=one('campaigns',study,prior['campaign_id'])
         old=one('protocols',study,campaign['protocol_id'])
         references.extend([dict(kind='runs',id=run['id']),dict(kind='protocols',id=old['id'])])
-        old_spec=json.loads(prior['request']['raw_input'])
+        try:
+            old_spec=json.loads(store.queue_input_bytes(study,prior))
+        except store.StoreError:
+            return None
         same_design=old.get('document',{}).get('decision')==decision and old_spec.get('runner')==document['execution']['runner'] and canonical(old_spec.get('config')) in configuration_by_spec
         coverage['prior_runs'].append(dict(run_id=run['id'],status=run['status'],same_decision_and_configuration=same_design,scope='Retained earlier result, not an additional independent replication or an unrecorded exclusion. Earlier criteria/configurations remain in its linked protocol.'))
         if same_design and run['status'] in ('complete','partial'):

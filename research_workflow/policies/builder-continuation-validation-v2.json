@@ -1,0 +1,14 @@
+{
+  "version": "builder-continuation-validation-v2",
+  "supersedes_for_followup_only": "builder-continuation-validation-v1",
+  "stage": "development-regression-followup",
+  "reason": "The v1 three-slot synthetic-provider run passed with shortened test system instructions. Repeat with the exact published builder-v2 template plus current turn, action and method instructions. Earlier failed fixtures and successful results remain retained.",
+  "inherited_criteria": "All criteria and bounds in builder-continuation-validation-v1 remain applicable.",
+  "additional_criteria": [
+    "The published builder-v2 template reconstructed by original local SQL migrations has the same content hash as the retained published template.",
+    "Every native slot receives all trusted system instructions without truncation. Optional inline context fields may be replaced whole by exact file references when necessary.",
+    "Three native slots pass with an 80000-byte retained source fixture, an actual context checkpoint and persistent installed-state markers. This exercises native tools and context delivery, not model planning quality."
+  ],
+  "stopping_rules": "One fresh invocation per code/fixture revision. Preserve failed originals; investigate specific failures before another invocation. No production writes, cloud launch, real model call or spending-limit reset.",
+  "reviewer": {"identity": "Implementing Codex assistant", "type": "AI", "independent": false}
+}

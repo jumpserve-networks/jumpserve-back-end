@@ -1,5 +1,5 @@
 """Builder development cases; no credentials, provider calls or cloud changes."""
-import io,json,os,sys,tempfile,unittest,uuid,zipfile
+import io,json,os,subprocess,sys,tempfile,unittest,uuid,zipfile
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -12,6 +12,58 @@ def project(root):
     for name,raw in {'experiment.py':b'print(1)\n','requirements.lock':b'','system-packages.lock.json':b'[]','build-evidence.json':b'{"commands":[],"checks":[],"limitations":[]}'}.items():(root/name).write_bytes(raw)
 
 class Packages(unittest.TestCase):
+    def test_large_context_and_history_are_exact_files_not_repeated_bootstrap_text(self):
+        context=dict(task='building',claim={'id':str(uuid.uuid4()),'description':'Check the frozen source calculation.'},source_material='paper-evidence-α'*11000,runner_contracts='contract'*10000)
+        history=[dict(type='function_call_output',call_id='prior-1',output='retained-tool-result-β'*2500)]
+        logical=dict(system=[dict(text='Fixed test instructions.')],builder=dict(context=context))
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);workspace=root/'workspace';workspace.mkdir()
+            text,manifest=builder.bootstrap(logical,workspace,root,history)
+            self.assertLessEqual(len(text.encode()),builder.BOOTSTRAP_BYTES)
+            self.assertNotIn(context['source_material'],text);self.assertNotIn(history[0]['output'],text)
+            self.assertEqual((workspace/'research-context.json').read_bytes(),autonomy.canonical(context))
+            self.assertEqual((workspace/'native-tool-history.json').read_bytes(),autonomy.canonical(history))
+            for record in manifest['files']:
+                raw=(workspace/record['path']).read_bytes();self.assertEqual(autonomy.digest(raw),record['sha256'])
+            fragments=[];page=0;reads=[]
+            while page is not None:
+                read=subprocess.run([sys.executable,str(workspace/'read-retained.py'),'context','source_material',str(page)],capture_output=True,check=True)
+                value=json.loads(read.stdout);self.assertLessEqual(len(value['fragment'].encode()),6000)
+                call_id='read-'+str(page)
+                reads.extend([dict(type='function_call',call_id=call_id,name='exec',arguments=json.dumps({'command':'python3 /workspace/read-retained.py context source_material '+str(page)})),dict(type='function_call_output',call_id=call_id,output=read.stdout.decode())])
+                fragments.append(value['fragment']);page=value['next_page']
+            self.assertEqual(''.join(fragments).encode(),autonomy.canonical(context['source_material']))
+            self.assertEqual(value['sha256'],autonomy.digest(''.join(fragments).encode()))
+            pages=builder.delivered_pages(context,reads)
+            self.assertEqual(sorted(pages['source_material']),list(range(len(fragments))))
+            self.assertEqual(builder.delivered_pages(dict(context,source_material='changed original'),reads),{})
+            altered=json.loads(reads[1]['output']);altered['fragment']='invented replacement';reads[1]['output']=json.dumps(altered)
+            self.assertNotIn(0,builder.delivered_pages(context,reads)['source_material'])
+            self.assertIn('native_output_sha256',pages['source_material'][0])
+            # Later delivery changes only current workspace copies; the previous
+            # immutable request is not edited and a new manifest identifies it.
+            old=autonomy.canonical(logical);context2=dict(context,builder_feedback='Address the exact retained error.')
+            builder.bootstrap(dict(logical,builder=dict(context=context2)),workspace,root,history)
+            self.assertEqual(autonomy.canonical(logical),old)
+            self.assertIn('not a review-completeness',manifest['scope'])
+
+    def test_trusted_instructions_are_never_silently_truncated(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            with self.assertRaisesRegex(ValueError,'Trusted builder instructions'):
+                builder.bootstrap(dict(system=[dict(text='x'*16001)],builder=dict(context={})),root,root,[])
+
+    def test_whole_optional_fields_move_to_files_to_leave_room_for_trusted_rules(self):
+        context={'task':'building','claim':{'description':'z'*2700},'builder_feedback':'f'*1400}
+        instruction='Trusted system instruction. '*365
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            text,manifest=builder.bootstrap(dict(system=[{'text':instruction}],builder={'context':context}),root,root,[])
+            self.assertLessEqual(len(text.encode()),builder.BOOTSTRAP_BYTES)
+            self.assertIn(instruction,text)
+            self.assertEqual(json.loads((root/'research-context.json').read_bytes()),context)
+            self.assertNotEqual(set(manifest['inline_fields']),set(context))
+
     def test_invalid_execution_mode_is_retained_but_never_registered(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);project(root/'project')
@@ -129,6 +181,22 @@ class Packages(unittest.TestCase):
         with patch.object(autonomy,'build_context',return_value={}),patch.object(autonomy.model,'call',return_value=answer),patch.object(autonomy,'advance') as advance:
             autonomy.step(task)
         self.assertEqual(advance.call_args.kwargs['stage'],'building');self.assertEqual(advance.call_args.args[1],'queued');self.assertEqual(advance.call_args.kwargs['context']['builder_checkpoint'],answer['runtime']['checkpoint'])
+    def test_sibling_package_returns_to_claim_specific_planning_without_resetting_checkpoint_or_criterion(self):
+        source=str(uuid.uuid4());package_id=str(uuid.uuid4())
+        task=dict(stage='building',id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),context=dict(source_id=source,builder_checkpoint={'sha256':'a'*64},decision_lock='frozen',completed_job_ids=['earlier-result']))
+        candidate=dict(id=package_id,task_id=str(uuid.uuid4()))
+        with patch.object(builder,'catalog',return_value=[candidate]),patch.object(autonomy.model,'call') as inference,patch.object(autonomy,'advance') as advance:
+            autonomy.step(task)
+        inference.assert_not_called();saved=advance.call_args.kwargs['context']
+        self.assertEqual(advance.call_args.kwargs['stage'],'planning');self.assertEqual(saved['decision_lock'],'frozen')
+        self.assertEqual(saved['builder_checkpoint'],task['context']['builder_checkpoint']);self.assertEqual(saved['completed_job_ids'],['earlier-result'])
+        self.assertEqual(saved['builder_reuse_considered'],[package_id]);self.assertNotIn('builder_reuse_considered',task['context'])
+        # The same candidate cannot bounce a builder back to planning forever.
+        task['context']=saved
+        answer=dict(id=str(uuid.uuid4()),status='complete',output=builder.decision(),runtime={})
+        with patch.object(builder,'catalog',return_value=[candidate]),patch.object(autonomy,'build_context',return_value={}),patch.object(autonomy.model,'call',return_value=answer) as inference,patch.object(autonomy,'advance') as advance:
+            autonomy.step(task)
+        inference.assert_called_once();self.assertEqual(advance.call_args.kwargs['stage'],'building')
     def test_building_decisions_do_not_claim_scientific_coverage(self):
         value=builder.decision({'protocol':{},'experiment_type':'independent-check'})
         autonomy_model.validate_phase(value,{'task':'building'})

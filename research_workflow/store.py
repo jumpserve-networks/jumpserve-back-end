@@ -161,6 +161,44 @@ def artifact_bytes(study_id, artifact_id, maximum=256000):
         raise StoreError("Original input artifact hash differs after retrieval.")
     return raw
 
+def queue_input_bytes(study_id, job):
+    """Read unchanged queue input, including historical inline definitions.
+
+    Modern queue requests contain an artifact identity and hash, not raw_input.
+    Never regenerate JSON: whitespace and original byte identity are evidence.
+    Artifact retrieval independently checks Storage length/content SHA-256.
+    """
+    study_id = identifier(study_id)
+    if job.get('study_id', study_id) != study_id:
+        raise ValueError('Queue input belongs to another assessment.')
+    request = job.get('request')
+    if not isinstance(request, dict):
+        raise ValueError('Queue input definition is unavailable.')
+    if job.get('definition_sha256') and digest(canonical(request)) != job['definition_sha256']:
+        raise ValueError('Queue input definition hash differs from its recorded identity.')
+    top = job.get('input_artifact_id'); saved = request.get('input_artifact_id')
+    if top and saved and top != saved:
+        raise ValueError('Queue input artifact pointers disagree.')
+    artifact_id = top or saved
+    inline = request.get('raw_input')
+    if inline is not None and (not isinstance(inline, str) or not inline):
+        raise ValueError('Legacy queue input must be original UTF-8 text.')
+    if artifact_id:
+        if not request.get('input_sha256'):
+            raise ValueError('Artifact-backed queue input requires its recorded SHA-256.')
+        raw = artifact_bytes(study_id, identifier(artifact_id), maximum=256000)
+        if inline is not None and raw != inline.encode('utf-8'):
+            raise ValueError('Inline and artifact-backed queue inputs disagree.')
+    elif inline is not None:
+        raw = inline.encode('utf-8')
+    else:
+        raise StoreError('Original queue input is unavailable; no numerical decision was made.')
+    if not raw or len(raw) > 256000:
+        raise ValueError('Queue input exceeds its retained input bound.')
+    if request.get('input_sha256') and digest(raw) != request['input_sha256']:
+        raise ValueError('Queue input hash differs from its immutable definition.')
+    return raw
+
 def snapshot(study_id, owner=False, maximum=10000, byte_budget=4_000_000):
     studies = rows("studies", {"id": "eq." + study_id, "limit": 1}, public=not owner)
     if not studies: return None
