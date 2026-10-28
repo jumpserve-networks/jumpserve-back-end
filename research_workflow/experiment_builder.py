@@ -245,11 +245,12 @@ def execution_contract():
         scope='Build/development evidence only. Production campaign admission, fresh reviews, budgets and scientific criteria remain separate.')
 
 def container_action(task_id, action):
-    if action not in ('remove','stop','start'):raise ValueError('Unsupported builder lifecycle operation.')
+    if action not in ('remove','stop','start','list'):raise ValueError('Unsupported builder lifecycle operation.')
     prefix='js-build-'+str(uuid.UUID(task_id)).replace('-','')+'-'
     listed=subprocess.run(['docker','ps','-aq','--filter','name=^/'+prefix],capture_output=True,timeout=5,check=True)
     ids=listed.stdout.decode().split()
     if any(not re.fullmatch('[a-f0-9]{12,64}',value) for value in ids):raise ValueError('Invalid builder container identity.')
+    if action=='list':return ids
     for identity in ids:
         state=json.loads(subprocess.run(['docker','inspect','--format','{{json .State}}',identity],capture_output=True,timeout=5,check=True).stdout)
         if state.get('Paused'):subprocess.run(['docker','unpause',identity],capture_output=True,timeout=5,check=True)
@@ -264,7 +265,7 @@ def reap(spool):
     root=Path(spool)/'builder-workspaces'
     if not root.exists():return
     for path in sorted(root.iterdir()):
-        if not path.is_dir() or path.is_symlink() or (path/'retired.json').exists():continue
+        if not path.is_dir() or path.is_symlink():continue
         try:task_id=str(uuid.UUID(path.name))
         except ValueError:continue
         with (path/'workspace.lock').open('a+b') as held:
@@ -277,13 +278,22 @@ def reap(spool):
             w=workflows[0]
             if task['status'] in ('queued','waiting','running') and w['status']=='running' and dt.datetime.fromisoformat(w['deadline_at'].replace('Z','+00:00'))>dt.datetime.now(dt.timezone.utc):continue
             pending=path/'retirement-pending.json'
-            if pending.exists():receipt=pending.read_bytes()
+            retired=path/'retired.json'
+            completed=retired.read_bytes() if retired.exists() else None
+            if completed is not None and (not pending.exists() or pending.read_bytes()==completed):
+                # A resumed task can create a fresh container after retirement.
+                # Retain the old receipt; its marker cannot exempt new resources
+                # from cleanup when that task next stops.
+                if not container_action(task_id,'list'):continue
+                history=path/'retirement-history';history.mkdir(exist_ok=True)
+                (history/(digest(completed)+'.json')).write_bytes(completed)
+            if pending.exists() and pending.read_bytes()!=completed:receipt=pending.read_bytes()
             else:
                 removed=container_action(task_id,'remove')
                 receipt=canonical(dict(version=VERSION,task_id=task_id,operation='retire-container',container_ids=removed,recorded_at=dt.datetime.now(dt.timezone.utc).isoformat(),measured_charges_usd=None,scope='Installed environment removed after a terminal claim or original paper stop; original checkpoints and call history remain retained.'))
                 pending.write_bytes(receipt)
             owner=store.rows('study_owners',dict(study_id='eq.'+task['study_id'],limit=1))[0]['owner_id']
-            record=store.artifact(task['study_id'],owner,receipt,str(uuid.uuid5(uuid.UUID(task_id),'builder-retirement')),'application/json',dict(kind='builder-cleanup-receipt',version=VERSION))
+            record=store.artifact(task['study_id'],owner,receipt,str(uuid.uuid5(uuid.UUID(task_id),'builder-retirement:'+digest(receipt))),'application/json',dict(kind='builder-cleanup-receipt',version=VERSION))
             store.append(task['study_id'],owner,'artifacts',record);(path/'retired.json').write_bytes(receipt)
 
 def eligible(task, output):

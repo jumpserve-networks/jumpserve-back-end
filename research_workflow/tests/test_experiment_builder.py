@@ -229,6 +229,20 @@ class Packages(unittest.TestCase):
                 with self.assertRaises(builder.store.StoreError):builder.reap(tmp)
                 original=(root/'retirement-pending.json').read_bytes();builder.reap(tmp)
             self.assertEqual(cleanup.call_count,1);self.assertEqual(artifact.call_args_list[0].args[2],artifact.call_args_list[1].args[2]);self.assertEqual((root/'retired.json').read_bytes(),original)
+    def test_resumed_retired_task_gets_new_cleanup_identity_without_overwriting_old_receipt(self):
+        task_id=str(uuid.uuid4());study=str(uuid.uuid4())
+        def rows(kind,*args,**kwargs):
+            return [dict(id=task_id,study_id=study,status='resolved')] if kind=='autonomy_tasks' else [dict(status='completed',deadline_at='2030-01-01T00:00:00Z')] if kind=='autonomy_workflows' else [dict(owner_id=str(uuid.uuid4()))]
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)/'builder-workspaces'/task_id;root.mkdir(parents=True)
+            old=b'{"original":"retired before recovery"}'
+            for name in ('retired.json','retirement-pending.json'):(root/name).write_bytes(old)
+            with patch.object(builder.store,'rows',side_effect=rows),patch.object(builder,'container_action',side_effect=[['a'*12],['a'*12],[]]) as cleanup,patch.object(builder.store,'artifact',return_value={}) as artifact,patch.object(builder.store,'append'):
+                builder.reap(tmp);new=(root/'retired.json').read_bytes();builder.reap(tmp)
+            self.assertNotEqual(new,old);self.assertEqual((root/'retirement-history'/(autonomy.digest(old)+'.json')).read_bytes(),old)
+            self.assertEqual([x.args[1] for x in cleanup.call_args_list],['list','remove','list'])
+            self.assertEqual(artifact.call_count,1)
+            self.assertEqual(artifact.call_args.args[3],str(uuid.uuid5(uuid.UUID(task_id),'builder-retirement:'+autonomy.digest(new))))
     def test_archived_plan_uses_authoritative_claim_source_without_a_text_binding(self):
         source=str(uuid.uuid4());task=dict(id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),actor_id=str(uuid.uuid4()),claim_id=str(uuid.uuid4()),context={'prepared_id':str(uuid.uuid4())})
         with patch.object(shared_campaigns.store,'rows',return_value=[{'id':task['claim_id'],'source_id':source}]),patch.object(shared_campaigns,'identity',return_value=({},'a'*64)) as identity,patch.object(shared_campaigns.store,'rpc',return_value={}):
