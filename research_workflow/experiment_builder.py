@@ -115,7 +115,7 @@ def execution_contract():
     This is server-owned configuration, distinct from untrusted paper content.
     Executing a prototype against inline JSON is not a portable package check.
     """
-    return dict(version='builder-execution-contract-v2',
+    return dict(version='builder-execution-contract-v3',
         wrapper_version=generated_package.VERSION,
         wrapper_sha256=digest(Path(generated_package.__file__).read_bytes()),
         entrypoint='python3 experiment.py; standard __main__ execution, not an imported run() callback',
@@ -123,6 +123,11 @@ def execution_contract():
                          JUMPSERVE_INPUTS='Absolute directory of retained inputs, including project.zip.',
                          JUMPSERVE_OUTPUT='Absolute filename to write the network-observations-v1 JSON envelope.'),
         spec_loader="spec = json.loads(Path(os.environ['JUMPSERVE_SPEC']).read_text(encoding='utf-8'))",
+        spec_fields=dict(version='network-execution-v1',runner='built-package-v1',configuration_index='zero-based integer',configuration_identity='Exact protocol configuration identity',replication='zero-based integer',
+            config=dict(mode=['emulated','real-world'],arguments='Array of strings',parameters='Exact model-declared parameters',package='Server-bound wrapper artifact',private_inputs='Server-bound project.zip and other retained inputs'),
+            limits='Exact execution.limits object',metrics=[dict(name='Declared metric name',units='Declared units')]),
+        metric_rule='Execution spec metrics contain ONLY name and units. planned_observations and metric bounds belong to the protocol and are NOT present in the executable spec. Do not require them in experiment.py.',
+        wrapper_reference='The exact unchanged wrapper source is supplied under reference-implementations/generated_package-<wrapper_sha256>.py; use it for a real development portability check with absolute spec/input/output paths. Keep the source and any development ZIP outside project/.',
         project_files=['experiment.py','requirements.lock','system-packages.lock.json','build-evidence.json'],
         validation='Run the program using actual spec/input/output paths, retain the real commands, exit codes and output, and use the unchanged server wrapper for the portability check. Do not substitute inline JSON environment values.',
         workspace_user='Commands and file tools run as the worker UID:GID. Use sudo -n for necessary installations/system setup inside the container; write project/evidence files as the workspace user. Python is python3; do not assume a python alias.',
@@ -291,6 +296,13 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     state = task_root / 'state'; state.mkdir(mode=0o700,exist_ok=True)
     (directory / 'logical.json').write_bytes(canonical(logical))
     settings = logical['builder']; prior = settings.get('checkpoint')
+    if prior:
+        original = store.artifact_bytes(job['study_id'], prior['artifact_id'], maximum=4000001)
+        if digest(original) != prior['sha256']: raise ValueError('Builder checkpoint original hash differs.')
+        if (task_root/'checkpoint-reference.json').exists():
+            if json.loads((task_root/'checkpoint-reference.json').read_bytes())!=prior:raise ValueError('Local builder workspace needs reconciliation with its recorded checkpoint.')
+        else:restore(original, workspace)
+    elif (task_root/'checkpoint-reference.json').exists():raise ValueError('A recorded builder workspace cannot be reset without its original checkpoint.')
     history_path=task_root/'native-tool-history.json'
     authority=action_policy()
     expected=settings.get('execution_authority')
@@ -300,15 +312,18 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     (directory/'runner-contract.json').write_bytes(contract)
     # An examined, exact starting point saves generated-code setup turns. It is
     # a reference, not an exemption from resource accounting or fresh reviews.
-    reference=Path(__file__).with_name('netem_iperf.py').read_bytes()
     reference_dir=workspace/'reference-implementations'
     if reference_dir.is_symlink():raise ValueError('Builder reference directory cannot be a symlink.')
     reference_dir.mkdir(exist_ok=True)
-    reference_path=reference_dir/('netem_iperf-'+digest(reference)+'.py')
-    if reference_path.is_symlink():raise ValueError('Builder reference file cannot be a symlink.')
-    if reference_path.exists() and reference_path.read_bytes()!=reference:raise ValueError('Builder reference implementation bytes changed.')
-    reference_path.write_bytes(reference)
-    (directory/'reference-implementations.json').write_bytes(canonical(dict(files=[dict(path=str(reference_path.relative_to(workspace)),sha256=digest(reference),bytes=len(reference))],scope='Versioned built-in source for inspection/adaptation; it does not establish a valid causal design or waive the clean executor contract.')))
+    references=[]
+    for name in ('netem_iperf','generated_package'):
+        reference=Path(__file__).with_name(name+'.py').read_bytes()
+        reference_path=reference_dir/(name+'-'+digest(reference)+'.py')
+        if reference_path.is_symlink():raise ValueError('Builder reference file cannot be a symlink.')
+        if reference_path.exists() and reference_path.read_bytes()!=reference:raise ValueError('Builder reference implementation bytes changed.')
+        reference_path.write_bytes(reference)
+        references.append(dict(path=str(reference_path.relative_to(workspace)),sha256=digest(reference),bytes=len(reference)))
+    (directory/'reference-implementations.json').write_bytes(canonical(dict(files=references,scope='Versioned built-in source and unchanged executor wrapper for inspection/development checks; this does not establish a valid causal design or waive fresh reviews.')))
     if (workspace/'runner-contract.json').exists() and (workspace/'runner-contract.json').read_bytes()!=contract:
         old=(workspace/'runner-contract.json').read_bytes()
         (workspace/('previous-runner-contract-'+digest(old)+'.json')).write_bytes(old)
@@ -316,13 +331,6 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     result = dict(runtime=VERSION, status='unknown', model_id=runtime.MODEL, provider_calls=0, paid_fallback=False,
                   measured_charges_usd=None, estimated_cost_usd=None, usage=None, build_state='paused', slice_seconds=SLICE_SECONDS,
                   action_policy_version=authority['version'],action_policy_sha256=authority['sha256'],execution_contract_sha256=digest(contract),workspace_uid=os.getuid(),workspace_gid=os.getgid())
-    if prior:
-        original = store.artifact_bytes(job['study_id'], prior['artifact_id'], maximum=4000001)
-        if digest(original) != prior['sha256']: raise ValueError('Builder checkpoint original hash differs.')
-        if (task_root/'checkpoint-reference.json').exists():
-            if json.loads((task_root/'checkpoint-reference.json').read_bytes())!=prior:raise ValueError('Local builder workspace needs reconciliation with its recorded checkpoint.')
-        else:restore(original, workspace)
-    elif (task_root/'checkpoint-reference.json').exists():raise ValueError('A recorded builder workspace cannot be reset without its original checkpoint.')
     material=settings['context'].get('source_material') or {}
     if material.get('text_artifact_id') and not (workspace/'paper-text.json').exists():
         source_rows=store.rows('artifacts',dict(study_id='eq.'+job['study_id'],id='eq.'+material['text_artifact_id'],limit=1))

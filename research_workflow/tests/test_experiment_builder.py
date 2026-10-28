@@ -111,6 +111,10 @@ class Packages(unittest.TestCase):
         self.assertIn('NOT inline JSON',contract['environment']['JUMPSERVE_SPEC'])
         self.assertIn("Path(os.environ['JUMPSERVE_SPEC']).read_text",contract['spec_loader'])
         self.assertIn('sudo -n',contract['workspace_user'])
+        self.assertEqual(contract['version'],'builder-execution-contract-v3')
+        self.assertEqual(set(contract['spec_fields']['metrics'][0]),{'name','units'})
+        self.assertIn('NOT present',contract['metric_rule'])
+        self.assertEqual(contract['spec_fields']['config']['mode'],['emulated','real-world'])
     def test_recoverable_design_and_implementation_enter_builder_but_external_gates_do_not(self):
         task={'stage':'planning'}
         with patch.dict('os.environ',RESEARCH_BUILDER_ENABLED='true'):
