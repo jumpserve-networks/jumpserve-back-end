@@ -207,7 +207,11 @@ def bootstrap(logical, workspace, directory, history):
         if path.is_symlink():raise ValueError('Builder context delivery cannot replace a symlink.')
         path.write_bytes(raw)
     focus={}
-    for key in ('task','repair_directive','claim','remaining_commitment_cents','deadline_at','builder_feedback','builder_work_progress'):
+    # Keep the immediate, incident-specific next action ahead of the longer
+    # repair instructions. Otherwise reverse-pruning at the byte boundary can
+    # discard every useful continuation hint while retaining only task=building.
+    # Full directives remain unchanged in the indexed context either way.
+    for key in ('task','builder_feedback','claim','remaining_commitment_cents','deadline_at','repair_directive','builder_work_progress'):
         if key in context and len(canonical({key:context[key]}))<=3000 and len(canonical(focus))+len(canonical({key:context[key]}))<=4500:
             focus[key]=context[key]
     # Preserve every trusted system instruction in full, without duplicating the

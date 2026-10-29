@@ -107,6 +107,20 @@ class Repair(unittest.TestCase):
    noop=subprocess.run([sys.executable,'-I','-c',repair_validation.RUNNER],cwd=root,capture_output=True,timeout=10)
    self.assertNotEqual(noop.returncode,0);self.assertEqual(json.loads(noop.stdout)['experiment_functions_executed'],[])
 
+ def test_tight_bootstrap_keeps_actual_next_action_ahead_of_long_repair_directive(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);work=root/'workspace';work.mkdir();directory=root/'dispatch';directory.mkdir()
+   logical=dict(system=[dict(text='Policy')],builder=dict(context=dict(repair_directive='x'*3100)))
+   baseline,_=builder.bootstrap(logical,work,directory,[])
+   policy='Policy'+'P'*(builder.BOOTSTRAP_BYTES-len(baseline.encode())-700)
+   feedback='The retained implementation and tests are complete. Write the exact incident plan and execute the existing tests; do not repeat completed inspection.'
+   context=dict(task='building',builder_feedback=feedback,claim=dict(description='Original claim'),repair_directive=repair.REPAIR_INSTRUCTION)
+   logical=dict(system=[dict(text=policy)],builder=dict(context=context))
+   message,manifest=builder.bootstrap(logical,work,directory,[])
+   self.assertLessEqual(len(message.encode()),builder.BOOTSTRAP_BYTES)
+   self.assertIn('builder_feedback',manifest['inline_fields']);self.assertIn(feedback,message)
+   self.assertTrue(message.startswith(policy));self.assertEqual(json.loads((work/'research-context.json').read_bytes()),context)
+
  def test_repair_cannot_skip_executed_check_receipt_before_fresh_scientific_review(self):
   t=task();ref=dict(id=str(uuid.uuid4()),state='repairing');t['context']['repair_progress']=ref
   record=dict(ref,version=repair.VERSION,revision=1,incident_sha256='a'*64,evidence={})
