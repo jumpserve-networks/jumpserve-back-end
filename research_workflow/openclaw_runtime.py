@@ -172,6 +172,66 @@ def execute(logical,directory,token_source=credential,transport=http_request):
  (directory/'receipt.json').write_bytes(canonical(result))
  return answer if result['status']=='complete' else None,result
 
+def persist_completed(job,directory):
+ directory=Path(directory)
+ with (directory/'completion.lock').open('a+b') as lock:
+  try:fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+  except BlockingIOError:return False
+  return _persist_completed(job,directory)
+
+def _persist_completed(job,directory):
+ """Idempotent persistence only. This function cannot invoke model transport."""
+ import model_dispatch as dispatch,store
+ directory=Path(directory);completed=json.loads((directory/'completion.json').read_bytes())
+ receipt=completed['receipt'];answer=completed['answer']
+ if digest((directory/'logical.json').read_bytes())!=job['request_sha256']:raise ValueError('Pending completion original request hash differs.')
+ prior=dispatch.rpc('result',dict(id=job['id'],study_id=job['study_id']))
+ if prior['status'] not in ('queued','running'):
+  # A missed lease is reconciled separately, never overwrite a terminal row.
+  return prior.get('provenance',{}).get('completion_sha256')==digest((directory/'completion.json').read_bytes())
+ artifacts=[]
+ for path in sorted(directory.iterdir()):
+  if path.is_file() and not path.is_symlink() and path.name not in ('config.json','completion.lock'):
+   raw=path.read_bytes();identity=str(uuid.uuid5(uuid.UUID(job['id']),'runtime:'+path.name))
+   record=store.artifact(job['study_id'],job['actor_id'],raw,identity,'application/octet-stream',dict(runtime=VERSION,kind='model-runtime-original',dispatch_id=job['id'],filename=path.name,response_received=receipt.get('response_received'),transformation='Original captured bytes; not scientific measurements.'))
+   store.append(job['study_id'],job['actor_id'],'artifacts',record);artifacts.append(dict(id=record['id'],name=path.name,sha256=record['sha256'],byte_count=record['byte_count']))
+ response_id=None;response_sha=None
+ if answer:
+  raw=canonical(answer);response_id=str(uuid.uuid5(uuid.UUID(job['id']),'controller-response'));record=store.artifact(job['study_id'],job['actor_id'],raw,response_id,'application/json',dict(runtime=VERSION,kind='derived-controller-model-response',dispatch_id=job['id'],transformation='Completed SSE to typed decision; original SSE and native CLI output retained separately.'))
+  store.append(job['study_id'],job['actor_id'],'artifacts',record);response_sha=record['sha256']
+ provenance=dict(receipt,artifacts=artifacts,completion_sha256=digest((directory/'completion.json').read_bytes()))
+ dispatch.rpc('finish',dict(id=job['id'],token=job['lease_token'],status=receipt['status'],response_artifact_id=response_id,response_sha256=response_sha,provenance=provenance))
+ return True
+
+def save_completion(job,directory,answer,receipt,pending):
+ """Capture before transport; the outbox contains private worker metadata."""
+ raw=canonical(dict(answer=answer,receipt=receipt));path=directory/'completion.json'
+ with path.open('xb') as output:output.write(raw);output.flush();os.fsync(output.fileno())
+ pending.mkdir(mode=0o700,exist_ok=True)
+ marker=pending/(str(uuid.UUID(job['id']))+'.json')
+ with marker.open('xb') as output:output.write(canonical(job));output.flush();os.fsync(output.fileno())
+ return marker
+
+def retry_completions(spool):
+ import model_dispatch as dispatch
+ pending=Path(spool)/'pending-completions'
+ if not pending.exists():return
+ for marker in sorted(pending.glob('*.json'))[:4]:
+  if marker.is_symlink():raise ValueError('Completion outbox cannot follow symlinks.')
+  job=json.loads(marker.read_bytes());directory=Path(spool)/str(uuid.UUID(job['id']))
+  try:
+   if persist_completed(job,directory):marker.unlink()
+   elif store_reconciliation_present(job):marker.rename(marker.with_suffix('.reconciled'))
+   elif dispatch.rpc('result',dict(id=job['id'],study_id=job['study_id']))['status'] not in ('queued','running'):
+    # Preserve a terminal mismatch for reconciliation without starving later
+    # pending saves. Renaming metadata does not replay or resolve that outcome.
+    marker.rename(marker.with_suffix('.awaiting-reconciliation'))
+  except Exception as error:print(json.dumps(dict(runtime=VERSION,status='completion-persistence-pending',dispatch_id=job['id'],error_type=type(error).__name__)),flush=True)
+
+def store_reconciliation_present(job):
+ import store
+ return bool(store.rows('model_reconciliations',dict(dispatch_id='eq.'+job['id'],limit=1)))
+
 def worker_loop():
  import model_dispatch as dispatch,store
  from openclaw_health import WorkerAvailability
@@ -187,22 +247,27 @@ def worker_loop():
    answer,receipt=experiment_builder.execute(logical,directory,job)
   else:answer,receipt=execute(logical,directory)
   availability.observe(receipt)
-  artifacts=[];captured={}
-  for path in sorted(directory.iterdir()):
-   if path.is_file() and path.name not in ('config.json',):
-    raw=path.read_bytes();identity=str(uuid.uuid5(uuid.UUID(job['id']),'runtime:'+path.name))
-    record=store.artifact(job['study_id'],job['actor_id'],raw,identity,'application/octet-stream',dict(runtime=VERSION,kind='model-runtime-original',dispatch_id=job['id'],filename=path.name,response_received=receipt.get('response_received'),transformation='Original captured bytes; not scientific measurements.'))
-    store.append(job['study_id'],job['actor_id'],'artifacts',record);artifacts.append(dict(id=record['id'],name=path.name,sha256=record['sha256'],byte_count=record['byte_count']))
-  response_id=None;response_sha=None
-  if answer:
-   raw=canonical(answer);response_id=str(uuid.uuid5(uuid.UUID(job['id']),'controller-response'));record=store.artifact(job['study_id'],job['actor_id'],raw,response_id,'application/json',dict(runtime=VERSION,kind='derived-controller-model-response',dispatch_id=job['id'],transformation='Completed SSE to typed decision; original SSE and native CLI output retained separately.'))
-   store.append(job['study_id'],job['actor_id'],'artifacts',record);response_sha=record['sha256']
-  provenance=dict(receipt,artifacts=artifacts)
-  dispatch.rpc('finish',dict(id=job['id'],token=job['lease_token'],status=receipt['status'],response_artifact_id=response_id,response_sha256=response_sha,provenance=provenance))
+  marker=save_completion(job,directory,answer,receipt,spool/'pending-completions')
+  if persist_completed(job,directory):marker.unlink()
  with ThreadPoolExecutor(max_workers=2) as pool:
-  futures=[];last_health=0;last_builder_reap=0;ready=False
+  futures=[];last_health=0;last_builder_reap=0;last_reconciliation=0;recovery=None;ready=False
   while True:
    try:
+    if recovery and recovery.done():
+     try:recovery.result()
+     except Exception as error:print(json.dumps(dict(runtime=VERSION,status='reconciliation-pending',error_type=type(error).__name__)),flush=True)
+     recovery=None
+    if recovery is None and time.monotonic()-last_reconciliation>30:
+     def recover():
+      retry_completions(spool)
+      if os.environ.get('RESEARCH_BUILDER_ENABLED')=='true':
+       import dispatch_recovery
+       dispatch_recovery.reconcile_spool(spool)
+     # Separate recovery executor keeps storage/hash reads off the heartbeat
+     # loop and does not consume either of the two inference worker slots.
+     if 'recovery_pool' not in locals():recovery_pool=ThreadPoolExecutor(max_workers=1,thread_name_prefix='retained-result-recovery')
+     recovery=recovery_pool.submit(recover)
+     last_reconciliation=time.monotonic()
     if os.environ.get('RESEARCH_BUILDER_ENABLED')=='true' and time.monotonic()-last_builder_reap>60:
      import experiment_builder
      experiment_builder.reap(spool);last_builder_reap=time.monotonic()

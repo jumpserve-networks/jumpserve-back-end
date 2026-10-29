@@ -1,7 +1,7 @@
 """Builder development cases; no credentials, provider calls or cloud changes."""
 import io,json,os,subprocess,sys,tempfile,unittest,uuid,zipfile
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch,Mock
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import experiment_builder as builder,generated_package as package,autonomy,autonomy_model,network_spec
 import shared_campaigns
@@ -91,9 +91,40 @@ class Packages(unittest.TestCase):
         with self.assertRaises(ValueError):builder.merge_tool_history(original,[dict(original[0],output='success')])
         self.assertEqual(original[0]['output'],'connection refused')
     def test_continuation_bound_does_not_silently_drop_earlier_evidence(self):
-        original=[dict(type='function_call_output',call_id='call-1',output='x'*999900)]
+        original=[dict(type='function_call_output',call_id='call-1',output='x'*(builder.HISTORY_BYTES-100))]
         with self.assertRaises(ValueError):builder.merge_tool_history(original,[dict(type='function_call_output',call_id='call-2',output='y'*200)])
         self.assertEqual(len(original),1)
+    def test_megabyte_history_round_trips_with_original_global_indices_and_bounded_reader(self):
+        history=[dict(type='function_call_output',call_id='call-'+str(i),output='α retained '*1000) for i in range(130)]
+        self.assertGreater(len(autonomy.canonical(history)),1000000)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);builder.save_history(root,history)
+            self.assertEqual(builder.load_history(root),history)
+            (root/'read-retained.py').write_text(builder.READ_RETAINED)
+            read=subprocess.run([sys.executable,str(root/'read-retained.py'),'history','129','0'],capture_output=True,check=True)
+            self.assertEqual(json.loads(read.stdout)['sha256'],autonomy.digest(autonomy.canonical(history[129])))
+            restored=root/'restored';restored.mkdir();builder.restore(builder.checkpoint(root),restored)
+            self.assertEqual(builder.load_history(restored),history)
+            # A hash alone is not accepted without matching compressed bytes.
+            (root/'native-tool-history.json.gz').write_bytes(b'altered')
+            with self.assertRaisesRegex(ValueError,'hash differs'):builder.load_history(root)
+    def test_delivery_and_notes_do_not_count_as_implementation_progress(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);first=builder.work_progress(root,{},[])
+            (root/'progress.json').write_text('{"claimed":"done"}')
+            (root/'builder-continuation.json').write_text('{}')
+            (root/'native-tool-history.json.gz').write_bytes(b'generated transport')
+            (root/'notes.txt').write_text('Another status message')
+            self.assertEqual(first['implementation_sha256'],builder.work_progress(root,{},[])['implementation_sha256'])
+            (root/'experiment.py').write_text('print(42)')
+            self.assertNotEqual(first['implementation_sha256'],builder.work_progress(root,{},[])['implementation_sha256'])
+    def test_compressed_history_cannot_bypass_the_expanded_byte_limit(self):
+        import gzip
+        raw=b'x'*(builder.HISTORY_BYTES+1);compressed=gzip.compress(raw,mtime=0)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'native-tool-history.json.gz').write_bytes(compressed)
+            (root/'native-tool-history.json').write_bytes(autonomy.canonical(dict(version='builder-history-gzip-v1',path='native-tool-history.json.gz',bytes=len(raw),records=1,sha256=autonomy.digest(raw),compressed_sha256=autonomy.digest(compressed))))
+            with self.assertRaisesRegex(ValueError,'Expanded native history'):builder.load_history(root)
     def test_standing_authority_is_hash_bound_and_does_not_claim_unavailable_capabilities(self):
         policy=builder.action_policy()
         self.assertEqual(policy['sha256'],autonomy.digest(builder.ACTION_POLICY_PATH.read_bytes()))
@@ -121,6 +152,19 @@ class Packages(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp,self.assertRaisesRegex(ValueError,'policies differ'):
             builder.execute(logical,Path(tmp)/'slice',job,token_source=token,transport=transport)
         token.assert_not_called();transport.assert_not_called()
+    def test_lost_checkpoint_ack_adopts_only_byte_identical_retained_workspace(self):
+        for changed in (False,True):
+            with tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);job=dict(id=str(uuid.uuid4()),task_id=str(uuid.uuid4()),study_id=str(uuid.uuid4()))
+                taskroot=root/'builder-workspaces'/job['task_id'];workspace=taskroot/'workspace';workspace.mkdir(parents=True)
+                (workspace/'experiment.py').write_text('print(42)');raw=builder.checkpoint(workspace)
+                prior=dict(artifact_id=str(uuid.uuid4()),sha256=autonomy.digest(raw));old=dict(artifact_id=str(uuid.uuid4()),sha256='a'*64)
+                (taskroot/'checkpoint-reference.json').write_bytes(autonomy.canonical(old))
+                if changed:(workspace/'experiment.py').write_text('print("unconfirmed change")')
+                with patch.object(builder.store,'artifact_bytes',return_value=raw),patch.object(builder,'action_policy',side_effect=RuntimeError('Stop after pre-provider identity check')):
+                    with self.assertRaisesRegex(ValueError if changed else RuntimeError,'needs reconciliation' if changed else 'Stop after pre-provider'):
+                        builder.execute(dict(builder=dict(checkpoint=prior,context={})),root/'slice',job,token_source=Mock(),transport=Mock())
+                self.assertEqual(json.loads((taskroot/'checkpoint-reference.json').read_bytes()),old if changed else prior)
     def test_unvalidated_cloud_policy_cannot_admit_a_generated_experiment(self):
         with patch.object(autonomy_costs,'BUILT_POLICY_PATH',Path(autonomy_costs.__file__).parent/'policies/built-package-costs-v1.json'):
             with self.assertRaisesRegex(ValueError,'awaits operational validation'):autonomy_costs.builtin_quote(b'{"runner":"built-package-v1"}')
@@ -181,6 +225,13 @@ class Packages(unittest.TestCase):
         with patch.object(autonomy,'build_context',return_value={}),patch.object(autonomy.model,'call',return_value=answer),patch.object(autonomy,'advance') as advance:
             autonomy.step(task)
         self.assertEqual(advance.call_args.kwargs['stage'],'building');self.assertEqual(advance.call_args.args[1],'queued');self.assertEqual(advance.call_args.kwargs['context']['builder_checkpoint'],answer['runtime']['checkpoint'])
+    def test_read_only_changes_cannot_reset_the_controller_stagnation_counter(self):
+        task=dict(stage='building',id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),claim_id=str(uuid.uuid4()),context=dict(builder_work_progress=dict(sha256='implementation-original',unchanged_slices=2),builder_feedback='Implement the retained loss sweep next.'),attempts=70)
+        answer=dict(id=str(uuid.uuid4()),status='complete',output=builder.decision(),runtime=dict(build_state='checkpoint',work_progress=dict(version='builder-work-progress-v2',sha256='changed-read-coverage',implementation_sha256='implementation-original',files=[],delivered={})))
+        with patch.object(autonomy,'build_context',return_value={}),patch.object(autonomy.model,'call',return_value=answer),patch.object(autonomy,'advance') as advance:
+            autonomy.step(task)
+        saved=advance.call_args.kwargs['context'];self.assertEqual(saved['builder_work_progress']['unchanged_slices'],3)
+        self.assertEqual(advance.call_args.kwargs['stage'],'planning');self.assertIn('Repeated context reads',saved['builder_feedback'])
     def test_sibling_package_returns_to_claim_specific_planning_without_resetting_checkpoint_or_criterion(self):
         source=str(uuid.uuid4());package_id=str(uuid.uuid4())
         task=dict(stage='building',id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),context=dict(source_id=source,builder_checkpoint={'sha256':'a'*64},decision_lock='frozen',completed_job_ids=['earlier-result']))

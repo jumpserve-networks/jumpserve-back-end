@@ -71,6 +71,8 @@ def rows(kind, params=None, public=False):
         projection = 'id,study_id,task_id,event,details,created_at'
     elif kind == 'model_dispatches' and not public:
         projection = 'id,study_id,task_id,status,request_sha256,response_artifact_id,response_sha256,provenance,created_at,ended_at'
+    elif kind == 'model_reconciliations' and not public:
+        projection = 'dispatch_id,study_id,task_id,request_sha256,artifact_id,sha256,proof,created_at'
     elif kind == 'builder_calls' and not public:
         projection = 'id,study_id,task_id,dispatch_id,number,prompt_version_id,model_id,request_artifact_id,request_sha256,request_bytes,status,reserved_cents,response_artifact_id,response_sha256,usage,response_received,http_status,reason,created_at,ended_at'
     elif kind == 'builder_packages' and not public:
@@ -104,6 +106,7 @@ def rows(kind, params=None, public=False):
         # binary float. A null remains null; zero remains an exact text value.
         query['select']=','.join('value::text' if field=='value' else field for field in query['select'].split(','))
     if kind == "study_owners": query.pop("order", None)
+    if kind == 'model_reconciliations':query['order']=(params or {}).get('order','created_at.asc,dispatch_id.asc')
     result = request("/rest/v1/" + table + "?" + urllib.parse.urlencode(query), public=public)
     if kind in ('measurements', 'published_values'):
         for row in result:
@@ -111,6 +114,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name in ('research_model_reconcile','research_model_reconciliation_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_autonomy_repair','research_autonomy_repair_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_builder_call','research_builder_package'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name == 'research_shared_campaign_bind':return request('/rest/v1/rpc/'+name,'POST',payload)

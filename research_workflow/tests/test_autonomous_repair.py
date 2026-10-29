@@ -121,6 +121,21 @@ class Repair(unittest.TestCase):
    self.assertIn('builder_feedback',manifest['inline_fields']);self.assertIn(feedback,message)
    self.assertTrue(message.startswith(policy));self.assertEqual(json.loads((work/'research-context.json').read_bytes()),context)
 
+ def test_production_sized_policies_keep_long_feedback_and_real_read_loop_inventory(self):
+  # Matches the observed policy byte sizes, including the formerly lost 1565+
+  # byte directive. These are development fixtures, not independent validation.
+  systems=[dict(text='P'*size) for size in (6889,969,2036,1871,546)]
+  systems[2]['text']=builder.action_policy()['document']['instruction']
+  ctx=dict(task='building',repair_directive=repair.REPAIR_INSTRUCTION,builder_feedback=repair.REPAIR_INSTRUCTION)
+  history=[dict(type='function_call',call_id=str(i),name='read',arguments='{"path":"context-index.json"}') for i in range(121)]
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);message,manifest=builder.bootstrap(dict(system=systems,builder=dict(context=ctx)),root,root,history)
+   self.assertLessEqual(len(message.encode()),16000)
+   self.assertIn('builder_feedback',manifest['inline_fields']);self.assertIn('No implementation files exist',message)
+   self.assertIn('121',message)
+   for system in systems:self.assertIn(system['text'],message)
+   self.assertEqual(json.loads((root/'research-context.json').read_bytes()),ctx)
+
  def test_metadata_locations_bind_exact_incident_bytes_and_reject_ambiguity(self):
   with tempfile.TemporaryDirectory() as tmp:
    work=Path(tmp);(work/'project').mkdir();ctx=dict(repair_packet=dict(incident_sha256='a'*64))

@@ -108,14 +108,16 @@ def diagnose(task, record):
             raise ValueError('Uncertain dispatch coverage exceeds the bounded diagnosis.')
         dispatches += [d for d in uncertain if d['id'] not in {x['id'] for x in dispatches}]
     events = rows(task, 'autonomy_events', task_id='eq.' + task['id'], event='eq.assessment-recovery-resumed', limit=20)
-    reconciled = []; checkpoint = None; failure_details=[]
+    reconciled = []; checkpoint = None; checkpoint_time=None;failure_details=[]
+    import datetime as dt
+    def when(value):return dt.datetime.fromisoformat(value.replace('Z','+00:00')) if value else dt.datetime.min.replace(tzinfo=dt.timezone.utc)
     for dispatch in dispatches:
         if dispatch['task_id'] != task['id'] or dispatch['study_id'] != task['study_id']:
             raise ValueError('Repair dispatch identity mismatch.')
         if dispatch['status'] in ('queued', 'running'):
             return dict(waiting=True, reason='Original dispatch is still admitted; read-only reconciliation will continue.')
         provenance = dispatch.get('provenance') or {}
-        if len(failure_details)<3:
+        if dispatch['status']!='complete' and len(failure_details)<3:
             snippets=[]
             for pointer in provenance.get('artifacts',[]):
                 if pointer.get('name') not in ('stderr.bin','stdout.bin','receipt.json'):continue
@@ -130,8 +132,9 @@ def diagnose(task, record):
             raw = original(task, dict(id=dispatch['response_artifact_id'], sha256=dispatch['response_sha256']))
             json.loads(raw)
             reconciled.append(dict(id=dispatch['id'], request_sha256=dispatch['request_sha256'], response_sha256=digest(raw), kind='completed-original-response'))
-            if checkpoint is None and provenance.get('checkpoint'):
+            if provenance.get('checkpoint') and (checkpoint_time is None or when(dispatch.get('ended_at'))>=checkpoint_time):
                 checkpoint = provenance['checkpoint']
+                checkpoint_time=when(dispatch.get('ended_at'))
             continue
         # Historical operator reconciliations are immutable service-only audit
         # records, not statements inside a paper, model answer or working note.
@@ -144,6 +147,13 @@ def diagnose(task, record):
             continue
         refs = {a['name']: a for a in provenance.get('artifacts', [])}
         receipt = json.loads(original(task, refs['receipt.json'])) if 'receipt.json' in refs else {}
+        import dispatch_recovery
+        verified=dispatch_recovery.confirmed(task,dispatch,receipt,original,rows)
+        if verified:
+            reconciled.append(verified)
+            if verified.get('checkpoint') and (checkpoint_time is None or when(verified.get('checkpoint_recorded_at'))>=checkpoint_time):
+                checkpoint=verified['checkpoint'];checkpoint_time=when(verified.get('checkpoint_recorded_at'))
+            continue
         zero = type(receipt.get('provider_calls')) is int and receipt['provider_calls'] == 0 and receipt.get('provider_request_sent') is False
         if zero and 'logical.json' in refs:
             logical = original(task, refs['logical.json'])
@@ -202,9 +212,8 @@ def drive(task, normal_step, advance):
         if document['native_repair']:
             record = transition(task, record, 'repairing', 'Native implementation repair with the retained checkpoint and fresh incident-specific instructions.', evidence)
             context.update(repair_directive=REPAIR_INSTRUCTION, repair_packet=dict(incident=json.loads(record['incident_raw']), incident_sha256=record['incident_sha256'], diagnosis=artifact, reconciled_dispatches=document['reconciled_dispatches'], command='Inspect original native history and project files; implement and run a concrete development check next.'))
-            if context.get('builder_work_progress'):
-                context['builder_work_progress'] = dict(context['builder_work_progress'], unchanged_slices=0)
-            context['builder_feedback'] = REPAIR_INSTRUCTION
+            context['builder_feedback'] = ('Repair this incident: '+str(json.loads(record['incident_raw']).get('reason','Recorded implementation failure'))+
+                '. Continue from existing files and verified reads. Write or amend project/experiment.py, execute a bounded development check, then supply the exact incident-bound repair tests/plan required by repair_directive. A repeated read-only slice is not progress.')
             context['repair_progress'] = progress(record)
             return advance(task, 'queued', stage='building', context=context, reason=record['reason'])
         # Context/reference correction must pass the actual full request preflight

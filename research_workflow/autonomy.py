@@ -691,20 +691,20 @@ def step(task):
   runtime=answer.get('runtime') or {}
   if runtime.get('repair_validation'):context['repair_validation']=runtime['repair_validation']
   if runtime.get('checkpoint'):context['builder_checkpoint']=runtime['checkpoint']
-  context['builder_feedback']=runtime.get('feedback')
+  if runtime.get('feedback'):context['builder_feedback']=runtime['feedback']
   context['builder_progress']=dict(version='experiment-builder-v1',state=runtime.get('build_state'),last_dispatch_id=answer['id'],provider_calls=runtime.get('provider_calls'),wall_seconds=runtime.get('wall_seconds'),measured_charges_usd=runtime.get('measured_charges_usd'))
   if runtime.get('admission_denied'):
    status=runtime['admission_denied'] if runtime['admission_denied'] in ('budget','deadline','cancelled') else 'blocked'
    return advance(task,status,context=context,reason='Original paper admission stopped further builder calls: '+runtime['admission_denied'])
   if runtime.get('build_state')=='external-blocked':return blocked(dict(task,context=context,_repair_external=True),output)
   if output['action']!='propose':
-   progress=runtime.get('work_progress') or {};fingerprint=progress.get('sha256')
+   progress=runtime.get('work_progress') or {};fingerprint=progress.get('implementation_sha256') or progress.get('sha256')
    if fingerprint:
     previous=context.get('builder_work_progress',{})
     stalled=previous.get('unchanged_slices',0)+1 if previous.get('sha256')==fingerprint else 0
-    context['builder_work_progress']=dict(sha256=fingerprint,unchanged_slices=stalled,version=progress['version'])
+    context['builder_work_progress']=dict(sha256=fingerprint,unchanged_slices=stalled,version=progress['version'],files=progress.get('files',[]),delivered=progress.get('delivered',{}))
     if stalled>=3:
-     reason='No implementation-file or exact context-delivery progress in three continuations. Reconsider the available runner and exact output contract using the retained commands and checkpoint; preserve the claim, method criteria, commitments and deadline.'
+     reason='No implementation-file progress in three continuations. Repeated context reads are not implementation progress. Reconsider the available runner and exact output contract using retained commands and checkpoint; preserve the claim, criteria, commitments and deadline.'
      seen=context.get('builder_stalled_fingerprints',[])
      context.update(last_feedback=reason,builder_feedback=reason)
      if fingerprint in seen:return advance(task,'blocked',context=context,reason='Builder remained unchanged after targeted replanning. Recorded integration/implementation repair is required before further spending; original checkpoint retained.')

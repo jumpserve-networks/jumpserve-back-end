@@ -1,0 +1,10 @@
+{
+  "version": "builder-recovery-validation-v3",
+  "kind": "development-regression",
+  "questions": ["Can a fresh scheduling slice act on retained work without rereading everything?", "Can finished native calls be reconciled after a parent or storage failure without replay?"],
+  "pass_criteria": ["Full trusted policies survive the 16000-byte bootstrap; actual long feedback or a labeled hash-bound excerpt and concrete next action remain inline", "Read-only context delivery cannot reset implementation stagnation", "History larger than 1 MB round-trips exactly with bounded decompression", "A native CLI with synthetic provider responses writes and executes real files across slices", "Reconciliation verifies every admitted request and terminal response, stops task containers under the workspace lock and preserves the original dispatch", "Unknown native calls, mismatched hashes, live leases, missing originals and forged coverage remain fenced", "Browser roles cannot read or write reconciliation records", "Budgets, deadlines, findings and attempts are not reset"],
+  "resources": {"live_model_calls": 0, "new_cloud_instances": 0, "linux_check_wall_seconds": 600, "unit_suite_wall_seconds": 300},
+  "inputs": "Pinned OpenClaw 2026.10.5; existing native CLI synthetic-provider regression; recorded incident used for development cases, not held-out validation",
+  "reviewer": {"identity": "Codex", "type": "AI", "independent": false},
+  "limitations": "Development evidence cannot establish scientific reproduction or live provider behavior. A new deployment instruction and production qualification are required. Preserve failed reports."
+}

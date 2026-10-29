@@ -6,6 +6,10 @@ every paper. Scientific findings require appropriate checks and declared review.
 
 ## Autonomous method completion
 
+The [2026-10-29 recovery investigation](builder-recovery-20261029.md) documents
+the local builder continuation, lossless history and append-only dispatch
+reconciliation changes, their tests and the remaining production qualification.
+
 Builder continuation uses `builder-context-files-v1`. Each native slot receives
 the full trusted instructions and at most 16,000 startup bytes; exact research
 context and the retained native transcript are hash-bound workspace files.
