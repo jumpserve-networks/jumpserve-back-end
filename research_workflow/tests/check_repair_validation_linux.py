@@ -18,7 +18,7 @@ def main():
  prior=os.environ.get('OPENCLAW_BUILDER_IMAGE');os.environ['OPENCLAW_BUILDER_IMAGE']=IMAGE
  tests='import unittest,experiment\nclass Checks(unittest.TestCase):\n def test_original_failure(self):\n  with self.assertRaises(TypeError):experiment.value(None)\n def test_corrected_behavior(self):\n  self.assertEqual(experiment.value(7),14)\n'
  try:
-  for name,code,test,expected in [('corrected','def value(x):\n return x*2\n',tests,True),('changed-code','def value(x):\n return x\n',tests,False),('no-op','def value(x):\n return x*2\n','import unittest\nclass Checks(unittest.TestCase):\n def test_original_failure(self):pass\n def test_corrected_behavior(self):pass\n',False),('output-limit','def value(x):\n print("x"*200000)\n return x*2\n',tests,False),('timeout','import time\ndef value(x):\n time.sleep(60)\n return x*2\n',tests,False)]:
+  for name,code,test,expected in [('corrected','def value(x):\n return x*2\n',tests,True),('noisy-corrected','def value(x):\n print("original command log",end="")\n return x*2\n',tests,True),('changed-code','def value(x):\n return x\n',tests,False),('no-op','def value(x):\n return x*2\n','import unittest\nclass Checks(unittest.TestCase):\n def test_original_failure(self):pass\n def test_corrected_behavior(self):pass\n',False),('output-limit','def value(x):\n print("x"*200000)\n return x*2\n',tests,False),('timeout','import time\ndef value(x):\n time.sleep(60)\n return x*2\n',tests,False)]:
    case=out/name;project=case/'project';project.mkdir(parents=True);job=dict(id=str(uuid.uuid4()));incident=digest(b'Explicit synthetic software incident; not a publication.')
    for path,raw in {'experiment.py':code,'requirements.lock':'','system-packages.lock.json':'[]','build-evidence.json':json.dumps(dict(commands=[],checks=[],limitations=['Software control only.'])),'repair_test.py':test,'repair-test-plan.json':json.dumps(dict(version=repair_validation.VERSION,incident_sha256=incident,scope='software-development-only'))}.items():(project/path).write_text(raw)
    original=generated_package.freeze(project);(case/'original-project.zip').write_bytes(original)
@@ -30,6 +30,8 @@ def main():
    except ValueError as exc:passed=False;error=str(exc)
    assert passed==expected,(name,error)
    retained=json.loads((case/'repair-validation.json').read_bytes());assert retained['passed']==expected
+   current=json.loads((case/'repair-validation-current.json').read_bytes());assert current['passed']==expected and current['project_sha256']==digest(original)
+   assert current['stdout']['sha256']==digest((case/'repair-check-stdout.bin').read_bytes())
    assert generated_package.freeze(project)==original
    report['checks'].append(dict(name=name,expected_pass=expected,actual_pass=passed,control_passed=True,report_sha256=digest((case/'repair-validation.json').read_bytes()),project_sha256=digest(original)))
   report['passed']=True

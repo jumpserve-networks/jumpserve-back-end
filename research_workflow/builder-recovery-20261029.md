@@ -174,3 +174,43 @@ For a separately requested release:
    progress and actual experiment ingestion through the deployed API. Preserve
    new failures and scientifically unresolved results. Do not promise conclusive
    findings or resume any genuinely unknown native invocation by replay.
+
+## Authorized release follow-up: validator integration defect
+
+The subsequent explicit merge/deployment request authorized production
+qualification. Its first bounded campaign, `20261029T215240368797Z`, remains
+failed and is recorded in Supabase evaluation history with archive SHA-256
+`440e48489d9c68bb94c8f62546e2208a91180091fbe5bc8cbdd88005021f9368`.
+It made 18 actual model calls: two planner answers and 16 native repair calls.
+Both planner cases met their structural criteria. The model wrote the repair,
+incident metadata and two tests, but the wrapper rejected their stdout even
+though both actual read-only runs exited zero, reported `passed=true`, ran two
+tests and traced real experiment functions. Ordinary test logging preceded the
+JSON record, while the wrapper expected the entire stdout to be one JSON value.
+The builder received only a generic failure, rather than those actual logs.
+
+The corrected runner separates its final JSON line from ordinary logging and
+retains all raw stdout/stderr. Exit status, test counts/names, real function
+execution, unchanged-project checks, read-only/network-free execution and
+time/output bounds remain mandatory. Atomic diagnostic working copies point to
+immutable original artifacts; post-validation checkpoints retain these copies
+without overwriting the earlier snapshot. Symlinks are rejected and atomic
+replacement preserves linked source files.
+
+The amended local checks passed 381 tests in 30.853 seconds. The six Docker
+controls passed, including ordinary/no-newline logging and negative changed-code,
+no-op, output-limit and timeout controls. The final log is
+`.test-artifacts/builder-recovery-v3-unit-validator-followup-final.log`; Docker
+report: `.test-artifacts/repair-validation-linux/20261029T221234601819Z/report.json`.
+The original negative-control harness initially rejected an actually empty
+timeout stdout; its failed report remains retained and the assertion now checks
+the captured hash without inventing output.
+
+Infrastructure amendment `builder-recovery-release-amendment-v2.json` preserves
+the original protocol/results, completed planner answers and exact generated
+checkpoint. It permits no replacement model call for that repair, an unchanged
+empty-project live case with at most 16 additional calls, and a cumulative
+36-call/3,600-cent qualification ceiling. Reused answers are development
+regressions, not independent validation. These limits do not change paper AI
+turns, criteria, commitments, spending cap or deadline. Production activation
+still requires the amended qualification and exact-source checks to pass.

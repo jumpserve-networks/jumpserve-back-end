@@ -121,6 +121,30 @@ class Repair(unittest.TestCase):
    self.assertIn('builder_feedback',manifest['inline_fields']);self.assertIn(feedback,message)
    self.assertTrue(message.startswith(policy));self.assertEqual(json.loads((work/'research-context.json').read_bytes()),context)
 
+ def test_actual_noisy_tests_preserve_logs_and_have_a_separate_final_result(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);(root/'experiment.py').write_text('def value(x):\n print("implementation output", end="")\n return x*2\n')
+   (root/'repair_test.py').write_text('import unittest,experiment,sys\nclass Checks(unittest.TestCase):\n def test_original_failure(self):\n  print("original failure evidence", file=sys.stderr)\n  with self.assertRaises(TypeError):experiment.value(None)\n def test_corrected_behavior(self):\n  self.assertEqual(experiment.value(7),14)\n  print("test output without newline", end="")\n')
+   result=subprocess.run([sys.executable,'-I','-c',repair_validation.RUNNER],cwd=root,capture_output=True,timeout=10)
+   self.assertEqual(result.returncode,0,result.stderr);self.assertIn(b'implementation output',result.stdout);self.assertIn(b'original failure evidence',result.stderr)
+   self.assertTrue(repair_validation.result_line(result.stdout)['passed'])
+   with self.assertRaises(ValueError):repair_validation.result_line(b'ordinary log with no result')
+   with self.assertRaises(ValueError):repair_validation.result_line(result.stdout+b'not a final result\n')
+   (root/'experiment.py').write_text('def value(x):\n print("still noisy")\n return x\n')
+   failed=subprocess.run([sys.executable,'-I','-c',repair_validation.RUNNER],cwd=root,capture_output=True,timeout=10)
+   self.assertNotEqual(failed.returncode,0);self.assertFalse(repair_validation.result_line(failed.stdout)['passed'])
+
+ def test_validation_diagnostics_cannot_overwrite_linked_project_source(self):
+  import os
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);source=root/'experiment.py';source.write_bytes(b'original source')
+   os.link(source,root/'repair-check-stdout.bin')
+   repair_validation.deliver_current(root,{'passed':False},b'actual output',b'actual error',{'sha256':'a'*64})
+   self.assertEqual(source.read_bytes(),b'original source');self.assertEqual((root/'repair-check-stdout.bin').read_bytes(),b'actual output')
+   (root/'repair-check-stderr.bin').unlink();(root/'repair-check-stderr.bin').symlink_to(source)
+   with self.assertRaisesRegex(ValueError,'never symlinks'):repair_validation.deliver_current(root,{'passed':False},b'next output',b'next error',{'sha256':'b'*64})
+   self.assertEqual(source.read_bytes(),b'original source');self.assertEqual((root/'repair-check-stdout.bin').read_bytes(),b'actual output')
+
  def test_production_sized_policies_keep_long_feedback_and_real_read_loop_inventory(self):
   # Matches the observed policy byte sizes, including the formerly lost 1565+
   # byte directive. These are development fixtures, not independent validation.

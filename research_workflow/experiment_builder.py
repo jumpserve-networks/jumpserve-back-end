@@ -720,6 +720,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
             if candidate: result['build_state'] = 'candidate'
         except (ValueError, KeyError, TypeError, SyntaxError) as error:
             candidate = None; result['feedback'] = str(error)
+            if getattr(error,'repair_evidence',None):result['repair_validation_failure']=error.repair_evidence
         output = decision(candidate)
         blocker=workspace/'blocker.json'
         if blocker.exists() and not (workspace/'candidate.json').exists():
@@ -732,6 +733,10 @@ def _execute(logical,directory,job,token_source,transport,task_root):
                 runtime.model.parse(dict(stopReason='tool_use',output=dict(message=dict(content=[dict(toolUse=dict(name='submit_assessment_step',input=output))]))))
                 result['build_state']='external-blocked'
             except (ValueError,KeyError,TypeError) as error:output=decision();result.update(feedback=str(error),build_state='checkpoint')
+        if result.get('repair_validation') or result.get('repair_validation_failure'):
+            # The earlier checkpoint predates the executed validator. Preserve
+            # its original and bind the new diagnostics in a separate snapshot.
+            result['checkpoint']=retain(job,'post-validation-checkpoint.zip',checkpoint(workspace),'builder-post-validation-checkpoint')
         answer = dict(stopReason='tool_use', output=dict(message=dict(role='assistant', content=[dict(toolUse=dict(name='submit_assessment_step', input=output))])), usage={})
     except Exception as error:
         result.update(status=failures[-1] if failures else 'failed' if cleanup and not in_flight else 'unknown', feedback=str(error))
