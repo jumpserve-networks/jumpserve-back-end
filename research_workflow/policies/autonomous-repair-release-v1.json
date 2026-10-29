@@ -1,0 +1,7 @@
+{
+  "version": "autonomous-repair-release-v1",
+  "approved_for_lab_recovery": false,
+  "qualified_files_sha256": null,
+  "evidence_sha256": null,
+  "scope": "Activation requires retained, actual-answer live qualification of the exact runtime plus deployed security checks. Local synthetic regressions do not establish a passing live qualification."
+}

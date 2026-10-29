@@ -70,7 +70,7 @@ def one(kind,study,value):
 def overview(studies):
  ids=[s['id'] for s in studies]
  workflows=store.rows('autonomy_workflows',{'study_id':'in.('+','.join(ids)+')','limit':101}) if ids else []
- tasks=store.rows('autonomy_tasks',{'study_id':'in.('+','.join(ids)+')','select':'id,study_id,claim_id,stage,status,label,attempts,reason,required_inputs,evidence_progress:context->evidence_progress,next_at,created_at,updated_at','limit':20001}) if workflows else []
+ tasks=store.rows('autonomy_tasks',{'study_id':'in.('+','.join(ids)+')','select':'id,study_id,claim_id,stage,status,label,attempts,reason,required_inputs,evidence_progress:context->evidence_progress,repair_progress:context->repair_progress,next_at,created_at,updated_at','limit':20001}) if workflows else []
  if len(workflows)>100 or len(tasks)>20000:raise store.StoreError('Autonomous coverage exceeds the interactive bound; use paginated study records.')
  # Full prompts are fetched only for the selected task, never loaded for every poll.
  claim_ids=[t['claim_id'] for t in tasks if t['claim_id']]
@@ -108,6 +108,11 @@ def builder_evidence(study,task_id,call_id,kind,cursor):
 
 def advance(task,status,stage=None,context=None,reason=None,label=None,delay=0):
  context=context if context is not None else task['context']
+ import autonomous_repair
+ routed=autonomous_repair.route(task,status,context,stage or task['stage'],reason or status)
+ if routed:
+  if 'result' in routed:return routed['result']
+  status,context,reason=routed['status'],routed['context'],routed['reason']
  if task.get('claim_id') and context.get('prepared_id'):
   required=inventory(dict(task,context=context));examined=set(context.get('completed_job_ids',[])+(context.get('job_ids',[]) if status=='resolved' else []))
   context=dict(context,evidence_progress=dict(required_checks=len(required),completed_checks=sum(j['id'] in examined for j in required),scope='Execution/check coverage only; complete scientific coverage follows the frozen claim criterion.'))
@@ -302,7 +307,17 @@ def coverage_manifest(task):
 def inspect_evidence(task,request):
  kind=request['kind'];record_id=identifier(request['id']);cursor=request['cursor'];study=task['study_id']
  claim=one('claims',study,task['claim_id']);available=inventory(task);jobs=retained_jobs(task)
- if kind=='source':
+ if kind=='controller-turn':
+  if task['stage'] not in ('planning','building','assessment'):raise ValueError('Fresh scientific reviews cannot inspect earlier model judgments.')
+  turn=one('autonomy_turns',study,record_id)
+  if turn['task_id']!=task['id']:raise ValueError('Controller turn belongs to another claim.')
+  result=evidence.document_page({k:turn.get(k) for k in ('id','number','stage','status','output','reason','request_sha256','response_sha256')},cursor)
+ elif kind=='runtime-contract':
+  if task['stage'] not in ('planning','building','comprehension','critic'):raise ValueError('Runner contracts are only readable for method development/review.')
+  contracts=inputs.runner_contracts();matches=[v for name,v in contracts.items() if inputs.runner_reference(name,v)['read_request']['id']==record_id]
+  if len(matches)!=1:raise ValueError('Runner contract identity/version is unavailable.')
+  result=evidence.document_page(matches[0],cursor)
+ elif kind=='source':
   if record_id!=claim['source_id']:raise ValueError('Source is outside this claim.')
   source=one('sources',study,record_id);material,records=inputs.source_text(task,claim,source,one)
   extracted=material['representation']!='metadata-only'
@@ -363,7 +378,7 @@ def build_context(task):
  claim=one('claims',task['study_id'],task['claim_id']);source=one('sources',task['study_id'],claim['source_id']);context=task['context']
  value=dict(task=task['stage'],initial_prompt=task['workflow']['initial_prompt'],claim=claim,source=source,attempt_number=task['attempts']+1,limits=DEFAULTS,
   source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
-  prior_attempts=[{k:r.get(k) for k in ('number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
+  prior_attempts=[{k:r.get(k) for k in ('id','number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
  value['resource_authorization']=dict(version='assessment-budget-amendment-v1',max_spend_cents=task['workflow']['max_spend_cents'],committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
  value['method_policy']=dict(version=methods.VERSION,sha256=digest(methods.INSTRUCTION.encode()))
@@ -391,6 +406,8 @@ def build_context(task):
  if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
  if context.get('runtime_retry'):value['runtime_retry']=context['runtime_retry']
  if context.get('builder_work_progress'):value['builder_work_progress']=context['builder_work_progress']
+ if context.get('repair_directive'):
+  value['repair_directive']=context['repair_directive'];value['repair_packet']=context['repair_packet']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
   eligible=[j for j in available if j['id'] not in context.get('tried_check_ids',[])]
@@ -423,7 +440,7 @@ def build_context(task):
   value['review_role']=task['stage']
  if task['stage'] not in ('comprehension','critic'):
   value['evidence_coverage']=coverage_manifest(task)
-  value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source','acquisition'],page_byte_limit=evidence.READ_BYTES,
+  value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source','acquisition','runtime-contract','controller-turn'],page_byte_limit=evidence.READ_BYTES,
    instructions='Use supplied check/protocol/run/source IDs only. Pages explicitly identify omitted records; calculations use the complete frozen data. Inspection consumes a model attempt.')
  if context.get('evidence_read'):value['evidence_read']=context['evidence_read']
  if task['stage']=='assessment':
@@ -672,13 +689,14 @@ def step(task):
  output=answer['output'];context['last_turn_id']=answer['id']
  if task['stage']=='building':
   runtime=answer.get('runtime') or {}
+  if runtime.get('repair_validation'):context['repair_validation']=runtime['repair_validation']
   if runtime.get('checkpoint'):context['builder_checkpoint']=runtime['checkpoint']
   context['builder_feedback']=runtime.get('feedback')
   context['builder_progress']=dict(version='experiment-builder-v1',state=runtime.get('build_state'),last_dispatch_id=answer['id'],provider_calls=runtime.get('provider_calls'),wall_seconds=runtime.get('wall_seconds'),measured_charges_usd=runtime.get('measured_charges_usd'))
   if runtime.get('admission_denied'):
    status=runtime['admission_denied'] if runtime['admission_denied'] in ('budget','deadline','cancelled') else 'blocked'
    return advance(task,status,context=context,reason='Original paper admission stopped further builder calls: '+runtime['admission_denied'])
-  if runtime.get('build_state')=='external-blocked':return blocked(dict(task,context=context),output)
+  if runtime.get('build_state')=='external-blocked':return blocked(dict(task,context=context,_repair_external=True),output)
   if output['action']!='propose':
    progress=runtime.get('work_progress') or {};fingerprint=progress.get('sha256')
    if fingerprint:
@@ -796,10 +814,15 @@ def step(task):
 
 def process(task):
  task['_tick']=time.monotonic()
- try:return step(task)
+ try:
+  import autonomous_repair
+  if autonomous_repair.enabled() and task['context'].get('repair_progress',{}).get('state') in autonomous_repair.ACTIVE:
+   return autonomous_repair.drive(task,step,advance)
+  return step(task)
  except model.ModelFailure as error:
   import runtime_retry
   context=copy.deepcopy(task['context'])
+  context['repair_failure_turn_id']=error.turn_id
   if task['stage']=='building' and (error.provenance or {}).get('checkpoint'):
    context.update(builder_checkpoint=error.provenance['checkpoint'],builder_feedback=error.provenance.get('feedback'))
   retry=runtime_retry.decision(error.provenance,context.get('runtime_retry'),task['workflow']['deadline_at'])
@@ -822,6 +845,8 @@ def handler(event,context=None):
  # removes historical count stops; SQL retains budget, deadline and uncertainty
  # gates, original turn numbering, labels and experiment identities.
  model.load_prompt()
+ import autonomous_repair
+ repairs=autonomous_repair.discover()
  turn_recovery=store.rpc('research_autonomy_resume_turns',dict(p_policy=model.TURN_POLICY['version']))
  recovery=[]
  recovery_version=os.environ.get('RESEARCH_AUTONOMY_CONTEXT_RECOVERY')
@@ -856,4 +881,4 @@ def handler(event,context=None):
   for future in futures:
    try:r=future.result();results.append({k:r.get(k) for k in ('id','status','reason')})
    except Exception as error:results.append(dict(status='unconfirmed',error_type=type(error).__name__))
- return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery,turn_limit_recovery=turn_recovery)
+ return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery,turn_limit_recovery=turn_recovery,repairs=repairs)

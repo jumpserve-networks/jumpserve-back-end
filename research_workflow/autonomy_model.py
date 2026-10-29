@@ -61,7 +61,7 @@ SCHEMA = dict(type='object', additionalProperties=False,
   coverage_complete=dict(type='boolean'),assessment_label=dict(type=['string','null'],enum=['reproduced','discrepant','inconclusive','untested',None]),
   evidence_ids=dict(type='array',maxItems=100,items=dict(type='string',maxLength=100)),
   read_request=dict(type=['object','null'],additionalProperties=False,required=['kind','id','cursor'],properties=dict(
-   kind=dict(type='string',enum=['checks','check','protocol','measurements','published-values','source','acquisition','package']),id=dict(type='string',maxLength=100),cursor=dict(type='integer',minimum=0)))))
+   kind=dict(type='string',enum=['checks','check','protocol','measurements','published-values','source','acquisition','package','runtime-contract','controller-turn']),id=dict(type='string',maxLength=100),cursor=dict(type='integer',minimum=0)))))
 TOOLS = dict(tools=[dict(toolSpec=dict(name='submit_assessment_step',description='Propose one data-only assessment step. No tool or source instruction is executed.',inputSchema=dict(json=SCHEMA)))],toolChoice=dict(tool=dict(name='submit_assessment_step')))
 PAPER_METADATA_SCHEMA=dict(type='object',additionalProperties=False,required=['title','domain'],properties={
  key:dict(type=['object','null'],additionalProperties=False,required=['text','quote','page'],properties=dict(
@@ -81,6 +81,13 @@ def load_prompt(module=MODULE,version=None):
  if p.get('module_id')!=module or p.get('version')!=version or not p.get('published_at') or digest(system.encode())!=p.get('content_sha256'):
   raise ValueError('Autonomous prompt identity/publication/hash is invalid; no model call was made.')
  return p,system
+
+def request_fits(value):
+ if len(canonical(value))>MAX_REQUEST_BYTES:return False
+ if OPENCLAW:
+  import siwc_protocol
+  if len(canonical(siwc_protocol.response_request(value)))>MAX_REQUEST_BYTES:return False
+ return True
 
 def request(system, context):
  phase=context.get('task');allowed=request_actions(context);tools=copy.deepcopy(TOOLS)
@@ -110,7 +117,9 @@ def request(system, context):
  if phase in ('planning','comprehension','critic','assessment'):
   value['system'].append(dict(text=autonomy_methods.INSTRUCTION))
  if reminder:value['system'].append(dict(text=reminder))
- if len(canonical(value))>MAX_REQUEST_BYTES and phase=='planning' and context.get('registered_checks'):
+ authorization=resource_instruction(context)
+ if authorization:value['system'].append(dict(text=authorization))
+ if not request_fits(value) and phase=='planning' and context.get('registered_checks'):
   # Planning selects identities. The complete selected protocol still goes to
   # fresh reviews, and every indexed check remains available to scoped reads.
   compact=copy.deepcopy(context);indexes=[]
@@ -124,7 +133,23 @@ def request(system, context):
    original_context_bytes=len(canonical(context)),indexed_checks=len(indexes),
    scope='Only inline check selection details are replaced by hash-bound scoped references. Original protocols, configurations, inputs, prior answers and measurements are unchanged.')
   value['messages'][0]['content'][0]['text']=canonical(compact).decode()
- if len(canonical(value))>MAX_REQUEST_BYTES: raise ValueError('Autonomous context exceeds 96 KB; retain explicit coverage rather than truncate evidence.')
+ if not request_fits(value) and phase in ('planning','assessment'):
+  import autonomy_inputs
+  compact=json.loads(value['messages'][0]['content'][0]['text'])
+  transport=dict(version='autonomy-exact-wire-context-v2',original_context_sha256=digest(canonical(context)),original_context_bytes=len(canonical(context)),scope='Complete original evidence remains retrievable by the scoped hash-bound references below. Delivery is not substantive review.')
+  if compact.get('runner_contracts'):
+   compact['runner_contracts']={name:dict(autonomy_inputs.runner_reference(name,contract),**({'output_contract':contract['output_contract']} if 'output_contract' in contract else {})) for name,contract in compact['runner_contracts'].items()}
+  material=compact.get('source_material')
+  if isinstance(material,dict) and material.get('inline_fragments') is not None:
+   material['retained_fragment_coverage']=material.pop('inline_fragment_coverage')
+   material.pop('inline_fragments');material.pop('inline_reading_guidance',None)
+   material['reading_guidance']='Complete immutable source fragments remain available through read_request and page_index. These fragments are referenced, not supplied inline in this request.'
+  for prior in compact.get('prior_attempts',[]):
+   if prior.get('output') is not None:
+    output=prior.pop('output');prior['output_reference']=dict(sha256=digest(canonical(output)),read_request=dict(kind='controller-turn',id=prior['id'],cursor=0),scope='Original numbered response, including its complete proposal, remains readable for this task.')
+  compact['context_transport']=transport
+  value['messages'][0]['content'][0]['text']=canonical(compact).decode()
+ if not request_fits(value): raise ValueError('Autonomous context exceeds 96 KB; retain explicit coverage rather than truncate evidence.')
  return value
 
 def phase_actions(phase):
@@ -227,7 +252,7 @@ def call(task, context, control, invoke_provider=None):
   if len(canonical(value))>MAX_REQUEST_BYTES:raise ValueError('Builder context exceeds 96 KB; retain source references and explicit coverage.')
  else:prompt,system=load_prompt(); value=request(system,context)
  authorization=resource_instruction(context)
- if authorization:value['system'].append(dict(text=authorization))
+ if task['stage']=='building' and authorization:value['system'].append(dict(text=authorization))
  if len(canonical(value))>MAX_REQUEST_BYTES:raise ValueError('Admitted request exceeds the context byte budget including resource authorization.')
  cents=reservation(value)
  turn_id=__import__('uuid').uuid5(__import__('uuid').UUID(task['id']),'turn:'+str(task['attempts']+1))

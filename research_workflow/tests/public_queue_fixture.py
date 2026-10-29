@@ -86,6 +86,11 @@ def data():
         value['queue_jobs'][0]['reason'] = None; value['runs'][0]['reason'] = None
         value['autonomy_tasks'][1].update(reason=None, required_inputs=[])
     if mode == 'turns-missing': value['autonomy_turns'] = []
+    if mode.startswith('repair-'):
+        state=mode.removeprefix('repair-')
+        next(t for t in value['autonomy_tasks'] if t['id']==TASK).update(
+            status='waiting' if state=='waiting' else 'queued', label='untested',
+            repair_progress=dict(version='autonomous-repair-v1',id='70000000-0000-4000-8000-000000000004',state=state,category='implementation',revision=2,updated_at=STAMP))
     value['builder_calls']=[]
     if mode.startswith('builder'):
         next(t for t in value['autonomy_tasks'] if t['id']==TASK).update(stage='building',status='running',attempts=31,reason='Building a versioned experiment from retained files.')
@@ -146,7 +151,7 @@ class Handler(BaseHTTPRequestHandler):
         global mode
         if self.path != '/fixture/mode': return self.reply(405, dict(error='Fixture does not accept research writes.'))
         request = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
-        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid', 'review-title', 'details-missing', 'turns-missing','builder','builder-missing','builder-invalid'): return self.reply(400, dict(error='Fixed fixture states only.'))
+        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid', 'review-title', 'details-missing', 'turns-missing','builder','builder-missing','builder-invalid','repair-diagnosing','repair-repairing','repair-validating','repair-resuming','repair-waiting','repair-resolved'): return self.reply(400, dict(error='Fixed fixture states only.'))
         os.environ['RESEARCH_BUILDER_ENABLED']='true' if request['mode'].startswith('builder') else 'false'
         mode = request['mode']; paper_titles.retained_title.cache_clear(); self.reply(200, dict(mode=mode))
 

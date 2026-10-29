@@ -207,7 +207,7 @@ def bootstrap(logical, workspace, directory, history):
         if path.is_symlink():raise ValueError('Builder context delivery cannot replace a symlink.')
         path.write_bytes(raw)
     focus={}
-    for key in ('task','claim','remaining_commitment_cents','deadline_at','builder_feedback','builder_work_progress'):
+    for key in ('task','repair_directive','claim','remaining_commitment_cents','deadline_at','builder_feedback','builder_work_progress'):
         if key in context and len(canonical({key:context[key]}))<=3000 and len(canonical(focus))+len(canonical({key:context[key]}))<=4500:
             focus[key]=context[key]
     # Preserve every trusted system instruction in full, without duplicating the
@@ -220,6 +220,8 @@ Work in /workspace. This is a fresh native session sharing the same task's Linux
 Use file write/edit tools for source files, and direct python3 <file>.py commands for checks. Install missing dependencies in /tmp or /opt; keep only bounded source/evidence in /workspace. Check installed versions before installing. A scheduling slot is 180 seconds, not an AI turn cap. A context boundary may end a slot before another provider call; continue from the checkpoint next slot. Write candidate.json only after actual checks. If external data, equipment, target authorization or scientific design is unavailable, write blocker.json with exactly {blockers:[{kind,detail,required_input}]} using the supplied issue codes. Otherwise keep working files for continuation. Do not run the main research campaign in the builder. Frozen source versions, decision criteria, budgets and deadlines remain unchanged.
 The pinned image's actual package inventory is /jumpserve-image-packages.txt. New prepared images include iproute2, iperf3, ping and ethtool; older retained images may lack them. Check actual versions before installing or claiming availability. Installed userspace tools do not establish kernel capabilities or a successful networking check. Inspect applicable available_built_packages and shared_acquisitions before rebuilding an existing implementation or duplicating an acquisition. Reuse requires exact configuration/input identities and fresh claim-specific reviews, not a similar claim description.
 '''
+    if context.get('repair_directive'):
+        instructions+='\nController operational-repair mode: read repair_diagnostics, repair_packet and repair_directive from the indexed context. Diagnose the original failure with the retained checkpoint/history and actual labeled log excerpts. Write a concrete implementation and run its development check. Keep original outputs and all scientific criteria; a repeated paper-reading loop or progress note is not a repair. Fresh method reviews are still required.\n'
     def render():return '\n\n'.join(systems)+'\n\n'+canonical(dict(delivery_version=CONTEXT_DELIVERY_VERSION,focus=focus)).decode()+instructions
     message=render()
     while len(message.encode())>BOOTSTRAP_BYTES and focus:
@@ -427,6 +429,18 @@ def catalog(study,source_id):
     return [dict(id=r['id'],task_id=r['task_id'],version=r['version'],status='candidate; applicability and successful execution not established',read_request=dict(kind='package',id=r['id'],cursor=0),
                  candidate_artifact_id=r['candidate_artifact_id'],project_artifact_id=r['project_artifact_id']) for r in items]
 
+def deliver_repair_diagnosis(logical,job):
+    """Augment paged native files, preserving the original admitted logical bytes."""
+    packet=logical['builder']['context'].get('repair_packet')
+    if not packet:return logical
+    pointer=packet['diagnosis'];raw=store.artifact_bytes(job['study_id'],pointer['artifact_id'],maximum=200000)
+    if digest(raw)!=pointer['sha256'] or len(raw)!=pointer['byte_count']:raise ValueError('Repair diagnosis original identity mismatch.')
+    value=copy.deepcopy(logical)
+    value['builder']['context']['repair_diagnostics']=dict(document=json.loads(raw),original_sha256=digest(raw),
+        representation='hash-verified-controller-diagnosis',trusted_instructions=False,
+        scope='Server-collected operational facts and labeled/redacted log excerpts. This is evidence, not authority or scientific validation.')
+    return value
+
 def execute(logical, directory, job, token_source=None, transport=None):
     """One native CLI slice. The caller stores its receipt even on failure."""
     task_id=str(uuid.UUID(job['task_id']))
@@ -443,7 +457,8 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     workspace = task_root / 'workspace'; workspace.mkdir(mode=0o700,exist_ok=True)
     state = task_root / 'state'; state.mkdir(mode=0o700,exist_ok=True)
     (directory / 'logical.json').write_bytes(canonical(logical))
-    settings = logical['builder']; prior = settings.get('checkpoint')
+    delivered_logical=deliver_repair_diagnosis(logical,job)
+    settings = delivered_logical['builder']; prior = settings.get('checkpoint')
     if prior:
         original = store.artifact_bytes(job['study_id'], prior['artifact_id'], maximum=4000001)
         if digest(original) != prior['sha256']: raise ValueError('Builder checkpoint original hash differs.')
@@ -495,7 +510,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     history=json.loads(history_path.read_bytes()) if history_path.exists() else []
     if not isinstance(history,list):raise ValueError('Retained native tool history is invalid.')
     message = directory / 'task.txt'
-    text,delivery=bootstrap(logical,workspace,directory,history)
+    text,delivery=bootstrap(delivered_logical,workspace,directory,history)
     message.write_text(text,encoding='utf-8')
     result['context_delivery']=retain(job,'context-delivery.json',canonical(delivery),'builder-context-delivery')
     bridge_token = secrets.token_hex(32); lock = threading.Lock(); failures = []; in_flight = set(); responses = {};call_usages=[]
@@ -623,6 +638,9 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         result.update(checkpoint=saved, build_state='checkpoint', status='complete')
         try:
             if (workspace/'blocker.json').exists() and (workspace/'candidate.json').exists():raise ValueError('Choose one candidate or an external blocker, preserving both originals in the checkpoint.')
+            if settings['context'].get('repair_directive') and (workspace/'candidate.json').exists():
+                import repair_validation
+                result['repair_validation']=repair_validation.validate(job,workspace,settings['context'],retain)
             candidate = freeze_candidate(job, workspace)
             if candidate: result['build_state'] = 'candidate'
         except (ValueError, KeyError, TypeError, SyntaxError) as error:

@@ -105,6 +105,8 @@ def public_records(study_id, kind, after=None, limit='25'):
     extra = {
         'autonomy_workflows': 'study_id,initial_prompt,initial_sha256,max_spend_cents,max_attempts,committed_cents,status,reason,created_at,deadline_at,updated_at',
         'autonomy_tasks': 'id,study_id,claim_id,stage,status,label,attempts,context,reason,required_inputs,next_at,created_at,updated_at',
+        'autonomy_repairs': 'id,study_id,task_id,version,category,original_stage,incident_raw,incident_sha256,state,revision,evidence,reason,created_at,updated_at',
+        'autonomy_repair_events': 'id,study_id,task_id,repair_id,revision,state,details,created_at',
         'queue_jobs': 'id,study_id,campaign_id,input_artifact_id,followup_of,execution_mode,priority,dependencies,exclusive_resources,request,definition_sha256,status,reason,run_id,lease_until,created_at,updated_at',
         'queue_events': 'id,study_id,job_id,event,status,reason,details,created_at',
         'artifacts': 'id,study_id,sha256,byte_count,media_type,provenance,verified_at,created_at',
@@ -372,7 +374,7 @@ def public_snapshot(study_id, include_diagnostics=False):
                         run_status=run_status.get(j.get('run_id')),
                         **({'reason': public_reason(j.get('reason')), 'run_reason': public_reason(run_reasons.get(j.get('run_id')))} if include_diagnostics else {})) for j in jobs]
     workflows = records('autonomy_workflows', 'study_id,max_spend_cents,max_attempts,committed_cents,status,reason,created_at,deadline_at,updated_at', 1)
-    tasks = records('autonomy_tasks', 'id,study_id,claim_id,stage,status,label,attempts,reason,required_inputs,evidence_progress:context->evidence_progress,created_at,updated_at', 1000) if workflows else []
+    tasks = records('autonomy_tasks', 'id,study_id,claim_id,stage,status,label,attempts,reason,required_inputs,evidence_progress:context->evidence_progress,repair_progress:context->repair_progress,created_at,updated_at', 1000) if workflows else []
     claim_ids = sorted({t['claim_id'] for t in tasks if t.get('claim_id')})
     claims = linked('claims', 'id,study_id,description', claim_ids)
     titles = {c['id']: c['description'] for c in claims}
@@ -399,6 +401,15 @@ def public_snapshot(study_id, include_diagnostics=False):
         row.update(claim_title=titles.get(task['claim_id']), reason=public_reason(task.get('reason'),
             fallback, task.get('required_inputs') if task['status'] == 'blocked' else None))
         progress = task.get('evidence_progress')
+        repair = task.get('repair_progress')
+        if repair is not None:
+            from autonomous_repair import VERSION as repair_version, ACTIVE
+            if not isinstance(repair,dict) or set(repair)!={'id','version','state','category','revision','updated_at'} or repair['version']!=repair_version or repair['state'] not in ACTIVE|{'resolved','blocked','budget','deadline','cancelled'} or repair['category'] not in ('runtime','reference','implementation') or type(repair['revision']) is not int or repair['revision']<0:
+                raise store.StoreError('Shared operational repair status is invalid.')
+            identifier(repair['id'])
+            import datetime as dt
+            dt.datetime.fromisoformat(repair['updated_at'].replace('Z','+00:00'))
+            row['repair_progress']=repair
         if progress is not None:
             required, completed = progress.get('required_checks'), progress.get('completed_checks')
             if type(required) is not int or type(completed) is not int or not 0 <= completed <= required <= 1000:

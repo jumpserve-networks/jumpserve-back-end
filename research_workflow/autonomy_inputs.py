@@ -5,7 +5,7 @@ import network_spec
 import store
 from workflow import canonical,digest,identifier
 
-VERSION='autonomy-planning-inputs-v6'
+VERSION='autonomy-planning-inputs-v7'
 FRAGMENT_CHARACTERS=1000
 ANCHOR_CHARACTERS=2500
 INLINE_SOURCE_BYTES=16000
@@ -141,6 +141,13 @@ def runner_contracts():
   result[runner]=dict(id=runner,**info,executor_configured=enabled(runner),test_config_schema=schemas[runner],metrics=network_spec.BUILTIN_METRICS.get(runner,'Package-declared metrics must match the frozen output schema.'),constraints=constraints[runner],autonomous_admission='Requires fresh reviews, current server-approved cost bounds, original deadline and remaining paper budget. Executor configuration alone is not scientific applicability or permission to bypass these gates.')
  result['netem-iperf-v1']['output_contract']=netem_iperf.observation_contract()
  return result
+
+def runner_reference(name,contract):
+ import uuid
+ sha=digest(canonical(contract))
+ return dict(id=name,representation='retained-runtime-contract',sha256=sha,byte_count=len(canonical(contract)),
+  read_request=dict(kind='runtime-contract',id=str(uuid.uuid5(uuid.NAMESPACE_URL,VERSION+':'+name+':'+sha)),cursor=0),
+  scope='Exact controller-generated executable contract. Inspect all fragments before relying on omitted schemas/constraints; a reference is not review.')
 
 def protocol_contract():
  import autonomy_methods

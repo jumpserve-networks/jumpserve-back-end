@@ -63,6 +63,14 @@ def rows(kind, params=None, public=False):
         projection = 'id,study_id,claim_id,stage,status,label,attempts,context,reason,required_inputs,next_at,created_at,updated_at'
     elif kind == 'autonomy_turns' and not public:
         projection = 'id,study_id,task_id,number,stage,prompt_version_id,model_id,request,request_raw,request_sha256,status,reserved_cents,estimated_cents,raw_response,response_sha256,output,usage,reason,created_at,ended_at'
+    elif kind == 'autonomy_repairs' and not public:
+        projection = 'id,study_id,task_id,version,category,original_stage,incident_raw,incident_sha256,original_context,state,revision,evidence,reason,created_at,updated_at'
+    elif kind == 'autonomy_repair_events' and not public:
+        projection = 'id,study_id,task_id,repair_id,revision,state,details,created_at'
+    elif kind == 'autonomy_events' and not public:
+        projection = 'id,study_id,task_id,event,details,created_at'
+    elif kind == 'model_dispatches' and not public:
+        projection = 'id,study_id,task_id,status,request_sha256,response_artifact_id,response_sha256,provenance,created_at,ended_at'
     elif kind == 'builder_calls' and not public:
         projection = 'id,study_id,task_id,dispatch_id,number,prompt_version_id,model_id,request_artifact_id,request_sha256,request_bytes,status,reserved_cents,response_artifact_id,response_sha256,usage,response_received,http_status,reason,created_at,ended_at'
     elif kind == 'builder_packages' and not public:
@@ -103,6 +111,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name in ('research_autonomy_repair','research_autonomy_repair_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_builder_call','research_builder_package'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name == 'research_shared_campaign_bind':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name == 'research_model_dispatch':return request('/rest/v1/rpc/'+name,'POST',payload)

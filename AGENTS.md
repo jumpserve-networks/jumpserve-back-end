@@ -8,6 +8,26 @@
   identifier is already available.
 - Prefer primary and official sources for technical claims.
 
+## Research assessment autonomy
+
+The goal of JumpServe research assessments is **100% unattended autonomy** after
+the user submits the paper or idea and confirms the assessment scope. The system
+should plan, implement, validate and execute experiments, analyze measurements,
+and diagnose, repair and resume recoverable failures without routine user input.
+Installing dependencies, writing instrumentation and repairing experiment
+packages are system responsibilities. Run claims in parallel where appropriate,
+share compatible acquisitions, and expose repair and execution progress in
+Experiment Queue. Persist prompts, responses, actions, failures, repairs and
+measurement provenance as versioned Supabase records.
+
+Continue useful work within approved spending, elapsed-time and authorization
+limits, honoring cancellation. Unattended operation does not guarantee conclusive
+findings: retain honest inconclusive or untested outcomes when evidence or
+external prerequisites remain insufficient. Never fabricate data, weaken frozen
+scientific criteria, reset limits or blindly replay uncertain calls to force
+completion. Record the exact remaining blocker and retained evidence. This goal
+does not authorize merging or deploying changes without an explicit user request.
+
 ## Research Scope
 
 This repository contains an empirical study of object-level regional-demand

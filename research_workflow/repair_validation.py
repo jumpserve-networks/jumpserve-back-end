@@ -1,0 +1,76 @@
+"""Server-owned repair test runner; executes only in the credential-free sandbox.
+
+Tests are model authored and nonindependent. Passing establishes bounded software
+development checks, never scientific correctness or a reproduced paper claim.
+"""
+import json
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+import time
+from workflow import canonical,digest
+import generated_package
+
+VERSION='repair-development-validation-v1'
+RUNNER=r'''
+import io,json,pathlib,sys,unittest
+sys.dont_write_bytecode=True
+root=pathlib.Path.cwd();sys.path.insert(0,str(root))
+plan=json.loads((root/'repair-test-plan.json').read_bytes())
+names=set();calls=set()
+suite=unittest.defaultTestLoader.discover(str(root),pattern='repair_test.py')
+def inventory(node):
+ for child in node:
+  if isinstance(child,unittest.TestSuite):inventory(child)
+  else:names.add(child._testMethodName)
+inventory(suite)
+if not {'test_original_failure','test_corrected_behavior'}<=names:raise ValueError('Both original-failure and corrected-behavior tests are required')
+def trace(frame,event,arg):
+ if event=='call' and pathlib.Path(frame.f_code.co_filename).resolve()==(root/'experiment.py').resolve() and frame.f_code.co_name!='<module>':calls.add(frame.f_code.co_name)
+ return trace
+stream=io.StringIO();sys.settrace(trace)
+try:result=unittest.TextTestRunner(stream=stream,verbosity=2).run(suite)
+finally:sys.settrace(None)
+passed=result.wasSuccessful() and result.testsRun>=2 and bool(calls)
+print(json.dumps(dict(version='repair-development-validation-v1',passed=passed,tests_run=result.testsRun,failures=len(result.failures),errors=len(result.errors),experiment_functions_executed=sorted(calls),test_output=stream.getvalue(),scope='Actual model-authored software tests; not independent scientific validation.')))
+sys.exit(0 if passed else 1)
+'''
+
+
+def validate(job,workspace,context,retain):
+    project=workspace/'project';before=generated_package.freeze(project)
+    plan=json.loads((project/'repair-test-plan.json').read_bytes())
+    incident=context['repair_packet']['incident_sha256']
+    if plan!={'version':VERSION,'incident_sha256':incident,'scope':'software-development-only'}:
+        raise ValueError('Repair test plan must identify the exact incident and software-only scope.')
+    image=os.environ.get('OPENCLAW_BUILDER_IMAGE','')
+    import re
+    if not re.fullmatch(r'(?:[A-Za-z0-9][A-Za-z0-9./:_-]*@)?sha256:[a-f0-9]{64}',image):
+        raise ValueError('Pinned repair validation image required.')
+    name='js-repair-check-'+str(__import__('uuid').UUID(job['id'])).replace('-','')
+    command=['docker','run','--rm','--name',name,'--network','none','--read-only','--pids-limit','64','--memory','256m','--cpus','0.5','--cap-drop','ALL','--security-opt','no-new-privileges',
+        '--user',str(os.getuid())+':'+str(os.getgid()),'--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,src='+str(project.resolve())+',dst=/project,readonly','--workdir','/project','--entrypoint','timeout',image,'-k','1s','20s','python3','-I','-c',RUNNER]
+    stopped=None
+    with tempfile.TemporaryFile() as output,tempfile.TemporaryFile() as error:
+        process=subprocess.Popen(command,stdout=output,stderr=error)
+        until=time.monotonic()+25
+        while process.poll() is None:
+            if time.monotonic()>=until or os.fstat(output.fileno()).st_size>64000 or os.fstat(error.fileno()).st_size>64000:
+                stopped='time-or-output-limit'
+                subprocess.run(['docker','rm','-f',name],capture_output=True,timeout=10)
+                process.kill();process.wait(timeout=5);break
+            time.sleep(0.02)
+        output.seek(0);error.seek(0);stdout,stderr,code=output.read(64001),error.read(64001),process.returncode
+    # Preserve unsuccessful checks as well. Never truncate them into a pass.
+    out=retain(job,'repair-check-stdout.bin',stdout);err=retain(job,'repair-check-stderr.bin',stderr)
+    report=dict(version=VERSION,incident_sha256=incident,project_sha256=digest(before),runner_sha256=digest(RUNNER.encode()),image=image,
+        exit_code=code,stdout=out,stderr=err,passed=False,stop_reason=stopped,output_prefix_only=stopped is not None or len(stdout)>64000 or len(stderr)>64000,measured_charges_usd=None,scope='Software development only; AI-authored tests are not independent, human or scientific validation.')
+    if not stopped and len(stdout)<=64000 and len(stderr)<=64000 and code==0:
+        try:
+            parsed=json.loads(stdout);report.update(test_result=parsed,passed=parsed.get('version')==VERSION and parsed.get('passed') is True and type(parsed.get('tests_run')) is int and parsed['tests_run']>=2 and bool(parsed.get('experiment_functions_executed')))
+        except (ValueError,TypeError):pass
+    if generated_package.freeze(project)!=before:report.update(passed=False,reason='Project changed during validation.')
+    original=retain(job,'repair-validation.json',canonical(report))
+    if not report['passed']:raise ValueError('Repair development checks failed; inspect the retained original stdout/stderr and correct the actual implementation.')
+    return original
