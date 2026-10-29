@@ -121,6 +121,21 @@ class Repair(unittest.TestCase):
    self.assertIn('builder_feedback',manifest['inline_fields']);self.assertIn(feedback,message)
    self.assertTrue(message.startswith(policy));self.assertEqual(json.loads((work/'research-context.json').read_bytes()),context)
 
+ def test_metadata_locations_bind_exact_incident_bytes_and_reject_ambiguity(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   work=Path(tmp);(work/'project').mkdir();ctx=dict(repair_packet=dict(incident_sha256='a'*64))
+   raw=workflow.canonical(dict(version=repair_validation.VERSION,incident_sha256='a'*64,scope='software-development-only'))
+   (work/'repair-test-plan.json').write_bytes(raw)
+   self.assertEqual(repair_validation.test_plan(work,ctx),[('repair-test-plan.json',raw)])
+   (work/'project/repair-test-plan.json').write_bytes(raw)
+   self.assertEqual(len(repair_validation.test_plan(work,ctx)),2)
+   (work/'project/repair-test-plan.json').write_bytes(raw+b'\n')
+   with self.assertRaisesRegex(ValueError,'Conflicting'):repair_validation.test_plan(work,ctx)
+   (work/'project/repair-test-plan.json').write_bytes(raw.replace(b'a'*64,b'b'*64))
+   with self.assertRaisesRegex(ValueError,'exact incident'):repair_validation.test_plan(work,ctx)
+   (work/'project/repair-test-plan.json').unlink();(work/'project/repair-test-plan.json').symlink_to(work/'repair-test-plan.json')
+   with self.assertRaisesRegex(ValueError,'regular file'):repair_validation.test_plan(work,ctx)
+
  def test_repair_cannot_skip_executed_check_receipt_before_fresh_scientific_review(self):
   t=task();ref=dict(id=str(uuid.uuid4()),state='repairing');t['context']['repair_progress']=ref
   record=dict(ref,version=repair.VERSION,revision=1,incident_sha256='a'*64,evidence={})
