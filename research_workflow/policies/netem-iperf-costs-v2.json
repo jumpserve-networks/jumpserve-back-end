@@ -1,0 +1,19 @@
+{
+  "version": "netem-iperf-costs-v2",
+  "approved_for_lab_execution": false,
+  "account": "395567831870",
+  "region": "us-east-1",
+  "instance_type": "t3.medium",
+  "cpu_credits": "standard",
+  "max_instances": 1,
+  "max_wall_seconds": 1800,
+  "root_gib": 8,
+  "max_network_bytes": 20000000000,
+  "max_output_bytes": 3000000,
+  "maximum_cents": 100,
+  "valid_until": "2026-11-26T00:00:00Z",
+  "kind": "conservative-reservation",
+  "basis": "Preserves v1 host, wall, disk, reservation and expiry. The new bound counts namespace/veth counters, not billed Internet egress; no public network target or larger cloud host is enabled. The 100-Mbit/s, 30-second, five-condition sweep requires 18760000000 bytes by the unchanged accounting formula. Activation requires explicit exact-source operational qualification before publishing this policy hash. This reservation is not measured charges or an absolute guarantee against failed cloud cleanup.",
+  "sources": ["https://aws.amazon.com/ec2/pricing/on-demand/", "https://aws.amazon.com/ebs/pricing/", "https://aws.amazon.com/vpc/pricing/"],
+  "measured_charges_usd": null
+}

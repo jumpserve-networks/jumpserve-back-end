@@ -10,6 +10,7 @@ from workflow import canonical, digest
 
 POLICY_PATH = Path(__file__).parent / 'policies/autonomy-experiment-costs-v2.json'
 BUILT_POLICY_PATH = Path(__file__).parent / 'policies/built-package-costs-v2.json'
+NETEM_POLICY_PATH = Path(__file__).parent / 'policies/netem-iperf-costs-v2.json'
 
 def builtin_quote(raw,today=None):
     spec=json.loads(raw)
@@ -28,12 +29,14 @@ def builtin_quote(raw,today=None):
         return dict(cents=policy['maximum_cents'],quote=dict(policy,spec_sha256=digest(raw),function_version=os.environ['NETWORK_BUILT_PACKAGE_FUNCTION'],policy_sha256=digest(canonical(policy))))
     if spec.get('runner')!='netem-iperf-v1': return None
     import netem_iperf
-    policy=json.loads((Path(__file__).parent/'policies/netem-iperf-costs-v1.json').read_bytes())
+    policy=json.loads(NETEM_POLICY_PATH.read_bytes())
+    if policy.get('approved_for_lab_execution') is not True:raise ValueError('TCP sweep counter envelope awaits operational qualification; no experiment admitted.')
     today=today or dt.datetime.now(dt.timezone.utc)
     if today>=dt.datetime.fromisoformat(policy['valid_until'].replace('Z','+00:00')): raise ValueError('TCP sweep cost envelope has expired.')
     netem_iperf.validate(spec['config'])
     if not re.fullmatch(r'arn:aws:lambda:us-east-1:395567831870:function:[A-Za-z0-9_-]+:[1-9][0-9]*',os.environ.get('NETWORK_NETEM_IPERF_FUNCTION','')) or os.environ.get('NETWORK_NETEM_IPERF_POLICY_SHA256')!=digest(canonical(policy)): raise ValueError('TCP sweep needs its immutable executor and matching server-owned cost policy.')
     if not netem_iperf.minimum_wall(spec['config'])<=spec['limits']['wall_seconds']<=policy['max_wall_seconds'] or spec['limits']['max_instances']!=1: raise ValueError('TCP sweep exceeds its approved host or duration envelope.')
+    if not netem_iperf.network_budget(spec['config'])<=spec['limits']['max_network_bytes']<=min(policy['max_network_bytes'],netem_iperf.MAX_COUNTER_BYTES) or not 1000000<=spec['limits']['max_output_bytes']<=policy['max_output_bytes']:raise ValueError('TCP sweep exceeds its qualified counter/output envelope.')
     return dict(cents=policy['maximum_cents'],quote=dict(policy,spec_sha256=digest(raw),function_version=os.environ['NETWORK_NETEM_IPERF_FUNCTION'],policy_sha256=digest(canonical(policy))))
 
 

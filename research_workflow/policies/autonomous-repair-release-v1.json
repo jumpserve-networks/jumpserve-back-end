@@ -1,6 +1,6 @@
 {
   "version": "autonomous-repair-release-v1",
-  "approved_for_lab_recovery": true,
+  "approved_for_lab_recovery": false,
   "qualified_files_sha256": "de7690152265c4e2f0a4db53d11bcecb4215a678516e979c33ad819d5e16e22f",
   "evidence_sha256": "20264f04b05b2bcafda9ec73f89705b4079379e6091bdc6b3148c50c2b7ba07c"
 }

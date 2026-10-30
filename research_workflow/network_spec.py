@@ -134,7 +134,11 @@ def specs(document, verify_hashes=True):
     integer(limits['max_output_bytes'],'max_output_bytes',1024,10000000)
     if execution['runner'] in ('custom-package-v1','built-package-v1') and limits['max_output_bytes']>3000000: raise ValueError('Custom package output is bounded to 3 MB for the private ingestion transport.')
     if execution['runner']=='built-package-v1' and limits['wall_seconds']>1800: raise ValueError('Built packages have a 30-minute disposable-host ceiling.')
-    integer(limits['max_network_bytes'],'max_network_bytes',1024,10000000000)
+    if execution['runner']=='netem-iperf-v1':
+        import netem_iperf
+        network_maximum=netem_iperf.MAX_COUNTER_BYTES
+    else:network_maximum=10000000000
+    integer(limits['max_network_bytes'],'max_network_bytes',1024,network_maximum)
     if limits['wall_seconds'] > document['resource_limits']['wall_seconds']: raise ValueError('Execution exceeds reviewed protocol wall-time budget.')
     output=[]
     planned_observations=sum(integer(m['planned_observations'],'planned_observations',1,document['resource_limits']['max_observations']) for m in document['metrics'] if m.get('planned_observations') is not None)

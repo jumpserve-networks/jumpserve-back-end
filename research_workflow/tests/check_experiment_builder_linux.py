@@ -3,7 +3,7 @@
 No arbitrary command arguments, credentials, provider calls or AWS resources.
 Original requests, outputs and failed reports remain under .test-artifacts.
 """
-import datetime as dt,io,json,os,subprocess,sys,traceback,uuid,zipfile
+import copy,datetime as dt,io,json,os,subprocess,sys,traceback,uuid,zipfile
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
@@ -122,6 +122,34 @@ def main():
             delivery=json.loads((directory/name/'context-delivery.json').read_bytes())
             assert delivery['bootstrap_bytes']<=builder.BOOTSTRAP_BYTES
         report.update(slots=3,retained_history_bytes=len(canonical(history)),maximum_provider_request_bytes=max(len(canonical(r)) for r in requests),context_boundary_before_provider_admission=True,verified_previous_page_deliveries=len(page_records),delivery_is_not_completed_review=True)
+        if sys.argv[1:]==['--retained-paper']:
+            # Static synthetic tool plan with the REAL retained paper context.
+            # This tests the native interface, not whether a model chooses code.
+            infra=ROOT.parent/'jumpserve-infra';base=infra/'.test-artifacts/assessment-4055396e'
+            matched_path=sorted(base.glob('*/matched-checkpoints.json'))[-1];matched=json.loads(matched_path.read_bytes())
+            capture=json.loads((infra/matched['source_capture']).read_bytes());entry=matched['checkpoints'][0]
+            original_zip=(matched_path.parent/entry['file']).read_bytes();assert digest(original_zip)==entry['sha256']
+            parent=next(d for d in capture['dispatches'] if d['id']==entry['dispatch_id'])
+            logical=copy.deepcopy(json.loads(parent['request_raw']))
+            with zipfile.ZipFile(io.BytesIO(original_zip)) as archive:context=json.loads(archive.read('research-context.json'))
+            logical['builder']['context']=context;logical['builder']['checkpoint']=parent['provenance']['checkpoint']
+            by_id[logical['builder']['checkpoint']['artifact_id']]=original_zip
+            paper_job={k:str(uuid.uuid4()) for k in ('id','study_id','actor_id','task_id','lease_token')}
+            program='import json\nfrom pathlib import Path\ndef read_conditions(path):\n return json.loads(Path(path).read_text())["loss_levels_pct"]\n'
+            check='import sys,json\nfrom pathlib import Path\nsys.path.insert(0,"/workspace/project")\nimport experiment\np=Path("/workspace/development-input.json")\nfor values in ([0,1,2,5,10],[0,None]):\n p.write_text(json.dumps({"loss_levels_pct":values}))\n assert experiment.read_conditions(p)==values\nprint("software-only checks passed; no measurements collected")\n'
+            steps=[('read',{'path':'/workspace/work-packet.json'}),('exec',{'command':'python3 /workspace/read-retained.py paper-page 2 0','timeoutSeconds':10}),('write',{'path':'/workspace/project/experiment.py','content':program}),('write',{'path':'/workspace/development_check.py','content':check}),('exec',{'command':'python3 /workspace/development_check.py','timeoutSeconds':10})]
+            offset=len(requests)
+            with patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package),patch.object(builder,'retain',side_effect=retain),patch.object(builder,'rpc',side_effect=rpc),patch.object(builder,'deliver_repair_diagnosis',side_effect=lambda value,job:value),patch.object(builder.store,'artifact_bytes',side_effect=lambda study,identity,**kw:by_id[identity]),patch.dict(os.environ,OPENCLAW_BUILDER_IMAGE=IMAGE,OPENCLAW_BUILDER_PACKAGE=str(corrected)):
+                paper_answer,paper_receipt=builder.execute(logical,directory/'retained-paper',paper_job,token_source=lambda:'synthetic-not-a-credential',transport=transport)
+            try:
+                assert paper_receipt['status']=='complete' and len(requests)==offset+6,paper_receipt
+                with zipfile.ZipFile(io.BytesIO(artifacts['checkpoint.zip'])) as archive:
+                    assert archive.read('project/experiment.py')==program.encode()
+                    assert json.loads(archive.read('research-context.json'))==context
+                outputs=[x['output'] for request in requests[offset:] for x in request['input'] if x.get('type')=='function_call_output']
+                assert any('software-only checks passed; no measurements collected' in text for text in outputs)
+                report['retained_paper']=dict(status='passed',original_dispatch_id=parent['id'],original_checkpoint_sha256=digest(original_zip),original_context_sha256=digest(canonical(context)),context_bytes=len(canonical(context)),receipt=paper_receipt,maximum_request_bytes=max(len(canonical(q)) for q in requests[offset:]),synthetic_provider_requests=len(requests)-offset,live_provider_calls=0,scope='Real native CLI read packet/source, wrote and executed a fixed SOFTWARE-ONLY conditions parser with full retained paper context. Diagnosis was already delivered in that checkpoint. No model behavior, paper experiment, candidate publication or measurement ingestion is validated.')
+            finally:builder.container_action(paper_job['task_id'],'remove')
         report['status']='passed'
     except Exception:
         report['failure']=traceback.format_exc();raise
@@ -131,4 +159,6 @@ def main():
             report.update(status='failed',source_changed_during_check=True)
         (directory/'report.json').write_bytes(canonical(report));print(json.dumps({'status':report['status'],'report':str(directory/'report.json')}))
     if report['status']!='passed':raise SystemExit(1)
-if __name__=='__main__':main()
+if __name__=='__main__':
+    if sys.argv[1:] not in ([],['--retained-paper']):raise SystemExit('Only the fixed --retained-paper development fixture is supported.')
+    main()

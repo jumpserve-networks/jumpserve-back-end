@@ -406,6 +406,7 @@ def build_context(task):
  if context.get('last_response_error'):value['response_contract_feedback']=context['last_response_error']
  if context.get('runtime_retry'):value['runtime_retry']=context['runtime_retry']
  if context.get('builder_work_progress'):value['builder_work_progress']=context['builder_work_progress']
+ if context.get('builder_recovery_plan'):value['builder_recovery_plan']=context['builder_recovery_plan']
  if context.get('repair_directive'):
   value['repair_directive']=context['repair_directive'];value['repair_packet']=context['repair_packet']
  if context.get('prepared_id'):
@@ -692,6 +693,7 @@ def step(task):
   if runtime.get('repair_validation'):context['repair_validation']=runtime['repair_validation']
   if runtime.get('checkpoint'):context['builder_checkpoint']=runtime['checkpoint']
   if runtime.get('feedback'):context['builder_feedback']=runtime['feedback']
+  if runtime.get('scheduling_feedback'):context['builder_scheduling_feedback']=runtime['scheduling_feedback']
   context['builder_progress']=dict(version='experiment-builder-v1',state=runtime.get('build_state'),last_dispatch_id=answer['id'],provider_calls=runtime.get('provider_calls'),wall_seconds=runtime.get('wall_seconds'),measured_charges_usd=runtime.get('measured_charges_usd'))
   if runtime.get('admission_denied'):
    status=runtime['admission_denied'] if runtime['admission_denied'] in ('budget','deadline','cancelled') else 'blocked'
@@ -705,10 +707,16 @@ def step(task):
     context['builder_work_progress']=dict(sha256=fingerprint,unchanged_slices=stalled,version=progress['version'],files=progress.get('files',[]),delivered=progress.get('delivered',{}))
     if stalled>=3:
      reason='No implementation-file progress in three continuations. Repeated context reads are not implementation progress. Reconsider the available runner and exact output contract using retained commands and checkpoint; preserve the claim, criteria, commitments and deadline.'
-     seen=context.get('builder_stalled_fingerprints',[])
+     # A new executable recovery adapter is material progress in the repair
+     # strategy. A new prompt/attempt number alone is not permission to repeat.
+     recovery_key=digest(canonical(dict(implementation=fingerprint,adapter=experiment_builder.recovery_identity())))
+     seen=context.get('builder_stalled_recovery_keys',[])
      context.update(last_feedback=reason,builder_feedback=reason)
-     if fingerprint in seen:return advance(task,'blocked',context=context,reason='Builder remained unchanged after targeted replanning. Recorded integration/implementation repair is required before further spending; original checkpoint retained.')
-     context['builder_stalled_fingerprints']=(seen+[fingerprint])[-32:]
+     if recovery_key in seen:
+      context['builder_stall']=dict(version='builder-stall-v1',recovery_key=recovery_key,implementation_sha256=fingerprint,adapter_sha256=experiment_builder.recovery_identity(),checkpoint=context.get('builder_checkpoint'))
+      return advance(task,'blocked',context=context,reason='Builder remained unchanged after targeted replanning. Recorded integration/implementation repair is required before further spending; original checkpoint retained.')
+     context['builder_stalled_recovery_keys']=(seen+[recovery_key])[-32:]
+     context['builder_recovery_plan']=dict(version=experiment_builder.WORK_PACKET_VERSION,recovery_key=recovery_key,action='Use the bounded work packet, implement the missing source and execute a concrete development check. Do not repeat metadata/protocol inspection unchanged.')
      return advance(task,'queued',stage='planning',context=context,reason=reason)
    return advance(task,'queued',stage='building',context=context,reason='Builder checkpoint retained; continuing from actual files and feedback within the original paper limits.',delay=5)
  if output['action']=='inspect':

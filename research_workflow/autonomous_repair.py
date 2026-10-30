@@ -32,6 +32,8 @@ def rpc(task, operation, payload):
 def category(task, reason, context):
     if not task.get('claim_id') or task.get('_repair_external'):
         return None
+    if context.get('builder_stall') or reason.startswith('Builder remained unchanged after targeted replanning.'):
+        return None  # A known failed recovery is not a new repair opportunity.
     blockers = context.get('blockers', [])
     if any(b.get('kind') in ('equipment', 'authorization', 'capacity') for b in blockers):
         return None

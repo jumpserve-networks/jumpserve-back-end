@@ -1,0 +1,15 @@
+{
+  "version": "builder-stall-fix-validation-v1",
+  "scope": "Local development qualification against retained assessment 4055396e traces; no production changes or new scientific measurements",
+  "acceptance": [
+    "Exact original context/history remain retrievable and hash-bound; trusted system instructions, tool-call identities, scientific settings, spending/time limits and unknown-call fences are preserved",
+    "Bounded work packet supplies applicable executable contract, claim, actionable feedback, source-page access and actual work; metadata does not recursively quote metadata",
+    "Scheduling feedback never replaces implementation feedback; every actual native request includes its real system/tool overhead in the unchanged 72000-byte check",
+    "Unchanged implementation after targeted recovery remains blocked through real repair routing; changed adapter implementation gets a distinct recovery identity, never reset attempts or commitments",
+    "The 100-Mbit/s, 30-second, five-loss sweep admits the unchanged 18760000000-byte interface-counter allowance within a netem-only 20000000000-byte envelope; other runners retain 10000000000",
+    "Missing/zero observations, units, complete loss grid, duration, uncertainty and fresh reviews remain unchanged"
+  ],
+  "resources": {"new_live_model_calls": 0, "new_cloud_instances": 0, "production_mutations": 0, "native_tests": "Pinned local CLI/container with synthetic provider responses only"},
+  "release": "Passing local checks do not approve publication or deployment. Clear old exact-source repair approval; a subsequent explicitly authorized release needs full-paper-context live qualification, new runtime pins, approved resource-policy hashes and deployed verification.",
+  "reviewer": {"identity": "Codex implementing AI", "type": "AI", "independent": false, "human": false}
+}

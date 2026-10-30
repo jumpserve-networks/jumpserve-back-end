@@ -1,0 +1,12 @@
+{
+  "version": "builder-stall-fix-validation-v2",
+  "amends": "builder-stall-fix-validation-v1",
+  "reason": "Initial counterfactual development replays brought four old requests under the bound, but the fifth still exceeded it after ten historical reads. Requiring every arbitrarily long old conversation to fit would contradict the unchanged bounded stateless-session contract. Preserve all failed replays and distinguish payload fit from model behavior.",
+  "checks": [
+    "All five exact matched checkpoints produce a bounded work packet and a fresh native request with the entire real developer message/tool schema overhead plus an actual packet-read result below 72000 bytes",
+    "Historical read sequences retain their original call identities, source context and full archived history. Report which transformed sequences still exceed the limit; never call those accepted or silently truncate them",
+    "Oversized requests retain the existing pre-provider stop; the no-progress router regression, resource bounds, source/zero/null controls and native synthetic-provider integration checks pass"
+  ],
+  "unchanged": ["Original hypotheses, measurements, source conditions, runtime budgets and limits", "No live model calls, cloud instances, production mutation or deployment", "Live full-paper-context and held-out model behavior remain unverified"],
+  "classification": "Exposed, tuned development cases reviewed by implementing AI, not independent or held-out validation"
+}
