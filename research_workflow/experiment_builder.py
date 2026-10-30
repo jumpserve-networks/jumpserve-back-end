@@ -266,6 +266,13 @@ def work_packet(context, inventory, workspace):
         if len(canonical(packet))<=WORK_PACKET_BYTES:break
         if key=='work':packet[key]['files']=[];packet[key]['complete']=False
         else:packet.pop(key,None)
+    if len(canonical(packet))>WORK_PACKET_BYTES and 'available_netem_output_contract' in packet:
+        raw=canonical(packet['available_netem_output_contract'])
+        packet['available_netem_output_contract']=dict(representation='retained-context-reference',complete=False,bytes=len(raw),sha256=digest(raw),
+            read=['context','runner_contracts',0],path='netem-iperf-v1.output_contract',scope='Complete contract remains in research-context.json; the working view does not imply absence or review.')
+    if len(canonical(packet))>WORK_PACKET_BYTES:
+        packet['claim']=view(context.get('claim'),500);packet['feedback']=view(feedback,500)
+        if context.get('builder_recovery_plan'):packet['recovery_plan']=reference('builder_recovery_plan')
     if len(canonical(packet))>WORK_PACKET_BYTES:raise ValueError('Required work packet exceeds its bounded view; originals retained.')
     return packet
 

@@ -78,6 +78,18 @@ class WorkPackets(unittest.TestCase):
             self.assertEqual(packet['available_netem_output_contract'],contract)
             self.assertIn('Legacy scheduling',packet['feedback_scope'])
 
+    def test_dense_repair_packet_uses_hashed_optional_references_and_preserves_originals(self):
+        contract=netem_iperf.observation_contract(sweep_config())
+        context=dict(claim=dict(description='Original source claim '*500),builder_feedback='Correct only the metadata envelope. '*80,builder_recovery_plan=dict(action='Previously retained plan '*300),
+            runner_contracts={'netem-iperf-v1':dict(output_contract=contract)},source_material=dict(origin='synthetic software control, no scientific data'),proposal_contract={'full':'retained'},repair_packet={'incident':'a'*64},repair_directive='Retain original bytes',resource_authorization={'scope':'unchanged'})
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);before=canonical(context);builder.bootstrap(dict(system=[],builder=dict(context=context)),root,root,[])
+            packet=json.loads((root/'work-packet.json').read_bytes());self.assertLessEqual(len(canonical(packet)),builder.WORK_PACKET_BYTES)
+            self.assertEqual(packet['execution_contract'],builder.execution_contract())
+            self.assertEqual(packet['available_netem_output_contract']['sha256'],digest(canonical(contract)))
+            self.assertFalse(packet['available_netem_output_contract']['complete'])
+            self.assertEqual((root/'research-context.json').read_bytes(),before)
+
     def test_repeated_stagnation_stays_blocked_through_real_advance_and_repair_route(self):
         fingerprint='a'*64
         key=digest(canonical(dict(implementation=fingerprint,adapter=builder.recovery_identity())))
