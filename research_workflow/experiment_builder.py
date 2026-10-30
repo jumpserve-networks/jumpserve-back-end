@@ -395,6 +395,10 @@ def execution_contract():
         metric_rule='Execution spec metrics contain ONLY name and units. planned_observations and metric bounds belong to the protocol and are NOT present in the executable spec. Do not require them in experiment.py.',
         wrapper_reference='The exact unchanged wrapper source is supplied under reference-implementations/generated_package-<wrapper_sha256>.py; use it for a real development portability check with absolute spec/input/output paths. Keep the source and any development ZIP outside project/.',
         project_files=['experiment.py','requirements.lock','system-packages.lock.json','build-evidence.json'],
+        metadata_contract=dict(requirements_lock='Empty for standard-library-only code; otherwise one exact package==version with SHA256 hashes per non-comment line. No editable URLs or alternate indexes.',
+            system_packages_lock='A JSON array, empty when no system dependencies are needed. Every entry must be an exact apt package=version string.',
+            build_evidence=dict(type='object',required=['commands','checks','limitations'],additional_properties=False,properties=dict(commands='array',checks='array',limitations='array'),
+                extra_metadata='Keep additional runtime/version/source notes in a separate JSON file in project/. Preserve the original metadata bytes when correcting its envelope. Notes do not substitute for executed checks.')),
         validation='Run the program using actual spec/input/output paths, retain the real commands, exit codes and output, and use the unchanged server wrapper for the portability check. Do not substitute inline JSON environment values.',
         workspace_user='Commands and file tools run as the worker UID:GID. Use sudo -n for necessary installations/system setup inside the container; write project/evidence files as the workspace user. Python is python3; do not assume a python alias.',
         scope='Build/development evidence only. Production campaign admission, fresh reviews, budgets and scientific criteria remain separate.')
