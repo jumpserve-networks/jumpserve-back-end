@@ -152,8 +152,13 @@ class OpenClaw(unittest.TestCase):
   if not node.exists():self.skipTest('Pinned native CLI absent; equivalent native release check remains required.')
   from unittest.mock import Mock
   transport=Mock(side_effect=AssertionError('Provider must not be contacted'))
+  # Freeze a valid admitted logical request before injecting a larger runtime
+  # wire body. In production's OPENCLAW mode, request() also preflights that
+  # body and would otherwise stop before this runtime guard is exercised.
+  logical=request()
   with tempfile.TemporaryDirectory() as tmp,patch.object(runtime,'NODE',node),patch.object(runtime,'PACKAGE',package),patch.object(wire,'response_request',return_value={'oversize':'x'*96000}):
-   answer,receipt=runtime.execute(request(),Path(tmp)/'turn',token_source=lambda:'synthetic-not-a-credential',transport=transport)
+   with patch.object(model,'OPENCLAW',True),patch.object(model,'MODEL',runtime.MODEL),self.assertRaisesRegex(ValueError,'96 KB'):request()
+   answer,receipt=runtime.execute(logical,Path(tmp)/'turn',token_source=lambda:'synthetic-not-a-credential',transport=transport)
    self.assertIsNone(answer);self.assertEqual(receipt['status'],'failed');self.assertEqual(receipt['error_code'],'provider-request-byte-limit');self.assertEqual(receipt['provider_calls'],0);self.assertFalse(receipt['provider_request_sent']);transport.assert_not_called()
 
 if __name__=='__main__':unittest.main()
