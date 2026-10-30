@@ -11,6 +11,7 @@ import tempfile
 import time
 from workflow import canonical,digest
 import generated_package
+import source_project
 
 VERSION='repair-development-validation-v1'
 RUNNER=r'''
@@ -88,7 +89,15 @@ def test_plan(workspace,context):
 
 
 def validate(job,workspace,context,retain):
-    project=workspace/'project';before=generated_package.freeze(project)
+    before=source_project.freeze(job,workspace/'project',retain)
+    # Execute the exact sealed source tree, never stale compiled cache files.
+    with tempfile.TemporaryDirectory(prefix='jumpserve-repair-sources-',dir=workspace.parent) as tmp:
+        project=Path(tmp)
+        for name,raw in generated_package.members(before).items():
+            path=project/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+        return _validate(job,workspace,context,retain,project,before)
+
+def _validate(job,workspace,context,retain,project,before):
     plans=test_plan(workspace,context)
     incident=context['repair_packet']['incident_sha256']
     metadata=[dict(path=path,original=retain(job,'repair-test-plan-'+str(index)+'.json',raw)) for index,(path,raw) in enumerate(plans)]
@@ -118,7 +127,7 @@ def validate(job,workspace,context,retain):
         try:
             parsed=result_line(stdout);report.update(report_encoding='final-json-line-v2',test_result=parsed,passed=parsed.get('version')==VERSION and parsed.get('passed') is True and type(parsed.get('tests_run')) is int and parsed['tests_run']>=2 and bool(parsed.get('experiment_functions_executed')))
         except (ValueError,TypeError):pass
-    if generated_package.freeze(project)!=before:report.update(passed=False,reason='Project changed during validation.')
+    if source_project.freeze(job,workspace/'project',retain)!=before:report.update(passed=False,reason='Project changed during validation.')
     original=retain(job,'repair-validation.json',canonical(report))
     deliver_current(workspace,report,stdout,stderr,original)
     if not report['passed']:raise RepairCheckFailure(original)

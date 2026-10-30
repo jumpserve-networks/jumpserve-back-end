@@ -22,6 +22,7 @@ import io
 import gzip
 
 import generated_package
+import source_project
 import network_spec
 import openclaw_runtime as runtime
 import siwc_protocol as wire
@@ -231,7 +232,7 @@ def work_progress(workspace,context,history):
 
 def recovery_identity():
     """Changed executable recovery code, not a turn count or a model's assertion."""
-    names=('experiment_builder.py','autonomous_repair.py','generated_package.py','repair_validation.py','network_spec.py','netem_iperf.py')
+    names=('experiment_builder.py','autonomous_repair.py','generated_package.py','source_project.py','repair_validation.py','network_spec.py','netem_iperf.py')
     return digest(canonical(dict(version=WORK_PACKET_VERSION,files={n:digest(Path(__file__).with_name(n).read_bytes()) for n in names})))
 
 def work_packet(context, inventory, workspace):
@@ -530,7 +531,7 @@ def freeze_candidate(job, workspace):
     if candidate_path.is_symlink() or candidate_path.stat().st_size > 64000: raise ValueError('Candidate manifest is not a bounded regular file.')
     candidate = json.loads(candidate_path.read_bytes())
     if not isinstance(candidate, dict) or set(candidate) != {'protocol', 'experiment_type'}: raise ValueError('Candidate needs a complete prospective protocol and experiment_type.')
-    raw = generated_package.freeze(workspace / 'project')
+    raw = source_project.freeze(job, workspace / 'project', retain)
     manifest=retain(job,'candidate-original.json',candidate_path.read_bytes(),'builder-original-manifest')
     archive = retain(job, 'project.zip', raw, 'builder-frozen-project')
     source = retain(job, 'package.py', Path(generated_package.__file__).read_bytes(), 'builder-server-wrapper')

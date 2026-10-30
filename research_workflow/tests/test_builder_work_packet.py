@@ -18,6 +18,7 @@ import autonomy_costs
 import autonomy_inputs
 import netem_iperf
 import network_spec
+import source_project
 from workflow import canonical,digest
 from test_network_execution import document
 from test_executable_methods import sweep_config
@@ -133,6 +134,36 @@ class CounterEnvelope(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'matching server-owned'):autonomy_costs.builtin_quote(canonical(network_spec.specs(self.full_grid(),verify_hashes=False)[0]))
         contract=autonomy_inputs.runner_contracts()['netem-iperf-v1']
         self.assertEqual(contract['counter_envelope']['maximum_bytes'],20000000000)
+
+
+class SourceSealing(unittest.TestCase):
+    def project(self, root):
+        for name, raw in {'experiment.py':b'print(1)\n','requirements.lock':b'','system-packages.lock.json':b'[]','build-evidence.json':b'{"commands":[],"checks":[],"limitations":[]}'}.items():
+            (root/name).write_bytes(raw)
+
+    def test_actual_compiler_cache_is_retained_without_entering_executable_zip(self):
+        import py_compile
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.project(root);py_compile.compile(str(root/'experiment.py'),doraise=True)
+            original={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()};retained={}
+            def retain(job,name,raw):
+                retained[name]=raw;return dict(artifact_id=str(uuid.uuid4()),sha256=digest(raw))
+            result=source_project.freeze({},root,retain)
+            self.assertEqual(set(__import__('generated_package').members(result)),set(original)-{n for n in original if '__pycache__' in n})
+            self.assertEqual({str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()},original)
+            manifest=json.loads(next(raw for n,raw in retained.items() if n.startswith('source-project-')))
+            self.assertEqual(manifest['package_sha256'],digest(result))
+            self.assertEqual(len(manifest['excluded']),1)
+            entry=manifest['excluded'][0];self.assertEqual(original[entry['path']],retained['python-cache-'+entry['sha256']+'.bin'])
+
+    def test_dependency_symlink_and_noncache_source_guards_remain(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.project(root);cache=root/'__pycache__';cache.mkdir();(cache/'source.py').write_text('print(1)')
+            with self.assertRaisesRegex(ValueError,'Only derived'):source_project.freeze({},root,None)
+            (cache/'source.py').unlink();(root/'.venv').mkdir();(root/'.venv'/'metadata.txt').write_text('installed')
+            with self.assertRaisesRegex(ValueError,'dependency'):source_project.freeze({},root,None)
+            (root/'.venv'/'metadata.txt').unlink();(root/'link.py').symlink_to(root/'experiment.py')
+            with self.assertRaisesRegex(ValueError,'symlinks'):source_project.freeze({},root,None)
 
 
 if __name__=='__main__':unittest.main()

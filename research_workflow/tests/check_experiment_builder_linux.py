@@ -68,7 +68,7 @@ def main():
     corrected=prepare(package,ROOT/'.test-artifacts/builder-vendor/node_modules/openclaw',builder.PATCH_PATH)
     protocol=ROOT/'research_workflow/policies/builder-continuation-validation-v2.json'
     report=dict(protocol='builder-continuation-validation-v2',protocol_sha256=digest(protocol.read_bytes()),kind='development-regression',provider_calls=0,measured_charges_usd=None,image=IMAGE,prompt_content_sha256=template['content_sha256'],full_published_system_composition=True,reviewer={'type':'AI','identity':'Codex','independent':False},status='failed',live_provider_calls=0)
-    names=['experiment_builder.py','autonomy_methods.py','autonomy_model.py','openclaw_runtime.py','store.py','network_spec.py','generated_package.py','workflow.py','openclaw-builder-patch.json','policies/experiment-action-policy-v1.json','policies/autonomy-turn-policy-v1.json','policies/builder-continuation-validation-v1.json','policies/builder-continuation-validation-v2.json','experiment-builder.Dockerfile','tests/check_experiment_builder_linux.py']
+    names=['experiment_builder.py','autonomy_methods.py','autonomy_model.py','openclaw_runtime.py','store.py','network_spec.py','generated_package.py','source_project.py','workflow.py','openclaw-builder-patch.json','policies/experiment-action-policy-v1.json','policies/autonomy-turn-policy-v1.json','policies/builder-continuation-validation-v1.json','policies/builder-continuation-validation-v2.json','experiment-builder.Dockerfile','tests/check_experiment_builder_linux.py']
     report['source_files']={}
     for name in names:
         raw=(ROOT/'research_workflow'/name).read_bytes();dest=directory/'original-source'/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
