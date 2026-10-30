@@ -1,5 +1,5 @@
 """Exposed OpenClaw protocol/dispatch regressions; synthetic provider, real CLI."""
-import io,json,os,sys,tempfile,unittest,uuid
+import io,json,os,sys,tempfile,unittest,uuid,urllib.error,urllib.request
 from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
@@ -17,6 +17,77 @@ def stream():
  text=json.dumps(decision());return b'data: '+json.dumps(dict(type='response.completed',response=dict(status='completed',model=runtime.MODEL,output=[dict(type='message',role='assistant',content=[dict(type='output_text',text=text)])],usage=dict(input_tokens=100,output_tokens=30,total_tokens=130)))).encode()+b'\n\n'
 
 class OpenClaw(unittest.TestCase):
+ def local_bridge(self,mutate=lambda request:None,transport=None,repeats=1):
+  """Real loopback HTTP handler, explicitly emulated native CLI and upstream."""
+  calls=[];errors=[]
+  def upstream(method,url,token,body):
+   calls.append(body)
+   return transport(method,url,token,body) if transport else Response(stream())
+  def cli(arguments,**kwargs):
+   cfg=json.loads(Path(arguments[arguments.index('--config')+1]).read_bytes())
+   settings=cfg['models']['providers']['lab'];message=Path(arguments[arguments.index('--message-file')+1]).read_text()
+   value=dict(model=runtime.MODEL,messages=[dict(role='user',content=message)],stream=False);mutate(value)
+   opener=urllib.request.build_opener(urllib.request.ProxyHandler({}));output=None
+   for _ in range(repeats):
+    request=urllib.request.Request(settings['baseUrl']+'/chat/completions',data=workflow.canonical(value),headers={'Content-Type':'application/json','Authorization':'Bearer '+settings['apiKey']})
+    try:
+     with opener.open(request,timeout=3) as response:output=json.loads(response.read())['choices'][0]['message']['content']
+    except urllib.error.HTTPError as error:errors.append(json.loads(error.read()))
+   return SimpleNamespace(returncode=1 if output is None else 0,stdout=workflow.canonical(dict(payloads=[] if output is None else [dict(text=output)])),stderr=b'')
+  with tempfile.TemporaryDirectory() as tmp,patch.object(runtime.subprocess,'run',side_effect=cli):
+   directory=Path(tmp)/'turn';answer,receipt=runtime.execute(request(),directory,token_source=lambda:'synthetic',transport=upstream)
+   artifacts={p.name:p.read_bytes() for p in directory.iterdir() if p.is_file() and p.name!='config.json'}
+  return answer,receipt,calls,errors,artifacts
+
+ def test_hash_bound_handoff_keeps_exact_provider_content_and_original_prompt(self):
+  answer,receipt,calls,errors,artifacts=self.local_bridge()
+  self.assertEqual(receipt['status'],'complete');self.assertEqual(errors,[]);self.assertEqual(len(calls),1)
+  self.assertEqual(calls[0],workflow.canonical(wire.response_request(request())))
+  self.assertEqual(artifacts['message.json'].decode(),request()['messages'][0]['content'][0]['text'])
+  handoff=json.loads(artifacts['native-message.json']);self.assertEqual(handoff['reference'],'controller-retained-request-sha256:'+workflow.digest(artifacts['logical.json']))
+  self.assertEqual(receipt['context_transport']['original_logical_sha256'],workflow.digest(artifacts['logical.json']))
+  self.assertEqual(receipt['request_sizes']['provider_bytes'],len(calls[0]))
+
+ def test_private_bridge_rejections_identify_exact_field_without_provider_calls(self):
+  cases=[('native-model-mismatch','native.model',lambda r:r.update(model='wrong')),
+         ('native-tools-forbidden','native.tools',lambda r:r.update(tools=[{'name':'forbidden'}])),
+         ('native-message-role','native.messages[].role',lambda r:r['messages'][0].update(role='tool')),
+         ('native-logical-reference','native.messages',lambda r:r['messages'][0].update(content='Unbound content')),
+         ('native-bridge-byte-limit','native.content_length',lambda r:r.update(extra='x'*96000))]
+  for code,field,mutation in cases:
+   with self.subTest(code=code):
+    answer,receipt,calls,errors,_=self.local_bridge(mutation)
+    self.assertIsNone(answer);self.assertEqual(calls,[]);self.assertEqual(receipt['status'],'failed')
+    self.assertFalse(receipt['provider_request_sent']);self.assertEqual(receipt['provider_calls'],0)
+    self.assertEqual(receipt['error_code'],code);self.assertEqual(receipt['validation']['field'],field)
+    self.assertEqual(errors[0]['error']['code'],code);self.assertEqual(errors[0]['error']['param'],field)
+    if code=='native-bridge-byte-limit':self.assertGreater(receipt['validation']['observed'],receipt['validation']['limit'])
+
+ def test_unknown_provider_outcome_is_not_replayed_or_rewritten_by_second_request(self):
+  def failure(*_):raise wire.StreamFailure('provider-wall-limit','unknown')
+  answer,receipt,calls,errors,_=self.local_bridge(transport=failure,repeats=2)
+  self.assertIsNone(answer);self.assertEqual(len(calls),1);self.assertEqual(receipt['status'],'unknown')
+  self.assertTrue(receipt['provider_request_sent']);self.assertEqual(receipt['provider_calls'],1)
+  self.assertEqual(receipt['error_code'],'provider-wall-limit');self.assertEqual(receipt['validation']['code'],'retained-provider-operation')
+  self.assertEqual([e['error']['code'] for e in errors],['provider-wall-limit','retained-provider-operation'])
+
+ def test_invalid_logical_request_is_retained_before_credential_or_native_work(self):
+  for logical,code in ((dict(request(),modelId='wrong'),'logical-model-mismatch'),(dict(request(),extra='x'*96000),'logical-request-byte-limit')):
+   with self.subTest(code=code),tempfile.TemporaryDirectory() as tmp,patch.object(runtime,'credential') as credential,patch.object(runtime.subprocess,'run') as cli:
+    directory=Path(tmp)/'turn';answer,receipt=runtime.execute(logical,directory,token_source=credential)
+    self.assertIsNone(answer);credential.assert_not_called();cli.assert_not_called()
+    self.assertEqual(receipt['error_code'],code);self.assertEqual(receipt['provider_calls'],0)
+    self.assertEqual((directory/'logical.json').read_bytes(),workflow.canonical(logical));self.assertEqual(json.loads((directory/'receipt.json').read_bytes())['validation']['code'],code)
+
+ def test_public_validation_reason_is_precise_without_echoing_untrusted_values(self):
+  provenance=dict(error_code='native-bridge-byte-limit',provider_request_sent=False,provider_calls=0,validation=dict(version='openclaw-request-validation-v1',code='native-bridge-byte-limit',field='secret-token-injected',rule='private-prompt-injected',observed=102035,limit=96000))
+  reason=dispatch.DispatchError(dict(status='failed',provenance=provenance)).public_reason
+  self.assertIn('102035 bytes; limit 96000 bytes',reason);self.assertIn('No model request was sent',reason)
+  self.assertNotIn('secret-token',reason);self.assertNotIn('private-prompt',reason)
+  for changes in (dict(provider_request_sent=True),dict(provider_calls=1),dict(error_code='arbitrary-source-instruction')):
+   self.assertNotIn('No model request was sent',dispatch.DispatchError(dict(status='failed',provenance=dict(provenance,**changes))).public_reason)
+  self.assertNotIn('No model request was sent',dispatch.DispatchError(dict(status='unknown',provenance=provenance)).public_reason)
+
  def test_complete_stream_after_former_deadline_is_accepted_only_with_new_bounded_window(self):
   class Slow(Response):
    def __init__(self):

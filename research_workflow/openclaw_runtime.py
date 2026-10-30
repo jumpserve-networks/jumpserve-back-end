@@ -12,6 +12,8 @@ MODEL='gpt-6.1-sol'
 DATA_RESPONSE_SECONDS=90
 DATA_CLI_SECONDS=120
 DATA_PROCESS_SECONDS=130
+REQUEST_VALIDATION_VERSION='openclaw-request-validation-v1'
+HANDOFF_VERSION='openclaw-retained-turn-handoff-v1'
 NODE=Path(os.environ.get('OPENCLAW_NODE','/opt/jumpserve/node/bin/node'))
 PACKAGE=Path(os.environ.get('OPENCLAW_PACKAGE','/opt/jumpserve/openclaw/node_modules/openclaw'))
 AUTH=Path(os.environ.get('OPENCLAW_AUTH_DIR','/var/lib/jumpserve-openclaw/auth'))
@@ -74,24 +76,39 @@ def catalog(token):
    raise ValueError('The exact model is unavailable to the authorized ChatGPT account.')
  return dict(model_id=MODEL,catalog_sha256=digest(raw))
 
+class RequestRejected(ValueError):
+ def __init__(self,code,field,rule,observed=None,limit=None):
+  super().__init__(code);self.code=code
+  self.validation=dict(version=REQUEST_VALIDATION_VERSION,code=code,field=field,rule=rule,observed=observed,limit=limit)
+
 def translate(request,logical):
- if request.get('model')!=MODEL or request.get('tools'):raise ValueError('OpenClaw requested an unexpected model/tool.')
+ if not isinstance(request,dict):raise RequestRejected('native-request-shape','native','JSON object required')
+ if request.get('model')!=MODEL:raise RequestRejected('native-model-mismatch','native.model','Pinned model required')
+ if request.get('tools'):raise RequestRejected('native-tools-forbidden','native.tools','Data-only adapter admits no tools')
+ if not isinstance(request.get('messages'),list) or not request['messages']:raise RequestRejected('native-messages-shape','native.messages','Nonempty message array required')
  systems=[];messages=[]
  for item in request['messages']:
+  if not isinstance(item,dict) or 'content' not in item:raise RequestRejected('native-message-shape','native.messages[]','Object with content required')
   content=item['content']
   if not isinstance(content,str):
-   if not isinstance(content,list) or any(p.get('type')!='text' for p in content):raise ValueError('Only text is admitted.')
+   if not isinstance(content,list) or any(not isinstance(p,dict) or p.get('type')!='text' or not isinstance(p.get('text'),str) for p in content):raise RequestRejected('native-content-type','native.messages[].content','Only text is admitted')
    content='\n'.join(p['text'] for p in content)
-  if item['role'] in ('system','developer'):systems.append(dict(text=content))
-  elif item['role'] in ('user','assistant'):messages.append(dict(role=item['role'],content=[dict(text=content)]))
-  else:raise ValueError('Unexpected tool/history role.')
+  if item.get('role') in ('system','developer'):systems.append(dict(text=content))
+  elif item.get('role') in ('user','assistant'):messages.append(dict(role=item['role'],content=[dict(text=content)]))
+  else:raise RequestRejected('native-message-role','native.messages[].role','Only system/developer/user/assistant roles are admitted')
  return dict(modelId=MODEL,system=systems,messages=messages,toolConfig=logical['toolConfig'])
 
 def execute(logical,directory,token_source=credential,transport=http_request):
  """Return parsed answer plus original-byte directory; no database side effects."""
  directory=Path(directory);directory.mkdir(mode=0o700,parents=True,exist_ok=False)
- if logical['modelId']!=MODEL or len(canonical(logical))>96000:raise ValueError('Invalid complete logical request.')
- (directory/'logical.json').write_bytes(canonical(logical))
+ original=canonical(logical);(directory/'logical.json').write_bytes(original)
+ result=dict(provider_request_sent=False,provider_calls=0,paid_fallback=False,request_sizes=dict(logical_bytes=len(original)))
+ try:
+  if logical.get('modelId')!=MODEL:raise RequestRejected('logical-model-mismatch','logical.modelId','Pinned model required')
+  if len(original)>96000:raise RequestRejected('logical-request-byte-limit','logical','Complete UTF-8 JSON bytes',len(original),96000)
+ except RequestRejected as error:
+  result.update(runtime=VERSION,model_id=MODEL,status='failed',error_code=error.code,validation=error.validation,usage=None,measured_charges_usd=None,subscription_allocation_usd=None)
+  (directory/'receipt.json').write_bytes(canonical(result));return None,result
  try:token=token_source()
  except CredentialFailure as error:
   receipt=dict(runtime=VERSION,model_id=MODEL,status='paused-auth' if error.status=='auth-required' else 'failed',error_code=error.reason,credential_status=error.status,retry_after_seconds=error.retry_after_seconds,provider_request_sent=False,provider_calls=0,usage=None,paid_fallback=False,measured_charges_usd=None,subscription_allocation_usd=None)
@@ -99,24 +116,33 @@ def execute(logical,directory,token_source=credential,transport=http_request):
  workspace=directory/'workspace';workspace.mkdir();state=directory/'state';state.mkdir()
  (workspace/'AGENTS.md').write_text('\n\n'.join(b['text'] for b in logical['system'])+'\nReturn one JSON decision. No tools or shell access are available.\n')
  message=directory/'message.json';message.write_text(logical['messages'][0]['content'][0]['text'])
- (directory/'logical.json').write_bytes(canonical(logical))
- bridge_token=secrets.token_urlsafe(32);result=dict(provider_request_sent=False,provider_calls=0);lock=threading.Lock();started=False
+ # Native OpenClaw is the authenticated transport, not an additional model
+ # interpretation. Its wrapper need not duplicate the entire source context:
+ # the bridge sends wire.response_request(logical) unchanged exactly once.
+ binding='controller-retained-request-sha256:'+digest(original)
+ handoff=canonical(dict(version=HANDOFF_VERSION,reference=binding,logical_bytes=len(original),instruction='Execute this retained data-only controller turn. The local bridge supplies its complete original policy, messages and decision schema unchanged. Return that JSON decision unchanged; no tools or additional provider calls.'))
+ native_message=directory/'native-message.json';native_message.write_bytes(handoff)
+ result['context_transport']=dict(version=HANDOFF_VERSION,original_logical_sha256=digest(original),original_message_sha256=digest(message.read_bytes()),native_message_sha256=digest(handoff),scope='Hash-bound native handoff only; complete upstream logical authority/context/schema remain unchanged, not summarized.')
+ result['request_sizes'].update(original_message_bytes=message.stat().st_size,native_handoff_bytes=len(handoff))
+ bridge_token=secrets.token_urlsafe(32);lock=threading.Lock();started=False
  def inference(raw):
   nonlocal started
   with lock:
    if started:
     if result.get('request_hash')==digest(raw) and result.get('answer'):return result['answer']
-    raise ValueError('A provider operation is already retained; no retry.')
+    raise RequestRejected('retained-provider-operation','native','A provider operation is already retained; no retry')
    started=True;result['request_hash']=digest(raw)
   (directory/'openclaw-http-body.bin').write_bytes(raw)
   # OpenClaw adds its own bootstrap and schema wrapper. Forward the admitted
   # logical request, not that duplicate wrapper, preserving its exact authority,
   # context and decision schema once. Retain both original transports.
-  translate(json.loads(raw),logical)  # Reject unexpected roles/tools/models.
+  translated=translate(json.loads(raw),logical)  # Reject unexpected roles/tools/models.
+  if not any(binding in p['text'] for m in translated['messages'] if m['role']=='user' for p in m['content']):raise RequestRejected('native-logical-reference','native.messages','Exact retained logical SHA256 reference required')
   body=canonical(wire.response_request(logical))
+  result['request_sizes']['provider_bytes']=len(body)
   if len(body)>96000:
    result.update(status='failed',error_code='provider-request-byte-limit',provider_request_sent=False,provider_calls=0)
-   raise ValueError('Complete provider request exceeds 96000 bytes; no call.')
+   raise RequestRejected('provider-request-byte-limit','provider','Complete UTF-8 JSON bytes',len(body),96000)
   (directory/'provider-request.json').write_bytes(body)
   result.update(status='unknown',response_received=False,usage=None,provider_retries=0,paid_fallback=False,provider_request_sent=True,provider_calls=1)
   with transport('POST','https://api.openai.com/v1/responses',token,body) as response:
@@ -136,10 +162,18 @@ def execute(logical,directory,token_source=credential,transport=http_request):
   def log_message(self,*args):pass
   def do_POST(self):
    try:
-    if self.path!='/v1/chat/completions' or self.headers.get('Authorization')!='Bearer '+bridge_token:raise ValueError('Invalid private bridge request.')
-    length=int(self.headers.get('Content-Length','0'))
-    if not 0<length<=96000:raise ValueError('Bridge request exceeds its bound.')
-    received=self.rfile.read(length);request=json.loads(received);answer=inference(received);text=canonical(model.parse(answer)).decode();usage=answer.get('usage',{})
+    if self.path!='/v1/chat/completions' or self.headers.get('Authorization')!='Bearer '+bridge_token:raise RequestRejected('native-bridge-authorization','native.authorization','Expected private path and bearer token required')
+    try:length=int(self.headers.get('Content-Length','0'))
+    except ValueError:raise RequestRejected('native-content-length','native.content_length','Integer UTF-8 body length required') from None
+    result['request_sizes']['native_bridge_bytes']=length
+    if not 0<length<=96000:raise RequestRejected('native-bridge-byte-limit','native.content_length','Complete UTF-8 JSON bytes',length,96000)
+    received=self.rfile.read(length)
+    if len(received)!=length:raise RequestRejected('native-incomplete-body','native.body','Body must match Content-Length',len(received),length)
+    try:request=json.loads(received)
+    except (ValueError,UnicodeError):
+     (directory/'rejected-native-body.bin').write_bytes(received)
+     raise RequestRejected('native-json-invalid','native.body','Valid UTF-8 JSON required') from None
+    answer=inference(received);text=canonical(model.parse(answer)).decode();usage=answer.get('usage',{})
     item=dict(id='retained-data-only',object='chat.completion',created=int(time.time()),model=MODEL,choices=[dict(index=0,message=dict(role='assistant',content=text),finish_reason='stop')],usage=dict(prompt_tokens=usage.get('inputTokens'),completion_tokens=usage.get('outputTokens'),total_tokens=usage.get('totalTokens')))
     raw=canonical(item);kind='application/json'
     if request.get('stream'):
@@ -149,15 +183,19 @@ def execute(logical,directory,token_source=credential,transport=http_request):
    except Exception as error:
     if result['provider_request_sent'] is False:
      result.setdefault('status','failed');result.setdefault('error_code','local-pre-provider-'+type(error).__name__)
-    else:result.update(status=getattr(error,'status','unknown'),error_code=getattr(error,'code','unconfirmed-'+type(error).__name__))
+    elif not isinstance(error,RequestRejected) or error.code!='retained-provider-operation':result.update(status=getattr(error,'status','unknown'),error_code=getattr(error,'code','unconfirmed-'+type(error).__name__))
     if getattr(error,'usage',None):result['usage']=error.usage
-    self.send_error(400,'Retained model operation failed; no provider retry.')
+    if isinstance(error,RequestRejected):
+     result['validation']=error.validation
+     if not result['provider_request_sent']:result['error_code']=error.code
+    payload=canonical(dict(error=dict(type='invalid_request_error',code=error.code if isinstance(error,RequestRejected) else result['error_code'],message='Retained model operation rejected; no provider retry.',param=error.validation['field'] if isinstance(error,RequestRejected) else None)))
+    self.send_response(400);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload)
  server=ThreadingHTTPServer(('127.0.0.1',0),Handler);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
  config=dict(models=dict(mode='replace',providers=dict(lab=dict(baseUrl='http://127.0.0.1:'+str(server.server_address[1])+'/v1',apiKey=bridge_token,api='openai-completions',models=[dict(id=MODEL,name='Subscription data-only adapter',reasoning=False,input=['text'],contextWindow=200000,maxTokens=4096,cost=dict(input=0,output=0,cacheRead=0,cacheWrite=0))]))),agents=dict(defaults=dict(model=dict(primary='lab/'+MODEL,fallbacks=[]),workspace=str(workspace),skipBootstrap=True,bootstrapMaxChars=30000,bootstrapTotalMaxChars=40000,compaction=dict(enabled=False))),tools=dict(deny=['*'],toolSearch=False,codeMode=False,elevated=dict(enabled=False)),plugins=dict(enabled=False),skills=dict(allowBundled=[]))
  config_path=directory/'config.json';config_path.write_bytes(canonical(config));env=environment(directory);env.update(OPENCLAW_CONFIG_PATH=str(config_path),OPENCLAW_STATE_DIR=str(state))
  began=time.monotonic()
  try:
-  cli=subprocess.run([str(NODE),str(PACKAGE/'openclaw.mjs'),'agent','exec','--config',str(config_path),'--state-dir',str(state),'--cwd',str(workspace),'--message-file',str(message),'--model','lab/'+MODEL,'--code-mode','direct','--thinking','off','--timeout',str(DATA_CLI_SECONDS),'--json'],capture_output=True,timeout=DATA_PROCESS_SECONDS,env=env)
+  cli=subprocess.run([str(NODE),str(PACKAGE/'openclaw.mjs'),'agent','exec','--config',str(config_path),'--state-dir',str(state),'--cwd',str(workspace),'--message-file',str(native_message),'--model','lab/'+MODEL,'--code-mode','direct','--thinking','off','--timeout',str(DATA_CLI_SECONDS),'--json'],capture_output=True,timeout=DATA_PROCESS_SECONDS,env=env)
   (directory/'stdout.bin').write_bytes(cli.stdout);(directory/'stderr.bin').write_bytes(cli.stderr)
   if cli.returncode or not result.get('answer'):raise ValueError('OpenClaw CLI did not complete its retained turn.')
   envelope=json.loads(cli.stdout);payloads=envelope.get('payloads') or envelope.get('result',{}).get('payloads') or [];texts=[p['text'] for p in payloads if p.get('text')]
