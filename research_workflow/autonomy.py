@@ -377,10 +377,11 @@ def inspect_evidence(task,request):
 def build_context(task):
  claim=one('claims',task['study_id'],task['claim_id']);source=one('sources',task['study_id'],claim['source_id']);context=task['context']
  value=dict(task=task['stage'],initial_prompt=task['workflow']['initial_prompt'],claim=claim,source=source,attempt_number=task['attempts']+1,limits=DEFAULTS,
-  source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
+  source_coverage='Recorded source metadata and supplied text only; retrieval is not complete review.',registered_checks=[],registered_runners=list(network_spec.RUNNERS),previous_feedback=context.get('last_feedback'),remaining_commitment_cents=None if task['workflow']['max_spend_cents'] is None else task['workflow']['max_spend_cents']-task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'],
   prior_attempts=[{k:r.get(k) for k in ('id','number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
- value['resource_authorization']=dict(version='assessment-budget-amendment-v1',max_spend_cents=task['workflow']['max_spend_cents'],committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
+ maximum=task['workflow']['max_spend_cents']
+ value['resource_authorization']=dict(version='assessment-budget-amendment-v2' if maximum is None or maximum>100000 else 'assessment-budget-amendment-v1',max_spend_cents=maximum,committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
  value['method_policy']=dict(version=methods.VERSION,sha256=digest(methods.INSTRUCTION.encode()))
  if task['stage'] in ('planning','building','comprehension','critic'):
   import experiment_builder

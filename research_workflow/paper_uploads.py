@@ -112,7 +112,7 @@ def review(actor, study):
     reason=r['reason'];status=r['status']
     if status=='preparing' and workflow['status']!='running': status='failed';reason=workflow['reason']
     allowed={s['claim_id'] for s in r['seeds']}
-    can_start=status=='ready' and workflow['status'] not in ('cancelled','budget','deadline') and workflow['committed_cents']+5<=workflow['max_spend_cents']
+    can_start=status=='ready' and workflow['status'] not in ('cancelled','budget','deadline') and (workflow['max_spend_cents'] is None or workflow['committed_cents']+5<=workflow['max_spend_cents'])
     from datetime import datetime, timezone
     can_start=can_start and datetime.fromisoformat(workflow['deadline_at'].replace('Z','+00:00')).timestamp()>datetime.now(timezone.utc).timestamp()+180
     tasks=store.rows('autonomy_tasks',dict(study_id='eq.'+study,claim_id='is.null',limit=1))
