@@ -44,7 +44,9 @@ def snapshot(directory):
 
 def protected(name, existed):
     if any(name==pattern or name.startswith(pattern) for pattern in POLICY['protected']): return True
-    return existed and any(part in ('test','tests','__tests__') for part in PurePosixPath(name).parts)
+    path=PurePosixPath(name)
+    test_file=path.name.startswith('test_') or path.name.endswith('_test.py') or '.test.' in path.name or '.spec.' in path.name
+    return existed and (test_file or any(part in ('test','tests','__tests__') for part in path.parts))
 
 def freeze(baseline, directory):
     current=snapshot(directory); changes=[]; total=0
