@@ -1,0 +1,23 @@
+name: Platform checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Platform validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install pydantic==2.13.5 boto3==1.42.4
+      - run: python3 -B -m unittest test_benchmark_ingest test_sender_metrics -v
+      - run: python3 -B -m unittest discover -s research_workflow/tests -v
+      - run: python3 -B -m unittest discover -s platform_supervisor/tests -v

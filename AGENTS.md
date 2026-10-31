@@ -28,6 +28,17 @@ scientific criteria, reset limits or blindly replay uncertain calls to force
 completion. Record the exact remaining blocker and retained evidence. This goal
 does not authorize merging or deploying changes without an explicit user request.
 
+## Named platform supervisor
+
+The user explicitly authorized the **Platform Development Supervisor OpenClaw**
+to merge and deploy qualified changes to the three JumpServe repositories after
+initial activation. That named service uses its immutable Supabase authorization,
+fixed checks, protected exact GitHub revisions, scoped AWS release roles, task
+limits and owner controls without per-release human confirmation. Preserve those
+boundaries and recorded production verification. This standing authority does
+not apply to unrelated interactive editing sessions. Activation order and scope
+are in `jumpserve-infra/docs/platform-supervisor-v1.md`.
+
 ## Research Scope
 
 This repository contains an empirical study of object-level regional-demand
