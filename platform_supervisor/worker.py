@@ -202,7 +202,8 @@ class Controller:
                 except Exception:self.lease_error=True;return
         thread=threading.Thread(target=renew,daemon=True);thread.start()
         try:
-            native.containers('js-platform-'+task['id'].replace('-','')+'-')
+            removed=native.containers(native.container_prefix(task['id']),workspace)
+            if removed:self.store.event('sandbox-cleanup-reconciled','Removed retained containers by their task workspace identity.',dict(container_ids=removed))
             self.validate_workspace(workspace)
             self.state.pop('cleanup_unknown',None);self.save_state()
             native.reconcile(self.store)
