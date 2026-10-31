@@ -28,6 +28,7 @@ BUILTIN_METRICS = {
     'netem-iperf-v1': {'throughput_mbit_s':'Mbit/s','received_bytes':'bytes','duration_seconds':'s','idle_rtt_ms':'ms','retransmits':'count'},
 }
 MAX_JOBS = 32
+BUILT_MAX_NETWORK_BYTES = 100_000_000_000  # Decimal GB; sampled guest counters.
 
 def implementation(runner):
     name={'netem-iperf-v1':'netem_iperf.py','source-arithmetic-v1':'source_arithmetic.py'}.get(runner)
@@ -137,6 +138,7 @@ def specs(document, verify_hashes=True):
     if execution['runner']=='netem-iperf-v1':
         import netem_iperf
         network_maximum=netem_iperf.MAX_COUNTER_BYTES
+    elif execution['runner']=='built-package-v1':network_maximum=BUILT_MAX_NETWORK_BYTES
     else:network_maximum=10000000000
     integer(limits['max_network_bytes'],'max_network_bytes',1024,network_maximum)
     if limits['wall_seconds'] > document['resource_limits']['wall_seconds']: raise ValueError('Execution exceeds reviewed protocol wall-time budget.')

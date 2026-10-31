@@ -253,6 +253,19 @@ def work_packet(context, inventory, workspace):
         limits={k:context[k] for k in ('remaining_commitment_cents','deadline_at') if k in context},
         order='Implement and run a bounded correctness check before reading the full proposal schema. Once code works, read the full prospective protocol contract and supply candidate.json for fresh reviews. Read one necessary source/contract page per command; do not concatenate full context or transcripts.')
     if context.get('builder_recovery_plan'):packet['recovery_plan']=view(context['builder_recovery_plan'],500)
+    if context.get('native_repair_handoff'):
+        handoff=repair_handoff(context)
+        packet['repair_handoff']=dict(version=handoff['version'],stage='building',required_tools=handoff['tools'],incident_sha256=handoff['incident_sha256'],
+            source_change_required=True,read=['context','native_repair_handoff',0],
+            test_plan=dict(version='repair-development-validation-v1',incident_sha256=handoff['incident_sha256'],scope='software-development-only'),
+            test_plan_locations=['project/repair-test-plan.json','repair-test-plan.json'],required_tests=['test_original_failure','test_corrected_behavior'])
+        import repair_validation
+        try:
+            plans=repair_validation.test_plan(workspace,context)
+            packet['repair_handoff']['metadata']=dict(status='valid',paths=[path for path,_ in plans],scope='Metadata only; executed tests, source change and candidate validation remain required.')
+        except (ValueError,KeyError,TypeError,OSError) as error:
+            packet['repair_handoff']['metadata']=dict(status='needs-correction',reason=str(error)[:400])
+        packet['next_action']='Follow the current repair feedback and preserve completed source changes. Implement only missing changes, run bounded incident tests, correct the test-plan JSON using the exact object below, then supply candidate.json. Metadata validity is not executed validation; the server checks the frozen source and tests before fresh reviews.'
     contracts=context.get('runner_contracts') or {}
     netem=contracts.get('netem-iperf-v1') if isinstance(contracts,dict) else None
     if isinstance(netem,dict) and isinstance(netem.get('output_contract'),dict):
@@ -381,6 +394,42 @@ def retain(job, name, raw, kind='builder-original'):
     return dict(artifact_id=identity, sha256=record['sha256'], version=VERSION)
 
 def enabled(): return os.environ.get('RESEARCH_BUILDER_ENABLED') == 'true'
+
+def repair_handoff(context):
+    """Server-owned dispatch binding; source text cannot grant native tools."""
+    packet=context.get('repair_packet') or {}
+    incident=packet.get('incident_sha256')
+    if not context.get('repair_directive') or not re.fullmatch(r'[a-f0-9]{64}',str(incident)):
+        raise ValueError('A native repair handoff requires its original incident identity.')
+    existing=context.get('native_repair_handoff')
+    if existing is not None:
+        if not isinstance(existing,dict) or existing.get('version')!='native-repair-handoff-v1' or existing.get('incident_sha256')!=incident or existing.get('stage')!='building' or existing.get('tools')!=TOOLS:
+            raise ValueError('Native repair handoff identity differs; reconcile the original incident.')
+        value=copy.deepcopy(existing)
+    else:
+        # Prefer the incident's original failed workspace to a later code edit.
+        pointer=(packet.get('incident') or {}).get('checkpoint') or context.get('builder_checkpoint')
+        value=dict(version='native-repair-handoff-v1',incident_sha256=incident,stage='building',tools=list(TOOLS),baseline_checkpoint=copy.deepcopy(pointer))
+    pointer=value.get('baseline_checkpoint')
+    if pointer is not None and (not isinstance(pointer,dict) or not re.fullmatch(r'[a-f0-9]{64}',str(pointer.get('sha256'))) or not pointer.get('artifact_id')):
+        raise ValueError('Native repair baseline requires an immutable checkpoint identity/hash.')
+    return value
+
+
+def validate_tool_surface(request,context):
+    tools=request.get('tools',[])
+    if not isinstance(tools,list) or any(not isinstance(t,dict) or t.get('type')!='function' or t.get('name') not in TOOLS for t in tools):
+        raise ValueError('Native tool surface exceeds the builder allowlist.')
+    if context.get('repair_directive') and not set(TOOLS)<={t['name'] for t in tools}:
+        raise ValueError('Native request is missing required native repair tools; no provider call was sent.')
+
+def bind_repair_baseline(context,job,workspace):
+    handoff=repair_handoff(context)
+    if handoff['baseline_checkpoint'] is None:
+        # A missing reference does not prove that the live workspace is empty.
+        handoff['baseline_checkpoint']=retain(job,'repair-handoff-baseline.zip',checkpoint(workspace),'builder-pre-repair-checkpoint')
+    return handoff
+
 
 def execution_contract():
     """The actual clean executor interface, supplied before code generation.
@@ -638,6 +687,10 @@ def _execute(logical,directory,job,token_source,transport,task_root):
     result = dict(runtime=VERSION, status='unknown', model_id=runtime.MODEL, provider_calls=0, paid_fallback=False,
                   measured_charges_usd=None, estimated_cost_usd=None, usage=None, build_state='paused', slice_seconds=SLICE_SECONDS,
                   action_policy_version=authority['version'],action_policy_sha256=authority['sha256'],execution_contract_sha256=digest(contract),workspace_uid=os.getuid(),workspace_gid=os.getgid())
+    if settings['context'].get('repair_directive'):
+        handoff=bind_repair_baseline(settings['context'],job,workspace)
+        settings['context']['native_repair_handoff']=handoff
+        result['native_repair_handoff']=handoff
     material=settings['context'].get('source_material') or {}
     if material.get('text_artifact_id') and not (workspace/'paper-text.json').exists():
         source_rows=store.rows('artifacts',dict(study_id='eq.'+job['study_id'],id='eq.'+material['text_artifact_id'],limit=1))
@@ -667,8 +720,7 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         request = json.loads(received)
         if request.get('model') != runtime.MODEL or len(received) > MAX_REQUEST or request.get('previous_response_id') or request.get('background'):
             raise ValueError('Native request identity/context bound invalid; full stateless history is required.')
-        if any(t.get('type') != 'function' or t.get('name') not in TOOLS for t in request.get('tools', [])):
-            raise ValueError('Native tool surface exceeds the builder allowlist.')
+        validate_tool_surface(request,settings['context'])
         # Preserve every input/reasoning/call-id item without converting to chat.
         request.update(store=False, stream=True, model=runtime.MODEL)
         # agent exec starts a fresh native session. Carry its actual tool calls
@@ -731,6 +783,15 @@ def _execute(logical,directory,job,token_source,transport,task_root):
             failures.append(status)
             result.update(response_received=response_received,http_status=http_status,error_code=reason)
         finally:
+            # Capture the finished stream before Storage/SQL I/O. A crash after
+            # receipt capture can be reconciled without another provider call.
+            if raw_path.exists():
+                with raw_path.open('rb') as captured:os.fsync(captured.fileno())
+            from dispatch_recovery import CALL_VERSION,write_once
+            write_once(directory/('call-'+str(index)+'-completion.json'),canonical(dict(
+                version=CALL_VERSION,call_id=call['id'],dispatch_id=job['id'],task_id=job['task_id'],study_id=job['study_id'],
+                request_sha256=digest(body),response_filename=raw_path.name,response_sha256=digest(raw_path.read_bytes()) if raw_path.exists() else None,
+                status=status,response_received=response_received,http_status=http_status)))
             response_artifact = retain(job, raw_path.name, raw_path.read_bytes()) if raw_path.exists() else None
             usage=wire.usage(completed) if completed else None;call_usages.append(usage)
             try:

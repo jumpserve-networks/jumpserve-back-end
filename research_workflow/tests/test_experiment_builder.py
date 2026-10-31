@@ -169,13 +169,16 @@ class Packages(unittest.TestCase):
         with patch.object(autonomy_costs,'BUILT_POLICY_PATH',Path(autonomy_costs.__file__).parent/'policies/built-package-costs-v1.json'):
             with self.assertRaisesRegex(ValueError,'awaits operational validation'):autonomy_costs.builtin_quote(b'{"runner":"built-package-v1"}')
     def test_lab_policy_quote_requires_exact_executor_policy_and_resource_envelope(self):
-        policy=json.loads(autonomy_costs.BUILT_POLICY_PATH.read_bytes());spec=dict(runner='built-package-v1',config=dict(package=dict(sha256=policy['wrapper_sha256'])),limits=dict(max_instances=1,wall_seconds=1800,max_network_bytes=10000000000,max_output_bytes=3000000))
+        # Retain this regression for the previously qualified v2 policy. New
+        # ceilings require separate approval rather than inheriting that review.
+        path=Path(autonomy_costs.__file__).parent/'policies/built-package-costs-v2.json'
+        policy=json.loads(path.read_bytes());spec=dict(runner='built-package-v1',config=dict(package=dict(sha256=policy['wrapper_sha256'])),limits=dict(max_instances=1,wall_seconds=1800,max_network_bytes=10000000000,max_output_bytes=3000000))
         env=dict(NETWORK_BUILT_PACKAGE_FUNCTION='arn:aws:lambda:us-east-1:395567831870:function:FixedLabExecutor:1',NETWORK_BUILT_PACKAGE_POLICY_SHA256=autonomy.digest(autonomy.canonical(policy)))
-        with patch.dict(os.environ,env):
+        with patch.object(autonomy_costs,'BUILT_POLICY_PATH',path),patch.dict(os.environ,env):
             quote=autonomy_costs.builtin_quote(autonomy.canonical(spec));self.assertEqual(quote['cents'],1000);self.assertIsNone(quote['quote']['measured_charges_usd']);self.assertFalse(quote['quote']['hard_resource_bounds_verified'])
             spec['limits']['max_instances']=2
             with self.assertRaisesRegex(ValueError,'exceeds'):autonomy_costs.builtin_quote(autonomy.canonical(spec))
-        with patch.dict(os.environ,dict(env,NETWORK_BUILT_PACKAGE_POLICY_SHA256='0'*64)):
+        with patch.object(autonomy_costs,'BUILT_POLICY_PATH',path),patch.dict(os.environ,dict(env,NETWORK_BUILT_PACKAGE_POLICY_SHA256='0'*64)):
             with self.assertRaisesRegex(ValueError,'matching server-owned'):autonomy_costs.builtin_quote(autonomy.canonical(spec))
     def test_frozen_project_is_deterministic_and_requires_actual_files(self):
         with tempfile.TemporaryDirectory() as tmp:

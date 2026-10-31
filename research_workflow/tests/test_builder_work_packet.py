@@ -140,12 +140,12 @@ class CounterEnvelope(unittest.TestCase):
             env=dict(NETWORK_NETEM_IPERF_FUNCTION='arn:aws:lambda:us-east-1:395567831870:function:Fixture:1',NETWORK_NETEM_IPERF_POLICY_SHA256=digest(canonical(policy)))
             with patch.object(autonomy_costs,'NETEM_POLICY_PATH',path),patch.dict(os.environ,env):
                 quote=autonomy_costs.builtin_quote(canonical(spec));self.assertEqual(quote['cents'],100)
-                spec['limits']['max_network_bytes']=20000000001
+                spec['limits']['max_network_bytes']=100000000001
                 with self.assertRaisesRegex(ValueError,'counter/output'):autonomy_costs.builtin_quote(canonical(spec))
             with patch.object(autonomy_costs,'NETEM_POLICY_PATH',path),patch.dict(os.environ,dict(env,NETWORK_NETEM_IPERF_POLICY_SHA256='0'*64)):
                 with self.assertRaisesRegex(ValueError,'matching server-owned'):autonomy_costs.builtin_quote(canonical(network_spec.specs(self.full_grid(),verify_hashes=False)[0]))
         contract=autonomy_inputs.runner_contracts()['netem-iperf-v1']
-        self.assertEqual(contract['counter_envelope']['maximum_bytes'],20000000000)
+        self.assertEqual(contract['counter_envelope']['maximum_bytes'],100000000000)
 
 
 class SourceSealing(unittest.TestCase):

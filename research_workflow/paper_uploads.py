@@ -96,7 +96,7 @@ def submit(actor, body):
         raise ValueError(reason)
     original = store.artifact(request_id,actor,raw,str(uuid.uuid5(uuid.UUID(request_id),'paper-original:'+meta['sha256'])),'application/pdf',
         dict(kind='paper-original-upload',input_origin='owner-upload',transformation='none; exact original uploaded PDF bytes',upload_id=request_id,sha256=meta['sha256']))
-    payload = dict(autonomy.start_payload(request_id,row['paper']),artifact=original)
+    payload = dict(autonomy.start_payload(request_id,row['paper'],autonomy.current_defaults()),artifact=original)
     store.rpc('research_paper_upload',dict(p_operation='prepare',p_actor=actor,p_id=request_id,p_payload=payload))
     autonomy.wake()
     return dict(id=request_id,review_version=REVIEW_VERSION,status='preparing')
@@ -123,7 +123,8 @@ def review(actor, study):
     organization=dict(version=paper_selection.VERSION,status='unorganized',central_claims=[],testable_findings=[],candidate_count=len(allowed),cursor=0)
     if selection:organization=dict(organization,**selection)
     confirmation=dict(r['confirmation'],selection=r['metadata']['owner_selection']) if r['confirmation'] and r['metadata'].get('owner_selection') else r['confirmation']
+    policy=autonomy.current_defaults().get('budget_policy')
     return dict(version=REVIEW_VERSION,id=study,status=status,revision=r['revision'],title=r['title'],domain=r['domain'],metadata=r['metadata'],progress=progress,organization=organization,
         claims=[{k:c[k] for k in ('id','description','claim_type','location','source_id')} for c in claims if c['id'] in allowed],
         coverage=r['coverage'],reason=reason,can_start=can_start,confirmation=confirmation,
-        limits=dict(max_spend_cents=workflow['max_spend_cents'],committed_cents=workflow['committed_cents'],deadline_at=workflow['deadline_at']),access='owner-private')
+        limits=dict(max_spend_cents=workflow['max_spend_cents'],committed_cents=workflow['committed_cents'],deadline_at=workflow['deadline_at'],**(dict(budget_policy=policy) if policy else {})),access='owner-private')

@@ -17,6 +17,34 @@ from workflow import canonical, digest, identifier, now, validate_record
 
 FUNCTIONS = {'bounded-tcp-v1':'NETWORK_BOUNDED_FUNCTION','emulated-netem-v1':'NETWORK_EMULATED_FUNCTION','real-world-iperf-v1':'NETWORK_REAL_WORLD_FUNCTION','custom-package-v1':'NETWORK_PACKAGE_FUNCTION'}
 FUNCTIONS.update({'netem-iperf-v1':'NETWORK_NETEM_IPERF_FUNCTION','source-arithmetic-v1':None,'built-package-v1':'NETWORK_BUILT_PACKAGE_FUNCTION'})
+BOUNDED_CAPTURE_VERSION='bounded-tcp-retained-response-v1'
+
+def bounded_data(state,spec,original,artifact,receipt):
+    """Build a terminal envelope from captured bytes, never launch an executor."""
+    failed=bool(receipt['function_error'])
+    result=None if failed else json.loads(original)
+    return dict(status='failed' if failed or result.get('provenance',{}).get('failure') else 'completed',started_at=state['started_at'],ended_at=receipt['ended_at'],output=result,
+        reason='Bounded executor failed; original response retained.' if failed else result.get('provenance',{}).get('failure'),
+        artifacts=[dict(id=artifact['id'],sha256=artifact['sha256'])],
+        resources=dict(function_version=receipt['function_version'],memory_mb=128,timeout_seconds=5,experiment_instances=0,remote_network_bytes=0,
+            cleanup='Invocation ended; no provisioned experiment machines.',original_response_sha256=digest(original),reserved_cents=receipt['reserved_cents'],measured_charges_usd=None))
+
+def retained_bounded_response(job,state,spec):
+    identity=str(uuid.uuid5(uuid.UUID(job['id']),'bounded-original-response'))
+    records=store.rows('artifacts',dict(study_id='eq.'+job['study_id'],id='eq.'+identity,limit=2))
+    if not records:return None
+    if len(records)!=1:raise ValueError('Ambiguous retained bounded response.')
+    record=records[0];receipt=record.get('provenance',{})
+    if receipt.get('capture_version')!=BOUNDED_CAPTURE_VERSION:return None  # Legacy capture lacks transport metadata.
+    if (receipt.get('kind')!='bounded-tcp-original-lambda-response' or receipt.get('complete') is not True or
+        receipt.get('spec_sha256')!=digest(canonical(spec)) or receipt.get('started_at')!=state['started_at'] or
+        not isinstance(receipt.get('ended_at'),str) or not isinstance(receipt.get('function_version'),str) or
+        not receipt['function_version'].startswith('arn:aws:lambda:us-east-1:'+store.ACCOUNT+':function:') or
+        receipt.get('response_status_code')!=200 or 'function_error' not in receipt or type(receipt.get('reserved_cents')) is not int):
+        raise ValueError('Retained bounded response identity or transport receipt differs.')
+    original=store.artifact_bytes(job['study_id'],identity,maximum=32000)
+    if len(original)!=record['byte_count'] or digest(original)!=record['sha256']:raise ValueError('Retained bounded response hash differs.')
+    return bounded_data(state,spec,original,record,receipt)
 
 def enabled(runner):
     return runner=='source-arithmetic-v1' or bool(os.environ.get(FUNCTIONS[runner]))
@@ -50,6 +78,11 @@ def bounded_response(job,state,spec):
     import datetime as dt
     import autonomy_costs
     if state['phase'] in ('completed','failed','cancelled'):return state['data']
+    if state['phase']!='pending':
+        retained=retained_bounded_response(job,state,spec)
+        if retained:
+            store.rpc('research_network_update',dict(p_job=job['id'],p_phase=retained['status'],p_data=retained,p_ingest_hash=None))
+            return retained
     deadline=dt.datetime.fromisoformat(state['deadline'].replace('Z','+00:00'))
     expired=dt.datetime.now(dt.timezone.utc)>=deadline
     if state['cancel_requested'] or expired:
@@ -74,16 +107,12 @@ def bounded_response(job,state,spec):
     original=response['Payload'].read(32001)
     # Preserve both successful and failed original response bytes before parsing.
     owner=store.rows('study_owners',{'study_id':'eq.'+job['study_id'],'limit':1})[0]['owner_id']
-    artifact=store.artifact(job['study_id'],owner,original,str(uuid.uuid5(uuid.UUID(job['id']),'bounded-original-response')),'application/json',dict(kind='bounded-tcp-original-lambda-response',transformation='none; original synchronous Lambda payload bytes' if len(original)<=32000 else 'Unmodified captured prefix; full response unavailable after transport bound.',complete=len(original)<=32000,spec_sha256=digest(canonical(spec))))
+    receipt=dict(capture_version=BOUNDED_CAPTURE_VERSION,kind='bounded-tcp-original-lambda-response',transformation='none; original synchronous Lambda payload bytes' if len(original)<=32000 else 'Unmodified captured prefix; full response unavailable after transport bound.',complete=len(original)<=32000,spec_sha256=digest(canonical(spec)),
+        started_at=state['started_at'],ended_at=now(),function_version=target,function_error=response.get('FunctionError'),response_status_code=response.get('StatusCode'),reserved_cents=quote['cents'])
+    artifact=store.artifact(job['study_id'],owner,original,str(uuid.uuid5(uuid.UUID(job['id']),'bounded-original-response')),'application/json',receipt)
     store.append(job['study_id'],owner,'artifacts',artifact)
     if len(original)>32000:raise ValueError('TCP executor output exceeded its approved transport bound; retained prefix is not complete output.')
-    failed=bool(response.get('FunctionError'))
-    result=None if failed else json.loads(original)
-    data=dict(status='failed' if failed or result.get('provenance',{}).get('failure') else 'completed',started_at=state['started_at'],ended_at=now(),output=result,
-        reason='Bounded executor failed; original response retained.' if failed else result.get('provenance',{}).get('failure'),
-        artifacts=[dict(id=artifact['id'],sha256=artifact['sha256'])],
-        resources=dict(function_version=target,memory_mb=128,timeout_seconds=5,experiment_instances=0,remote_network_bytes=0,cleanup='Invocation ended; no provisioned experiment machines.',
-                       original_response_sha256=digest(original),reserved_cents=quote['cents'],measured_charges_usd=None))
+    data=bounded_data(state,spec,original,artifact,receipt)
     store.rpc('research_network_update',dict(p_job=job['id'],p_phase=data['status'],p_data=data,p_ingest_hash=None))
     return data
 

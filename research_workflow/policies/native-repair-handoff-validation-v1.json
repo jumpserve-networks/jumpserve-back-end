@@ -1,0 +1,27 @@
+{
+  "version": "native-repair-handoff-validation-v1",
+  "scope": "Exposed local development regressions; no model calls, production writes, deployment or scientific experiment.",
+  "observed_case": {
+    "assessment_id": "4055396e-35c0-4962-ba39-cf23e443ad8d",
+    "task_id": "b9c00763-023d-5971-9367-e02d30949d7c",
+    "planning_turn": 263,
+    "later_native_turns": [264, 266],
+    "limitation": "Public bounded history shows an unnecessary planning-only hop followed by actual native requests. It does not establish that unavailable tools caused every later unchanged continuation. Native call 270 request/response are only partially inspected."
+  },
+  "questions": [
+    "Does an active implementation repair retain its checkpoint and route to the native builder rather than data-only planning?",
+    "Can a stale/misrouted request or missing native edit/command tool be denied before provider admission?",
+    "Must a repaired candidate contain an actual experiment.py change, incident-bound executed checks and a frozen exact package before fresh scientific reviews?"
+  ],
+  "pass_criteria": [
+    "Planning-stage repair context is durably handed to building without a model call or attempt/budget reset.",
+    "No-progress remediation stays in building for repairs; unchanged recovery keys still stop instead of cycling indefinitely.",
+    "A newly available sibling package does not divert an unfinished repair to a planning-only tool surface.",
+    "Native configuration supplies read/write/edit/exec/process; missing tool schemas are denied before inference transport.",
+    "An immutable pre-repair checkpoint is hash verified. Unchanged experiment.py is rejected before executing tests or freezing a candidate.",
+    "Real temporary source edits and subprocess tests distinguish the retained original failure from corrected behavior. Model transport and persistence are fixtures, not live validation.",
+    "Existing uncertain-call fences, original claim/criteria, spending, deadline, cancellation and scientific review requirements remain unchanged."
+  ],
+  "resources": {"actual_model_calls": 0, "new_cloud_instances": 0, "production_writes": 0},
+  "reviewer": {"identity": "Codex implementing AI", "type": "AI", "independent": false, "human": false, "held_out": false}
+}

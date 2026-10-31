@@ -1,15 +1,17 @@
 name: Deploy benchmark AMI
+run-name: Platform release ${{ inputs.operation_id || github.run_id }}
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - '**/*.md'
-      - 'experiments/**'
-      - 'real_world/**'
-      - '.github/workflows/real-world.yml'
-      - '.github/workflows/deploy.yml'
+  # Production image changes are explicit or dispatched by the scoped platform
+  # release workflow. Merging research/platform Python cannot rebuild an AMI.
   workflow_dispatch:
+    inputs:
+      operation_id:
+        type: string
+        required: false
+      expected_revision:
+        type: string
+        required: false
 
 permissions:
   contents: read
@@ -20,8 +22,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bind the requested production revision
+        env:
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          ACTUAL_REVISION: ${{ github.sha }}
+          OPERATION_ID: ${{ inputs.operation_id }}
+        run: python3 -c 'import os,re,uuid; expected=os.environ["EXPECTED_REVISION"]; assert not expected or re.fullmatch("[a-f0-9]{40}",expected) and expected==os.environ["ACTUAL_REVISION"]; operation=os.environ["OPERATION_ID"]; assert not operation or str(uuid.UUID(operation))==operation'
   deploy:
+    needs: validate
     if: github.ref == 'refs/heads/main'
     uses: jumpserve-networks/jumpserve-infra/.github/workflows/benchmark-ami.yml@main
     with:
       backend_commit: ${{ github.sha }}
+      platform_operation_id: ${{ inputs.operation_id }}

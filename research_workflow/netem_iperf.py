@@ -19,7 +19,7 @@ import time
 import uuid
 
 VERSION = 'netem-iperf-v1'
-MAX_COUNTER_BYTES = 20000000000
+MAX_COUNTER_BYTES = 100_000_000_000
 METRICS = {'throughput_mbit_s': 'Mbit/s', 'received_bytes': 'bytes', 'duration_seconds': 's', 'idle_rtt_ms': 'ms', 'retransmits': 'count'}
 FIELDS = {'cca', 'loss_levels_pct', 'rate_mbit', 'one_way_delay_ms', 'duration_seconds', 'queue_packets', 'mtu', 'socket_buffer_bytes', 'seed', 'loss_seed', 'ping_count'}
 

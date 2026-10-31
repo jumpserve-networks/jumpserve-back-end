@@ -3,12 +3,41 @@
 Parent failures remain immutable. A separate service-only record accounts for
 completed native calls and cleanup. Unknown native outcomes always stay fenced.
 """
-import fcntl,io,json,time,uuid
+import fcntl,io,json,os,re,time,uuid
 from pathlib import Path
 import store,siwc_protocol as wire
 from workflow import canonical,digest
 
 VERSION='builder-dispatch-reconciliation-v1'
+CALL_VERSION='builder-native-call-reconciliation-v1'
+
+def write_once(path,raw):
+    """Publish durable bytes atomically; an existing original cannot change."""
+    path=Path(path);temporary=path.with_name('.'+path.name+'.'+uuid.uuid4().hex)
+    try:
+        with temporary.open('xb') as sink:
+            os.chmod(temporary,0o600);sink.write(raw);sink.flush();os.fsync(sink.fileno())
+        try:os.link(temporary,path)
+        except FileExistsError:
+            if path.is_symlink() or path.read_bytes()!=raw:raise ValueError('Durable original bytes differ.')
+        descriptor=os.open(path.parent,os.O_RDONLY)
+        try:os.fsync(descriptor)
+        finally:os.close(descriptor)
+    finally:temporary.unlink(missing_ok=True)
+
+def reconciled_call(task,call,original,rows):
+    found=rows(task,'builder_call_reconciliations',call_id='eq.'+call['id'],limit=2)
+    if not found:return None
+    if len(found)!=1:raise ValueError('Ambiguous native call reconciliation.')
+    row=found[0];proof=json.loads(original(task,dict(artifact_id=row['artifact_id'],sha256=row['sha256'])))
+    if (proof!=row['proof'] or proof.get('version')!=CALL_VERSION or
+        any(proof.get(k)!=call[k] for k in ('dispatch_id','task_id','study_id','request_sha256')) or
+        proof.get('call_id')!=call['id'] or row['call_id']!=call['id'] or row['request_sha256']!=call['request_sha256'] or
+        proof.get('original_status')!=call['status'] or proof.get('status')!='complete' or
+        proof.get('response_received') is not True or proof.get('http_status')!=200):
+        raise ValueError('Native call reconciliation identity mismatch.')
+    return dict(call,status='complete',response_received=True,http_status=200,
+        response_artifact_id=proof['response']['artifact_id'],response_sha256=proof['response']['sha256'])
 
 def ledger(task,dispatch,original,rows):
     calls=rows(task,'builder_calls',dispatch_id='eq.'+dispatch['id'],order='number.asc',limit=101)
@@ -16,7 +45,10 @@ def ledger(task,dispatch,original,rows):
     proofs=[]
     for call in calls:
         if call['study_id']!=task['study_id'] or call['task_id']!=task['id'] or call['dispatch_id']!=dispatch['id']:raise ValueError('Native reconciliation identity mismatch.')
-        if call['status']!='complete' or call.get('response_received') is not True or call.get('http_status')!=200:return None
+        if call['status']!='complete':
+            call=reconciled_call(task,call,original,rows)
+            if call is None:return None
+        if call.get('response_received') is not True or call.get('http_status')!=200:return None
         request=original(task,dict(id=call['request_artifact_id'],sha256=call['request_sha256']),maximum=256000)
         value=json.loads(request)
         if value.get('model')!='gpt-6.1-sol' or value.get('store') is not False or value.get('stream') is not True or value.get('previous_response_id'):raise ValueError('Original native request contract differs.')
@@ -25,6 +57,57 @@ def ledger(task,dispatch,original,rows):
         if terminal.get('model')!='gpt-6.1-sol':raise ValueError('Original native response model differs.')
         proofs.append(dict(id=call['id'],request_sha256=call['request_sha256'],response_sha256=call['response_sha256']))
     return proofs
+
+def reconcile_native_calls(task,dispatch,directory,retain):
+    """Use captured terminal bytes only. Never obtain credentials or call a model."""
+    import autonomous_repair as repair,experiment_builder as builder
+    calls=repair.rows(task,'builder_calls',dispatch_id='eq.'+dispatch['id'],order='number.asc',limit=101)
+    if len(calls)>100:raise ValueError('Native reconciliation coverage exceeds 100 calls per dispatch.')
+    receipts=list(directory.glob('call-*-completion.json'))
+    if len(receipts)>100:raise ValueError('Native completion receipt coverage exceeds its bound.')
+    for call in calls:
+        if call['status']=='complete' or reconciled_call(task,call,repair.original,repair.rows):continue
+        if call['status']!='unknown':continue
+        matches=[]
+        for path in receipts:
+            if path.is_symlink() or path.stat().st_size>16000:raise ValueError('Invalid native completion receipt.')
+            receipt=json.loads(path.read_bytes())
+            if receipt.get('call_id')==call['id']:matches.append((path,receipt))
+        if len(matches)>1:raise ValueError('Ambiguous original native completion receipt.')
+        if matches:
+            path,receipt=matches[0];captured_raw=path.read_bytes()
+            filename=receipt.get('response_filename','')
+            if not re.fullmatch(r'call-[1-9][0-9]*-response\.bin',filename) or path.name!=filename.replace('-response.bin','-completion.json'):
+                raise ValueError('Original native response path differs.')
+            source=directory/filename
+            if not source.is_file() or source.is_symlink() or source.stat().st_size>1048576:continue
+            raw=source.read_bytes()
+        else:
+            # Older workers predate sidecars. Their retained transport fields
+            # and original response can still establish a terminal completion;
+            # an absent field or merely missing local output cannot do so.
+            if not (call.get('response_received') is True and call.get('http_status')==200 and call.get('response_artifact_id') and call.get('response_sha256')):continue
+            raw=repair.original(task,dict(artifact_id=call['response_artifact_id'],sha256=call['response_sha256']),maximum=1048576)
+            captured_raw=canonical(dict(version='retained-native-call-record-v1',record=call,scope='Canonical projection of the unchanged original database call, not original HTTP receipt bytes.'))
+            receipt=dict(version=CALL_VERSION,call_id=call['id'],dispatch_id=call['dispatch_id'],task_id=call['task_id'],study_id=call['study_id'],request_sha256=call['request_sha256'],
+                response_sha256=digest(raw),status='complete',response_received=True,http_status=200,capture_origin='retained-database-transport-metadata-and-terminal-stream')
+        if (receipt.get('version')!=CALL_VERSION or any(receipt.get(k)!=call[k] for k in ('dispatch_id','task_id','study_id','request_sha256')) or
+            call['dispatch_id']!=dispatch['id'] or receipt.get('status')!='complete' or receipt.get('response_received') is not True or receipt.get('http_status')!=200):
+            raise ValueError('Original native completion identity mismatch.')
+        if digest(raw)!=receipt.get('response_sha256') or call.get('response_sha256') not in (None,digest(raw)):
+            raise ValueError('Original native response hash differs.')
+        request=repair.original(task,dict(artifact_id=call['request_artifact_id'],sha256=call['request_sha256']),maximum=256000)
+        value=json.loads(request)
+        if value.get('model')!='gpt-6.1-sol' or value.get('store') is not False or value.get('stream') is not True or value.get('previous_response_id'):
+            raise ValueError('Original native request contract differs.')
+        terminal=wire.read_terminal_stream(io.BytesIO(raw),io.BytesIO(),time.monotonic()+10,1048576)
+        if terminal.get('model')!='gpt-6.1-sol':raise ValueError('Original native response model differs.')
+        builder.validate_calls(terminal)
+        response=retain('native-'+call['id']+'-response.bin',raw,'builder-reconciled-native-response')
+        captured=retain('native-'+call['id']+'-completion.json',captured_raw,'builder-reconciled-native-completion')
+        proof=dict(receipt,original_status=call['status'],response=response,completion=captured,container_cleanup='stopped',usage=wire.usage(terminal))
+        evidence=retain('native-'+call['id']+'-proof.json',canonical(proof),'builder-native-call-reconciliation')
+        store.rpc('research_builder_call_reconcile',dict(p_call=call['id'],p_artifact=evidence['artifact_id'],p_sha256=evidence['sha256'],p_proof=proof))
 
 def confirmed(task,dispatch,receipt,original,rows):
     """Pure recorded-data check. No cleanup, writes, model or experiment calls."""
@@ -69,7 +152,7 @@ def reconcile_spool(spool):
         try:recovered.extend(_reconcile_dispatches(spool,[d]))
         except Exception as error:
             print(json.dumps(dict(version=VERSION,dispatch_id=d['id'],status='reconciliation-fenced',error_type=type(error).__name__)),flush=True)
-    cursor.write_bytes(canonical(dict(after=candidates[-1]['id'] if candidates else None)))
+    temporary=cursor.with_suffix('.tmp');temporary.write_bytes(canonical(dict(after=candidates[-1]['id'] if candidates else None)));os.replace(temporary,cursor)
     return recovered
 
 def _reconcile_dispatches(spool,dispatches):
@@ -94,8 +177,6 @@ def _reconcile_dispatches(spool,dispatches):
             owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id'];task=dict(task,actor_id=owner)
             logical=(directory/'logical.json').read_bytes()
             if logical!=d['request_raw'].encode() or digest(logical)!=d['request_sha256']:raise ValueError('Interrupted worker logical hash differs.')
-            calls=ledger(task,d,repair.original,repair.rows)
-            if calls is None:continue
             builder.container_action(task['id'],'stop')
             workspace=task_root/'workspace'
             # Preserve exact history, including the last pre-transport input.
@@ -108,6 +189,9 @@ def _reconcile_dispatches(spool,dispatches):
                 store.append(d['study_id'],owner,'artifacts',record)
                 if store.artifact_bytes(d['study_id'],identity,maximum=len(raw)+1)!=raw:raise ValueError('Reconciliation artifact hash differs after retrieval.')
                 return dict(artifact_id=identity,sha256=record['sha256'])
+            reconcile_native_calls(task,d,directory,retain)
+            calls=ledger(task,d,repair.original,repair.rows)
+            if calls is None:continue
             normalization=retain('normalization.json',metadata,'builder-reconciliation-metadata')
             checkpoint=retain('checkpoint.zip',builder.checkpoint(workspace),'builder-reconciled-workspace')
             proof=dict(version=VERSION,dispatch_id=d['id'],request_sha256=d['request_sha256'],original_status=d['status'],calls=calls,container_cleanup='stopped',checkpoint=checkpoint,normalization=normalization,

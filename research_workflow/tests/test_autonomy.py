@@ -71,7 +71,7 @@ class Autonomy(unittest.TestCase):
   with patch.object(store,'rpc',return_value={'id':body['request_id']}) as rpc,patch.object(autonomy,'wake',return_value={'status':'deferred'}):
    autonomy.start(str(uuid.uuid4()),body)
    payload=rpc.call_args.args[1]['p_payload'];initial=json.loads(payload['initial_prompt'])
-   self.assertEqual(initial['defaults']['maximum_spend_usd'],100);self.assertEqual(initial['defaults']['elapsed_days'],7);self.assertIsNone(initial['defaults']['attempts_per_claim'])
+   self.assertIsNone(initial['defaults']['maximum_spend_usd']);self.assertEqual(initial['defaults']['elapsed_days'],7);self.assertIsNone(initial['defaults']['attempts_per_claim'])
    with self.assertRaises(ValueError):autonomy.start(str(uuid.uuid4()),dict(body,max_spend=1000))
  def test_prompt_precedes_provider_and_failure_counts_and_is_retained(self):
   t=task();events=[];system='Server-owned prompt';prompt=dict(id=str(uuid.uuid4()))

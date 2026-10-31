@@ -28,6 +28,33 @@ def document(runner='emulated-netem-v1',replications=1):
     return network_spec.bind_inputs(p)
 
 class NetworkingContract(unittest.TestCase):
+    def test_retained_tcp_response_survives_worker_restart_without_another_invocation(self):
+        spec=dict(runner='bounded-tcp-v1',config=dict(payload_bytes=32,exchanges=2,application_delay_ms=0))
+        state=dict(phase='dispatching',started_at='2026-10-30T00:00:00Z',deadline='2099-01-01T00:00:00Z',cancel_requested=False)
+        raw=workflow.canonical(dict(version='network-observations-v1',observations=[],provenance={},usage=None))
+        identity=str(uuid.uuid5(uuid.UUID(JOB),'bounded-original-response'))
+        receipt=dict(capture_version=network_execution.BOUNDED_CAPTURE_VERSION,kind='bounded-tcp-original-lambda-response',complete=True,spec_sha256=workflow.digest(workflow.canonical(spec)),started_at=state['started_at'],ended_at='2026-10-30T00:00:01Z',function_version='arn:aws:lambda:us-east-1:'+store.ACCOUNT+':function:Fixture:1',response_status_code=200,function_error=None,reserved_cents=1)
+        artifact=dict(id=identity,sha256=workflow.digest(raw),byte_count=len(raw),provenance=receipt)
+        with patch.object(store,'rows',return_value=[artifact]),patch.object(store,'artifact_bytes',return_value=raw),patch.object(store,'rpc',return_value={}) as update,patch('boto3.client') as client:
+            result=network_execution.bounded_response(dict(id=JOB,study_id=STUDY),state,spec)
+        self.assertEqual(result['status'],'completed');self.assertEqual(result['ended_at'],receipt['ended_at']);self.assertEqual(result['output'],json.loads(raw));client.assert_not_called()
+        self.assertEqual(update.call_args.args[0],'research_network_update');self.assertEqual(result['resources']['original_response_sha256'],workflow.digest(raw))
+        for defect in ('changed-bytes','wrong-spec','wrong-status','incomplete'):
+            with self.subTest(defect=defect):
+                altered=copy.deepcopy(artifact);captured=raw
+                if defect=='changed-bytes':captured+=b'changed'
+                elif defect=='wrong-spec':altered['provenance']['spec_sha256']='a'*64
+                elif defect=='wrong-status':altered['provenance']['response_status_code']=503
+                else:altered['provenance']['complete']=False
+                with patch.object(store,'rows',return_value=[altered]),patch.object(store,'artifact_bytes',return_value=captured),patch.object(store,'rpc') as rpc,patch('boto3.client') as client:
+                    with self.assertRaises(ValueError):network_execution.bounded_response(dict(id=JOB,study_id=STUDY),state,spec)
+                rpc.assert_not_called();client.assert_not_called()
+    def test_missing_or_legacy_tcp_capture_remains_unconfirmed_without_relaunch(self):
+        state=dict(phase='dispatching',started_at='2026-10-30T00:00:00Z',deadline='2099-01-01T00:00:00Z',cancel_requested=False)
+        for records in ([],[dict(provenance=dict(kind='bounded-tcp-original-lambda-response'))]):
+            with patch.object(store,'rows',return_value=records),patch.object(store,'rpc') as rpc,patch('boto3.client') as client:
+                result=network_execution.bounded_response(dict(id=JOB,study_id=STUDY),state,dict(runner='bounded-tcp-v1'))
+            self.assertEqual(result,dict(status='launch-unconfirmed'));rpc.assert_not_called();client.assert_not_called()
     def test_independent_reaper_includes_cancellation_before_the_deadline(self):
         import urllib.parse
         with patch.object(store,'request',return_value=[dict(job_id=JOB)]) as request, patch.object(network_package,'handler',return_value=dict(status='cleaning')) as handle:

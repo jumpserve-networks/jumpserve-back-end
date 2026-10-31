@@ -9,8 +9,8 @@ import generated_package
 from workflow import canonical, digest
 
 POLICY_PATH = Path(__file__).parent / 'policies/autonomy-experiment-costs-v2.json'
-BUILT_POLICY_PATH = Path(__file__).parent / 'policies/built-package-costs-v2.json'
-NETEM_POLICY_PATH = Path(__file__).parent / 'policies/netem-iperf-costs-v2.json'
+BUILT_POLICY_PATH = Path(__file__).parent / 'policies/built-package-costs-v3.json'
+NETEM_POLICY_PATH = Path(__file__).parent / 'policies/netem-iperf-costs-v3.json'
 
 def builtin_quote(raw,today=None):
     spec=json.loads(raw)

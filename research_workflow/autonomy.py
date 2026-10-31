@@ -23,7 +23,7 @@ import store
 from workflow import canonical,digest,identifier,now,paper_details,protocol_record,validate_protocol
 
 VERSION='research-autonomy-v3'
-DEFAULTS=dict(maximum_spend_usd=100,elapsed_days=7,attempts_per_claim=None,parallel_claims_per_paper=2,global_parallel_claims=4)
+DEFAULTS=dict(maximum_spend_usd=None,elapsed_days=7,attempts_per_claim=None,parallel_claims_per_paper=2,global_parallel_claims=4)
 REVIEWER=dict(identity='Autonomous evidence controller with fresh AI reviews',type='AI',independence='Shared model and inputs; primary implementation is not independent or human scientific review.')
 EXTERNAL={'missing-data','equipment','authorization','implementation','provider'}
 
@@ -31,17 +31,23 @@ def uid(parent,key):return str(uuid.uuid5(uuid.UUID(parent),key))
 def control(task,operation,payload):
  return store.rpc('research_autonomy_control',dict(p_operation=operation,p_actor=task.get('actor_id'),p_study=task.get('study_id'),p_payload=dict(payload,task_id=task['id'],token=task.get('lease_token'))))
 
+def current_defaults():
+ if os.environ.get('RESEARCH_CATEGORY_BUDGETS_ENABLED')!='true':return dict(DEFAULTS)
+ import budget_policy
+ return budget_policy.assessment_defaults(DEFAULTS)
+
 def start(actor,body):
  if set(body)!={'request_id','paper','autonomous'} or body['autonomous'] is not True:raise ValueError('Submit one paper and its initial autonomous request; application limits cannot be overridden.')
  paper=paper_details(body['paper'])
  if paper.get('study_kind','paper')!='paper':raise ValueError('Autonomous paper verification requires a published paper identity.')
  paper['study_kind']='paper';study=identifier(body['request_id'])
- result=store.rpc('research_autonomy_control',dict(p_operation='start',p_actor=actor,p_study=study,p_payload=start_payload(study,paper)))
+ result=store.rpc('research_autonomy_control',dict(p_operation='start',p_actor=actor,p_study=study,p_payload=start_payload(study,paper,current_defaults())))
+ if result.get('denied')=='budget':raise ValueError('The current assessment budget cannot admit the retained intake reservation.')
  result['dispatch']=wake()
  return result
 
-def start_payload(study,paper):
- initial=canonical(dict(instruction='Assess this paper autonomously within application defaults. Preserve unresolved findings and explain external blockers; never force a desired result.',paper=paper,defaults=DEFAULTS)).decode()
+def start_payload(study,paper,defaults=None):
+ initial=canonical(dict(instruction='Assess this paper autonomously within application defaults. Preserve unresolved findings and explain external blockers; never force a desired result.',paper=paper,defaults=DEFAULTS if defaults is None else defaults)).decode()
  return dict(paper=paper,initial_prompt=initial,intake_id=uid(study,'autonomous-intake'))
 
 def wake():
@@ -59,7 +65,7 @@ def runtime_health():
   return model_dispatch.health()
  return dict(runtime='bedrock',model_id=model.MODEL,status='configured')
 
-def capability():return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',prompt_module=model.MODULE,runtime=runtime_health(),attempt_definition='One model invocation, including failures; polling does not consume an attempt.',limit_kind='Conservative aggregate commitments; unknown charges are retained, not zero.')
+def capability():return dict(version=VERSION,defaults=current_defaults(),enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',prompt_module=model.MODULE,runtime=runtime_health(),attempt_definition='One model invocation, including failures; polling does not consume an attempt.',limit_kind='Conservative aggregate commitments; unknown charges are retained, not zero.')
 
 def rows(kind,study,**params):return store.rows(kind,dict(study_id='eq.'+study,**params))
 def one(kind,study,value):
@@ -79,7 +85,7 @@ def overview(studies):
  if set(claim_ids)!=set(names):raise store.StoreError('Autonomous claim identity coverage is incomplete.')
  for task in tasks:
   task.pop('context',None);task['claim_title']=names.get(task['claim_id'])
- return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',runtime=runtime_health(),workflows=workflows,tasks=tasks,coverage=dict(workflows=len(workflows),tasks=len(tasks)))
+ return dict(version=VERSION,defaults=current_defaults(),enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',runtime=runtime_health(),workflows=workflows,tasks=tasks,coverage=dict(workflows=len(workflows),tasks=len(tasks)))
 
 def history(study,task_id,before=None):
  task=one('autonomy_tasks',study,identifier(task_id))
@@ -381,7 +387,12 @@ def build_context(task):
   prior_attempts=[{k:r.get(k) for k in ('id','number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
  maximum=task['workflow']['max_spend_cents']
- value['resource_authorization']=dict(version='assessment-budget-amendment-v2' if maximum is None or maximum>100000 else 'assessment-budget-amendment-v1',max_spend_cents=maximum,committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
+ policy=current_defaults().get('budget_policy') if os.environ.get('RESEARCH_CATEGORY_BUDGETS_ENABLED')=='true' else None
+ if policy:
+  maximum=None if policy['max_spend_cents']==-1 else policy['max_spend_cents']
+  value['remaining_commitment_cents']=None if maximum is None else max(0,maximum-task['workflow']['committed_cents'])
+ value['resource_authorization']=dict(version='assessment-budget-amendment-v2' if maximum is None or maximum<10000 or maximum>100000 else 'assessment-budget-amendment-v1',max_spend_cents=maximum,committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
+ if policy:value['resource_authorization'].update(version='assessment-budget-amendment-v2',budget_policy=policy)
  value['method_policy']=dict(version=methods.VERSION,sha256=digest(methods.INSTRUCTION.encode()))
  if task['stage'] in ('planning','building','comprehension','critic'):
   import experiment_builder
@@ -410,6 +421,7 @@ def build_context(task):
  if context.get('builder_recovery_plan'):value['builder_recovery_plan']=context['builder_recovery_plan']
  if context.get('repair_directive'):
   value['repair_directive']=context['repair_directive'];value['repair_packet']=context['repair_packet']
+  if context.get('native_repair_handoff'):value['native_repair_handoff']=context['native_repair_handoff']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
   eligible=[j for j in available if j['id'] not in context.get('tried_check_ids',[])]
@@ -657,13 +669,21 @@ def numeric_finding(task):
  return ('discrepant' if 'discrepant' in labels else 'reproduced',list(unique.values()),coverage) if labels else None
 
 def step(task):
+ if task['stage'] in ('planning','building') and task['context'].get('repair_directive'):
+  import experiment_builder
+  handoff=experiment_builder.repair_handoff(task['context'])
+  if task['stage']=='planning' or task['context'].get('native_repair_handoff') is None:
+   if not model.OPENCLAW or not experiment_builder.enabled():
+    return advance(dict(task,_repair_external=True),'blocked',reason='Native repair builder is unavailable; original checkpoint retained and no planning-only call admitted.')
+   context=copy.deepcopy(task['context']);context['native_repair_handoff']=handoff
+   return advance(task,'queued',stage='building',context=context,reason='Implementation repair handed to native file/edit/command tools; original incident, checkpoint, criteria and limits retained.')
  if task['stage']=='building':
   # Another claim may finish reusable code while this one is checkpointed.
   # Reconsider that exact package prospectively; never copy its verdict or
   # bypass this claim's own immutable criterion, semantic checks or reviews.
   import experiment_builder
   source_id=task['context'].get('source_id')
-  if source_id:
+  if source_id and not task['context'].get('repair_directive'):
    packages=experiment_builder.catalog(task['study_id'],source_id)
    tried=set(task['context'].get('builder_reuse_considered',[]))
    fresh=[p for p in packages if p['id'] not in tried and p.get('task_id')!=task['id']]
@@ -692,6 +712,7 @@ def step(task):
  if task['stage']=='building':
   runtime=answer.get('runtime') or {}
   if runtime.get('repair_validation'):context['repair_validation']=runtime['repair_validation']
+  if runtime.get('native_repair_handoff'):context['native_repair_handoff']=runtime['native_repair_handoff']
   if runtime.get('checkpoint'):context['builder_checkpoint']=runtime['checkpoint']
   if runtime.get('feedback'):context['builder_feedback']=runtime['feedback']
   if runtime.get('scheduling_feedback'):context['builder_scheduling_feedback']=runtime['scheduling_feedback']
@@ -718,7 +739,10 @@ def step(task):
       return advance(task,'blocked',context=context,reason='Builder remained unchanged after targeted replanning. Recorded integration/implementation repair is required before further spending; original checkpoint retained.')
      context['builder_stalled_recovery_keys']=(seen+[recovery_key])[-32:]
      context['builder_recovery_plan']=dict(version=experiment_builder.WORK_PACKET_VERSION,recovery_key=recovery_key,action='Use the bounded work packet, implement the missing source and execute a concrete development check. Do not repeat metadata/protocol inspection unchanged.')
-     return advance(task,'queued',stage='planning',context=context,reason=reason)
+     # Replanning has no file/exec tools. An unfinished implementation repair
+     # must act on this feedback in the native builder; the same failed recovery
+     # key still stops above rather than buying unchanged continuations.
+     return advance(task,'queued',stage='building' if context.get('repair_directive') else 'planning',context=context,reason=reason)
    return advance(task,'queued',stage='building',context=context,reason='Builder checkpoint retained; continuing from actual files and feedback within the original paper limits.',delay=5)
  if output['action']=='inspect':
   read=inspect_evidence(task,output['read_request']);context['evidence_read']=dict(read,requested_by_turn_id=answer['id'])
@@ -834,6 +858,8 @@ def process(task):
   context['repair_failure_turn_id']=error.turn_id
   if task['stage']=='building' and (error.provenance or {}).get('checkpoint'):
    context.update(builder_checkpoint=error.provenance['checkpoint'],builder_feedback=error.provenance.get('feedback'))
+  if task['stage']=='building' and (error.provenance or {}).get('native_repair_handoff'):
+   context['native_repair_handoff']=error.provenance['native_repair_handoff']
   retry=runtime_retry.decision(error.provenance,context.get('runtime_retry'),task['workflow']['deadline_at'])
   if retry:
    context.update(runtime_retry=dict(retry,failed_turn_id=error.turn_id),last_feedback=retry['reason'],last_turn_id=error.turn_id)
