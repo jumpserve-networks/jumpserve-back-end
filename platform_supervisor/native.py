@@ -105,7 +105,7 @@ def containers(prefix,workspace=None):
                 records=subprocess.check_output(['docker','inspect','--format',template,*candidates],timeout=20,text=True)
                 for line in records.splitlines():
                     record=json.loads(line)
-                    owned=any(mount.get('Type')=='bind' and Path(mount['Source']).resolve().is_relative_to(root) for mount in record.get('Mounts',[]))
+                    owned=any(mount.get('Type')=='bind' and Path(mount['Source']).resolve().is_relative_to(root) for mount in record.get('Mounts') or [])
                     if owned:ids.append(record['Id'])
                     elif record['Name'].lstrip('/').startswith(prefix):raise ValueError('Container prefix identifies a different workspace.')
         if any(not re.fullmatch('[a-f0-9]{12,64}',ident) for ident in ids):raise ValueError('Malformed container identity.')
