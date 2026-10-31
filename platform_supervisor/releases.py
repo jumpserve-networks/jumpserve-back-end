@@ -12,9 +12,13 @@ class ReleaseFailure(Hold):
         super().__init__('Scoped release failed. Workflow '+str(run['id'])+' retains its original logs and rollback outcome.')
         self.receipt=dict(workflow_run_id=str(run['id']),conclusion=run['conclusion'],status='failed',production_revision_verified=False)
 
-def plan(repository, paths):
+def plan(repository, paths, qualification=None):
     component=POLICY['repositories'][repository]['component']
-    if component=='backend' and any(p.startswith(('research_workflow/','real_world/','openclaw_worker/')) for p in paths):
+    if component=='backend' and any(p.startswith('research_workflow/') for p in paths):
+        if not all(p.startswith(('research_workflow/','docs/')) for p in paths):raise Hold('Research controller releases require an isolated source change.')
+        if not qualification or qualification.get('version')!='research-controller-recovery-v1' or qualification.get('scientific_and_request_content_unchanged') is not True or qualification.get('existing_tests_unchanged') is not True:raise Hold('This research source requires the trusted operational qualification before release.')
+        return 'research-runtime'
+    if component=='backend' and any(p.startswith(('real_world/','openclaw_worker/')) for p in paths):
         raise Hold('This backend change needs its versioned runtime pin and existing qualification before release. Retained source is available; automatic AMI builds are reserved for benchmark code.')
     if component=='infrastructure' and any(p.startswith(('ami/','assets/openclaw/','agent/')) for p in paths):
         raise Hold('This change needs the dedicated image, worker or evaluated-agent release path; a general infrastructure release cannot replace those components.')
@@ -23,6 +27,7 @@ def plan(repository, paths):
 class Releases:
     def __init__(self, github):self.github=github
     def target(self,request):
+        if request['component']=='research-runtime':return (POLICY['release_repository'],'research-runtime-release.yml')
         return (request['repository'],'deploy.yml') if request['component']=='backend' else (POLICY['release_repository'],POLICY['release_workflow'])
     def find(self, operation):
         repository,workflow=self.target(operation['request'])
@@ -43,6 +48,7 @@ class Releases:
         repository,workflow=self.target(request)
         if self.github.main(repository)!=request['workflow_revision']:raise Hold('Release workflow main advanced; freeze a newly reviewed release intent.')
         inputs=dict(operation_id=operation['id'],expected_revision=request['revision']) if request['component']=='backend' else dict(operation_id=operation['id'],repository=request['repository'],revision=request['revision'],component=request['component'])
+        if request['component']=='research-runtime':inputs=dict(operation_id=operation['id'],revision=request['revision'],pin_revision=request['pin_revision'])
         self.github.post(repository,'actions/workflows/'+workflow+'/dispatches',dict(ref='main',inputs=inputs))
         return dict(dispatched=True)
 

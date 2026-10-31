@@ -9,7 +9,7 @@ import time
 import store
 import paper_selection
 import autonomy_methods
-from workflow import canonical, digest
+from workflow import canonical, digest, identifier
 
 VERSION = 'research-autonomy-v2'
 MODULE = 'research-autonomy'
@@ -197,6 +197,10 @@ def invoke(value):
  client=boto3.client('bedrock-runtime',region_name='us-east-1',config=Config(connect_timeout=5,read_timeout=65,retries=dict(total_max_attempts=1,mode='standard')))
  return client.converse(**value)
 
+def inspection_identifier(read):
+ try:identifier(read['id'])
+ except ValueError as error:raise ValueError('Inspection requires the exact UUID from the controller read_request, not a runner name or invented reference.') from error
+
 def parse(response):
  blocks=response['output']['message']['content']
  if response.get('stopReason')!='tool_use' or len(blocks)!=1 or set(blocks[0])!={'toolUse'} or blocks[0]['toolUse'].get('name')!='submit_assessment_step': raise ValueError('Expected one structured data response; no requested action was executed.')
@@ -222,6 +226,7 @@ def parse(response):
  read=value.get('read_request')
  if value['action']=='inspect':
   if not isinstance(read,dict) or set(read)!={'kind','id','cursor'} or read['kind'] not in SCHEMA['properties']['read_request']['properties']['kind']['enum'] or not isinstance(read['id'],str) or not 1<=len(read['id'])<=100 or type(read['cursor']) is not int or read['cursor']<0:raise ValueError('Inspection needs a bounded, controller-scoped evidence reference.')
+  inspection_identifier(read)
   if value['ready'] is not None or value['coverage_complete'] or value['assessment_label'] is not None or value['proposal'] is not None or value['check_id'] is not None or value['claims'] or value['blockers']:raise ValueError('Read-only inspection cannot select, review, conclude or launch work.')
  elif read is not None:raise ValueError('Only inspection can request evidence.')
  if any(not isinstance(v,str) or len(v)>100 for v in value['evidence_ids']): raise ValueError('Invalid evidence references.')
