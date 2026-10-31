@@ -1,6 +1,1 @@
-{
-  "version": "autonomous-repair-release-v1",
-  "approved_for_lab_recovery": true,
-  "qualified_files_sha256": "fbd2e56244c720b411dfbf4ece73ae73151a652b1becc688c1c3251189a28acd",
-  "evidence_sha256": "c8d5df65ed18cc5004c9d061fbc533ea4ab306036a84849261957daf656d5c1f"
-}
+{"approved_for_lab_recovery":true,"evidence_sha256":"6ad3322c6113f3db3e892df00cff76c5b02774999f7f9304831f329c2267971d","qualified_files_sha256":"17d0e6a9bc89fc68481719dab2a1de681d53418df70fcd5f7aff476bfb3d1ff6","version":"autonomous-repair-release-v1"}

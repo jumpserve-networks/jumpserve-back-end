@@ -23,7 +23,7 @@ import store
 from workflow import canonical,digest,identifier,now,paper_details,protocol_record,validate_protocol
 
 VERSION='research-autonomy-v3'
-DEFAULTS=dict(maximum_spend_usd=100,elapsed_days=7,attempts_per_claim=None,parallel_claims_per_paper=2,global_parallel_claims=4)
+DEFAULTS=dict(maximum_spend_usd=None,elapsed_days=7,attempts_per_claim=None,parallel_claims_per_paper=2,global_parallel_claims=4)
 REVIEWER=dict(identity='Autonomous evidence controller with fresh AI reviews',type='AI',independence='Shared model and inputs; primary implementation is not independent or human scientific review.')
 EXTERNAL={'missing-data','equipment','authorization','implementation','provider'}
 

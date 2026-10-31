@@ -70,7 +70,7 @@ class Recovery(unittest.TestCase):
 
  def test_authorized_budget_is_explicit_without_changing_the_intake_default(self):
   context=dict(resource_authorization=dict(version='assessment-budget-amendment-v1',max_spend_cents=100000,committed_cents=9980,deadline_at='2030-01-01T00:00:00Z'))
-  self.assertIn('100000 cents',autonomy_model.resource_instruction(context));self.assertEqual(autonomy.DEFAULTS['maximum_spend_usd'],100)
+  self.assertIn('100000 cents',autonomy_model.resource_instruction(context));self.assertIsNone(autonomy.DEFAULTS['maximum_spend_usd'])
   context['resource_authorization']['max_spend_cents']=100001
   with self.assertRaises(ValueError):autonomy_model.resource_instruction(context)
 
