@@ -102,6 +102,8 @@ class Controller:
             elif not target.exists():
                 original=self.state['sources'][repo]
                 source.extract(self.github.archive(repo,original['revision']),target)
+            baseline=workspace.parent/'baseline'/name
+            if not baseline.exists():source.extract(self.github.archive(repo,self.state['sources'][repo]['revision']),baseline)
         save(workspace/'task.json',canonical(dict(id=self.store.task['id'],objective=self.store.task['objective'],repositories=self.store.task['repositories'],deadline_at=self.store.task['deadline_at'],limits=dict(max_reserved_cents=self.store.task['max_reserved_cents']),protected=POLICY['protected'])))
 
     def persist_work(self, workspace):
