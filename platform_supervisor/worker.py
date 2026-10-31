@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation
+from . import checks, native, source, documentation, research_runtime
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
@@ -84,6 +84,7 @@ class Controller:
                 except ReleaseFailure as error:self.record_release_failure(operation,error);raise
                 if result:
                     self.store.rpc('release',dict(id=identity(self.store.task['id'],'release:'+request['repository']+':'+request['revision']),component=request['component'],repository=request['repository'],revision=request['revision'],status='verified',external_id=operation['id'],verification=result))
+                    if request['component']=='research-runtime':research_runtime.record_pin_release(self,result)
             elif operation['kind']=='merge' and change:
                 result=self.github.merge_receipt(change)
                 if result:change.update(result,status='merged');self.record_change(change)
@@ -182,6 +183,7 @@ class Controller:
                 fresh=workspace.parent/('rebase-'+str(uuid.uuid4()));source.extract(self.github.archive(repo,advances[repo]),fresh)
                 original=source.snapshot(fresh);previous=self.state['sources'][repo]['snapshot']
                 for file in patch['files']:
+                    if self.state.get('research_runtime') and file['path']==research_runtime.APPROVAL:continue
                     if original.get(file['path'])==previous.get(file['path']):source.apply_patch(dict(files=[file]),fresh)
                     else:
                         import base64
@@ -199,6 +201,8 @@ class Controller:
                 self.operation('publish','close:'+change['id'],dict(repository=repo,pr_number=change['pr_number'],action='close-superseded'),close,close)
             change['status']='superseded';self.record_change(change)
         save(workspace/'rebase-conflicts.json',canonical(conflicts))
+        self.state.pop('research_runtime',None)
+        if self.state.get('runtime_reviewed_source'):self.state['runtime_reviewed_source']=advances[research_runtime.BACKEND]
         self.state.update(tested=False,changes=[],generation=self.state.get('generation',0)+1,feedback='Main advanced. Non-overlapping changes were preserved on the fresh main source. Read rebase-conflicts.json and previous-candidates/ for overlapping edits; preserve concurrent work, repair the proposal and rerun checks. Original patches, tests and PRs remain recorded.')
         self.persist_work(workspace)
         raise Hold('Fresh main revisions acquired; native repair and all fixed checks will run again.','implementing')
@@ -225,6 +229,7 @@ class Controller:
             if not (root/'workspace-ready.json').exists():self.restore_work(workspace);save(root/'workspace-ready.json',canonical(dict(restored=True)))
             self.boundary()
             if not self.state.get('tested'):
+                research_runtime.reviewed(self,workspace)
                 proposal=dict(ready=False,summary='Improve validated platform behavior',feedback='Model-call reservation is exhausted.')
                 if self.coding_available():
                     try:documentation.deliver(self.store,workspace,self.state,documentation.Context7(self.documentation_key))
@@ -254,9 +259,15 @@ class Controller:
                     self.store.event('retained-source-validation','Model-call reservation exhausted; fixed checks may validate retained source without another provider call. Original reservation and deadline remain unchanged.')
                 changes=[]
                 for repo,original in self.state['sources'].items():
-                    directory=workspace/POLICY['repositories'][repo]['directory'];patch=source.freeze(original['snapshot'],directory)
+                    directory=workspace/POLICY['repositories'][repo]['directory']
+                    try:patch=source.freeze(original['snapshot'],directory)
+                    except Hold as error:
+                        self.state['feedback']=str(error)+'. Restore the protected file exactly from the baseline. Put new regression tests in a new test file; existing tests and authority cannot change.'
+                        self.persist_work(workspace)
+                        raise Hold('Retained candidate needs a scope correction. Protected validation remains unchanged.','implementing') from None
                     if not patch:continue
-                    component=plan(repo,[f['path'] for f in patch['files']])
+                    runtime_candidate=repo==research_runtime.BACKEND and any(f['path'].startswith('research_workflow/') for f in patch['files'])
+                    component='research-runtime' if runtime_candidate else plan(repo,[f['path'] for f in patch['files']])
                     receipt,artifact=checks.execute(self.store,repo,directory,self.image)
                     if not receipt['passed']:
                         save(workspace/'check-feedback.json',canonical(receipt))
@@ -265,6 +276,9 @@ class Controller:
                         if exhausted:raise Hold('Reservation exhausted and retained source failed fixed checks; original source and receipts remain retained.','budget')
                         raise Hold('Executed checks failed; native repair will continue from the retained source.','implementing')
                     if source.freeze(original['snapshot'],directory)!=patch:raise Hold('Source changed during testing.')
+                    if component=='research-runtime':
+                        patch=research_runtime.qualify(self,directory,patch,receipt,artifact)
+                        component=plan(repo,[f['path'] for f in patch['files']],self.state['research_runtime']['scope'])
                     patch_artifact=self.store.artifact('patch-'+repo.split('/')[1]+'.json',canonical(patch))
                     change=dict(id=identity(task['id'],'change:'+repo+':'+str(self.state.get('generation',0))),repository=repo,base_sha=original['revision'],head_sha=None,tree_sha256=patch['tree_sha256'],summary=proposal.get('summary') or 'Improve validated platform behavior',patch_artifact_id=patch_artifact['id'],checks_artifact_id=artifact['id'],pr_number=None,pr_url=None,merge_sha=None,status='tested',component=component,patch=patch)
                     changes.append(change)
@@ -278,8 +292,10 @@ class Controller:
                 raise Hold('Frozen source passed fixed checks; publication is the next durable stage.','publishing')
             changes=self.state['changes']
             self.rebase(workspace,changes)
+            if self.state.get('research_runtime'):research_runtime.refresh_pin(self,workspace)
             for change in changes:self.github.protection(change['repository'])
             for change in changes:
+                if change.get('status')=='superseded':continue
                 self.record_change(change)
                 self.boundary();self.github.protection(change['repository'])
                 if not change.get('head_sha'):
@@ -295,10 +311,14 @@ class Controller:
                     result=self.operation('merge',change['repository'],dict(repository=change['repository'],pr_number=change['pr_number'],head_sha=change['head_sha'],base_sha=change['base_sha']),lambda op:self.github.merge(change),lambda op:self.github.merge_receipt(change))
                     change.update(result,status='merged');self.record_change(change)
                     self.store.rpc('release',dict(id=identity(task['id'],'release:'+change['repository']+':'+change['merge_sha']),component=change['component'],repository=change['repository'],revision=change['merge_sha'],status='pending',external_id=None))
+                if change['component']=='research-runtime':research_runtime.add_pin(self,change,workspace)
             for change in changes:
+                if change.get('status')=='superseded':continue
+                if change['component']=='research-runtime-pin':continue
                 workflow_repository=change['repository'] if change['component']=='backend' else POLICY['release_repository']
                 workflow_revision=self.state.setdefault('release_workflow_revisions',{}).setdefault(workflow_repository,self.github.main(workflow_repository))
                 request=dict(repository=change['repository'],revision=change['merge_sha'],component=change['component'],workflow_revision=workflow_revision)
+                if change['component']=='research-runtime':request=research_runtime.release_request(self,change)
                 sha=digest(canonical(request));op_id=identity(task['id'],'deploy:'+change['repository']+':'+sha)
                 release=dict(id=identity(task['id'],'release:'+change['repository']+':'+change['merge_sha']),component=change['component'],repository=change['repository'],revision=change['merge_sha'],status='deploying',external_id=op_id)
                 self.store.rpc('release',release)
@@ -307,6 +327,9 @@ class Controller:
                 def dispatch(op):self.releases.dispatch(op);return self.releases.receipt(op)
                 proof=self.operation('deploy',change['repository'],request,dispatch,self.releases.receipt)
                 release.update(status='verified',verification=proof);self.store.rpc('release',release)
+                if change['component']=='research-runtime':
+                    research_runtime.record_pin_release(self,proof)
+                    self.state['runtime_recovery']=research_runtime.resume(self,proof);self.save_state()
             self.store.checkpoint('completed','All tested changes merged; every scoped production revision was verified.',self.state)
         except Hold as error:
             if isinstance(error,native.CleanupUnknown):self.state['cleanup_unknown']=True

@@ -1,5 +1,5 @@
 {
-  "version": "platform-supervisor-v1.1",
+  "version": "platform-supervisor-v1.2",
   "model": "gpt-6.1-sol",
   "paid_fallback": false,
   "required_check": "Platform validation",
@@ -109,6 +109,9 @@
     "database/",
     "research_workflow/policies/",
     "research-workflow-runtime.json",
+    "research-runtime-targets.json",
+    "research-runtime-qualifications/",
+    "bin/research-runtime-",
     "openclaw-worker-runtime.json",
     "lib/openclaw-worker.ts",
     "cdk.json",
@@ -137,5 +140,12 @@
     ".runtime-autonomy-python"
   ],
   "release_workflow": "platform-release.yml",
-  "release_repository": "jumpserve-networks/jumpserve-infra"
+  "release_repository": "jumpserve-networks/jumpserve-infra",
+  "research_runtime_release": {
+    "version": "research-controller-recovery-v1",
+    "workflow": "research-runtime-release.yml",
+    "derived_metadata_only": ["research_workflow/policies/autonomous-repair-release-v1.json", "research-workflow-runtime.json", "research-runtime-qualifications/"],
+    "scientific_and_request_changes": "separate-qualification-required",
+    "uncertain_call_replay": false
+  }
 }

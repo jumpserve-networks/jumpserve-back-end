@@ -866,8 +866,17 @@ def handler(event,context=None):
  # gates, original turn numbering, labels and experiment identities.
  model.load_prompt()
  import autonomous_repair
- repairs=autonomous_repair.discover()
- turn_recovery=store.rpc('research_autonomy_resume_turns',dict(p_policy=model.TURN_POLICY['version']))
+ maintenance_faults=[]
+ def maintenance(name,call):
+  try:return call()
+  except (ValueError,store.StoreError,KeyError,TypeError,IndexError) as error:
+   fault=dict(version='research-controller-health-v1',component=name,error_type=type(error).__name__,policy=model.TURN_POLICY['version'])
+   maintenance_faults.append(fault)
+   try:store.rpc('research_autonomy_runtime_observe',dict(p_action='maintenance-failed',p_details=fault))
+   except (ValueError,store.StoreError,KeyError,TypeError,IndexError):pass
+   return []
+ repairs=maintenance('repair-discovery',autonomous_repair.discover)
+ turn_recovery=maintenance('turn-recovery',lambda:store.rpc('research_autonomy_resume_turns',dict(p_policy=model.TURN_POLICY['version'])))
  recovery=[]
  recovery_version=os.environ.get('RESEARCH_AUTONOMY_CONTEXT_RECOVERY')
  if recovery_version==model.CONTEXT_BUDGET_VERSION:
@@ -875,7 +884,7 @@ def handler(event,context=None):
   # actual current request before allowing the service-only, once-per-version
   # recovery gate to queue it. No model calls or counter resets in preflight.
   _,system=model.load_prompt()
-  for candidate in store.rpc('research_autonomy_budget_candidates',{}):
+  for candidate in maintenance('context-recovery',lambda:store.rpc('research_autonomy_budget_candidates',{})):
    try:
     task=one('autonomy_tasks',candidate['study_id'],candidate['id'])
     task['workflow']=rows('autonomy_workflows',candidate['study_id'],limit=1)[0]
@@ -887,7 +896,7 @@ def handler(event,context=None):
  elif recovery_version==evidence.VERSION:
   # Publication must be verified before resuming any older paused task.
   model.load_prompt()
-  for candidate in store.rpc('research_autonomy_context_candidates',{}):
+  for candidate in maintenance('context-recovery',lambda:store.rpc('research_autonomy_context_candidates',{})):
    try:
     result=store.rpc('research_autonomy_resume_context',dict(p_study=candidate['study_id'],p_actor=candidate['owner_id'],p_task=candidate['id'],p_version=evidence.VERSION))
     recovery.append(dict(task_id=candidate['id'],status=result['status']))
@@ -901,4 +910,4 @@ def handler(event,context=None):
   for future in futures:
    try:r=future.result();results.append({k:r.get(k) for k in ('id','status','reason')})
    except Exception as error:results.append(dict(status='unconfirmed',error_type=type(error).__name__))
- return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery,turn_limit_recovery=turn_recovery,repairs=repairs)
+ return dict(version=VERSION,slots=2,outcomes=results,context_recovery=recovery,turn_limit_recovery=turn_recovery,repairs=repairs,maintenance_faults=maintenance_faults)
