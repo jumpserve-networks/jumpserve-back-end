@@ -114,6 +114,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name=='autonomy_budget_snapshot':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_model_reconcile','research_model_reconciliation_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_autonomy_repair','research_autonomy_repair_candidates'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_builder_call','research_builder_package'):return request('/rest/v1/rpc/'+name,'POST',payload)
