@@ -105,6 +105,9 @@ def diagnose(task, record):
     live = rows(task, 'autonomy_turns', task_id='eq.' + task['id'], status='eq.running', limit=1)
     if pending or live:
         return dict(waiting=True, reason='An original native call or controller turn is unresolved; no replacement call admitted.')
+    unknown_turns = rows(task, 'autonomy_turns', task_id='eq.' + task['id'], status='eq.unknown', limit=101)
+    if len(unknown_turns) > 100:
+        raise ValueError('Unknown controller turn coverage exceeds the bounded diagnosis.')
     dispatches = rows(task, 'model_dispatches', task_id='eq.' + task['id'], order='created_at.desc', limit=21)
     if len(dispatches) == 21:
         # Include every uncertain dispatch even when the recent window is full.
@@ -112,6 +115,19 @@ def diagnose(task, record):
         if len(uncertain) > 100:
             raise ValueError('Uncertain dispatch coverage exceeds the bounded diagnosis.')
         dispatches += [d for d in uncertain if d['id'] not in {x['id'] for x in dispatches}]
+    missing = [t['id'] for t in unknown_turns if t['id'] not in {d['id'] for d in dispatches}]
+    if missing:
+        dispatches += rows(task, 'model_dispatches', task_id='eq.' + task['id'],
+            id='in.(' + ','.join(missing) + ')', limit=101)
+    by_id = {d['id']: d for d in dispatches}
+    for turn in unknown_turns:
+        if turn['study_id'] != task['study_id'] or turn['task_id'] != task['id']:
+            raise ValueError('Repair controller turn identity mismatch.')
+        dispatch = by_id.get(turn['id'])
+        if dispatch is None:
+            return dict(waiting=True, reason='Provider outcome remains unconfirmed for controller turn ' + turn['id'] + '; original dispatch evidence is unavailable. No replay or replacement call admitted.')
+        if dispatch['request_sha256'] != turn['request_sha256']:
+            raise ValueError('Repair controller turn/dispatch request identity mismatch.')
     events = rows(task, 'autonomy_events', task_id='eq.' + task['id'], event='eq.assessment-recovery-resumed', limit=20)
     reconciled = []; checkpoint = None; checkpoint_time=None;failure_details=[]
     import datetime as dt
