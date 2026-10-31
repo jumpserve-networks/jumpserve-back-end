@@ -48,9 +48,14 @@ class TrafficAllowance(unittest.TestCase):
     def test_unapproved_v3_policies_cannot_inherit_old_authorization(self):
         for runner,path in (('built-package-v1',costs.BUILT_POLICY_PATH),('netem-iperf-v1',costs.NETEM_POLICY_PATH)):
             policy=json.loads(path.read_bytes())
-            self.assertFalse(policy['approved_for_lab_execution'])
             self.assertEqual(policy['max_network_bytes'],MAXIMUM)
-            with self.assertRaisesRegex(ValueError,'operational'):costs.builtin_quote(canonical(dict(runner=runner)))
+            # Exercise denial independently of the current release's approval.
+            policy['approved_for_lab_execution']=False
+            with tempfile.TemporaryDirectory() as tmp:
+                fixture=Path(tmp)/'unapproved-v3.json';fixture.write_bytes(canonical(policy))
+                attr='BUILT_POLICY_PATH' if runner=='built-package-v1' else 'NETEM_POLICY_PATH'
+                with patch.object(costs,attr,fixture),self.assertRaisesRegex(ValueError,'operational'):
+                    costs.builtin_quote(canonical(dict(runner=runner)))
 
     def test_approved_fixture_quote_enforces_hash_expiry_and_other_bounds(self):
         for runner,path,proto,prefix,reservation in (
