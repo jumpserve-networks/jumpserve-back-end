@@ -50,7 +50,8 @@ def readiness(workspace,envelope,local_stops=(),known_complete=False):
 NORMALIZE='''import os,stat,sys
 from pathlib import Path
 root=Path('/workspace');uid=int(sys.argv[1]);gid=int(sys.argv[2]);excluded=set(sys.argv[3].split(','));entries=[];total=0
-for directory,dirs,files in os.walk(root,followlinks=False):
+def traversal_error(error):raise error
+for directory,dirs,files in os.walk(root,followlinks=False,onerror=traversal_error):
  for name in dirs+files:
   path=Path(directory)/name;info=path.lstat()
   if stat.S_ISLNK(info.st_mode) or not (stat.S_ISREG(info.st_mode) or stat.S_ISDIR(info.st_mode)):raise ValueError('Unsupported workspace path')
@@ -63,7 +64,7 @@ for path,mode in [(root,stat.S_IFDIR)]+entries:
 '''
 
 def normalize(workspace,image,prefix):
-    subprocess.run(['docker','run','--rm','--name',prefix+'normalize','--network','none','--cap-drop','ALL','--cap-add','CHOWN','--cap-add','FOWNER','--pids-limit','32','--memory','128m','--user','0','--mount','type=bind,source='+str(Path(workspace).resolve())+',target=/workspace',image,'python3','-I','-c',NORMALIZE,str(os.getuid()),str(os.getgid()),','.join(POLICY['source_exclusions'])],check=True,capture_output=True,timeout=45)
+    subprocess.run(['docker','run','--rm','--name',prefix+'normalize','--network','none','--cap-drop','ALL','--cap-add','CHOWN','--cap-add','FOWNER','--cap-add','DAC_OVERRIDE','--pids-limit','32','--memory','128m','--user','0','--mount','type=bind,source='+str(Path(workspace).resolve())+',target=/workspace',image,'python3','-I','-c',NORMALIZE,str(os.getuid()),str(os.getgid()),','.join(POLICY['source_exclusions'])],check=True,capture_output=True,timeout=45)
 
 def reconcile(store):
     proofs={r['run_id'] for r in store.rows('run_reconciliations')}
@@ -220,8 +221,14 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
         return readiness(workspace,envelope,local_stops,confirmed_outcomes(runs))
     finally:
         server.shutdown();server.server_close();thread.join(timeout=5)
+        cleanup_phase='container-inventory'
         try:
             removed=containers(prefix,workspace)
             store.artifact('sandbox-cleanup-'+directory.name+'.json',canonical(dict(removed_container_ids=removed,workspace_path_sha256=digest(str(workspace.resolve()).encode()),verified=True)))
+            cleanup_phase='workspace-metadata'
             normalize(workspace,image,prefix)
-        except Exception:raise CleanupUnknown('Native container cleanup is unconfirmed; host execution admission remains fenced.','reconciling') from None
+        except Exception as error:
+            stderr=getattr(error,'stderr',b'') or b''
+            try:store.artifact('cleanup-failure-'+directory.name+'.json',canonical(dict(phase=cleanup_phase,error_type=type(error).__name__,exit_code=getattr(error,'returncode',None),stderr_tail=stderr[-12000:].decode('utf-8','replace') if isinstance(stderr,bytes) else str(stderr)[-12000:])))
+            except Exception:pass
+            raise CleanupUnknown('Native '+cleanup_phase+' is unconfirmed; host execution admission remains fenced.','reconciling') from None
