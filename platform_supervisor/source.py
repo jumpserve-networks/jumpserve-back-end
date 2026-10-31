@@ -2,6 +2,7 @@
 import base64
 import io
 import os
+import json
 from pathlib import Path, PurePosixPath
 import tarfile
 import zipfile
@@ -46,7 +47,8 @@ def protected(name, existed):
     if any(name==pattern or name.startswith(pattern) for pattern in POLICY['protected']): return True
     path=PurePosixPath(name)
     test_file=path.name.startswith('test_') or path.name.endswith('_test.py') or '.test.' in path.name or '.spec.' in path.name
-    return existed and (test_file or any(part in ('test','tests','__tests__') for part in path.parts))
+    validation_config=path.name in ('tsconfig.json','eslint.config.mjs','eslint.config.js','jest.config.js','jest.config.ts','vitest.config.ts','pytest.ini')
+    return existed and (test_file or validation_config or any(part in ('test','tests','__tests__') for part in path.parts))
 
 def freeze(baseline, directory):
     current=snapshot(directory); changes=[]; total=0
@@ -54,6 +56,12 @@ def freeze(baseline, directory):
         if baseline.get(name)==current.get(name): continue
         if protected(name,name in baseline): raise Hold('Automatic publication cannot change authority, migrations, CI or existing validation: '+name)
         raw=(Path(directory)/name).read_bytes() if name in current else None
+        if name=='package.json' and name in baseline:
+            original=Path(directory).parent.parent/'baseline'/Path(directory).name/'package.json'
+            if raw is None or not original.is_file() or digest(original.read_bytes())!=baseline[name]['sha256']:
+                raise Hold('A changed manifest needs its retained original validation scripts.')
+            if json.loads(original.read_bytes()).get('scripts',{})!=json.loads(raw).get('scripts',{}):
+                raise Hold('Automatic publication cannot change the fixed package validation scripts.')
         if raw is not None:
             total+=len(raw)
             # A secret-looking candidate is retained for review, never published.

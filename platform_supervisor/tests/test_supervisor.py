@@ -31,6 +31,17 @@ class DurableStore:
         raise AssertionError(operation)
 
 class SupervisorTests(unittest.TestCase):
+    def test_dependency_updates_cannot_rewrite_validation_scripts_or_existing_check_configuration(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);baseline=root/'baseline'/'repo';candidate=root/'workspace'/'repo';baseline.mkdir(parents=True);candidate.mkdir(parents=True)
+            original=dict(scripts=dict(test='node --test tests/*.test.mjs'),dependencies=dict(example='1.0.0'))
+            (baseline/'package.json').write_text(json.dumps(original));snapshot=source.snapshot(baseline)
+            upgraded={**original,'dependencies':dict(example='1.0.1')};(candidate/'package.json').write_text(json.dumps(upgraded))
+            self.assertIsNotNone(source.freeze(snapshot,candidate))
+            (candidate/'package.json').write_text(json.dumps({**upgraded,'scripts':dict(test='true')}))
+            with self.assertRaisesRegex(Hold,'validation scripts'):source.freeze(snapshot,candidate)
+        self.assertTrue(source.protected('eslint.config.mjs',True));self.assertTrue(source.protected('tsconfig.json',True))
+
     def test_truncated_sandbox_names_are_cleaned_by_exact_workspace_without_touching_research(self):
         root=Path('/var/lib/jumpserve-platform')/TASK/'workspace';own='a'*64;research='b'*64
         records='\n'.join(json.dumps(value) for value in [dict(Id=own,Name='/js-plat-workspace-retained',Mounts=[dict(Type='bind',Source=str(root),Destination='/agent')]),dict(Id=research,Name='/research-workspace',Mounts=[dict(Type='bind',Source='/var/lib/jumpserve-openclaw/another-task',Destination='/workspace')])])
