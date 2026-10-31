@@ -98,7 +98,8 @@ class SupervisorTests(unittest.TestCase):
     def test_controller_restores_durable_stages_and_waits_for_production_proof(self):
         class Store(DurableStore):
             def __init__(self,directory):
-                super().__init__();self.spool=directory;self.task=dict(id=TASK,checkpoint={},repositories=[REPO],objective='Private objective',title='Private title',created_at='2026-10-30T00:00:00Z',deadline_at='2099-01-01T00:00:00Z',max_reserved_cents=10000);self.artifacts={};self.releases={};self.changes={};self.stages=[]
+                super().__init__();self.spool=directory;self.task=dict(id=TASK,checkpoint={},repositories=[REPO],objective='Private objective',title='Private title',created_at='2026-10-30T00:00:00Z',deadline_at='2099-01-01T00:00:00Z',max_reserved_cents=10000);self.artifacts={};self.releases={};self.changes={};self.stages=[];self.spent=0
+            def event(self,*args):self.events.append(args)
             def artifact(self,name,raw):
                 ident=identity(TASK,digest(raw));item=dict(id=ident,name=name,sha256=digest(raw),storage_path=TASK+'/'+digest(raw),byte_count=len(raw));self.artifacts[ident]=(item,raw);return item
             def rows(self,table,**filters):
@@ -107,6 +108,7 @@ class SupervisorTests(unittest.TestCase):
                 return values
             def request(self,path,raw=False):return next(raw for item,raw in self.artifacts.values() if path.endswith(item['storage_path']))
             def rpc(self,operation,payload=None):
+                if operation=='lease':return dict(super().rpc(operation),committed_cents=self.spent,max_reserved_cents=10000)
                 if operation=='progress':self.task['checkpoint']=json.loads(json.dumps(payload['checkpoint']));return {}
                 if operation=='change':self.changes[payload['id']]=payload;return payload
                 if operation=='release':self.releases[payload['id']]=payload;return payload
@@ -121,9 +123,10 @@ class SupervisorTests(unittest.TestCase):
             controller.releases=Mock();controller.releases.receipt.return_value=None
             def coding(store,workspace,*args):
                 (workspace/'jumpserve-front-end/app.ts').write_text('corrected source')
-                return dict(ready=True,summary='Changed public source')
+                store.spent=10000
+                return dict(ready=False,summary='Changed public source',feedback='No readiness hint was written before the last model admission.')
             def checked(store,repo,directory,image):return dict(passed=True),store.artifact('checks.json',b'{"passed":true}')
-            with patch('platform_supervisor.worker.native.containers',return_value=[]),patch('platform_supervisor.worker.native.reconcile'),patch('platform_supervisor.worker.documentation.deliver'),patch('platform_supervisor.worker.checks.prepare_dependencies',return_value=None),patch('platform_supervisor.worker.native.execute',side_effect=coding),patch('platform_supervisor.worker.checks.execute',side_effect=checked):
+            with patch('platform_supervisor.worker.native.containers',return_value=[]),patch('platform_supervisor.worker.native.reconcile'),patch('platform_supervisor.worker.documentation.deliver'),patch('platform_supervisor.worker.checks.prepare_dependencies',return_value=None),patch('platform_supervisor.worker.native.execute',side_effect=coding) as native_call,patch('platform_supervisor.worker.checks.execute',side_effect=checked) as fixed_check:
                 controller.run();self.assertEqual(store.stages[-1],'publishing')
                 controller.run();self.assertEqual(store.stages[-1],'reconciling')
                 self.assertEqual(controller.releases.dispatch.call_count,1)
@@ -133,6 +136,18 @@ class SupervisorTests(unittest.TestCase):
                 self.assertEqual(controller.releases.dispatch.call_count,1)
                 self.assertEqual(github.publish.call_count,1);self.assertEqual(github.merge.call_count,1)
                 self.assertTrue(all(r['status']=='verified' for r in store.releases.values()))
+                self.assertEqual(native_call.call_count,1);self.assertEqual(fixed_check.call_count,1)
+                # A second, already exhausted task cannot call the model or
+                # publish retained source when its unchanged fixed checks fail.
+                failed=Store(Path(temp)/'failed');failed.spent=10000
+                stopped=Controller(failed,github,'image');fixed_check.side_effect=lambda store,*args:(dict(passed=False),store.artifact('checks.json',b'{"passed":false}'))
+                def retained(workspace):
+                    stopped.originals_original(workspace)
+                    (workspace/'jumpserve-front-end/app.ts').write_text('incomplete retained source')
+                stopped.originals_original=stopped.originals
+                with patch.object(stopped,'originals',side_effect=retained):stopped.run()
+                self.assertEqual(failed.stages[-1],'budget');self.assertEqual(native_call.call_count,1)
+                self.assertEqual(github.publish.call_count,1);self.assertEqual(github.merge.call_count,1)
 
     def test_unknown_mutation_is_reconciled_without_redispatch(self):
         store=DurableStore();controller=Controller(store,Mock(),'unused')

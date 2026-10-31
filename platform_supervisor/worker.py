@@ -30,8 +30,10 @@ class Controller:
         if self.flags['cancel_requested']:raise Hold('Cancellation honored at a safe boundary; original in-flight receipts retained.','cancelled')
         if self.flags['paused']:raise Hold('Owner paused new work; checkpoint retained.','implementing')
         if dt.datetime.fromisoformat(self.flags['deadline_at'].replace('Z','+00:00'))<=now():raise Hold('Elapsed-time limit reached; remaining changes and receipts retained.','deadline')
-        if not self.state.get('tested') and self.flags.get('committed_cents',0)+100>self.flags.get('max_reserved_cents',self.store.task.get('max_reserved_cents',10000)):raise Hold('Reservation limit reached before another coding call; source and original receipts are retained.','budget')
         return self.flags
+
+    def coding_available(self):
+        return self.flags.get('committed_cents',0)+100<=self.flags.get('max_reserved_cents',self.store.task.get('max_reserved_cents',10000))
 
     def save_state(self):self.store.rpc('progress',dict(checkpoint=self.state))
 
@@ -215,26 +217,33 @@ class Controller:
             if not (root/'workspace-ready.json').exists():self.restore_work(workspace);save(root/'workspace-ready.json',canonical(dict(restored=True)))
             self.boundary()
             if not self.state.get('tested'):
-                try:documentation.deliver(self.store,workspace,self.state,documentation.Context7(self.documentation_key))
-                except Exception as error:
-                    self.state['not_before']=(now()+dt.timedelta(minutes=5)).isoformat()
-                    raise Hold('Required Context7 documentation is unavailable ('+type(error).__name__+'); retry is scheduled before further code generation.','investigating') from None
-                prefix='Read references/context7/index.json and relevant library documentation before coding. '
-                if not self.state.get('feedback','').startswith(prefix):self.state['feedback']=prefix+self.state.get('feedback','')
-                dependency_failures=[]
-                for repo in self.state['sources']:
-                    receipt=checks.prepare_dependencies(self.store,repo,workspace/POLICY['repositories'][repo]['directory'],self.image,self.github)
-                    if receipt:dependency_failures.append(receipt)
-                if dependency_failures:
-                    save(workspace/'dependency-feedback.json',canonical(dependency_failures))
-                    self.state['feedback']+=' Read dependency-feedback.json. Repair dependency manifests first; the controller retries installation before further application coding. Read the installed Next.js guide before writing Next.js code.'
-                self.save_state()
-                proposal=native.execute(self.store,workspace,root/('slice-'+str(uuid.uuid4())),self.image,self.state.get('feedback',''))
+                proposal=dict(ready=False,summary='Improve validated platform behavior',feedback='Model-call reservation is exhausted.')
+                if self.coding_available():
+                    try:documentation.deliver(self.store,workspace,self.state,documentation.Context7(self.documentation_key))
+                    except Exception as error:
+                        self.state['not_before']=(now()+dt.timedelta(minutes=5)).isoformat()
+                        raise Hold('Required Context7 documentation is unavailable ('+type(error).__name__+'); retry is scheduled before further code generation.','investigating') from None
+                    prefix='Read references/context7/index.json and relevant library documentation before coding. '
+                    if not self.state.get('feedback','').startswith(prefix):self.state['feedback']=prefix+self.state.get('feedback','')
+                    dependency_failures=[]
+                    for repo in self.state['sources']:
+                        receipt=checks.prepare_dependencies(self.store,repo,workspace/POLICY['repositories'][repo]['directory'],self.image,self.github)
+                        if receipt:dependency_failures.append(receipt)
+                    if dependency_failures:
+                        save(workspace/'dependency-feedback.json',canonical(dependency_failures))
+                        self.state['feedback']+=' Read dependency-feedback.json. Repair dependency manifests first; the controller retries installation before further application coding. Read the installed Next.js guide before writing Next.js code.'
+                    self.save_state()
+                    try:proposal=native.execute(self.store,workspace,root/('slice-'+str(uuid.uuid4())),self.image,self.state.get('feedback',''))
+                    except Hold as error:
+                        if error.status!='budget':raise
                 self.validate_workspace(workspace)
                 self.persist_work(workspace)
-                if not proposal['ready']:
-                    self.boundary()
+                self.boundary()
+                exhausted=not self.coding_available()
+                if not proposal['ready'] and not exhausted:
                     raise Hold(proposal['feedback'],'implementing')
+                if exhausted:
+                    self.store.event('retained-source-validation','Model-call reservation exhausted; fixed checks may validate retained source without another provider call. Original reservation and deadline remain unchanged.')
                 changes=[]
                 for repo,original in self.state['sources'].items():
                     directory=workspace/POLICY['repositories'][repo]['directory'];patch=source.freeze(original['snapshot'],directory)
@@ -245,12 +254,13 @@ class Controller:
                         save(workspace/'check-feedback.json',canonical(receipt))
                         self.state['feedback']='Repair the executed fixed checks. Read check-feedback.json for the actual failure output and original artifact references.'
                         self.persist_work(workspace)
+                        if exhausted:raise Hold('Reservation exhausted and retained source failed fixed checks; original source and receipts remain retained.','budget')
                         raise Hold('Executed checks failed; native repair will continue from the retained source.','implementing')
                     if source.freeze(original['snapshot'],directory)!=patch:raise Hold('Source changed during testing.')
                     patch_artifact=self.store.artifact('patch-'+repo.split('/')[1]+'.json',canonical(patch))
-                    change=dict(id=identity(task['id'],'change:'+repo+':'+str(self.state.get('generation',0))),repository=repo,base_sha=original['revision'],head_sha=None,tree_sha256=patch['tree_sha256'],summary=proposal['summary'],patch_artifact_id=patch_artifact['id'],checks_artifact_id=artifact['id'],pr_number=None,pr_url=None,merge_sha=None,status='tested',component=component,patch=patch)
+                    change=dict(id=identity(task['id'],'change:'+repo+':'+str(self.state.get('generation',0))),repository=repo,base_sha=original['revision'],head_sha=None,tree_sha256=patch['tree_sha256'],summary=proposal.get('summary') or 'Improve validated platform behavior',patch_artifact_id=patch_artifact['id'],checks_artifact_id=artifact['id'],pr_number=None,pr_url=None,merge_sha=None,status='tested',component=component,patch=patch)
                     changes.append(change)
-                if not changes:raise Hold('No source change was produced. Original coding history is retained.')
+                if not changes:raise Hold('No source change was produced. Original coding history is retained.','budget' if exhausted else 'blocked')
                 self.state.update(tested=True,changes=changes)
                 # The durable SQL checkpoint remains below 1 MB: patches live
                 # in immutable artifacts and are reconstructed on the next slot.
