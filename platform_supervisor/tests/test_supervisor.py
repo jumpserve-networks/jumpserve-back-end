@@ -11,7 +11,7 @@ from platform_supervisor.common import Hold, canonical, digest, save, identity
 from platform_supervisor.credentials import Credentials
 from platform_supervisor.github import GitHub, ApiError
 from platform_supervisor import source
-from platform_supervisor.native import failure_status,readiness
+from platform_supervisor.native import failure_status,readiness,containers,container_prefix,confirmed_outcomes,CleanupUnknown
 from platform_supervisor.releases import plan,ReleaseFailure
 from platform_supervisor.worker import Controller
 
@@ -31,6 +31,19 @@ class DurableStore:
         raise AssertionError(operation)
 
 class SupervisorTests(unittest.TestCase):
+    def test_truncated_sandbox_names_are_cleaned_by_exact_workspace_without_touching_research(self):
+        root=Path('/var/lib/jumpserve-platform')/TASK/'workspace';own='a'*64;research='b'*64
+        records='\n'.join(json.dumps(value) for value in [dict(Id=own,Name='/js-plat-workspace-retained',Mounts=[dict(Type='bind',Source=str(root),Destination='/agent')]),dict(Id=research,Name='/research-workspace',Mounts=[dict(Type='bind',Source='/var/lib/jumpserve-openclaw/another-task',Destination='/workspace')])])
+        with patch('platform_supervisor.native.subprocess.check_output',side_effect=[own+'\n'+research,records]),patch('platform_supervisor.native.subprocess.run') as remove:
+            self.assertEqual(containers(container_prefix(TASK),root),[own]);self.assertEqual(remove.call_args.args[0],['docker','rm','-f',own])
+        self.assertLessEqual(len(container_prefix(TASK))+len('workspace-'+'a'*32),63)
+        with patch('platform_supervisor.native.subprocess.check_output',side_effect=TimeoutError),self.assertRaises(CleanupUnknown):containers(container_prefix(TASK),root)
+
+    def test_known_failed_tool_proposals_do_not_become_unknown_or_erase_valid_progress(self):
+        self.assertTrue(confirmed_outcomes([dict(status='complete'),dict(status='failed')]))
+        self.assertFalse(confirmed_outcomes([dict(status='failed')]))
+        for state in ('running','unknown'):self.assertFalse(confirmed_outcomes([dict(status='complete'),dict(status=state)]))
+
     def test_completed_proposal_survives_local_budget_stop_without_accepting_unknown_or_cancelled_calls(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);error=dict(status='error',error=dict(kind='incomplete_turn'))
@@ -99,7 +112,7 @@ class SupervisorTests(unittest.TestCase):
                 (workspace/'jumpserve-front-end/app.ts').write_text('corrected source')
                 return dict(ready=True,summary='Changed public source')
             def checked(store,repo,directory,image):return dict(passed=True),store.artifact('checks.json',b'{"passed":true}')
-            with patch('platform_supervisor.worker.native.containers'),patch('platform_supervisor.worker.native.reconcile'),patch('platform_supervisor.worker.documentation.deliver'),patch('platform_supervisor.worker.checks.prepare_dependencies',return_value=None),patch('platform_supervisor.worker.native.execute',side_effect=coding),patch('platform_supervisor.worker.checks.execute',side_effect=checked):
+            with patch('platform_supervisor.worker.native.containers',return_value=[]),patch('platform_supervisor.worker.native.reconcile'),patch('platform_supervisor.worker.documentation.deliver'),patch('platform_supervisor.worker.checks.prepare_dependencies',return_value=None),patch('platform_supervisor.worker.native.execute',side_effect=coding),patch('platform_supervisor.worker.checks.execute',side_effect=checked):
                 controller.run();self.assertEqual(store.stages[-1],'publishing')
                 controller.run();self.assertEqual(store.stages[-1],'reconciling')
                 self.assertEqual(controller.releases.dispatch.call_count,1)
