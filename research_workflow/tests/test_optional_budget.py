@@ -24,7 +24,7 @@ class OptionalBudget(unittest.TestCase):
    context=autonomy.build_context(t)
    self.assertIsNone(context['remaining_commitment_cents']);self.assertIsNone(context['resource_authorization']['max_spend_cents'])
    self.assertIn('propose',model.request_actions(context));self.assertIn('removed the aggregate',model.resource_instruction(context))
-   self.assertEqual(context['initial_prompt'],original['workflow']['initial_prompt']);self.assertEqual(autonomy.DEFAULTS['maximum_spend_usd'],100)
+   self.assertEqual(context['initial_prompt'],original['workflow']['initial_prompt']);self.assertIsNone(autonomy.DEFAULTS['maximum_spend_usd'])
    t['workflow']['max_spend_cents']=150000;exhausted=autonomy.build_context(t)
    self.assertEqual(exhausted['remaining_commitment_cents'],0);self.assertEqual(model.request_actions(exhausted),['blocked'])
    t['workflow']['max_spend_cents']=200000;bounded=autonomy.build_context(t)
