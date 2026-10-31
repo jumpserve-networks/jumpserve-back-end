@@ -31,6 +31,17 @@ class DurableStore:
         raise AssertionError(operation)
 
 class SupervisorTests(unittest.TestCase):
+    def test_build_outputs_do_not_become_source_edits_and_runtime_inputs_stay_frozen(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);(root/'app.ts').write_text('source')
+            before=source.snapshot(root)
+            for name in ('next-env.d.ts','tsconfig.tsbuildinfo'):(root/name).write_text('generated')
+            (root/'.runtime-autonomy-python').mkdir();(root/'.runtime-autonomy-python/manifest.json').write_text('{}')
+            self.assertEqual(source.snapshot(root),before)
+            self.assertIsNone(source.freeze(before,root))
+        for name in ('bin/prepare-research-runtime.py','real-world-runtime.json','autonomy-pdf-runtime.json'):
+            self.assertTrue(source.protected(name,True))
+
     def test_failed_release_records_failure_without_inventing_rollback_or_success(self):
         class Store(DurableStore):
             def rpc(self,operation,payload=None):

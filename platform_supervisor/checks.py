@@ -4,11 +4,46 @@ import datetime as dt
 from pathlib import Path
 import subprocess
 import time
+import json
+import re
 from .common import POLICY, canonical, digest, Hold
-from .source import snapshot
+from .source import snapshot, extract
 
-def prepare_dependencies(store,repository,directory,image):
+def prepare_runtime_inputs(store,directory,image,github):
+    """Stage only hash-checked runtime prerequisites at frozen public revisions."""
+    from .common import save
+    names=('research-workflow-runtime.json','real-world-runtime.json','openclaw-worker-runtime.json','autonomy-pdf-runtime.json')
+    fingerprint=digest(canonical({name:digest((directory/name).read_bytes()) for name in names}))
+    marker=store.spool/store.task['id']/'dependencies'/'runtime-inputs'
+    if marker.exists() and marker.read_text()==fingerprint and all((directory/name).is_dir() for name in ('.runtime-research','.runtime-backend','.runtime-openclaw','.runtime-autonomy-python')):return
+    pins=[(json.loads((directory/'research-workflow-runtime.json').read_bytes())['source_revision'],'.runtime-research'),(json.loads((directory/'real-world-runtime.json').read_bytes())['revision'],'.runtime-backend')]
+    for revision,target in pins:
+        if not re.fullmatch('[a-f0-9]{40}',revision):raise Hold('Pinned runtime input is malformed.')
+        extract(github.archive('jumpserve-networks/jumpserve-back-end',revision),directory/target)
+    commands=[['python3','-B','bin/prepare-research-runtime.py','--backend','.runtime-research'],['python3','-B','bin/prepare-openclaw-worker.py','--backend','.runtime-research'],['python3','-B','bin/prepare-autonomy-runtime.py']]
+    for number,command in enumerate(commands):
+        flags=store.rpc('lease')
+        if flags['cancel_requested'] or flags['paused']:raise Hold('Runtime preparation stopped at an owner boundary.','implementing')
+        remaining=(dt.datetime.fromisoformat(flags['deadline_at'].replace('Z','+00:00'))-dt.datetime.now(dt.timezone.utc)).total_seconds()
+        if remaining<10:raise Hold('Elapsed-time limit reached before runtime preparation.','deadline')
+        name='js-platform-'+store.task['id'].replace('-','')+'-runtime-'+str(number)
+        try:
+            result=subprocess.run(['docker','run','--rm','--name',name,'--network','bridge','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','256','--memory','1g','--user',str(os.getuid())+':'+str(os.getgid()),'--env','HOME=/tmp','--mount','type=bind,source='+str(directory.resolve())+',target=/workspace','--workdir','/workspace',image,*command],capture_output=True,timeout=min(300,remaining-5))
+        except subprocess.TimeoutExpired:
+            try:subprocess.run(['docker','rm','-f',name],check=True,capture_output=True,timeout=30)
+            except Exception:
+                from .native import CleanupUnknown
+                raise CleanupUnknown('Runtime preparation cleanup needs reconciliation.','reconciling') from None
+            raise Hold('Runtime preparation timed out; pinned inputs remain retained.','investigating') from None
+        store.artifact('runtime-preparation-'+str(number)+'.json',canonical(dict(command=command,exit_code=result.returncode,stdout_tail=result.stdout[-12000:].decode('utf-8','replace'),stderr_tail=result.stderr[-12000:].decode('utf-8','replace'),credential_free=True)))
+        if result.returncode:raise Hold('Pinned runtime prerequisite failed its preparation or hash check.','investigating')
+    save(marker,fingerprint.encode())
+
+def prepare_dependencies(store,repository,directory,image,github=None):
     directory=Path(directory);lock=directory/'package-lock.json'
+    if repository=='jumpserve-networks/jumpserve-infra':
+        if github is None:raise Hold('Trusted pinned runtime acquisition is unavailable.')
+        prepare_runtime_inputs(store,directory,image,github)
     if not lock.is_file():return None
     from .common import save
     sha=digest(lock.read_bytes());marker=store.spool/store.task['id']/'dependencies'/repository.split('/')[1]
