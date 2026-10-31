@@ -146,6 +146,8 @@ class SupervisorTests(unittest.TestCase):
             (root/'AGENTS.md').unlink();(root/'app/link').symlink_to('/etc/passwd')
             with self.assertRaises(Hold):source.snapshot(root)
         self.assertTrue(source.protected('tests/existing.test.ts',True))
+        for name in ('test_benchmark_ingest.py','test_sender_metrics.py','component.test.ts','component.spec.ts','module_test.py'):
+            self.assertTrue(source.protected(name,True))
         self.assertFalse(source.protected('tests/new.test.ts',False))
 
     def test_excluded_secret_and_dependency_paths_never_enter_patch(self):
