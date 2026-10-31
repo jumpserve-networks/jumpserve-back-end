@@ -220,7 +220,7 @@ class Controller:
                 if not self.state.get('feedback','').startswith(prefix):self.state['feedback']=prefix+self.state.get('feedback','')
                 dependency_failures=[]
                 for repo in self.state['sources']:
-                    receipt=checks.prepare_dependencies(self.store,repo,workspace/POLICY['repositories'][repo]['directory'],self.image)
+                    receipt=checks.prepare_dependencies(self.store,repo,workspace/POLICY['repositories'][repo]['directory'],self.image,self.github)
                     if receipt:dependency_failures.append(receipt)
                 if dependency_failures:
                     save(workspace/'dependency-feedback.json',canonical(dependency_failures))

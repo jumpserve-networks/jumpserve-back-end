@@ -1,5 +1,5 @@
 {
-  "version": "platform-supervisor-v1",
+  "version": "platform-supervisor-v1.1",
   "model": "gpt-6.1-sol",
   "paid_fallback": false,
   "required_check": "Platform validation",
@@ -10,22 +10,132 @@
   "repositories": {
     "jumpserve-networks/jumpserve-front-end": {
       "directory": "jumpserve-front-end",
-      "checks": [["npm", "ci", "--ignore-scripts"], ["npm", "run", "lint"], ["npm", "test"], ["npm", "run", "build"]],
+      "checks": [
+        [
+          "npm",
+          "ci",
+          "--ignore-scripts"
+        ],
+        [
+          "npm",
+          "run",
+          "lint"
+        ],
+        [
+          "npm",
+          "test"
+        ],
+        [
+          "npm",
+          "run",
+          "build"
+        ]
+      ],
       "component": "frontend"
     },
     "jumpserve-networks/jumpserve-back-end": {
       "directory": "jumpserve-back-end",
-      "checks": [["python3", "-B", "-m", "unittest", "test_benchmark_ingest", "test_sender_metrics", "-v"], ["python3", "-B", "-m", "unittest", "discover", "-s", "research_workflow/tests", "-v"], ["python3", "-B", "-m", "unittest", "discover", "-s", "platform_supervisor/tests", "-v"]],
+      "checks": [
+        [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "test_benchmark_ingest",
+          "test_sender_metrics",
+          "-v"
+        ],
+        [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "research_workflow/tests",
+          "-v"
+        ],
+        [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "platform_supervisor/tests",
+          "-v"
+        ]
+      ],
       "component": "backend"
     },
     "jumpserve-networks/jumpserve-infra": {
       "directory": "jumpserve-infra",
-      "checks": [["npm", "ci", "--ignore-scripts"], ["npm", "test", "--", "--runInBand"], ["npm", "run", "build"]],
+      "checks": [
+        [
+          "npm",
+          "ci",
+          "--ignore-scripts"
+        ],
+        [
+          "npm",
+          "test",
+          "--",
+          "--runInBand"
+        ],
+        [
+          "npm",
+          "run",
+          "build",
+          "--",
+          "--noEmit"
+        ]
+      ],
       "component": "infrastructure"
     }
   },
-  "protected": ["AGENTS.md", ".github/", ".agents/", ".codex/", "platform_supervisor/", "bin/platform-", "bin/platform.ts", "assets/platform/", "lib/platform-supervisor-access.ts", "test/check_platform", "test/platform", "docs/platform-supervisor", "database/", "research_workflow/policies/", "research-workflow-runtime.json", "openclaw-worker-runtime.json", "lib/openclaw-worker.ts", "cdk.json"],
-  "source_exclusions": [".git", ".codex", ".agents", "node_modules", ".next", ".test-artifacts", "__pycache__", ".pytest_cache", ".venv", "cdk.out", ".runtime-backend", ".runtime-research", ".runtime-openclaw", "experiments"],
+  "protected": [
+    "AGENTS.md",
+    ".github/",
+    ".agents/",
+    ".codex/",
+    "platform_supervisor/",
+    "bin/platform-",
+    "bin/platform.ts",
+    "assets/platform/",
+    "lib/platform-supervisor-access.ts",
+    "test/check_platform",
+    "test/platform",
+    "docs/platform-supervisor",
+    "database/",
+    "research_workflow/policies/",
+    "research-workflow-runtime.json",
+    "openclaw-worker-runtime.json",
+    "lib/openclaw-worker.ts",
+    "cdk.json",
+    "bin/prepare-",
+    "real-world-runtime.json",
+    "autonomy-pdf-runtime.json",
+    "assets/openclaw/"
+  ],
+  "source_exclusions": [
+    ".git",
+    ".codex",
+    ".agents",
+    "node_modules",
+    ".next",
+    ".test-artifacts",
+    "__pycache__",
+    ".pytest_cache",
+    ".venv",
+    "cdk.out",
+    ".runtime-backend",
+    ".runtime-research",
+    ".runtime-openclaw",
+    "experiments",
+    "next-env.d.ts",
+    "tsconfig.tsbuildinfo",
+    ".runtime-autonomy-python"
+  ],
   "release_workflow": "platform-release.yml",
   "release_repository": "jumpserve-networks/jumpserve-infra"
 }
