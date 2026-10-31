@@ -30,6 +30,23 @@ def failure_status(sent,completed,http_status):
     # answer is a known failure. A cut stream after dispatch remains unknown.
     return 'failed' if not sent or completed is not None or http_status in (400,401,403,404,413,422,429) else 'unknown'
 
+def readiness(workspace,envelope,local_stops=(),known_complete=False):
+    """A local admission stop needs no final provider acknowledgement.
+
+    The proposal remains only a hint: the controller still freezes source and
+    executes every fixed check before any publication or release.
+    """
+    stopped=envelope.get('status') not in ('ok','timeout')
+    if stopped and (not local_stops or any(reason not in ('budget','slice') for reason in local_stops) or not known_complete):
+        return dict(ready=False,feedback='Native slice returned '+str((envelope.get('error') or {}).get('kind','error'))+'. Working source retained.')
+    proposal=Path(workspace)/'proposal.json'
+    if proposal.exists() and not proposal.is_symlink() and proposal.stat().st_size<=20000:
+        try:value=json.loads(proposal.read_bytes())
+        except (ValueError,UnicodeError):value={}
+        if value.get('version')=='platform-proposal-v1' and value.get('ready') is True and isinstance(value.get('summary'),str) and 0<len(value['summary'])<=4000:
+            return dict(ready=True,summary=value['summary'],readiness_origin='retained-proposal-after-local-admission-stop' if stopped else 'native-proposal')
+    return dict(ready=False,feedback='Native slice checkpoint; continue from retained files and progress.json.')
+
 NORMALIZE='''import os,stat,sys
 from pathlib import Path
 root=Path('/workspace');uid=int(sys.argv[1]);gid=int(sys.argv[2]);excluded=set(sys.argv[3].split(','));entries=[];total=0
@@ -87,7 +104,7 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
         'Read task.json first, then inspect only necessary files. Do not copy secrets into source.\nPrevious scheduling/check feedback:\n'+feedback[:20000],encoding='utf-8')
     store.artifact('coding-instruction-'+directory.name+'.txt',message.read_bytes())
     prefix='js-platform-'+store.task['id'].replace('-','')+'-'; bridge_token=secrets.token_hex(32)
-    lock=threading.Lock(); failures=[]; rejections=[]; cache={}; admitted=set(); began=time.monotonic()
+    lock=threading.Lock(); failures=[]; rejections=[]; local_stops=[]; cache={}; admitted=set(); began=time.monotonic()
     def inference(received):
         with lock:
             if len(received)>4000000:raise Hold('Native request exceeds its byte limit.')
@@ -98,12 +115,16 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
             request.update(store=False,stream=True,model=POLICY['model']);body=canonical(request);sha=digest(body)
             if sha in cache:return cache[sha]
             if sha in admitted:raise Hold('Retained provider call cannot be replayed.','reconciling')
-            if time.monotonic()-began>POLICY['slice_seconds']-95:raise Hold('Slice checkpoint before another provider admission.','implementing')
+            if time.monotonic()-began>POLICY['slice_seconds']-95:
+                local_stops.append('slice');raise Hold('Slice checkpoint before another provider admission.','implementing')
             run_id=str(uuid.uuid4()); call_dir=store.spool/store.task['id']/'calls'/run_id
             save(call_dir/'request.json',body)
             artifact=store.artifact('model-request-'+run_id+'.json',body)
             call=store.rpc('begin-run',dict(id=run_id,request_sha256=sha,request_artifact_id=artifact['id']))
-            if call.get('denied'):raise Hold('Model admission stopped: '+call['denied'], 'budget' if call['denied']=='budget' else 'implementing')
+            if call.get('denied'):
+                store.artifact('model-admission-stop-'+run_id+'.json',canonical(dict(request_sha256=sha,denied=call['denied'],provider_dispatched=False)))
+                local_stops.append(call['denied'])
+                raise Hold('Model admission stopped: '+call['denied'], 'budget' if call['denied']=='budget' else 'implementing')
             admitted.add(sha); status='unknown'; completed=None;reason=None;sent=False;http_status=None
             raw_path=call_dir/'response.bin'
             try:
@@ -159,13 +180,8 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
         if rejections:
             if 401 in rejections and token_source is runtime.credential:runtime.credential()
             raise Hold('Provider explicitly rejected a retained request (HTTP '+str(rejections[-1])+'); retry is scheduled without a paid fallback.','investigating')
-        if envelope.get('status') not in ('ok','timeout'):
-            return dict(ready=False,feedback='Native slice returned '+str((envelope.get('error') or {}).get('kind','error'))+'. Working source retained.')
-        proposal=workspace/'proposal.json'
-        if proposal.exists() and not proposal.is_symlink() and proposal.stat().st_size<=20000:
-            value=json.loads(proposal.read_bytes())
-            if value.get('version')=='platform-proposal-v1' and value.get('ready') is True and isinstance(value.get('summary'),str) and 0<len(value['summary'])<=4000:return dict(ready=True,summary=value['summary'])
-        return dict(ready=False,feedback='Native slice checkpoint; continue from retained files and progress.json.')
+        runs=store.rows('runs')
+        return readiness(workspace,envelope,local_stops,bool(runs) and all(run['status']=='complete' for run in runs))
     finally:
         server.shutdown();server.server_close();thread.join(timeout=5)
         try:

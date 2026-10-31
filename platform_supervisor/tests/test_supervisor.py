@@ -11,7 +11,7 @@ from platform_supervisor.common import Hold, canonical, digest, save, identity
 from platform_supervisor.credentials import Credentials
 from platform_supervisor.github import GitHub, ApiError
 from platform_supervisor import source
-from platform_supervisor.native import failure_status
+from platform_supervisor.native import failure_status,readiness
 from platform_supervisor.releases import plan,ReleaseFailure
 from platform_supervisor.worker import Controller
 
@@ -31,6 +31,16 @@ class DurableStore:
         raise AssertionError(operation)
 
 class SupervisorTests(unittest.TestCase):
+    def test_completed_proposal_survives_local_budget_stop_without_accepting_unknown_or_cancelled_calls(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);error=dict(status='error',error=dict(kind='incomplete_turn'))
+            self.assertFalse(readiness(root,error,['budget'],True)['ready'])
+            (root/'proposal.json').write_text(json.dumps(dict(version='platform-proposal-v1',ready=True,summary='Retained tested source')))
+            recovered=readiness(root,error,['budget'],True)
+            self.assertTrue(recovered['ready']);self.assertEqual(recovered['readiness_origin'],'retained-proposal-after-local-admission-stop')
+            for reasons,complete in [([],True),(['budget'],False),(['paused-cancelled-or-deadline'],True)]:
+                self.assertFalse(readiness(root,error,reasons,complete)['ready'])
+
     def test_build_outputs_do_not_become_source_edits_and_runtime_inputs_stay_frozen(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);(root/'app.ts').write_text('source')
