@@ -421,10 +421,11 @@ def public_snapshot(study_id, include_diagnostics=False):
                              reason=public_reason(w.get('reason'), workflow_reasons.get(w['status'], 'Recorded status is unavailable.'))) for w in workflows]
     import autonomy
     health = autonomy.runtime_health()
+    defaults = autonomy.current_defaults()
     runtime = {k: health[k] for k in ('runtime', 'model_id', 'status', 'updated_at') if k in health}
     result = dict(version=PUBLIC_VERSION, access='public-read-only', study=dict(id=study_id, title=paper_titles.display_title(studies[0])),
         jobs=public_jobs, workers_enabled=os.environ.get('RESEARCH_QUEUE_WORKERS_ENABLED') == 'true',
-        autonomy=dict(version=autonomy.VERSION, access='public-read-only', defaults={k: autonomy.DEFAULTS[k] for k in ('maximum_spend_usd', 'elapsed_days', 'attempts_per_claim', 'parallel_claims_per_paper', 'global_parallel_claims')},
+        autonomy=dict(version=autonomy.VERSION, access='public-read-only', defaults={k: defaults[k] for k in ('maximum_spend_usd', 'elapsed_days', 'attempts_per_claim', 'parallel_claims_per_paper', 'global_parallel_claims','budget_policy') if k in defaults},
             enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED') == 'true', runtime=runtime,
             workflows=public_workflows, tasks=public_tasks, coverage=dict(workflows=len(workflows), tasks=len(public_tasks))),
         coverage=dict(jobs=len(public_jobs)),

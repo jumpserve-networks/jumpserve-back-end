@@ -33,7 +33,15 @@ class Controller:
         return self.flags
 
     def coding_available(self):
-        return self.flags.get('committed_cents',0)+100<=self.flags.get('max_reserved_cents',self.store.task.get('max_reserved_cents',10000))
+        spent=self.flags.get('committed_cents')
+        maximum=self.flags.get('max_reserved_cents',self.store.task.get('max_reserved_cents'))
+        if type(spent) is not int or spent<0 or type(maximum) is not int or maximum < -1:
+            raise Hold('Recorded category budget is missing or invalid.','reconciling')
+        calls=self.flags.get('model_calls',0)
+        call_maximum=self.flags.get('max_model_calls',-1)
+        if ('model_calls' in self.flags)!=('max_model_calls' in self.flags) or type(calls) is not int or calls<0 or type(call_maximum) is not int or call_maximum < -1:
+            raise Hold('Recorded category call budget is missing or invalid.','reconciling')
+        return (maximum==-1 or spent+100<=maximum) and (call_maximum==-1 or calls+1<=call_maximum)
 
     def save_state(self):self.store.rpc('progress',dict(checkpoint=self.state))
 

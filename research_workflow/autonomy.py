@@ -31,17 +31,23 @@ def uid(parent,key):return str(uuid.uuid5(uuid.UUID(parent),key))
 def control(task,operation,payload):
  return store.rpc('research_autonomy_control',dict(p_operation=operation,p_actor=task.get('actor_id'),p_study=task.get('study_id'),p_payload=dict(payload,task_id=task['id'],token=task.get('lease_token'))))
 
+def current_defaults():
+ if os.environ.get('RESEARCH_CATEGORY_BUDGETS_ENABLED')!='true':return dict(DEFAULTS)
+ import budget_policy
+ return budget_policy.assessment_defaults(DEFAULTS)
+
 def start(actor,body):
  if set(body)!={'request_id','paper','autonomous'} or body['autonomous'] is not True:raise ValueError('Submit one paper and its initial autonomous request; application limits cannot be overridden.')
  paper=paper_details(body['paper'])
  if paper.get('study_kind','paper')!='paper':raise ValueError('Autonomous paper verification requires a published paper identity.')
  paper['study_kind']='paper';study=identifier(body['request_id'])
- result=store.rpc('research_autonomy_control',dict(p_operation='start',p_actor=actor,p_study=study,p_payload=start_payload(study,paper)))
+ result=store.rpc('research_autonomy_control',dict(p_operation='start',p_actor=actor,p_study=study,p_payload=start_payload(study,paper,current_defaults())))
+ if result.get('denied')=='budget':raise ValueError('The current assessment budget cannot admit the retained intake reservation.')
  result['dispatch']=wake()
  return result
 
-def start_payload(study,paper):
- initial=canonical(dict(instruction='Assess this paper autonomously within application defaults. Preserve unresolved findings and explain external blockers; never force a desired result.',paper=paper,defaults=DEFAULTS)).decode()
+def start_payload(study,paper,defaults=None):
+ initial=canonical(dict(instruction='Assess this paper autonomously within application defaults. Preserve unresolved findings and explain external blockers; never force a desired result.',paper=paper,defaults=DEFAULTS if defaults is None else defaults)).decode()
  return dict(paper=paper,initial_prompt=initial,intake_id=uid(study,'autonomous-intake'))
 
 def wake():
@@ -59,7 +65,7 @@ def runtime_health():
   return model_dispatch.health()
  return dict(runtime='bedrock',model_id=model.MODEL,status='configured')
 
-def capability():return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',prompt_module=model.MODULE,runtime=runtime_health(),attempt_definition='One model invocation, including failures; polling does not consume an attempt.',limit_kind='Conservative aggregate commitments; unknown charges are retained, not zero.')
+def capability():return dict(version=VERSION,defaults=current_defaults(),enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',prompt_module=model.MODULE,runtime=runtime_health(),attempt_definition='One model invocation, including failures; polling does not consume an attempt.',limit_kind='Conservative aggregate commitments; unknown charges are retained, not zero.')
 
 def rows(kind,study,**params):return store.rows(kind,dict(study_id='eq.'+study,**params))
 def one(kind,study,value):
@@ -79,7 +85,7 @@ def overview(studies):
  if set(claim_ids)!=set(names):raise store.StoreError('Autonomous claim identity coverage is incomplete.')
  for task in tasks:
   task.pop('context',None);task['claim_title']=names.get(task['claim_id'])
- return dict(version=VERSION,defaults=DEFAULTS,enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',runtime=runtime_health(),workflows=workflows,tasks=tasks,coverage=dict(workflows=len(workflows),tasks=len(tasks)))
+ return dict(version=VERSION,defaults=current_defaults(),enabled=os.environ.get('RESEARCH_AUTONOMY_ENABLED')=='true',runtime=runtime_health(),workflows=workflows,tasks=tasks,coverage=dict(workflows=len(workflows),tasks=len(tasks)))
 
 def history(study,task_id,before=None):
  task=one('autonomy_tasks',study,identifier(task_id))
@@ -381,7 +387,12 @@ def build_context(task):
   prior_attempts=[{k:r.get(k) for k in ('id','number','stage','status','output','reason','request_sha256','response_sha256')} for r in rows('autonomy_turns',task['study_id'],task_id='eq.'+task['id'],order='number.desc',limit=3)])
  value['source_material']=inputs.source_text(task,claim,source,one)[0]
  maximum=task['workflow']['max_spend_cents']
- value['resource_authorization']=dict(version='assessment-budget-amendment-v2' if maximum is None or maximum>100000 else 'assessment-budget-amendment-v1',max_spend_cents=maximum,committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
+ policy=current_defaults().get('budget_policy') if os.environ.get('RESEARCH_CATEGORY_BUDGETS_ENABLED')=='true' else None
+ if policy:
+  maximum=None if policy['max_spend_cents']==-1 else policy['max_spend_cents']
+  value['remaining_commitment_cents']=None if maximum is None else max(0,maximum-task['workflow']['committed_cents'])
+ value['resource_authorization']=dict(version='assessment-budget-amendment-v2' if maximum is None or maximum<10000 or maximum>100000 else 'assessment-budget-amendment-v1',max_spend_cents=maximum,committed_cents=task['workflow']['committed_cents'],deadline_at=task['workflow']['deadline_at'])
+ if policy:value['resource_authorization'].update(version='assessment-budget-amendment-v2',budget_policy=policy)
  value['method_policy']=dict(version=methods.VERSION,sha256=digest(methods.INSTRUCTION.encode()))
  if task['stage'] in ('planning','building','comprehension','critic'):
   import experiment_builder
