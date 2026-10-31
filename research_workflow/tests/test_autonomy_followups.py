@@ -164,7 +164,7 @@ class Followups(unittest.TestCase):
 
     def test_uncertain_bounded_dispatch_never_invokes_again(self):
         state=dict(phase='dispatching',deadline='2099-01-01T00:00:00Z',cancel_requested=False)
-        with patch.object(store:=network_execution.store,'rpc') as rpc:
-            self.assertEqual(network_execution.bounded_response({'id':str(uuid.uuid4())},state,{'runner':'bounded-tcp-v1'}),dict(status='launch-unconfirmed'));rpc.assert_not_called()
+        with patch.object(store:=network_execution.store,'rpc') as rpc,patch.object(store,'rows',return_value=[]):
+            self.assertEqual(network_execution.bounded_response({'id':str(uuid.uuid4()),'study_id':str(uuid.uuid4())},state,{'runner':'bounded-tcp-v1'}),dict(status='launch-unconfirmed'));rpc.assert_not_called()
 
 if __name__=='__main__':unittest.main()

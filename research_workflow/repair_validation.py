@@ -9,6 +9,10 @@ from pathlib import Path
 import subprocess
 import tempfile
 import time
+import io
+import stat
+import zipfile
+import store
 from workflow import canonical,digest
 import generated_package
 import source_project
@@ -97,7 +101,32 @@ def validate(job,workspace,context,retain):
             path=project/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
         return _validate(job,workspace,context,retain,project,before)
 
+def source_change(job,context,sealed):
+    """Compare actual source with its immutable pre-repair workspace, not notes."""
+    handoff=context.get('native_repair_handoff')
+    if handoff is None:return None  # Historical protocol; new handoffs bind it.
+    import experiment_builder
+    handoff=experiment_builder.repair_handoff(context)
+    pointer=handoff.get('baseline_checkpoint')
+    if pointer is None:raise ValueError('Native repair baseline checkpoint is unavailable; retain it before editing.')
+    raw=store.artifact_bytes(job['study_id'],pointer['artifact_id'],maximum=4000001)
+    if len(raw)>4000000 or digest(raw)!=pointer['sha256']:raise ValueError('Native repair baseline original-byte hash differs.')
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        matches=[item for item in archive.infolist() if item.filename=='project/experiment.py']
+        if len(matches)>1 or any(item.file_size>1000000 or stat.S_ISLNK(item.external_attr>>16) or item.is_dir() for item in matches):
+            raise ValueError('Native repair baseline source is ambiguous or invalid.')
+        original=archive.read(matches[0]) if matches else None
+    current=generated_package.members(sealed).get('experiment.py')
+    if not current or current==original:
+        raise ValueError('Repair experiment.py is unchanged from the retained failure; edit actual code before validation.')
+    return dict(version='repair-source-change-v1',baseline_checkpoint=pointer,
+        original_source_status='recorded' if original is not None else 'absent-in-retained-checkpoint',
+        original_experiment_sha256=digest(original) if original is not None else None,
+        current_experiment_sha256=digest(current),changed=True,
+        scope='Original-byte source change only; not correctness or independent scientific validation.')
+
 def _validate(job,workspace,context,retain,project,before):
+    changed=source_change(job,context,before)
     plans=test_plan(workspace,context)
     incident=context['repair_packet']['incident_sha256']
     metadata=[dict(path=path,original=retain(job,'repair-test-plan-'+str(index)+'.json',raw)) for index,(path,raw) in enumerate(plans)]
@@ -121,7 +150,7 @@ def _validate(job,workspace,context,retain,project,before):
         output.seek(0);error.seek(0);stdout,stderr,code=output.read(64001),error.read(64001),process.returncode
     # Preserve unsuccessful checks as well. Never truncate them into a pass.
     out=retain(job,'repair-check-stdout.bin',stdout);err=retain(job,'repair-check-stderr.bin',stderr)
-    report=dict(version=VERSION,incident_sha256=incident,project_sha256=digest(before),runner_sha256=digest(RUNNER.encode()),image=image,test_plan_binding_version='repair-test-plan-binding-v2',test_plans=metadata,
+    report=dict(version=VERSION,incident_sha256=incident,project_sha256=digest(before),runner_sha256=digest(RUNNER.encode()),image=image,test_plan_binding_version='repair-test-plan-binding-v2',test_plans=metadata,source_change=changed,
         exit_code=code,stdout=out,stderr=err,passed=False,stop_reason=stopped,output_prefix_only=stopped is not None or len(stdout)>64000 or len(stderr)>64000,measured_charges_usd=None,scope='Software development only; AI-authored tests are not independent, human or scientific validation.')
     if not stopped and len(stdout)<=64000 and len(stderr)<=64000 and code==0:
         try:

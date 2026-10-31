@@ -1,0 +1,28 @@
+{
+  "version": "network-traffic-100gb-validation-v1",
+  "scope": "Local software development regressions; no model calls, cloud experiments, scientific findings or 100-GB transfer campaign.",
+  "questions": [
+    "Can netem and AI-built protocols declare exactly 100000000000 decimal bytes while rejecting larger, ambiguous or invalid limits?",
+    "Do exact policy and immutable executor identities, approval gates, observation counts, scientific configurations and host/output/time limits remain enforced?",
+    "Does the actual process watchdog retain counter overshoot and stop above the expanded limit without transferring 100 GB?"
+  ],
+  "controls": [
+    "Preserve original v1/v2 policy bytes and existing frozen assessment protocols.",
+    "Keep generic custom-package-v1 and other runners at their existing 10000000000-byte envelope.",
+    "Both v3 policies remain unapproved pending fresh release qualification; approved temporary fixtures exercise quote mechanics only.",
+    "Use a real sleeping child process with controlled sampled counters; this is a software check, not network or billing calibration."
+  ],
+  "pass_criteria": [
+    "Exact ceiling accepted by the relevant compiler and an explicitly approved fixture quote; ceiling plus one, booleans, nulls, strings and nonfinite values rejected by protocol validation.",
+    "Unapproved policies, stale hashes, expired policies and changed host/time/output bounds deny admission.",
+    "The full source loss grid and three replications remain unchanged; compiler does not expand a requested limit to the maximum.",
+    "Controlled counter watchdog stops the real child and records actual sampled delta and overshoot."
+  ],
+  "production_conditions": [
+    "Explicit release authorization; verify AWS account 395567831870 and Supabase project regphejnlvfpyokpniny before mutations.",
+    "Fresh retained pricing review for the expanded built-package reservation; original source bytes and hashes, measured charges remain missing.",
+    "Qualified immutable runtime/executor/policy hashes and Linux operational controls, then audited recovery without replaying uncertain operations."
+  ],
+  "resource_limits": {"real_model_calls": 0, "cloud_experiments": 0, "requested_network_transfer_bytes": 0},
+  "reviewer": {"identity": "Codex implementing AI", "type": "AI", "independent": false, "human": false, "held_out": false}
+}

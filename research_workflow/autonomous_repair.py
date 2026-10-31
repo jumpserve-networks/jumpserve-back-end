@@ -98,7 +98,10 @@ def original(task, pointer, maximum=150000):
 
 def diagnose(task, record):
     """Read stored identities; never invoke a provider or submit an experiment."""
-    pending = rows(task, 'builder_calls', task_id='eq.' + task['id'], status='in.(running,unknown)', limit=1)
+    pending = rows(task, 'builder_calls', task_id='eq.' + task['id'], status='in.(running,unknown)', limit=101)
+    if len(pending)>100:raise ValueError('Uncertain native call coverage exceeds the bounded diagnosis.')
+    import dispatch_recovery
+    pending=[c for c in pending if c['status']=='running' or not dispatch_recovery.reconciled_call(task,c,original,rows)]
     live = rows(task, 'autonomy_turns', task_id='eq.' + task['id'], status='eq.running', limit=1)
     if pending or live:
         return dict(waiting=True, reason='An original native call or controller turn is unresolved; no replacement call admitted.')
@@ -230,6 +233,7 @@ def drive(task, normal_step, advance):
         if document['native_repair']:
             record = transition(task, record, 'repairing', 'Native implementation repair with the retained checkpoint and fresh incident-specific instructions.', evidence)
             context.update(repair_directive=REPAIR_INSTRUCTION, repair_packet=dict(incident=json.loads(record['incident_raw']), incident_sha256=record['incident_sha256'], diagnosis=artifact, reconciled_dispatches=document['reconciled_dispatches'], command='Inspect original native history and project files; implement and run a concrete development check next.'))
+            context.pop('native_repair_handoff',None)  # New incident, original context remains in its audit.
             context['builder_feedback'] = ('Repair this incident: '+str(json.loads(record['incident_raw']).get('reason','Recorded implementation failure'))+
                 '. Continue from existing files and verified reads. Write or amend project/experiment.py, execute a bounded development check, then supply the exact incident-bound repair tests/plan required by repair_directive. A repeated read-only slice is not progress.')
             context['repair_progress'] = progress(record)
@@ -254,6 +258,7 @@ def drive(task, normal_step, advance):
         record = transition(task, record, 'resolved', 'Repair completed; resume original claim without rewriting its finding.', record['evidence'])
         context['repair_progress'] = progress(record)
         context.pop('repair_directive', None); context.pop('repair_packet', None)
+        context.pop('native_repair_handoff',None)
         return advance(task, 'queued', stage=record['evidence']['resume_stage'], context=context, reason=record['reason'])
     raise ValueError('Unsupported active repair state.')
 
@@ -263,6 +268,24 @@ def route(task, status, context, stage, reason):
     if not enabled():
         return None
     ref = context.get('repair_progress')
+    if status=='queued' and context.get('native_repair_handoff') and stage=='comprehension' and context.get('proposal') and (not ref or ref['state'] not in ACTIVE):
+        # Budget resumption can retain a terminal historical repair record.
+        # Verify the new candidate rather than carry edit/exec instructions into
+        # a fresh data-only scientific review or rewrite that historical record.
+        import experiment_builder
+        handoff=experiment_builder.repair_handoff(context)
+        validation=context.get('repair_validation')
+        if not validation:raise ValueError('Original server repair validation receipt required before resumption.')
+        report=json.loads(original(task,validation))
+        hashes={c['details']['test_config']['private_inputs']['project.zip']['sha256'] for c in context['proposal']['protocol']['configurations']}
+        changed=report.get('source_change') or {}
+        if report.get('passed') is not True or report.get('incident_sha256')!=handoff['incident_sha256'] or hashes!={report.get('project_sha256')} or changed.get('changed') is not True or changed.get('baseline_checkpoint')!=handoff.get('baseline_checkpoint'):
+            raise ValueError('Repair validation does not match this exact incident, source baseline and frozen project.')
+        context=copy.deepcopy(context)
+        context['native_repair_completion']=dict(version='native-repair-handoff-v1',validation=validation,incident_sha256=handoff['incident_sha256'],
+            historical_repair_state=ref['state'] if ref else None,status='validated-candidate;fresh-scientific-reviews-pending')
+        for key in ('repair_directive','repair_packet','native_repair_handoff'):context.pop(key,None)
+        return dict(status=status,context=context,reason=reason)
     if ref and ref['state'] in ACTIVE:
         found = rows(task, 'autonomy_repairs', id='eq.' + ref['id'], task_id='eq.' + task['id'], limit=2)
         if len(found) != 1:
@@ -290,11 +313,18 @@ def route(task, status, context, stage, reason):
             hashes={c['details']['test_config']['private_inputs']['project.zip']['sha256'] for c in configs}
             if report.get('passed') is not True or report.get('incident_sha256')!=record['incident_sha256'] or hashes!={report.get('project_sha256')}:
                 raise ValueError('Repair validation does not match this exact incident and frozen project.')
+            if context.get('native_repair_handoff'):
+                import experiment_builder
+                handoff=experiment_builder.repair_handoff(context)
+                changed=report.get('source_change') or {}
+                if changed.get('changed') is not True or changed.get('baseline_checkpoint')!=handoff.get('baseline_checkpoint'):
+                    raise ValueError('Repair validation lacks the exact retained source-change baseline.')
             evidence = dict(record['evidence'], validated=True, candidate_sha256=digest(canonical(context['proposal'])),development_validation=validation, validator='executed-software-checks-frozen-package-and-semantic-protocol-v1', resume_stage='comprehension')
             for state in ('validating', 'resuming', 'resolved'):
                 record = transition(task, record, state, 'Versioned implementation candidate validated; fresh comprehension and critic reviews remain pending.', evidence)
             context['repair_progress'] = progress(record)
             context.pop('repair_directive', None); context.pop('repair_packet', None)
+            context.pop('native_repair_handoff',None)
             return dict(status=status, context=context, reason=reason)
     if status == 'blocked':
         result = enqueue(task, context, reason)

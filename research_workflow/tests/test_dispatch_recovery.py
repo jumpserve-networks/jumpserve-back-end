@@ -13,7 +13,7 @@ class Fixture:
   self.task=dict(id=uid(),study_id=uid(),actor_id=uid(),status='waiting',context={})
   self.logical=canonical(dict(builder=dict(context={})))
   self.d=dict(id=uid(),task_id=self.task['id'],study_id=self.task['study_id'],status='unknown',request_raw=self.logical.decode(),request_sha256=digest(self.logical),created_at='2026-10-29T00:00:00Z',ended_at='2026-10-29T00:04:00Z',provenance={})
-  self.blobs={};self.records={};self.calls=[];self.proofs=[]
+  self.blobs={};self.records={};self.calls=[];self.proofs=[];self.call_proofs=[]
   self.checkpoint=self.add(b'exact original checkpoint')
   for _ in range(count):
    req=self.add(canonical(dict(model='gpt-6.1-sol',store=False,stream=True,input=[])))
@@ -26,6 +26,7 @@ class Fixture:
  def rows(self,task,kind,**q):
   if kind=='builder_calls':return self.calls
   if kind=='model_reconciliations':return self.proofs
+  if kind=='builder_call_reconciliations':return [r for r in self.call_proofs if r['call_id']==q['call_id'][3:]]
   if kind=='artifacts':return [self.records[q['id'][3:]]]
   return []
  def original(self,task,pointer,maximum=150000):
@@ -43,6 +44,47 @@ class Fixture:
   stack=ExitStack();stack.enter_context(patch.object(repair,'rows',side_effect=self.rows));stack.enter_context(patch.object(store,'artifact_bytes',side_effect=lambda study,ident,**kw:self.blobs[ident]));return stack
 
 class Recovery(unittest.TestCase):
+ def test_legacy_unknown_with_retained_transport_metadata_can_be_verified(self):
+  f=Fixture(1);call=f.calls[0];call['status']='unknown'
+  def retain(name,raw,kind):return f.add(raw,provenance=dict(kind=kind,dispatch_id=f.d['id']))
+  with tempfile.TemporaryDirectory() as tmp,f.patches(),patch.object(store,'rpc') as rpc:
+   recovery.reconcile_native_calls(f.task,f.d,Path(tmp),retain)
+  self.assertEqual(rpc.call_count,1);proof=rpc.call_args.args[1]['p_proof']
+  self.assertEqual(proof['capture_origin'],'retained-database-transport-metadata-and-terminal-stream');self.assertEqual(proof['response_sha256'],call['response_sha256']);self.assertEqual(call['status'],'unknown')
+ def test_unknown_native_finish_recovers_exact_terminal_stream_without_replaying(self):
+  f=Fixture(1);call=f.calls[0];original=copy.deepcopy(call);call['status']='unknown';before=copy.deepcopy(call)
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);raw=f.blobs[call['response_artifact_id']];(root/'call-1-response.bin').write_bytes(raw)
+   receipt=dict(version=recovery.CALL_VERSION,call_id=call['id'],dispatch_id=call['dispatch_id'],task_id=call['task_id'],study_id=call['study_id'],request_sha256=call['request_sha256'],response_filename='call-1-response.bin',response_sha256=digest(raw),status='complete',response_received=True,http_status=200)
+   (root/'call-1-completion.json').write_bytes(canonical(receipt))
+   def retain(name,raw,kind):return f.add(raw,provenance=dict(kind=kind,dispatch_id=f.d['id']))
+   def rpc(name,p):
+    self.assertEqual(name,'research_builder_call_reconcile');f.call_proofs.append(dict(call_id=p['p_call'],artifact_id=p['p_artifact'],sha256=p['p_sha256'],proof=p['p_proof'],request_sha256=call['request_sha256']))
+   with f.patches(),patch.object(store,'rpc',side_effect=rpc),patch.object(runtime,'credential') as token,patch.object(runtime,'http_request') as invoke:
+    recovery.reconcile_native_calls(f.task,f.d,root,retain)
+    proof=recovery.ledger(f.task,f.d,f.original,f.rows)
+    recovery.reconcile_native_calls(f.task,f.d,root,retain)
+   self.assertEqual(len(f.call_proofs),1);self.assertEqual(proof,[{k:original[k] for k in ('id','request_sha256','response_sha256')}]);self.assertEqual(call,before);token.assert_not_called();invoke.assert_not_called()
+ def test_native_completion_receipt_cannot_establish_changed_or_missing_stream(self):
+  for defect in ('missing-receipt','changed-stream','wrong-request','incomplete-stream','non-200'):
+   with self.subTest(defect=defect),tempfile.TemporaryDirectory() as tmp:
+    f=Fixture(1);call=f.calls[0];call['status']='unknown';root=Path(tmp);raw=f.blobs[call['response_artifact_id']]
+    if defect=='incomplete-stream':raw=b'data: '+canonical(dict(type='response.created',response={})) +b'\n\n';call['response_sha256']=None
+    (root/'call-1-response.bin').write_bytes(raw)
+    receipt=dict(version=recovery.CALL_VERSION,call_id=call['id'],dispatch_id=call['dispatch_id'],task_id=call['task_id'],study_id=call['study_id'],request_sha256='a'*64 if defect=='wrong-request' else call['request_sha256'],response_filename='call-1-response.bin',response_sha256=digest(raw),status='complete',response_received=True,http_status=503 if defect=='non-200' else 200)
+    if defect!='missing-receipt':(root/'call-1-completion.json').write_bytes(canonical(receipt))
+    else:call['response_received']=None
+    if defect=='changed-stream':(root/'call-1-response.bin').write_bytes(raw+b'changed')
+    with f.patches(),patch.object(store,'rpc') as rpc:
+     if defect=='missing-receipt':recovery.reconcile_native_calls(f.task,f.d,root,Mock())
+     else:
+      with self.assertRaises(Exception):recovery.reconcile_native_calls(f.task,f.d,root,Mock())
+     rpc.assert_not_called()
+ def test_atomic_completion_publication_preserves_existing_original(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   path=Path(tmp)/'completion.json';recovery.write_once(path,b'original');recovery.write_once(path,b'original')
+   with self.assertRaisesRegex(ValueError,'original bytes differ'):recovery.write_once(path,b'changed')
+   self.assertEqual(path.read_bytes(),b'original');self.assertEqual(list(Path(tmp).iterdir()),[path])
  def test_damaged_candidate_does_not_starve_other_claims_and_scan_cursor_advances(self):
   candidates=[dict(id=uid()),dict(id=uid())]
   with tempfile.TemporaryDirectory() as tmp:
@@ -98,6 +140,16 @@ class Recovery(unittest.TestCase):
    self.assertEqual(json.loads((taskroot/'checkpoint-reference.json').read_bytes()),proof['checkpoint']);self.assertEqual(f.d,before)
 
 class Outbox(unittest.TestCase):
+ def test_completion_is_never_published_before_its_durable_outbox_intent(self):
+  job=dict(id=uid(),study_id=uid());order=[];original_write=recovery.write_once
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);directory=root/job['id'];directory.mkdir()
+   def write(path,raw):
+    order.append(path.name)
+    if path.name=='completion.json':self.assertTrue((root/'pending-completions'/(job['id']+'.json')).is_file())
+    original_write(path,raw)
+   with patch.object(recovery,'write_once',side_effect=write):runtime.save_completion(job,directory,{'retained':True},{'status':'complete'},root/'pending-completions')
+   self.assertEqual(order,[job['id']+'.json','completion.json'])
  def test_storage_failure_retries_exact_bytes_without_any_model_transport(self):
   logical=canonical(dict(test='original'));job=dict(id=uid(),study_id=uid(),actor_id=uid(),lease_token=uid(),request_sha256=digest(logical));calls=[];saved={};finished={}
   def rpc(op,payload):

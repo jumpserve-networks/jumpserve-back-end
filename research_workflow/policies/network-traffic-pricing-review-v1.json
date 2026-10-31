@@ -1,0 +1,29 @@
+{
+  "account": "395567831870",
+  "built_package_reservation_cents": 2000,
+  "illustrative_100gb_30minute_allowance_usd": "9.024",
+  "measured_charges_usd": null,
+  "netem_private_namespace_reservation_cents": 100,
+  "region": "us-east-1",
+  "reviewed_at": "2026-10-31T23:00:17.601471+00:00",
+  "reviewer": {
+    "human": false,
+    "identity": "Codex implementing AI",
+    "independent": false
+  },
+  "scope": "Conservative reservation for one fixed disposable host; sampled traffic can overshoot and is not a billing meter or invoice cap. Bootstrap, control-plane/storage requests and shared services are not separately measured. No free-tier credit assumed. Exact-source Linux qualification and explicit deployment remain required.",
+  "source": "AWS Price List GetProducts; original JSON retained in release evidence",
+  "source_sha256": {
+    "compute": "870a9c65f5b5e205bb96350838f7e1644550e7c753a76a0ede2b7a6f9a99000e",
+    "ipv4": "2b5eef2b33f539dda3a0445224ce6c4ea44c2039f535cb5474d4e49952a5e117",
+    "storage": "b4bd12278ecb01977e4785649928b2f64b14940ff48b8c6bf94b894c4a24a33c",
+    "transfer": "8302c3f30955d3c8dc74d383e11f789fa47a6eb085ef8367ab6c3393902e5e76"
+  },
+  "usd_rates": {
+    "gp3_per_gb_month": "0.08",
+    "internet_out_first_tier_per_gb": "0.09",
+    "public_ipv4_per_hour": "0.005",
+    "t3_medium_per_hour": "0.0416"
+  },
+  "version": "network-traffic-pricing-review-v1"
+}

@@ -243,11 +243,14 @@ def _persist_completed(job,directory):
 
 def save_completion(job,directory,answer,receipt,pending):
  """Capture before transport; the outbox contains private worker metadata."""
+ from dispatch_recovery import write_once
  raw=canonical(dict(answer=answer,receipt=receipt));path=directory/'completion.json'
- with path.open('xb') as output:output.write(raw);output.flush();os.fsync(output.fileno())
  pending.mkdir(mode=0o700,exist_ok=True)
  marker=pending/(str(uuid.UUID(job['id']))+'.json')
- with marker.open('xb') as output:output.write(canonical(job));output.flush();os.fsync(output.fileno())
+ write_once(marker,canonical(job))
+ # Durable intent precedes the payload: a crash after completion publication
+ # can never strand captured results without an outbox entry.
+ write_once(path,raw)
  return marker
 
 def retry_completions(spool):

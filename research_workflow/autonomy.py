@@ -421,6 +421,7 @@ def build_context(task):
  if context.get('builder_recovery_plan'):value['builder_recovery_plan']=context['builder_recovery_plan']
  if context.get('repair_directive'):
   value['repair_directive']=context['repair_directive'];value['repair_packet']=context['repair_packet']
+  if context.get('native_repair_handoff'):value['native_repair_handoff']=context['native_repair_handoff']
  if context.get('prepared_id'):
   _,available=choices(task['study_id'],claim['id'],context['prepared_id'])
   eligible=[j for j in available if j['id'] not in context.get('tried_check_ids',[])]
@@ -668,13 +669,21 @@ def numeric_finding(task):
  return ('discrepant' if 'discrepant' in labels else 'reproduced',list(unique.values()),coverage) if labels else None
 
 def step(task):
+ if task['stage'] in ('planning','building') and task['context'].get('repair_directive'):
+  import experiment_builder
+  handoff=experiment_builder.repair_handoff(task['context'])
+  if task['stage']=='planning' or task['context'].get('native_repair_handoff') is None:
+   if not model.OPENCLAW or not experiment_builder.enabled():
+    return advance(dict(task,_repair_external=True),'blocked',reason='Native repair builder is unavailable; original checkpoint retained and no planning-only call admitted.')
+   context=copy.deepcopy(task['context']);context['native_repair_handoff']=handoff
+   return advance(task,'queued',stage='building',context=context,reason='Implementation repair handed to native file/edit/command tools; original incident, checkpoint, criteria and limits retained.')
  if task['stage']=='building':
   # Another claim may finish reusable code while this one is checkpointed.
   # Reconsider that exact package prospectively; never copy its verdict or
   # bypass this claim's own immutable criterion, semantic checks or reviews.
   import experiment_builder
   source_id=task['context'].get('source_id')
-  if source_id:
+  if source_id and not task['context'].get('repair_directive'):
    packages=experiment_builder.catalog(task['study_id'],source_id)
    tried=set(task['context'].get('builder_reuse_considered',[]))
    fresh=[p for p in packages if p['id'] not in tried and p.get('task_id')!=task['id']]
@@ -703,6 +712,7 @@ def step(task):
  if task['stage']=='building':
   runtime=answer.get('runtime') or {}
   if runtime.get('repair_validation'):context['repair_validation']=runtime['repair_validation']
+  if runtime.get('native_repair_handoff'):context['native_repair_handoff']=runtime['native_repair_handoff']
   if runtime.get('checkpoint'):context['builder_checkpoint']=runtime['checkpoint']
   if runtime.get('feedback'):context['builder_feedback']=runtime['feedback']
   if runtime.get('scheduling_feedback'):context['builder_scheduling_feedback']=runtime['scheduling_feedback']
@@ -729,7 +739,10 @@ def step(task):
       return advance(task,'blocked',context=context,reason='Builder remained unchanged after targeted replanning. Recorded integration/implementation repair is required before further spending; original checkpoint retained.')
      context['builder_stalled_recovery_keys']=(seen+[recovery_key])[-32:]
      context['builder_recovery_plan']=dict(version=experiment_builder.WORK_PACKET_VERSION,recovery_key=recovery_key,action='Use the bounded work packet, implement the missing source and execute a concrete development check. Do not repeat metadata/protocol inspection unchanged.')
-     return advance(task,'queued',stage='planning',context=context,reason=reason)
+     # Replanning has no file/exec tools. An unfinished implementation repair
+     # must act on this feedback in the native builder; the same failed recovery
+     # key still stops above rather than buying unchanged continuations.
+     return advance(task,'queued',stage='building' if context.get('repair_directive') else 'planning',context=context,reason=reason)
    return advance(task,'queued',stage='building',context=context,reason='Builder checkpoint retained; continuing from actual files and feedback within the original paper limits.',delay=5)
  if output['action']=='inspect':
   read=inspect_evidence(task,output['read_request']);context['evidence_read']=dict(read,requested_by_turn_id=answer['id'])
@@ -845,6 +858,8 @@ def process(task):
   context['repair_failure_turn_id']=error.turn_id
   if task['stage']=='building' and (error.provenance or {}).get('checkpoint'):
    context.update(builder_checkpoint=error.provenance['checkpoint'],builder_feedback=error.provenance.get('feedback'))
+  if task['stage']=='building' and (error.provenance or {}).get('native_repair_handoff'):
+   context['native_repair_handoff']=error.provenance['native_repair_handoff']
   retry=runtime_retry.decision(error.provenance,context.get('runtime_retry'),task['workflow']['deadline_at'])
   if retry:
    context.update(runtime_retry=dict(retry,failed_turn_id=error.turn_id),last_feedback=retry['reason'],last_turn_id=error.turn_id)

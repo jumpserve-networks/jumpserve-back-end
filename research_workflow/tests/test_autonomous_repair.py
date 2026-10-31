@@ -50,7 +50,7 @@ class Repair(unittest.TestCase):
    self.assertTrue(self.diagnostic({},receipt,dict(modelId='fixed'))['waiting'])
 
  def test_inflight_native_call_blocks_diagnosis_before_any_provider_action(self):
-  with patch.object(repair,'rows',side_effect=[[{'status':'unknown'}],[]]):
+  with patch.object(repair,'rows',side_effect=[[{'id':str(uuid.uuid4()),'status':'unknown'}],[],[]]):
    self.assertTrue(repair.diagnose(task(),dict(category='implementation'))['waiting'])
 
  def test_complete_original_response_requires_original_bytes_not_model_claims(self):
