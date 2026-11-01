@@ -16,6 +16,7 @@ import threading
 import time
 import uuid
 from .common import POLICY, canonical, digest, save, Hold
+from .repair import blocked_progress
 
 local_runtime=Path(__file__).resolve().parents[1]/'research_workflow'
 sys.path.insert(0,str(local_runtime if local_runtime.is_dir() else Path('/opt/jumpserve/runtime')))
@@ -37,7 +38,7 @@ def readiness(workspace,envelope,local_stops=(),known_complete=False):
     executes every fixed check before any publication or release.
     """
     stopped=envelope.get('status') not in ('ok','timeout')
-    if stopped and (not local_stops or any(reason not in ('budget','slice') for reason in local_stops) or not known_complete):
+    if stopped and (not local_stops or any(reason not in ('budget','slice','blocked-progress') for reason in local_stops) or not known_complete):
         return dict(ready=False,feedback='Native slice returned '+str((envelope.get('error') or {}).get('kind','error'))+'. Working source retained.')
     proposal=Path(workspace)/'proposal.json'
     if proposal.exists() and not proposal.is_symlink() and proposal.stat().st_size<=20000:
@@ -45,6 +46,8 @@ def readiness(workspace,envelope,local_stops=(),known_complete=False):
         except (ValueError,UnicodeError):value={}
         if value.get('version')=='platform-proposal-v1' and value.get('ready') is True and isinstance(value.get('summary'),str) and 0<len(value['summary'])<=4000:
             return dict(ready=True,summary=value['summary'],readiness_origin='retained-proposal-after-local-admission-stop' if stopped else 'native-proposal')
+    blocked=blocked_progress(workspace)
+    if blocked:return dict(ready=False,blocked=True,feedback=blocked['reason'],progress_sha256=blocked['progress_sha256'])
     return dict(ready=False,feedback='Native slice checkpoint; continue from retained files and progress.json.')
 
 NORMALIZE='''import os,stat,sys
@@ -133,6 +136,7 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
         'Exec timeoutSeconds must be an integer from 1 through 45. Use process polling for background commands, or let the controller run long builds in its fixed checks. '+
         'Implement and check the objective, repair recoverable failures, and write proposal.json with {"version":"platform-proposal-v1","summary":"...","ready":true}. '+
         'If incomplete, keep working files and write a concise progress.json. The controller runs fixed checks after your slice; only actual successful checks admit publication. '+
+        'For assessment repairs, read references/assessment-repair/summary.json first. The trusted controller supplies scoped diagnostics and source copies without credentials. If prerequisites prevent a safe correction, write progress.json with version platform-progress-v1, ready false, status blocked and remaining_blocker. This stops inference until evidence changes; do not repeatedly rerun checks or create logs in place of a repair. '+
         'Read task.json first, then inspect only necessary files. Do not copy secrets into source.\nPrevious scheduling/check feedback:\n'+feedback[:20000],encoding='utf-8')
     store.artifact('coding-instruction-'+directory.name+'.txt',message.read_bytes())
     prefix=container_prefix(store.task['id']); bridge_token=secrets.token_hex(32)
@@ -149,6 +153,8 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
             if sha in admitted:raise Hold('Retained provider call cannot be replayed.','reconciling')
             if time.monotonic()-began>POLICY['slice_seconds']-95:
                 local_stops.append('slice');raise Hold('Slice checkpoint before another provider admission.','implementing')
+            if blocked_progress(workspace):
+                local_stops.append('blocked-progress');raise Hold('Recorded blocker stops further inference before reservation.','blocked')
             run_id=str(uuid.uuid4()); call_dir=store.spool/store.task['id']/'calls'/run_id
             save(call_dir/'request.json',body)
             artifact=store.artifact('model-request-'+run_id+'.json',body)

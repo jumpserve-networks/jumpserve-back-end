@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation, research_runtime
+from . import checks, native, source, documentation, research_runtime, repair
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
@@ -229,6 +229,11 @@ class Controller:
             if not (root/'workspace-ready.json').exists():self.restore_work(workspace);save(root/'workspace-ready.json',canonical(dict(restored=True)))
             self.boundary()
             if not self.state.get('tested'):
+                try:repair.deliver(self.store,workspace,self.state)
+                except Hold:raise
+                except Exception:
+                    raise Hold('Task-scoped incident evidence is unavailable; no model call admitted. Retain the original incident and retry delivery after controller recovery.','investigating') from None
+                before=repair.implementation(workspace,self.state['sources']) if self.state.get('repair_guard') else None
                 research_runtime.reviewed(self,workspace)
                 proposal=dict(ready=False,summary='Improve validated platform behavior',feedback='Model-call reservation is exhausted.')
                 if self.coding_available():
@@ -252,6 +257,8 @@ class Controller:
                 self.validate_workspace(workspace)
                 self.persist_work(workspace)
                 self.boundary()
+                try:repair.observe(workspace,self.state,proposal,before)
+                finally:self.save_state()
                 exhausted=not self.coding_available()
                 if not proposal['ready'] and not exhausted:
                     raise Hold(proposal['feedback'],'implementing')
