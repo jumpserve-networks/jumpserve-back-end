@@ -327,7 +327,10 @@ def inspect_evidence(task,request):
   if record_id!=claim['source_id']:raise ValueError('Source is outside this claim.')
   source=one('sources',study,record_id);material,records=inputs.source_text(task,claim,source,one)
   extracted=material['representation']!='metadata-only'
-  envelope=dict(source_material={k:v for k,v in material.items() if k!='inline_passage'},record_kind='extracted-paper-text' if extracted else 'source-metadata-only')
+  # Initial inline transport is already recorded. A reread carries its own
+  # exact fragments/cursor/hash rather than repeating that larger bundle.
+  inline_fields=('inline_passage','inline_fragments','inline_fragment_coverage','inline_reading_guidance')
+  envelope=dict(source_material={k:v for k,v in material.items() if k not in inline_fields},record_kind='extracted-paper-text' if extracted else 'source-metadata-only')
   result=evidence.page(records if extracted else [source],cursor,byte_budget=evidence.READ_BYTES-len(canonical(envelope))-64)
   result.update(envelope)
   if len(canonical(result))>evidence.READ_BYTES:raise ValueError('Source page and provenance exceed the bounded reader; no text was silently truncated.')

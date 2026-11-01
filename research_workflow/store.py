@@ -119,6 +119,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name=='research_controller_dispatch_reconcile':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name=='research_autonomy_runtime_observe':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name=='autonomy_budget_snapshot':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name in ('research_model_reconcile','research_model_reconciliation_candidates','research_builder_call_reconcile','research_model_reconcile_queued'):return request('/rest/v1/rpc/'+name,'POST',payload)
