@@ -13,6 +13,7 @@ from .common import canonical,digest,save,Hold
 from . import source
 
 VERSION='platform-repair-handoff-v1'
+SEMANTIC_VERSION='platform-repair-semantic-evidence-v2'
 MAX_UNCHANGED_SLICES=2
 DIAGNOSTICS={'stdout.bin','stderr.bin','receipt.json','diagnosis.json','repair-validation.json','repair-check-stdout.bin','repair-check-stderr.bin'}
 CHECKPOINTS={'checkpoint.zip','failed-checkpoint.zip','post-validation-checkpoint.zip','repair-handoff-baseline.zip'}
@@ -108,9 +109,14 @@ def deliver(store,workspace,state):
     encoded=canonical(summary);save(root/'summary.json',encoded)
     store.artifact('assessment-repair-delivery.json',canonical(dict(version=VERSION,original=summary['original_context'],evidence_revision=packet['evidence_revision'],context_view_sha256=digest(context),summary_sha256=digest(encoded),artifacts=files,projection=projection)))
     previous=state.get('repair_guard') or {}
-    if previous.get('version')==VERSION and previous.get('evidence_revision')==packet['evidence_revision'] and previous.get('waiting'):
+    revision=previous.get('evidence_revision');baseline=previous.get('semantic_baseline')
+    if baseline is not None:
+        if not isinstance(baseline,dict) or baseline.get('version')!=SEMANTIC_VERSION or packet.get('evidence_revision_protocol')!=SEMANTIC_VERSION or not re.fullmatch('[a-f0-9]{64}',str(baseline.get('evidence_revision'))):
+            raise Hold('Retained semantic evidence baseline differs; no coding call admitted.','reconciling')
+        revision=baseline['evidence_revision']
+    if previous.get('version')==VERSION and revision==packet['evidence_revision'] and previous.get('waiting'):
         raise Hold('Recorded repair blocker is unchanged; no new coding call admitted. Evidence is retained in references/assessment-repair/.','blocked')
-    if previous.get('evidence_revision')!=packet['evidence_revision']:
+    if revision!=packet['evidence_revision']:
         state['repair_guard']=dict(version=VERSION,evidence_revision=packet['evidence_revision'],unchanged_slices=0,waiting=False)
         # Preserve the prior blocked report; a fresh evidence version gets one
         # new attempt without a stale file immediately stopping it.
