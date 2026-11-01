@@ -145,8 +145,8 @@ def main():
     manifest=dict(protocol=candidate,experiment_type='independent-check')
     (source/'software-candidate-template.json').write_bytes(canonical(manifest))
     # The template is prospective fixture metadata, not a supplied repair.
-    if args.live:
-        baseline=retain(job,'live-failed-workspace.zip',builder.checkpoint(source));ctx['builder_checkpoint']=baseline
+    if args.live or args.completion_v2:
+        baseline=retain(job,'live-failed-workspace.zip' if args.live else 'completion-failed-workspace.zip',builder.checkpoint(source));ctx['builder_checkpoint']=baseline
         ctx['repair_packet']['incident']['checkpoint']=baseline;ctx['repair_packet']['incident_sha256']=digest(canonical(ctx['repair_packet']['incident']))
         ctx.pop('native_repair_handoff',None);ctx['native_repair_handoff']=builder.repair_handoff(ctx)
         ctx['builder_feedback']='Software qualification only: convert(7) must return 14, and convert(None) must raise TypeError. Keep repair_test.py unchanged. Edit the actual function and run the incident checks. Write the exact incident-bound repair-test-plan.json required by repair_directive. After both checks pass, copy software-candidate-template.json verbatim to candidate.json. No research experiment or user input is needed.'
