@@ -55,7 +55,16 @@ directory is also supported; there is no fallback to the old local grant. The ne
 the old failed trial. It requires a successful native completion-command output,
 unchanged prospective candidate bytes and actual Docker server validation.
 
-The current fix has not been deployed. A fresh live qualification remains
-pending; local controls alone do not prove unattended model completion.
+The new isolated Linux trial completed the repair and candidate handoff in nine
+of the allowed twelve inference calls. Its original harness report remains
+failed because the evidence reader required the completion command to be the
+entire exec string. The model successfully ran it after another checked script
+using `&&`. A separate zero-call retained-evidence review verifies its paired
+incident-bound JSON result, every original terminal stream, unchanged prospective
+candidate bytes, source changes and actual Docker test execution. No model,
+experiment, candidate or test was replayed or rewritten. This establishes the
+observed software-completion path; production release verification is tracked
+in `jumpserve-infra/docs/repair-completion-qualification-v1.json` and Platform
+Updates. It does not establish scientific correctness for arbitrary papers.
 Assessment budgets, deadlines, cancellation, uncertain-call fences and frozen
 scientific criteria are unchanged.
