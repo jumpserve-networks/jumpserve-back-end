@@ -369,17 +369,25 @@ def main():
         store=Store(credentials.supabase,spool,identity_file.read_text().strip())
         github=GitHub(credentials.github)
         controller=Controller(store,github,os.environ.get('PLATFORM_IMAGE',''),credentials.context7)
+        last_maintenance=None;retry_delay=15
         while True:
+            delay=15
             try:
                 store.task=None
                 store.rpc('heartbeat',dict(status='ready',reason='Private worker ready; fixed checks and exact production receipts required.'))
-                store.rpc('maintenance',dict(policy_sha256=POLICY_SHA256))
+                # Claims still run every 15 seconds; incident triggers enqueue
+                # new blockers immediately. Rechecking unchanged blocked
+                # evidence and daily maintenance needs only one pass a minute.
+                if last_maintenance is None or time.monotonic()-last_maintenance>=60:
+                    store.rpc('maintenance',dict(policy_sha256=POLICY_SHA256));last_maintenance=time.monotonic()
                 task=store.rpc('claim',dict(policy_sha256=POLICY_SHA256))
                 if task:store.task=task;controller.lease_error=None;controller.run()
+                retry_delay=15
             except Exception as error:
                 # Never print auth headers, response bodies, source or private
                 # exception messages into host-wide journal logs.
-                print(json.dumps(dict(status='waiting',reason=type(error).__name__)),flush=True)
-            time.sleep(15)
+                delay=retry_delay;retry_delay=min(120,retry_delay*2)
+                print(json.dumps(dict(status='waiting',reason=type(error).__name__,retry_after_seconds=delay)),flush=True)
+            time.sleep(delay)
 
 if __name__=='__main__':main()
