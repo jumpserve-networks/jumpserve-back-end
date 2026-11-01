@@ -110,7 +110,7 @@ def rows(kind, params=None, public=False):
         # binary float. A null remains null; zero remains an exact text value.
         query['select']=','.join('value::text' if field=='value' else field for field in query['select'].split(','))
     if kind == "study_owners": query.pop("order", None)
-    if kind == 'model_reconciliations':query['order']=(params or {}).get('order','created_at.asc,dispatch_id.asc')
+    if kind in ('model_reconciliations','queued_dispatch_reconciliations'):query['order']=(params or {}).get('order','created_at.asc,dispatch_id.asc')
     if kind == 'builder_call_reconciliations':query['order']=(params or {}).get('order','created_at.asc,call_id.asc')
     result = request("/rest/v1/" + table + "?" + urllib.parse.urlencode(query), public=public)
     if kind in ('measurements', 'published_values'):
