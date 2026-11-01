@@ -1,6 +1,7 @@
 """Fixed-project Supabase transport; no keys or private paths enter agent input."""
 import json
 import os
+import re
 from pathlib import Path
 import urllib.error
 import urllib.parse
@@ -22,7 +23,8 @@ class Store:
         self.opener = network_opener(NoRedirect())
 
     def request(self, path, method='GET', body=None, raw=False):
-        if not path.startswith(('/rest/v1/', '/storage/v1/object/'+BUCKET+'/')) or '..' in path: raise ValueError('Unexpected platform persistence path.')
+        research_read=method=='GET' and raw and re.fullmatch(r'/storage/v1/object/research-workflow-raw/[a-f0-9-]{36}/[a-f0-9]{64}',path)
+        if (not research_read and not path.startswith(('/rest/v1/', '/storage/v1/object/'+BUCKET+'/'))) or '..' in path: raise ValueError('Unexpected platform persistence path.')
         data = body if isinstance(body, bytes) else canonical(body) if body is not None else None
         key=self.key() if callable(self.key) else self.key
         headers = {'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/octet-stream' if isinstance(body,bytes) else 'application/json'}
