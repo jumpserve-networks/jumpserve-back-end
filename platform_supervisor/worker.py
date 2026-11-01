@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation, research_runtime, repair, source_refresh
+from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
@@ -30,6 +30,12 @@ class Controller:
         if self.flags['cancel_requested']:raise Hold('Cancellation honored at a safe boundary; original in-flight receipts retained.','cancelled')
         if self.flags['paused']:raise Hold('Owner paused new work; checkpoint retained.','implementing')
         if dt.datetime.fromisoformat(self.flags['deadline_at'].replace('Z','+00:00'))<=now():raise Hold('Elapsed-time limit reached; remaining changes and receipts retained.','deadline')
+        if self.flags.get('incident_closure') is not None:
+            closure=self.flags['incident_closure']
+            if not isinstance(closure,dict) or closure.get('version')!='platform-incident-closure-v1' or closure.get('platform_task_id')!=self.store.task['id']:
+                raise Hold('Operational incident closure binding differs.','reconciling')
+            self.state['incident_closure']=closure
+            raise Hold('Original operational incident resolved with recorded controller continuation; no platform change or scientific completion claimed.','completed')
         return self.flags
 
     def coding_available(self):
@@ -235,6 +241,8 @@ class Controller:
                 except Exception:
                     raise Hold('Task-scoped incident evidence is unavailable; no model call admitted. Retain the original incident and retry delivery after controller recovery.','investigating') from None
                 source_refresh.refresh(self,workspace)
+                delivered=working_evidence.deliver(self.store,workspace,self.state)
+                if delivered and self.state.get('repair_guard'):self.state['repair_guard']['working_evidence_revision']=delivered
                 before=repair.implementation(workspace,self.state['sources']) if self.state.get('repair_guard') else None
                 research_runtime.reviewed(self,workspace)
                 proposal=dict(ready=False,summary='Improve validated platform behavior',feedback='Model-call reservation is exhausted.')
