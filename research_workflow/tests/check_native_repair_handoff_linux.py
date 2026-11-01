@@ -28,7 +28,6 @@ import openclaw_runtime as runtime
 import store
 from workflow import canonical,digest,numerical_protocol
 from prepare_builder_vendor import prepare
-from check_experiment_builder_linux import Response,sse
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -95,6 +94,7 @@ def main():
     directory.mkdir(parents=True)
     protocol=ROOT/'research_workflow/policies'/('repair-completion-validation-v1.json' if args.completion_v2 else 'native-repair-handoff-validation-v1.json')
     image_report=json.loads((ROOT/'.test-artifacts/builder-image'/('selected-linux-amd64.json' if args.amd64 else 'continuation-v1.json')).read_bytes());image=image_report['image']
+    from check_experiment_builder_linux import Response,sse
     live_protocol=ROOT.parent/'jumpserve-infra/docs/autonomy-recovery-execution-protocol-v1.json'
     limits=json.loads(live_protocol.read_bytes())['qualification']
     if args.completion_v2:
