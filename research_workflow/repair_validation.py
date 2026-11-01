@@ -92,6 +92,35 @@ def test_plan(workspace,context):
     return originals
 
 
+def prepare_test_plan(workspace,context):
+    """Supply missing server-known binding, never replace an existing plan.
+
+    This is metadata delivery, not an assertion that tests ran or passed. Keep
+    malformed, conflicting and old-incident originals available for correction.
+    """
+    import experiment_builder
+    handoff=experiment_builder.repair_handoff(context)
+    candidates=[workspace/'project/repair-test-plan.json',workspace/'repair-test-plan.json']
+    created=False
+    if not any(p.exists() or p.is_symlink() for p in candidates):
+        raw=canonical(dict(version=VERSION,incident_sha256=handoff['incident_sha256'],scope='software-development-only'))
+        # Publish complete bytes without replacing a concurrently created file.
+        with tempfile.NamedTemporaryFile(dir=workspace,prefix='.repair-plan-',delete=False) as output:
+            output.write(raw);output.flush();os.fsync(output.fileno());temporary=output.name
+        try:
+            os.link(temporary,candidates[1]);created=True
+        except FileExistsError:pass
+        finally:os.unlink(temporary)
+    try:
+        plans=test_plan(workspace,context)
+        return dict(status='valid',created_by_server=created,
+            files=[dict(path=path,bytes=len(raw),sha256=digest(raw)) for path,raw in plans],
+            scope='Incident binding only; source change, executed tests and candidate validation remain required.')
+    except (ValueError,KeyError,TypeError,OSError) as error:
+        return dict(status='needs-correction',created_by_server=created,reason=str(error)[:400],
+            scope='Existing metadata retained unchanged; correct the original before staging a candidate.')
+
+
 def validate(job,workspace,context,retain):
     before=source_project.freeze(job,workspace/'project',retain)
     # Execute the exact sealed source tree, never stale compiled cache files.

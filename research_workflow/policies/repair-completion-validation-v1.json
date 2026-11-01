@@ -1,0 +1,28 @@
+{
+  "version": "repair-completion-validation-v1",
+  "scope": "Exposed software-development controls for missing repair completion metadata; no scientific finding.",
+  "original_trial": {
+    "directory": "20261031T230926512822Z",
+    "status": "failed",
+    "actual_provider_calls": 12,
+    "checkpoint_sha256": "7c21f6465c0554e868c1d2d37dd2229fe4aa05bf05d7c201897687e5ee97e448",
+    "limitation": "The live model changed source and passed incident tests, but never declared a candidate. Preserve that outcome and all original admissions."
+  },
+  "local_controls": [
+    "Supply missing incident-binding metadata from validated server context; preserve malformed, conflicting or old-incident originals.",
+    "Stage unchanged bytes from an explicitly selected prospective candidate, without substituting scientific settings or asserting a pass.",
+    "Reject missing metadata, conflicting files, symlinks, hardlinks, outside paths and oversized inputs; preserve existing candidate bytes.",
+    "Generated metadata and helper delivery do not count as implementation progress.",
+    "The actual server validator and compiler require a changed source, passing executed incident tests and matching frozen package hashes. Fresh scientific reviews remain required.",
+    "Run the original hash-checked failed checkpoint through server metadata delivery and scripted candidate selection without manually writing a test plan; label local Python and fixture persistence explicitly."
+  ],
+  "fresh_live_qualification": {
+    "command": "python3 research_workflow/tests/check_native_repair_handoff_linux.py --completion-v2 --live --qualification-auth /absolute/isolated-auth",
+    "maximum_actual_provider_calls": 12,
+    "requires": "A separately isolated Linux qualification environment with the pinned image/runtime and a safe credential owner; never overlap production workers or refresh a copied OAuth grant.",
+    "pass_criteria": "A new model-led run edits source, executes unchanged incident tests and explicitly stages a candidate; actual OpenClaw tools and Docker server validation return a compiled candidate within the original-sized allowance.",
+    "not_a_retry": "New versioned qualification of changed code. Do not resume, reset, amend or relabel the original failed trial."
+  },
+  "unchanged": ["Assessment budgets, deadlines and cancellation", "Uncertain-call fences", "Frozen scientific criteria and fresh reviews", "Original qualification limit and failed outcome"],
+  "reviewer": {"identity": "Codex implementing AI", "independent": false, "human": false, "held_out": false}
+}

@@ -42,6 +42,50 @@ WORK_PACKET_VERSION = 'builder-work-packet-v1'
 WORK_PACKET_BYTES = 8000
 HISTORY_BYTES = 16000000
 TOOLS = ['read', 'write', 'edit', 'exec', 'process']
+REPAIR_FINISH = r'''"""Stage an explicitly selected prospective candidate; validation remains pending."""
+import json,os,pathlib,stat,sys,tempfile
+root=pathlib.Path(__file__).resolve().parent
+def read_regular(path,maximum):
+ relative=path.relative_to(root)
+ current=root
+ for part in relative.parts:
+  current=current/part
+  if current.is_symlink():raise ValueError('Completion inputs must not follow symlinks')
+ info=path.stat()
+ if not stat.S_ISREG(info.st_mode) or info.st_nlink!=1 or info.st_size>maximum:
+  raise ValueError('Completion input must be a bounded regular file without hardlinks')
+ raw=path.read_bytes()
+ if len(raw)>maximum:raise ValueError('Completion input exceeds its bound')
+ return raw
+if len(sys.argv)!=2:raise ValueError('Select one prospective candidate: python3 /workspace/finish-repair.py <candidate-file.json>')
+selected=pathlib.Path(sys.argv[1])
+if not selected.is_absolute():selected=root/selected
+if '..' in selected.parts:raise ValueError('Candidate must be inside the workspace')
+raw=read_regular(selected,64000);candidate=json.loads(raw)
+if not isinstance(candidate,dict) or set(candidate)!={'protocol','experiment_type'} or not isinstance(candidate['protocol'],dict) or not isinstance(candidate['experiment_type'],str):
+ raise ValueError('Candidate requires exactly protocol and experiment_type; server checks the full schema')
+packet=json.loads(read_regular(root/'work-packet.json',8000))
+incident=packet['repair_handoff']['incident_sha256']
+expected=dict(version='repair-development-validation-v1',incident_sha256=incident,scope='software-development-only')
+plans=[]
+for name in ('project/repair-test-plan.json','repair-test-plan.json'):
+ path=root/name
+ if path.exists() or path.is_symlink():
+  plan=read_regular(path,4096)
+  if json.loads(plan)!=expected:raise ValueError('Repair metadata identifies a different incident or scope')
+  plans.append(plan)
+if not plans or any(p!=plans[0] for p in plans):raise ValueError('Missing or conflicting repair metadata; correct the originals first')
+target=root/'candidate.json'
+if target.exists() or target.is_symlink():
+ if read_regular(target,64000)!=raw:raise ValueError('A different candidate already exists; amend it explicitly')
+else:
+ # Publish all original bytes atomically without replacing an existing file.
+ with tempfile.NamedTemporaryFile(dir=root,prefix='.repair-candidate-',delete=False) as output:
+  output.write(raw);output.flush();os.fsync(output.fileno());temporary=output.name
+ try:os.link(temporary,target)
+ finally:os.unlink(temporary)
+print(json.dumps(dict(version='repair-candidate-staging-v1',status='candidate-staged;server-validation-and-fresh-reviews-pending',selected=selected.relative_to(root).as_posix(),incident_sha256=incident)))
+'''
 ACTION_POLICY_PATH=Path(__file__).parent/'policies/experiment-action-policy-v1.json'
 PATCH_PATH=Path(__file__).with_name('openclaw-builder-patch.json')
 
@@ -216,7 +260,7 @@ def delivered_pages(context, history):
 
 def work_progress(workspace,context,history):
     """Trusted inventory of changed work files and exact deliveries; not correctness."""
-    generated={'context-index.json','research-context.json','native-tool-history.json','native-tool-history.json.gz','builder-continuation.json','runner-contract.json','read-retained.py','paper-text.json','paper-text-reference.json','progress.json','work-packet.json','delivery-proofs.json','native-context-budget.json'}
+    generated={'context-index.json','research-context.json','native-tool-history.json','native-tool-history.json.gz','builder-continuation.json','runner-contract.json','read-retained.py','finish-repair.py','paper-text.json','paper-text-reference.json','progress.json','work-packet.json','delivery-proofs.json','native-context-budget.json'}
     files=[]
     for p in sorted(workspace.rglob('*')):
         name=p.relative_to(workspace).as_posix()
@@ -227,7 +271,7 @@ def work_progress(workspace,context,history):
     pages=delivered_pages(context,history)
     coverage={key:dict(sha256=digest(canonical(context[key])),pages=sorted(value)) for key,value in pages.items() if key in ('source_material','source','claim','proposal_contract','runner_contracts')}
     record=dict(version='builder-work-progress-v2',files=files,delivered=coverage,scope='File changes and exact context transport, not substantive review, correctness or scientific completion.')
-    implementation=[f for f in files if Path(f['path']).name in ('candidate.json','requirements.lock','system-packages.lock.json','repair-test-plan.json') or Path(f['path']).suffix in ('.py','.sh','.c','.h','.cpp','.go','.rs','.js','.ts')]
+    implementation=[f for f in files if Path(f['path']).name in ('candidate.json','requirements.lock','system-packages.lock.json') or Path(f['path']).suffix in ('.py','.sh','.c','.h','.cpp','.go','.rs','.js','.ts')]
     return dict(record,sha256=digest(canonical(record)),implementation_sha256=digest(canonical(implementation)),implementation_files=implementation)
 
 def recovery_identity():
@@ -258,14 +302,16 @@ def work_packet(context, inventory, workspace):
         packet['repair_handoff']=dict(version=handoff['version'],stage='building',required_tools=handoff['tools'],incident_sha256=handoff['incident_sha256'],
             source_change_required=True,read=['context','native_repair_handoff',0],
             test_plan=dict(version='repair-development-validation-v1',incident_sha256=handoff['incident_sha256'],scope='software-development-only'),
-            test_plan_locations=['project/repair-test-plan.json','repair-test-plan.json'],required_tests=['test_original_failure','test_corrected_behavior'])
+            test_plan_locations=['project/repair-test-plan.json','repair-test-plan.json'],required_tests=['test_original_failure','test_corrected_behavior'],
+            completion_command=['python3','/workspace/finish-repair.py','<explicitly-selected-prospective-candidate.json>'])
         import repair_validation
         try:
             plans=repair_validation.test_plan(workspace,context)
             packet['repair_handoff']['metadata']=dict(status='valid',paths=[path for path,_ in plans],scope='Metadata only; executed tests, source change and candidate validation remain required.')
         except (ValueError,KeyError,TypeError,OSError) as error:
             packet['repair_handoff']['metadata']=dict(status='needs-correction',reason=str(error)[:400])
-        packet['next_action']='Follow the current repair feedback and preserve completed source changes. Implement only missing changes, run bounded incident tests, correct the test-plan JSON using the exact object below, then supply candidate.json. Metadata validity is not executed validation; the server checks the frozen source and tests before fresh reviews.'
+        packet['order']='Use the repair completion command after incident checks. Fresh scientific reviews remain required.'
+        packet['next_action']='Preserve completed source changes. Implement only missing changes and run python3 -m unittest discover -s project -p repair_test.py -v. The server supplies missing incident-binding metadata. Correct any metadata error below without discarding originals, then stage your selected prospective protocol with python3 /workspace/finish-repair.py <candidate-file.json>. If none exists, write candidate.json using the full retained protocol contract. Metadata validity is not executed validation; the server checks frozen source and tests before fresh scientific reviews.'
     contracts=context.get('runner_contracts') or {}
     netem=contracts.get('netem-iperf-v1') if isinstance(contracts,dict) else None
     if isinstance(netem,dict) and isinstance(netem.get('output_contract'),dict):
@@ -286,6 +332,13 @@ def work_packet(context, inventory, workspace):
     if len(canonical(packet))>WORK_PACKET_BYTES:
         packet['claim']=view(context.get('claim'),500);packet['feedback']=view(feedback,500)
         if context.get('builder_recovery_plan'):packet['recovery_plan']=reference('builder_recovery_plan')
+    if len(canonical(packet))>WORK_PACKET_BYTES:
+        # Repair completion instructions must fit alongside the full executable
+        # interface. Replace optional excerpts with exact reads, never truncate
+        # the interface, incident binding or trusted instructions.
+        if 'claim' in context:packet['claim']=reference('claim')
+        key='builder_recovery_plan' if legacy_notice and context.get('builder_recovery_plan') else 'builder_feedback'
+        if key in context:packet['feedback']=reference(key)
     if len(canonical(packet))>WORK_PACKET_BYTES:raise ValueError('Required work packet exceeds its bounded view; originals retained.')
     return packet
 
@@ -300,6 +353,11 @@ def bootstrap(logical, workspace, directory, history):
     context = logical['builder']['context']; context_raw = canonical(context)
     history_raw = canonical(history)
     paths = {'research-context.json': context_raw, 'read-retained.py': READ_RETAINED.encode(),**history_files(history)}
+    repair_metadata=None
+    if context.get('native_repair_handoff'):
+        import repair_validation
+        repair_metadata=repair_validation.prepare_test_plan(workspace,context)
+        paths['finish-repair.py']=REPAIR_FINISH.encode()
     pages=delivered_pages(context,history)
     paths['delivery-proofs.json']=canonical(dict(version=CONTEXT_DELIVERY_VERSION,context_sha256=digest(context_raw),field_hashes={k:digest(canonical(v)) for k,v in context.items()},delivered_pages=pages))
     index = dict(version=CONTEXT_DELIVERY_VERSION,
@@ -314,6 +372,7 @@ def bootstrap(logical, workspace, directory, history):
     paths['context-index.json'] = canonical(index)
     manifest = dict(version=CONTEXT_DELIVERY_VERSION,files=[dict(path=k,bytes=len(v),sha256=digest(v)) for k,v in paths.items()],
         scope='Complete current context and actual tool history delivered as exact files. This delivery inventory is not a review-completeness statement. Previous numbered requests and checkpoints remain retained.')
+    if repair_metadata is not None:manifest['repair_metadata']=repair_metadata
     for name, raw in paths.items():
         path=workspace/name
         if path.is_symlink():raise ValueError('Builder context delivery cannot replace a symlink.')
@@ -342,6 +401,7 @@ def bootstrap(logical, workspace, directory, history):
     next_action=('Continue the existing implementation and run its next bounded development check.' if inventory['implementation_files'] else
         'No implementation files exist. Use the retained source/contract reads to write project/experiment.py and a concrete development check next; inspect missing essentials only.')
     focus=dict(next_action=next_action,prior_native_calls=len(calls),implementation_files=len(inventory['implementation_files']))
+    if repair_metadata is not None:focus['next_action']=json.loads(packet)['next_action']
     # The full claim/directive/limits are in the bounded packet and exact files.
     # Keep only short actionable feedback here, avoiding duplicate documents.
     if context.get('builder_feedback'):
@@ -358,7 +418,7 @@ Read only a missing essential: python3 /workspace/read-retained.py context <key>
 Write/edit project source and run a direct python3 <file>.py check before reading the full prospective protocol schema. native-context-budget.json includes all actual system/tool/output bytes. Install outside /workspace; userspace tools do not establish kernel capabilities. No main campaign here. Keep all original criteria, budgets, deadlines and unknown-call fences. External blocker.json uses exactly {blockers:[{kind,detail,required_input}]} and supplied issue codes.
 '''
     if context.get('repair_directive'):
-        instructions+='\nController operational-repair mode: use packet references for exact incident-bound tests and preserve original failure evidence.\n'
+        instructions+='\nController operational-repair mode: preserve original failure evidence. Missing incident-binding metadata is server supplied. After source checks, explicitly select your prospective candidate with python3 /workspace/finish-repair.py <candidate-file.json>; staging never bypasses server validation or fresh reviews.\n'
     def render():return '\n\n'.join(systems)+'\n\n'+canonical(dict(delivery_version=CONTEXT_DELIVERY_VERSION,focus=focus)).decode()+instructions
     message=render()
     while len(message.encode())>BOOTSTRAP_BYTES and len(focus)>3:
