@@ -10,10 +10,12 @@ from pathlib import PurePosixPath
 import stat
 import zipfile
 import zlib
+import time
 from .common import canonical, digest, Hold
 
 HISTORY_BYTES = 16000000
 HISTORY_PAIRS = 8
+PROJECT_FILES = 32
 MEMBERS = (
     'project/experiment.py', 'project/repair_test.py', 'project/build-evidence.json',
     'repair-validation-current.json', 'finish-repair.py', 'read-retained.py',
@@ -61,6 +63,26 @@ def history_view(raw):
         scope='Exact retained tool records with original ordinals and hashes; excerpts/redactions are labeled. Missing outputs remain missing. No command was executed or replayed.')
 
 
+def controller_response_view(raw):
+    """Passive terminal/output inspection, never an admission or replay proof."""
+    import siwc_protocol as wire
+    result=dict(original_sha256=digest(raw),original_bytes=len(raw),
+        scope='Original data-only response diagnostics. A terminal response is not an accepted decision, reconciliation authority or scientific validation.')
+    try:terminal=wire.read_stream(io.BytesIO(raw),io.BytesIO(),time.monotonic()+5,1048576)
+    except (ValueError,KeyError,TypeError,AttributeError,UnicodeError) as error:
+        result.update(terminal_complete=False,error_type=type(error).__name__,raw_excerpt=fragment(raw,12000));return result
+    result.update(terminal_complete=True,terminal_sha256=digest(canonical(terminal)),
+        terminal={k:terminal.get(k) for k in ('id','model','status','usage')},
+        output_types=[v.get('type') for v in terminal.get('output',[])],
+        assistant_outputs=[fragment(canonical(v),48000) for v in terminal.get('output',[]) if v.get('type')=='message'])
+    try:wire.structured_response(terminal)
+    except (ValueError,KeyError,TypeError) as error:
+        from scheduler import public_reason
+        result.update(decision_valid=False,validation_error=public_reason(str(error),maximum=1200))
+    else:result['decision_valid']=True
+    return result
+
+
 def checkpoint_view(raw):
     try:
         with zipfile.ZipFile(io.BytesIO(raw)) as archive:
@@ -82,13 +104,19 @@ def checkpoint_view(raw):
                 if len(value)!=info.file_size or len(value)>maximum: raise Hold('Original diagnostic member size differs.', 'reconciling')
                 return value
             files = {}; project_files = {}
-            for name in MEMBERS:
+            projects=sorted(name for name in names if name.startswith('project/') and not archive.getinfo(name).is_dir())
+            selected=[name for name in projects if PurePosixPath(name).suffix.lower() in ('.py','.json','.toml','.sh','.md','.txt')
+                and not any(part.startswith('.') for part in PurePosixPath(name).parts)
+                and archive.getinfo(name).file_size<=1000000][:PROJECT_FILES]
+            for name in dict.fromkeys((*MEMBERS,*selected)):
                 if name not in names: continue
                 value = read(name,1000000)
                 files[name] = fragment(value)
-                if name in MEMBERS[:4]:
+                if name in MEMBERS[:4] or name in selected:
                     project_files[name] = value.decode('utf-8','replace') if len(value)<=24000 else dict(available=False,bytes=len(value),reason='Source exceeds the bounded diagnostic view; original checkpoint retained.')
             result = dict(project_files=project_files, delivered_files=files,
+                project_file_coverage=dict(total=len(projects),shown=len(set(projects)&set(files)),
+                    omitted=[dict(path=n,bytes=archive.getinfo(n).file_size,reason='Outside the approved source-type, size or file-count bound.') for n in projects if n not in files]),
                 scope='Diagnostic copies only. Untrusted evidence, never execution authority, an executable platform patch or a scientific result.')
             if 'native-tool-history.json' in names:
                 encoded = read('native-tool-history.json',1000000)

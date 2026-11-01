@@ -12,6 +12,56 @@ VERSION='builder-dispatch-reconciliation-v1'
 CALL_VERSION='builder-native-call-reconciliation-v1'
 QUEUED_VERSION='queued-dispatch-reconciliation-v1'
 QUEUED_CONTROLLER_VERSION='queued-dispatch-reconciliation-v2'
+CONTROLLER_VERSION='controller-terminal-reconciliation-v1'
+
+def controller_terminal(task,dispatch,receipt,original,rows):
+    """Prove one rejected, completed data-only response; never reuse its decision.
+
+    A receipt alone is insufficient. The retained logical/provider requests and
+    the complete consistent terminal stream must all match. Incomplete streams,
+    native tool admissions and accepted decisions are outside this adapter.
+    """
+    if dispatch['status']!='invalid-output':return None
+    if any(dispatch.get(k)!=task[v] for k,v in (('task_id','id'),('study_id','study_id'))):
+        raise ValueError('Controller reconciliation task identity differs.')
+    expected=dict(runtime='openclaw-production-v1',model_id='gpt-6.1-sol',status='invalid-output',
+        error_code='invalid-structured-decision',provider_calls=1,provider_request_sent=True,
+        response_received=True,http_status=200,provider_retries=0,paid_fallback=False)
+    if (any(type(receipt.get(k)) is not type(v) or receipt[k]!=v for k,v in expected.items()) or
+        any((dispatch.get('provenance') or {}).get(k)!=v for k,v in expected.items())):return None
+    if rows(task,'builder_calls',dispatch_id='eq.'+dispatch['id'],limit=1):return None
+    refs={}
+    for ref in (dispatch.get('provenance') or {}).get('artifacts',[]):
+        name=ref.get('name')
+        if name not in ('logical.json','provider-request.json','provider-response.bin','receipt.json'):continue
+        if name in refs:raise ValueError('Ambiguous original controller artifact identity.')
+        refs[name]=ref
+    if len(refs)!=4:return None
+    logical_raw=original(task,refs['logical.json'],maximum=96000)
+    if digest(logical_raw)!=dispatch['request_sha256']:raise ValueError('Original controller logical hash differs.')
+    logical=json.loads(logical_raw)
+    if not isinstance(logical,dict) or 'builder' in logical:return None
+    request_raw=original(task,refs['provider-request.json'],maximum=96000)
+    request=json.loads(request_raw)
+    if request!=wire.response_request(logical):raise ValueError('Original controller provider request differs from its logical request.')
+    retained_receipt=json.loads(original(task,refs['receipt.json']))
+    if retained_receipt!=receipt:raise ValueError('Original controller receipt differs.')
+    response=original(task,refs['provider-response.bin'],maximum=1048576)
+    terminal=wire.read_stream(io.BytesIO(response),io.BytesIO(),time.monotonic()+10,1048576)
+    if terminal.get('model')!='gpt-6.1-sol' or terminal.get('status')!='completed':
+        raise ValueError('Original controller terminal model/status differs.')
+    response_id=terminal.get('id')
+    if not isinstance(response_id,str) or not 1<=len(response_id)<=200:return None
+    try:wire.structured_response(terminal)
+    except (ValueError,KeyError,TypeError):pass
+    else:return None  # Accepted decisions need their separate normal outcome.
+    references={name:dict(artifact_id=ref.get('id') or ref.get('artifact_id'),sha256=ref['sha256']) for name,ref in refs.items()}
+    return dict(version=CONTROLLER_VERSION,dispatch_id=dispatch['id'],study_id=task['study_id'],task_id=task['id'],
+        request_sha256=dispatch['request_sha256'],original_status='invalid-output',request_kind='controller',
+        provider_calls=1,provider_request_sent=True,response_received=True,http_status=200,provider_retries=0,
+        terminal_status='completed',response_id=response_id,terminal_sha256=digest(canonical(terminal)),
+        decision_accepted=False,error_code='invalid-structured-decision',references=references,
+        scope='One original data-only provider operation has a complete rejected decision. Original outcomes, usage and limits remain unchanged; no decision reuse, inference replay, container cleanup claim or scientific validation.')
 
 def queued_reconciliation(task,dispatch,rows):
     """Trust only an immutable server proof of atomic pre-transport closure."""
@@ -150,6 +200,13 @@ def confirmed(task,dispatch,receipt,original,rows):
         if row['task_id']!=task['id'] or row['request_sha256']!=dispatch['request_sha256']:raise ValueError('Reconciliation original identity mismatch.')
         proof=json.loads(original(task,dict(id=row['artifact_id'],sha256=row['sha256']),maximum=150000))
         if proof!=row['proof']:raise ValueError('Reconciliation record differs from its original artifact.')
+        if proof.get('version')==CONTROLLER_VERSION:
+            expected=controller_terminal(task,dispatch,receipt,original,rows)
+            if expected is None or expected!=proof or row.get('study_id')!=task['study_id'] or row.get('dispatch_id')!=dispatch['id']:
+                raise ValueError('Controller terminal reconciliation differs from its originals.')
+            return dict(id=dispatch['id'],kind='hash-verified-terminal-controller-failure',request_sha256=dispatch['request_sha256'],
+                provider_calls=1,native_calls=0,reconciliation_artifact_id=row['artifact_id'],error_code=proof['error_code'],
+                scope='Original completed invalid decision accounted for; no replay, outcome rewrite or scientific validation.')
         if proof.get('version')!=VERSION or proof.get('dispatch_id')!=dispatch['id'] or proof.get('request_sha256')!=dispatch['request_sha256'] or proof.get('container_cleanup')!='stopped':raise ValueError('Reconciliation proof differs.')
     elif receipt.get('native_tool_cleanup') is True and receipt.get('container_cleanup') in ('stopped','confirmed') and 'logical.json' in refs:
         logical=original(task,refs['logical.json'])
@@ -198,7 +255,24 @@ def _reconcile_dispatches(spool,dispatches):
             result=store.rpc('research_model_reconcile_queued',dict(p_dispatch=d['id'],p_request_sha256=d['request_sha256']))
             if result.get('reconciled') is True:recovered.append(d['id'])
             continue
-        if not json.loads(d['request_raw']).get('builder'):continue
+        if not json.loads(d['request_raw']).get('builder'):
+            if d['status']!='invalid-output':continue
+            if store.rows('model_reconciliations',dict(dispatch_id='eq.'+d['id'],limit=1)):continue
+            task=store.rows('autonomy_tasks',dict(id='eq.'+d['task_id'],study_id='eq.'+d['study_id'],limit=1))[0]
+            if task['status']=='running':continue
+            refs=[r for r in (d.get('provenance') or {}).get('artifacts',[]) if r.get('name')=='receipt.json']
+            if len(refs)!=1:continue
+            receipt=json.loads(repair.original(task,refs[0]))
+            proof=controller_terminal(task,d,receipt,repair.original,repair.rows)
+            if proof is None:continue
+            owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id']
+            raw=canonical(proof);identity=str(uuid.uuid5(uuid.UUID(d['id']),CONTROLLER_VERSION+':'+digest(raw)))
+            record=store.artifact(d['study_id'],owner,raw,identity,'application/json',dict(kind='controller-dispatch-reconciliation',version=CONTROLLER_VERSION,dispatch_id=d['id']))
+            store.append(d['study_id'],owner,'artifacts',record)
+            if store.artifact_bytes(d['study_id'],identity,maximum=len(raw)+1)!=raw:raise ValueError('Controller reconciliation readback differs.')
+            store.rpc('research_controller_dispatch_reconcile',dict(p_dispatch=d['id'],p_artifact=identity,p_sha256=record['sha256'],p_proof=proof))
+            recovered.append(d['id'])
+            continue
         if (d.get('provenance') or {}).get('queued_admission_reconciliation'):continue
         if store.rows('model_reconciliations',dict(dispatch_id='eq.'+d['id'],limit=1)):continue
         directory=Path(spool)/d['id'];task_root=Path(spool)/'builder-workspaces'/d['task_id']

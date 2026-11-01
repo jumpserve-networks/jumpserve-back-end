@@ -16,6 +16,7 @@ CONTRACT_VERSION='platform-repair-recovery-contract-v1'
 MAX_UNCHANGED_SLICES=2
 DIAGNOSTICS={'stdout.bin','stderr.bin','receipt.json','diagnosis.json','repair-validation.json','repair-check-stdout.bin','repair-check-stderr.bin'}
 DELIVERY_FILES={'context-delivery.json','task.txt','action-policy.json'}
+CONTROLLER_FILES={'logical.json','provider-request.json','provider-response.bin'}
 CHECKPOINTS={'checkpoint.zip','failed-checkpoint.zip','post-validation-checkpoint.zip','repair-handoff-baseline.zip'}
 
 
@@ -52,6 +53,8 @@ def _project(value):
 
 
 def _artifact_view(raw,filename):
+    if filename=='provider-response.bin':return incident_evidence.controller_response_view(raw)
+    if filename in CONTROLLER_FILES:return incident_evidence.fragment(raw,128000)
     if filename in DELIVERY_FILES or re.fullmatch(r'native-request-[a-f0-9]{64}\.json',filename or ''):
         return incident_evidence.fragment(raw,128000)
     if filename in DIAGNOSTICS:
@@ -100,10 +103,10 @@ def deliver(store,workspace,state):
     for artifact in artifacts[:12]:
         filename=(artifact.get('provenance') or {}).get('filename')
         if (artifact.get('provenance') or {}).get('kind')=='autonomous-repair-diagnosis':filename='diagnosis.json'
-        if filename not in DIAGNOSTICS|CHECKPOINTS|DELIVERY_FILES and not re.fullmatch(r'native-request-[a-f0-9]{64}\.json',filename or ''):continue
+        if filename not in DIAGNOSTICS|CHECKPOINTS|DELIVERY_FILES|CONTROLLER_FILES and not re.fullmatch(r'native-request-[a-f0-9]{64}\.json',filename or ''):continue
         ident=artifact['id'];sha=artifact['sha256'];size=artifact['byte_count']
         if not re.fullmatch('[a-f0-9]{64}',str(sha)) or type(size) is not int or size<0:raise Hold('Original diagnostic artifact identity is invalid.','reconciling')
-        limit=4000000 if filename in CHECKPOINTS else 128000
+        limit=4000000 if filename in CHECKPOINTS else 1048576 if filename=='provider-response.bin' else 128000
         if size>limit:
             files.append(dict(artifact_id=ident,original_sha256=sha,available=False,reason='Original exceeds the diagnostic delivery bound.'));continue
         # Fixed bucket and server-returned study-bound pointer; never an agent URL.
