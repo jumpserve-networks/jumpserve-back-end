@@ -275,6 +275,7 @@ def store_reconciliation_present(job):
 
 def worker_loop():
  import model_dispatch as dispatch,store
+ from polling import Backoff
  from openclaw_health import WorkerAvailability
  from workflow import now
  os.umask(0o077);verify_runtime();spool=Path(os.environ.get('OPENCLAW_SPOOL','/var/lib/jumpserve-openclaw/spool'));spool.mkdir(mode=0o700,parents=True,exist_ok=True)
@@ -291,14 +292,18 @@ def worker_loop():
   marker=save_completion(job,directory,answer,receipt,spool/'pending-completions')
   if persist_completed(job,directory):marker.unlink()
  with ThreadPoolExecutor(max_workers=2) as pool:
-  futures=[];last_health=0;last_builder_reap=0;last_reconciliation=0;recovery=None;ready=False
+  futures=[];last_health=None;last_builder_reap=0;next_reconciliation=0;next_claim=0;recovery=None;ready=False
+  idle=Backoff(1,10);outage=Backoff(2,30);recovery_outage=Backoff(30,300)
   while True:
+   loop_delay=1
    try:
     if recovery and recovery.done():
-     try:recovery.result()
-     except Exception as error:print(json.dumps(dict(runtime=VERSION,status='reconciliation-pending',error_type=type(error).__name__)),flush=True)
+     try:recovery.result();recovery_outage.reset()
+     except Exception as error:
+      delay=recovery_outage.next_delay();next_reconciliation=time.monotonic()+delay
+      print(json.dumps(dict(runtime=VERSION,status='reconciliation-pending',error_type=type(error).__name__,retry_after_seconds=delay)),flush=True)
      recovery=None
-    if recovery is None and time.monotonic()-last_reconciliation>30:
+    if recovery is None and time.monotonic()>=next_reconciliation:
      def recover():
       retry_completions(spool)
       if os.environ.get('RESEARCH_BUILDER_ENABLED')=='true':
@@ -308,11 +313,13 @@ def worker_loop():
      # loop and does not consume either of the two inference worker slots.
      if 'recovery_pool' not in locals():recovery_pool=ThreadPoolExecutor(max_workers=1,thread_name_prefix='retained-result-recovery')
      recovery=recovery_pool.submit(recover)
-     last_reconciliation=time.monotonic()
+     next_reconciliation=time.monotonic()+30
     if os.environ.get('RESEARCH_BUILDER_ENABLED')=='true' and time.monotonic()-last_builder_reap>60:
      import experiment_builder
      experiment_builder.reap(spool);last_builder_reap=time.monotonic()
-    if time.monotonic()-last_health>5:
+    # The database's freshness window is 30 seconds. Ten-second heartbeats
+    # leave margin while halving unchanged heartbeat writes.
+    if last_health is None or time.monotonic()-last_health>=10:
      health=availability.check();ready=health['status']=='ready'
      dispatch.rpc('heartbeat',dict(status=health['status'],configuration=dict(runtime=VERSION,model_id=MODEL,paid_fallback=False,actual_cost_usd=None,auth_recovery='openclaw-auth-recovery-v1',reason=health['reason'],retry_after_seconds=health['retry_after_seconds'])));last_health=time.monotonic()
     active=[]
@@ -322,15 +329,20 @@ def worker_loop():
       except Exception as error:print(json.dumps(dict(runtime=VERSION,status='unconfirmed',error_type=type(error).__name__)),flush=True)
      else:active.append(future)
     futures=active
-    if ready and len(futures)<2:
+    if ready and len(futures)<2 and time.monotonic()>=next_claim:
      # A completed concurrent turn may have recorded a quota/provider pause
      # since the periodic heartbeat. Check again before claiming more work.
      admission=availability.check()
      if admission['status']!='ready':ready=False;continue
      job=dispatch.rpc('claim',{})
-     if job:futures.append(pool.submit(process,job))
-   except Exception as error:print(json.dumps(dict(runtime=VERSION,status='unavailable',error_type=type(error).__name__)),flush=True)
-   time.sleep(1)
+     if job:
+      futures.append(pool.submit(process,job));idle.reset();next_claim=time.monotonic()
+     else:next_claim=time.monotonic()+idle.next_delay()
+    outage.reset()
+   except Exception as error:
+    loop_delay=outage.next_delay()
+    print(json.dumps(dict(runtime=VERSION,status='unavailable',error_type=type(error).__name__,retry_after_seconds=loop_delay)),flush=True)
+   time.sleep(loop_delay)
 
 if __name__=='__main__':
  import sys

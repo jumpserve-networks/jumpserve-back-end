@@ -1,6 +1,7 @@
 """Private durable model handoff. No provider retry or paid fallback."""
 import json,time,urllib.error
 import store
+from polling import Backoff, wait
 from workflow import canonical,digest
 
 VERSION='openclaw-production-v1'
@@ -61,22 +62,25 @@ def invoke(task,turn_id,request):
   if any(retained.get(k)!=v for k,v in dict(id=turn_id,study_id=task['study_id'],task_id=task['id'],request_sha256=digest(raw.encode()),runtime=VERSION).items()):raise ValueError('Unconfirmed dispatch admission does not match the original request.')
   admitted=dict(replayed=False)
  if admitted.get('replayed'):raise ValueError('Retained model dispatch must be reconciled, never replayed.')
+ pending=Backoff(2,5);unavailable=Backoff(2,10);previous_status=None
  while time.monotonic()<until:
   try:result=rpc('result',dict(id=turn_id,study_id=task['study_id']))
   except Exception as error:
    if not transient_read(error):raise
    # Repeat only this bounded read, never enqueue or provider transport. The
    # original request remains admitted and fenced throughout reconciliation.
-   time.sleep(2);continue
+   wait(unavailable.next_delay(),until);continue
+  unavailable.reset()
+  if result['status']!=previous_status:pending.reset();previous_status=result['status']
   if result['status']=='complete':
    try:raw=store.artifact_bytes(task['study_id'],result['response_artifact_id'],maximum=150000)
    except Exception as error:
     if not transient_read(error):raise
-    time.sleep(2);continue
+    wait(pending.next_delay(),until);continue
    if digest(raw)!=result['response_sha256']:raise ValueError('OpenClaw response artifact identity mismatch.')
    answer=json.loads(raw);answer.setdefault('usage',{})['research_runtime']=result['provenance']
    return answer
   if result['status'] not in ('queued','running'):
    raise DispatchError(result)
-  time.sleep(1)
+  wait(pending.next_delay(),until)
  raise ValueError('OpenClaw completion is unconfirmed; retain the dispatch identity and do not retry it.')
