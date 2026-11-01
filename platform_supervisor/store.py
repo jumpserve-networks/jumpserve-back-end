@@ -42,7 +42,7 @@ class Store:
     def rows(self, table, **filters):
         if table not in ('runs','run_reconciliations','operations','changes','releases','artifacts'): raise ValueError('Unexpected platform relation.')
         if not self.task: raise ValueError('Task lease required.')
-        return self.request('/rest/v1/platform_'+table+'?'+urllib.parse.urlencode(dict(select='*',task_id='eq.'+self.task['id'],limit='1000',**filters)))
+        return self.request('/rest/v1/platform_'+table+'?'+urllib.parse.urlencode(dict(select='*',task_id='eq.'+self.task['id'],limit=filters.pop('limit','1000'),**filters)))
 
     def artifact(self, name, original, provenance=None):
         if len(original)>5000000: raise Hold('Artifact exceeds the private 5 MB record limit.')
