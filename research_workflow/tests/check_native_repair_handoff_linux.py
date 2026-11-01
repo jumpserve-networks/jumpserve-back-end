@@ -14,6 +14,7 @@ import shlex
 import stat
 import subprocess
 import sys
+import tempfile
 import traceback
 import uuid
 import zipfile
@@ -41,6 +42,37 @@ def qualification_token(path):
         raise ValueError('Qualification access token is missing, invalid or expiring; no refresh is permitted.')
     return value['access_token']
 
+
+def checkpoint_history(raw):
+    """Include the last executed tool output even when the next call is unadmitted."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root=Path(tmp);builder.restore(raw,root);return builder.load_history(root)
+
+
+def staged_completion(history,incident):
+    """Recognize a direct completion command within an allowed shell sequence.
+
+    Read provenance only; never execute the command. Require a paired actual
+    JSON result, not a word in a printed script or another call's output.
+    """
+    staged=[]
+    for call in history:
+        if call.get('type')!='function_call' or call.get('name')!='exec':continue
+        arguments=json.loads(call['arguments']);lexer=shlex.shlex(arguments.get('command',''),posix=True,punctuation_chars=';&|')
+        lexer.whitespace_split=True;tokens=list(lexer);segments=[[]]
+        for token in tokens:
+            if token in ('&&',';'):segments.append([])
+            else:segments[-1].append(token)
+        if not any(len(part)==3 and part[:2]==['python3','/workspace/finish-repair.py'] and part[2] in ('software-candidate-template.json','/workspace/software-candidate-template.json') for part in segments):continue
+        for output in history:
+            if output.get('type')!='function_call_output' or output.get('call_id')!=call['call_id']:continue
+            for line in str(output['output']).splitlines():
+                try:value=json.loads(line)
+                except (ValueError,TypeError):continue
+                if isinstance(value,dict) and value==dict(version='repair-candidate-staging-v1',status='candidate-staged;server-validation-and-fresh-reviews-pending',selected='software-candidate-template.json',incident_sha256=incident):
+                    staged.append(dict(call_id=call['call_id'],arguments_sha256=digest(call['arguments'].encode()),output_sha256=digest(str(output['output']).encode()),result=value))
+    return staged
+
 def verify_live_result(name):
     """Review retained actual outputs without replaying model/tool operations."""
     import re
@@ -60,6 +92,7 @@ def verify_live_result(name):
     assert matches,'Original pre-repair workspace is required, not a reconstructed baseline.'
     with zipfile.ZipFile(io.BytesIO(matches[0].read_bytes())) as archive:
         original_source=archive.read('project/experiment.py');original_tests=archive.read('project/repair_test.py')
+        prospective=archive.read('software-candidate-template.json') if report.get('qualification_variant')=='fresh-completion-v2' else None
     members=generated_package.members(project)
     assert members['repair_test.py']==original_tests and digest(original_source)==validation['source_change']['original_experiment_sha256']
     assert members['experiment.py']!=original_source and digest(members['experiment.py'])==validation['source_change']['current_experiment_sha256']
@@ -75,6 +108,15 @@ def verify_live_result(name):
         new_provider_calls=0,actual_provider_calls_in_trial=report['actual_provider_calls'],aggregate_actual_provider_calls=report.get('continuation',{}).get('earlier_actual_provider_calls',0)+report['actual_provider_calls'],
         validation=validation,project_sha256=digest(project),platform=report['platform'],emulated=report['emulated'],scientific_completion=False,production_writes=0,
         usage=report['receipt']['usage'],source_files=report['source_files'],reviewer=dict(identity='Codex implementing AI',independent=False,human=False,held_out=False))
+    if report.get('qualification_variant')=='fresh-completion-v2':
+        assert report['actual_provider_calls']<=12 and (dt.datetime.fromisoformat(report['ended_at'])-dt.datetime.fromisoformat(report['started_at'])).total_seconds()<=480
+        saved=next(value for value in originals.values() if digest(value)==report['receipt']['checkpoint']['sha256'])
+        staged=staged_completion(checkpoint_history(saved),validation['incident_sha256']);assert staged
+        assert originals['candidate-original.json']==prospective
+        delivery=json.loads(originals['context-delivery.json']);assert delivery['repair_metadata']['created_by_server'] and delivery['repair_metadata']['status']=='valid'
+        result.update(version='repair-completion-retained-review-v1',model_declared_candidate=True,staging=staged,original_candidate_bytes_unchanged=True,
+            correction='The original live run executed the direct staging command after another checked script with &&. Require its actual paired JSON result and the complete retained checkpoint history; do not require the entire exec string to contain only one command.',
+            server_metadata=delivery['repair_metadata'],qualification_limit_unchanged=12,criteria_unchanged=True)
     destination=prior.parent/('retained-review-'+uuid.uuid4().hex+'.json');destination.write_bytes(canonical(result));print(json.dumps(dict(report=str(destination),status='passed',new_provider_calls=0)))
 
 def main():
@@ -230,7 +272,7 @@ def main():
         actual_source=generated_package.members(artifacts['project.zip'])['experiment.py']
         if args.live:assert actual_source!=original and generated_package.members(artifacts['project.zip'])['repair_test.py']==checks
         else:assert actual_source==original.replace(b'return value',b'return value * 2')
-        history=builder.merge_tool_history([],requests[-1]['input'])
+        history=checkpoint_history(by_id[result['runtime']['checkpoint']['artifact_id']])
         outputs=[h for h in history if h.get('type')=='function_call_output']
         execs=[h for h in history if h.get('type')=='function_call' and h.get('name')=='exec']
         if args.live:
@@ -244,11 +286,7 @@ def main():
             corrected_output=next(h['output'] for h in outputs if h['call_id']==execs[1]['call_id'])
             assert 'FAILED' in original_output and 'OK' in corrected_output
         if args.completion_v2:
-            completion=[]
-            for h in execs:
-                command=shlex.split(json.loads(h['arguments']).get('command',''))
-                if len(command)==3 and command[:2]==['python3','/workspace/finish-repair.py'] and command[2] in ('software-candidate-template.json','/workspace/software-candidate-template.json'):completion.append(h)
-            assert completion and any('candidate-staged;server-validation-and-fresh-reviews-pending' in str(o['output']) for h in completion for o in outputs if o['call_id']==h['call_id'])
+            assert staged_completion(history,validation['incident_sha256'])
             assert artifacts['candidate-original.json']==canonical(manifest)
             delivery=json.loads(artifacts['context-delivery.json'])
             assert delivery['repair_metadata']['created_by_server'] and delivery['repair_metadata']['status']=='valid'

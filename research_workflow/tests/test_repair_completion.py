@@ -22,7 +22,7 @@ import repair_validation as validation
 import store
 from workflow import canonical,digest,numerical_protocol
 from test_native_repair_handoff import context
-from check_native_repair_handoff_linux import qualification_token
+from check_native_repair_handoff_linux import qualification_token,staged_completion,checkpoint_history
 
 ORIGINAL=b'def convert(value):\n    return value\n'
 REPAIRED=ORIGINAL.replace(b'return value',b'return value * 2')
@@ -61,6 +61,17 @@ class RepairCompletion(unittest.TestCase):
         with self.assertRaises(ValueError):qualification_token(path)
         path.chmod(0o600);link=self.root/'credential-link';link.symlink_to(path)
         with self.assertRaises(ValueError):qualification_token(link)
+
+    def test_native_staging_evidence_accepts_a_direct_command_after_another_script(self):
+        incident='a'*64;marker=dict(version='repair-candidate-staging-v1',status='candidate-staged;server-validation-and-fresh-reviews-pending',selected='software-candidate-template.json',incident_sha256=incident)
+        call=dict(type='function_call',name='exec',call_id='actual-call',arguments=json.dumps(dict(command='python3 record-development.py && python3 /workspace/finish-repair.py software-candidate-template.json')))
+        output=dict(type='function_call_output',call_id='actual-call',output='Actual prior check passed.\n'+json.dumps(marker))
+        history=[call,output];self.assertEqual(len(staged_completion(history,incident)),1)
+        builder.save_history(self.root,history);self.assertEqual(checkpoint_history(builder.checkpoint(self.root)),history)
+        self.assertEqual(staged_completion(history,'b'*64),[])
+        self.assertEqual(staged_completion([call,dict(output,call_id='other-call')],incident),[])
+        self.assertEqual(staged_completion([call,dict(output,output='print(status="candidate-staged;server-validation-and-fresh-reviews-pending")')],incident),[])
+        self.assertEqual(staged_completion([dict(call,arguments=json.dumps(dict(command='cat finish-repair.py'))),output],incident),[])
 
     def test_missing_metadata_is_server_delivered_without_fake_implementation_progress(self):
         before=copy.deepcopy(self.ctx);text,manifest=self.bootstrap()
