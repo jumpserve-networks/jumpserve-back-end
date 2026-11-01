@@ -11,6 +11,7 @@ from workflow import canonical,digest
 VERSION='builder-dispatch-reconciliation-v1'
 CALL_VERSION='builder-native-call-reconciliation-v1'
 QUEUED_VERSION='queued-dispatch-reconciliation-v1'
+QUEUED_CONTROLLER_VERSION='queued-dispatch-reconciliation-v2'
 
 def queued_reconciliation(task,dispatch,rows):
     """Trust only an immutable server proof of atomic pre-transport closure."""
@@ -20,7 +21,12 @@ def queued_reconciliation(task,dispatch,rows):
     if len(found)!=1:raise ValueError('Original queued-admission proof is unavailable or ambiguous.')
     row=found[0];proof=row['proof'];original=row['snapshot_raw'].encode()
     snapshot=json.loads(original)
-    if (dispatch['status']!='failed' or proof!=marker or proof.get('version')!=QUEUED_VERSION or
+    request=json.loads(snapshot['request_raw'])
+    kind='builder' if isinstance(request,dict) and isinstance(request.get('builder'),dict) else 'controller'
+    contract=(isinstance(request,dict) and
+        (proof.get('version')==QUEUED_VERSION and kind=='builder' or
+         proof.get('version')==QUEUED_CONTROLLER_VERSION and kind=='controller' and proof.get('request_kind')==kind))
+    if (dispatch['status']!='failed' or proof!=marker or not contract or
         digest(original)!=row['snapshot_sha256'] or proof.get('snapshot_sha256')!=row['snapshot_sha256'] or
         any(row.get(k)!=v for k,v in dict(dispatch_id=dispatch['id'],study_id=task['study_id'],task_id=task['id'],request_sha256=dispatch['request_sha256']).items()) or
         any(proof.get(k)!=row[k] for k in ('dispatch_id','study_id','task_id','request_sha256','parent_turn_status')) or
@@ -29,7 +35,7 @@ def queued_reconciliation(task,dispatch,rows):
         type(proof.get('provider_calls')) is not int or proof['provider_calls']!=0 or proof.get('provider_request_sent') is not False or
         any(snapshot.get(k)!=v for k,v in dict(id=dispatch['id'],study_id=task['study_id'],task_id=task['id'],request_sha256=dispatch['request_sha256'],status='queued',runtime='openclaw-production-v1',provenance={}).items()) or
         any(snapshot.get(k) is not None for k in ('lease_token','lease_until','response_artifact_id','response_sha256','ended_at')) or
-        digest(snapshot['request_raw'].encode())!=dispatch['request_sha256'] or not isinstance(json.loads(snapshot['request_raw']).get('builder'),dict)):
+        digest(snapshot['request_raw'].encode())!=dispatch['request_sha256']):
         raise ValueError('Queued-admission reconciliation does not match its retained original.')
     return dict(id=dispatch['id'],kind='atomic-unclaimed-dispatch',request_sha256=dispatch['request_sha256'],snapshot_sha256=row['snapshot_sha256'],native_calls=0,
         scope='Original queued admission closed before worker claim; no provider replay or scientific finding.')
@@ -188,11 +194,11 @@ def _reconcile_dispatches(spool,dispatches):
     import autonomous_repair as repair,experiment_builder as builder
     recovered=[]
     for d in dispatches:
-        if not json.loads(d['request_raw']).get('builder'):continue
         if d['status']=='queued':
             result=store.rpc('research_model_reconcile_queued',dict(p_dispatch=d['id'],p_request_sha256=d['request_sha256']))
             if result.get('reconciled') is True:recovered.append(d['id'])
             continue
+        if not json.loads(d['request_raw']).get('builder'):continue
         if (d.get('provenance') or {}).get('queued_admission_reconciliation'):continue
         if store.rows('model_reconciliations',dict(dispatch_id='eq.'+d['id'],limit=1)):continue
         directory=Path(spool)/d['id'];task_root=Path(spool)/'builder-workspaces'/d['task_id']

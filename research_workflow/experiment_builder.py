@@ -433,6 +433,10 @@ Write/edit project source and run a direct python3 <file>.py check before readin
     if len(message.encode())>BOOTSTRAP_BYTES:
         raise ValueError('Trusted builder instructions exceed the bootstrap bound; reconcile the versioned instructions rather than truncate them.')
     manifest.update(bootstrap_sha256=digest(message.encode()),bootstrap_bytes=len(message.encode()),inline_fields=list(focus))
+    manifest['runtime_sources']=dict(version='installed-builder-sources-v1',files=[
+        dict(path=name,sha256=digest(Path(__file__).with_name(name).read_bytes()))
+        for name in ('experiment_builder.py','autonomous_repair.py','dispatch_recovery.py','openclaw_runtime.py','repair_validation.py')],
+        scope='Hashes of installed source bytes captured by the trusted controller before provider admission; not a scientific validation or model assertion.')
     (directory/'context-delivery.json').write_bytes(canonical(manifest))
     return message,manifest
 
@@ -790,16 +794,18 @@ def _execute(logical,directory,job,token_source,transport,task_root):
         raw_history=canonical(history)
         history_path.write_bytes(raw_history)
         body = canonical(request); key = digest(body)
-        budget=canonical(dict(version='native-context-budget-v1',request_bytes=len(body),maximum_bytes=CONTEXT_CHECKPOINT_BYTES,remaining_bytes=max(0,CONTEXT_CHECKPOINT_BYTES-len(body)),includes='Actual native developer/user messages, tool schemas, reasoning and tool items. No history is truncated.',scope='Scheduling diagnostic, not an implementation instruction or scientific result.'))
+        budget=canonical(dict(version='native-context-budget-v1',request_sha256=key,request_bytes=len(body),maximum_bytes=CONTEXT_CHECKPOINT_BYTES,remaining_bytes=max(0,CONTEXT_CHECKPOINT_BYTES-len(body)),includes='Actual native developer/user messages, tool schemas, reasoning and tool items. No history is truncated.',scope='Scheduling diagnostic, not an implementation instruction or scientific result.'))
         budget_path=workspace/'native-context-budget.json'
         if budget_path.is_symlink():raise ValueError('Native context budget cannot replace a symlink.')
         budget_path.write_bytes(budget)
         if len(body)>CONTEXT_CHECKPOINT_BYTES:
+            result['denied_request']=dict(filename='native-request-'+digest(received)+'.json',received_sha256=digest(received),request_sha256=key,reason_code='native-context-checkpoint',provider_request_sent=False)
             result.update(context_checkpoint=True,scheduling_feedback='Native context boundary reached before provider admission. Full tool history and working files retained; use the work packet and inspect only a missing essential in the next slot.')
             raise ValueError('Native context checkpoint before provider admission; no call was sent.')
         # Leave a complete provider window before admitting another charged
         # request. A worker slot boundary must not knowingly cut inference short.
         if time.monotonic()-began>SLICE_SECONDS-PROVIDER_WINDOW_SECONDS:
+            result['denied_request']=dict(filename='native-request-'+digest(received)+'.json',received_sha256=digest(received),request_sha256=key,reason_code='worker-slot-ended',provider_request_sent=False)
             result['slice_exhausted']=True
             raise ValueError('Worker slot ended before another provider request; no call was admitted or sent.')
         with lock:
