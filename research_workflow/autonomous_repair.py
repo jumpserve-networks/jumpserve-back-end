@@ -137,6 +137,10 @@ def diagnose(task, record):
             raise ValueError('Repair dispatch identity mismatch.')
         if dispatch['status'] in ('queued', 'running'):
             return dict(waiting=True, reason='Original dispatch is still admitted; read-only reconciliation will continue.')
+        queued=dispatch_recovery.queued_reconciliation(task,dispatch,rows)
+        if queued:
+            reconciled.append(queued)
+            continue
         provenance = dispatch.get('provenance') or {}
         if dispatch['status']!='complete' and len(failure_details)<3:
             snippets=[]

@@ -102,6 +102,18 @@ class RepairHandoff(unittest.TestCase):
         (repository/'worker.py').write_text('print(2)\n');self.assertNotEqual(repair.implementation(self.root,sources),before)
         repair.observe(self.root,state,dict(ready=False),before);self.assertEqual(state['repair_guard']['unchanged_slices'],0)
 
+    def test_semantic_protocol_upgrade_does_not_reset_blocked_progress_or_admit_a_retry(self):
+        state=dict(repair_guard=dict(version=repair.VERSION,evidence_revision='old-original-token',waiting=True,unchanged_slices=2,
+            semantic_baseline=dict(version=repair.SEMANTIC_VERSION,evidence_revision='a'*64)))
+        self.store.packet['evidence_revision_protocol']=repair.SEMANTIC_VERSION
+        original=canonical(dict(version='platform-progress-v1',ready=False,status='blocked',remaining_blocker='Original queue still unresolved.'))
+        save(self.root/'progress.json',original);before=copy.deepcopy(state)
+        with self.assertRaisesRegex(Hold,'unchanged'):repair.deliver(self.store,self.root,state)
+        self.assertEqual(state,before);self.assertEqual((self.root/'progress.json').read_bytes(),original)
+        self.store.packet['evidence_revision']='b'*64;repair.deliver(self.store,self.root,state)
+        self.assertFalse(state['repair_guard']['waiting']);self.assertNotIn('semantic_baseline',state['repair_guard'])
+        self.assertEqual(next((self.root/'previous-candidates').iterdir()).read_bytes(),original)
+
     def test_blocked_progress_is_conservative_and_preserved_when_new_evidence_arrives(self):
         state={};repair.deliver(self.store,self.root,state)
         raw=canonical(dict(version='platform-progress-v1',ready=False,status='blocked',remaining_blocker='Need the retained diagnostic.'))
