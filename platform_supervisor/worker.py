@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority
+from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority, call_recovery
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
@@ -215,6 +215,7 @@ class Controller:
 
     def run(self):
         task=self.store.task;self.state=task['checkpoint'] or {};root=self.store.spool/task['id'];workspace=root/'workspace';workspace.mkdir(parents=True,exist_ok=True)
+        cleanup_verified=False
         stop=threading.Event()
         def renew():
             while not stop.wait(30):
@@ -228,7 +229,9 @@ class Controller:
             if removed:self.store.event('sandbox-cleanup-reconciled','Removed retained containers by their task workspace identity.',dict(container_ids=removed))
             self.validate_workspace(workspace)
             self.state.pop('cleanup_unknown',None);self.save_state()
+            cleanup_verified=True
             native.reconcile(self.store)
+            self.state.pop('reconciliation_wait',None)
             self.reconcile_pending()
             self.boundary()
             self.originals(workspace)
@@ -350,7 +353,13 @@ class Controller:
             self.store.checkpoint('completed','All tested changes merged; every scoped production revision was verified.',self.state)
         except Hold as error:
             if isinstance(error,native.CleanupUnknown):self.state['cleanup_unknown']=True
-            if error.status=='reconciling':self.state['not_before']=(now()+dt.timedelta(minutes=1)).isoformat()
+            if error.status=='reconciling':
+                self.state['not_before']=(now()+dt.timedelta(minutes=1)).isoformat()
+                try:waiting=call_recovery.defer(self.store,self.state,now(),cleanup_verified=cleanup_verified)
+                except Exception:waiting=None  # Failed evidence reads never relax admission.
+                if waiting:
+                    self.state['reconciliation_wait']=waiting
+                    self.state['not_before']=waiting['not_before']
             elif error.status=='investigating':self.state['not_before']=(now()+dt.timedelta(minutes=5)).isoformat()
             self.store.checkpoint(error.status,str(error),self.state)
         except native.runtime.CredentialFailure as error:

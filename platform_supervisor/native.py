@@ -17,6 +17,7 @@ import time
 import uuid
 from .common import POLICY, canonical, digest, save, Hold
 from .repair import blocked_progress
+from . import call_recovery
 
 local_runtime=Path(__file__).resolve().parents[1]/'research_workflow'
 sys.path.insert(0,str(local_runtime if local_runtime.is_dir() else Path('/opt/jumpserve/runtime')))
@@ -71,12 +72,13 @@ def normalize(workspace,image,prefix):
 
 def reconcile(store):
     proofs={r['run_id'] for r in store.rows('run_reconciliations')}
+    http_failures=[]
     for run in store.rows('runs'):
         if run['status'] not in ('running','unknown') or run['id'] in proofs: continue
         directory=store.spool/store.task['id']/'calls'/run['id']
         response=directory/'response.bin'; receipt=directory/'receipt.json'
         if not receipt.exists() or not response.exists(): raise Hold('Original model call '+run['id']+' has no complete retained receipt. No replacement call was sent.','reconciling')
-        proof=json.loads(receipt.read_bytes()); raw=response.read_bytes()
+        receipt_raw=call_recovery.original(receipt,150000);proof=json.loads(receipt_raw);raw=call_recovery.original(response,5000000)
         if proof['request_sha256']!=run['request_sha256'] or proof['response_sha256']!=digest(raw):raise Hold('Retained model identity or stream differs.','reconciling')
         artifact=store.artifact('model-response-'+run['id']+'.sse',raw)
         if run['status']=='running':
@@ -84,7 +86,11 @@ def reconcile(store):
         elif proof['status']=='complete':
             completed=wire.read_stream(io.BytesIO(raw),io.BytesIO(),time.monotonic()+5,5000000);builder.validate_calls(completed)
             store.rpc('reconcile-run',dict(id=run['id'],artifact_id=artifact['id'],proof=dict(request_sha256=run['request_sha256'],status='complete',response_sha256=digest(raw))))
-        else:raise Hold('Original unknown model call remains unresolved.','reconciling')
+        else:
+            reconciled=call_recovery.reconcile_http(store,run,directory,proof,raw,receipt_raw) if proof.get('http_status') in call_recovery.HTTP_ERRORS else None
+            if reconciled:http_failures.append(reconciled['http_status'])
+            else:raise Hold('Original unknown model call remains unresolved.','reconciling')
+    return http_failures
 
 def container_prefix(task):
     # OpenClaw preserves a 42-character workspace slug within a 63-character
@@ -117,8 +123,9 @@ def containers(prefix,workspace=None):
         return ids
     except Exception:raise CleanupUnknown('Owned container cleanup is unconfirmed; retain the host admission fence.','reconciling') from None
 
-def confirmed_outcomes(runs):
-    return bool(runs) and any(run['status']=='complete' for run in runs) and all(run['status'] in ('complete','failed') for run in runs)
+def confirmed_outcomes(runs,reconciliations=()):
+    statuses=[call_recovery.effective_status(run,reconciliations) for run in runs]
+    return bool(statuses) and 'complete' in statuses and all(s in ('complete','failed') for s in statuses)
 
 def execute(store, workspace, directory, image, feedback='', token_source=None, transport=None):
     if not re.fullmatch(r'(?:[a-zA-Z0-9][a-zA-Z0-9./:_-]*@)?sha256:[a-f0-9]{64}',image):raise Hold('An installed platform coding image digest is required.')
@@ -218,14 +225,14 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
         store.artifact('native-stdout-'+directory.name+'.json',result.stdout)
         store.artifact('native-stderr-'+directory.name+'.txt',result.stderr)
         envelope=json.loads(result.stdout)
-        if failures:reconcile(store)
+        if failures:rejections.extend(reconcile(store) or [])
         if rejections:
             if 401 in rejections and token_source is runtime.credential:runtime.credential()
             raise Hold('Provider explicitly rejected a retained request (HTTP '+str(rejections[-1])+'); retry is scheduled without a paid fallback.','investigating')
         if invalid_tools:
             return dict(ready=False,feedback='The original complete response proposed an invalid tool call: '+invalid_tools[-1]+' Exec timeoutSeconds must be an integer 1..45; no host or elevated execution is allowed. Retained files remain available. Correct the next proposal without replaying the original provider call.')
         runs=store.rows('runs')
-        return readiness(workspace,envelope,local_stops,confirmed_outcomes(runs))
+        return readiness(workspace,envelope,local_stops,confirmed_outcomes(runs,store.rows('run_reconciliations')))
     finally:
         server.shutdown();server.server_close();thread.join(timeout=5)
         cleanup_phase='container-inventory'
