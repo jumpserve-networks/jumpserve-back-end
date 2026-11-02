@@ -8,6 +8,8 @@ import tarfile
 import zipfile
 from .common import POLICY, canonical, digest, Hold
 
+FROZEN_SUPERVISOR_FILES={'__init__.py','common.py','credentials.py','store.py','github.py','source.py','releases.py','self_runtime.py','standing_authority.py','policy.json'}
+
 def safe_name(name):
     path=PurePosixPath(name)
     if not name or path.is_absolute() or '..' in path.parts or '\\' in name or '`' in name or any(ord(char)<32 for char in name) or path.as_posix()!=name: raise Hold('Unsafe source path.')
@@ -50,11 +52,18 @@ def protected(name, existed):
     validation_config=path.name in ('tsconfig.json','eslint.config.mjs','eslint.config.js','jest.config.js','jest.config.ts','vitest.config.ts','pytest.ini')
     return existed and (test_file or validation_config or any(part in ('test','tests','__tests__') for part in path.parts))
 
-def freeze(baseline, directory):
+def freeze(baseline, directory, supervisor_scope=None):
     current=snapshot(directory); changes=[]; total=0
     for name in sorted(set(baseline)|set(current)):
         if baseline.get(name)==current.get(name): continue
-        if protected(name,name in baseline): raise Hold('Automatic publication cannot change authority, migrations, CI or existing validation: '+name)
+        qualified_supervisor=(supervisor_scope and supervisor_scope.get('version')=='platform-supervisor-self-repair-v1'
+            and name.startswith('platform_supervisor/')
+            and name in current
+            and name.split('/')[1] not in FROZEN_SUPERVISOR_FILES
+            and (name.count('/')==1 or name not in baseline and name.startswith('platform_supervisor/tests/'))
+            and current.get(name,{}).get('sha256')==supervisor_scope.get('candidate_paths',{}).get(name)
+            and name in supervisor_scope.get('candidate_paths',{}))
+        if protected(name,name in baseline) and not qualified_supervisor: raise Hold('Automatic publication cannot change authority, migrations, CI or existing validation: '+name)
         raw=(Path(directory)/name).read_bytes() if name in current else None
         if name=='package.json' and name in baseline:
             original=Path(directory).parent.parent/'baseline'/Path(directory).name/'package.json'
@@ -72,10 +81,15 @@ def freeze(baseline, directory):
     if total>POLICY['maximum_patch_bytes'] or len(changes)>POLICY['maximum_changed_files']: raise Hold('Candidate exceeds automatic patch limits.')
     return dict(version='platform-patch-v1',tree_sha256=digest(canonical(current)),files=changes)
 
-def apply_patch(patch, directory):
+def apply_patch(patch, directory, supervisor_scope=None):
     for item in patch['files']:
         name=item['path']
-        if not safe_name(name) or protected(name,False): raise Hold('Unsafe retained patch.')
+        qualified=(supervisor_scope and supervisor_scope.get('version')=='platform-supervisor-self-repair-v1'
+            and item['content'] is not None and name in supervisor_scope.get('candidate_paths',{})
+            and name.startswith('platform_supervisor/') and name.split('/')[1] not in FROZEN_SUPERVISOR_FILES
+            and (name.count('/')==1 or name.startswith('platform_supervisor/tests/') and not (Path(directory)/name).exists())
+            and digest(base64.b64decode(item['content'],validate=True))==supervisor_scope['candidate_paths'][name])
+        if not safe_name(name) or protected(name,False) and not qualified: raise Hold('Unsafe retained patch.')
         path=Path(directory)/name
         if item['content'] is None: path.unlink()
         else:

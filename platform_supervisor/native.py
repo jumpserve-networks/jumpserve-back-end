@@ -145,7 +145,7 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
         'Implement and check the objective, repair recoverable failures, and write proposal.json with {"version":"platform-proposal-v1","summary":"...","ready":true}. '+
         'If incomplete, keep working files and write a concise progress.json. The controller runs fixed checks after your slice; only actual successful checks admit publication. '+
         'For assessment repairs, read references/assessment-repair/summary.json first. The trusted controller supplies scoped diagnostics and source copies without credentials. If prerequisites prevent a safe correction, write progress.json with version platform-progress-v1, ready false, status blocked and remaining_blocker. This stops inference until evidence changes; do not repeatedly rerun checks or create logs in place of a repair. '+
-        'Read task.json first, then inspect only necessary files. Do not copy secrets into source.\nPrevious scheduling/check feedback:\n'+feedback[:20000],encoding='utf-8')
+        'Read task.json first, including supervisor_self_repair when controller functionality needs repair or extension. This dedicated route requires frozen qualification; it never permits changing the credential, authority or uncertain-call admission kernel. Then inspect only necessary files. Do not copy secrets into source.\nPrevious scheduling/check feedback:\n'+feedback[:20000],encoding='utf-8')
     store.artifact('coding-instruction-'+directory.name+'.txt',message.read_bytes())
     prefix=container_prefix(store.task['id']); bridge_token=secrets.token_hex(32)
     lock=threading.Lock(); failures=[]; rejections=[]; local_stops=[]; invalid_tools=[]; cache={}; admitted=set(); began=time.monotonic()

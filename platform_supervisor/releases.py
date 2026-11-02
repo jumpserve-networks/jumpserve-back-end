@@ -27,6 +27,7 @@ def plan(repository, paths, qualification=None):
 class Releases:
     def __init__(self, github):self.github=github
     def target(self,request):
+        if request['component']=='supervisor-runtime':return (POLICY['release_repository'],'supervisor-runtime-release.yml')
         if request['component']=='research-runtime':return (POLICY['release_repository'],'research-runtime-release.yml')
         return (request['repository'],'deploy.yml') if request['component']=='backend' else (POLICY['release_repository'],POLICY['release_workflow'])
     def find(self, operation):
@@ -49,6 +50,7 @@ class Releases:
         if self.github.main(repository)!=request['workflow_revision']:raise Hold('Release workflow main advanced; freeze a newly reviewed release intent.')
         inputs=dict(operation_id=operation['id'],expected_revision=request['revision']) if request['component']=='backend' else dict(operation_id=operation['id'],repository=request['repository'],revision=request['revision'],component=request['component'])
         if request['component']=='research-runtime':inputs=dict(operation_id=operation['id'],revision=request['revision'],pin_revision=request['pin_revision'])
+        if request['component']=='supervisor-runtime':inputs=dict(operation_id=operation['id'],revision=request['revision'],previous_revision=request['previous_revision'],qualification_artifact_id=request['qualification_artifact_id'])
         self.github.post(repository,'actions/workflows/'+workflow+'/dispatches',dict(ref='main',inputs=inputs))
         return dict(dispatched=True)
 
