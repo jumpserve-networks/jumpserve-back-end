@@ -80,6 +80,12 @@ def execute(store, repository, directory, image):
         # publisher key, cloud key or home directory is mounted.
         network='bridge' if command[:2]==['npm','ci'] else 'none'
         args=['docker','run','--rm','--name',name,'--network',network,'--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','256','--memory','3g','--memory-swap','3g','--cpus','2','--user',str(os.getuid())+':'+str(os.getgid()),'--env','HOME=/tmp','--env','CI=true','--env','NODE_OPTIONS=--max-old-space-size=1536','--env','NEXT_PUBLIC_SUPABASE_URL=https://regphejnlvfpyokpniny.supabase.co','--env','NEXT_PUBLIC_SUPABASE_ANON_KEY=platform-build-placeholder','--env','NEXT_PUBLIC_SITE_URL=https://jumpserve.quaint-lab.org','--mount','type=bind,source='+str(Path(directory).resolve())+',target=/workspace','--workdir','/workspace',image,*command]
+        if repository=='jumpserve-networks/jumpserve-back-end':
+            # The broker belongs to the installed trusted release, outside the
+            # writable candidate. Backend-only checks receive it read-only.
+            from . import self_runtime
+            image_index=len(args)-len(command)-1
+            args[image_index:image_index]=['--mount','type=bind,source='+str(Path(self_runtime.gate().__file__).resolve())+',target=/supervisor-runtime-gate.py,readonly']
         started=time.monotonic()
         try:
             output=subprocess.run(args,capture_output=True,timeout=min(900,remaining-5))

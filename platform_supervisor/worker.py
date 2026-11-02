@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority, call_recovery
+from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority, call_recovery, self_runtime, self_failure
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
@@ -121,7 +121,12 @@ class Controller:
                 source.extract(self.github.archive(repo,original['revision']),target)
             baseline=workspace.parent/'baseline'/name
             if not baseline.exists():source.extract(self.github.archive(repo,self.state['sources'][repo]['revision']),baseline)
-        save(workspace/'task.json',canonical(dict(id=self.store.task['id'],objective=self.store.task['objective'],repositories=self.store.task['repositories'],deadline_at=self.store.task['deadline_at'],limits=dict(max_reserved_cents=self.store.task['max_reserved_cents']),protected=POLICY['protected'],standing_authority=standing_authority.MANDATE,standing_authority_sha256=standing_authority.MANDATE_SHA256)))
+        packet=dict(id=self.store.task['id'],objective=self.store.task['objective'],repositories=self.store.task['repositories'],
+            deadline_at=self.store.task['deadline_at'],limits=dict(max_reserved_cents=self.store.task['max_reserved_cents']),
+            protected=POLICY['protected'],standing_authority=standing_authority.MANDATE,standing_authority_sha256=standing_authority.MANDATE_SHA256,
+            supervisor_self_repair=self_runtime.capabilities())
+        save(workspace/'task.json',canonical(packet))
+        if self.state.get('supervisor_failure'):save(workspace/'supervisor-failure.json',canonical(self.state['supervisor_failure']))
 
     def persist_work(self, workspace):
         patches={}
@@ -190,7 +195,9 @@ class Controller:
                 original=source.snapshot(fresh);previous=self.state['sources'][repo]['snapshot']
                 for file in patch['files']:
                     if self.state.get('research_runtime') and file['path']==research_runtime.APPROVAL:continue
-                    if original.get(file['path'])==previous.get(file['path']):source.apply_patch(dict(files=[file]),fresh)
+                    if original.get(file['path'])==previous.get(file['path']):
+                        scope=self.state.get('supervisor_runtime',{}).get('scope') if change['component']=='supervisor-runtime' else None
+                        source.apply_patch(dict(files=[file]),fresh,supervisor_scope=scope)
                     else:
                         import base64
                         retained=workspace/'previous-candidates'/name/file['path'];retained.parent.mkdir(parents=True,exist_ok=True)
@@ -208,6 +215,7 @@ class Controller:
             change['status']='superseded';self.record_change(change)
         save(workspace/'rebase-conflicts.json',canonical(conflicts))
         self.state.pop('research_runtime',None)
+        self.state.pop('supervisor_runtime',None)
         if self.state.get('runtime_reviewed_source'):self.state['runtime_reviewed_source']=advances[research_runtime.BACKEND]
         self.state.update(tested=False,changes=[],generation=self.state.get('generation',0)+1,feedback='Main advanced. Non-overlapping changes were preserved on the fresh main source. Read rebase-conflicts.json and previous-candidates/ for overlapping edits; preserve concurrent work, repair the proposal and rerun checks. Original patches, tests and PRs remain recorded.')
         self.persist_work(workspace)
@@ -280,14 +288,16 @@ class Controller:
                 changes=[]
                 for repo,original in self.state['sources'].items():
                     directory=workspace/POLICY['repositories'][repo]['directory']
-                    try:patch=source.freeze(original['snapshot'],directory)
+                    try:
+                        supervisor_scope=self_runtime.prepare(self,workspace,directory) if repo==self_runtime.BACKEND else None
+                        patch=source.freeze(original['snapshot'],directory,supervisor_scope=supervisor_scope)
                     except Hold as error:
                         self.state['feedback']=str(error)+'. Restore the protected file exactly from the baseline. Put new regression tests in a new test file; existing tests and authority cannot change.'
                         self.persist_work(workspace)
                         raise Hold('Retained candidate needs a scope correction. Protected validation remains unchanged.','implementing') from None
                     if not patch:continue
                     runtime_candidate=repo==research_runtime.BACKEND and any(f['path'].startswith('research_workflow/') for f in patch['files'])
-                    component='research-runtime' if runtime_candidate else plan(repo,[f['path'] for f in patch['files']])
+                    component='supervisor-runtime' if supervisor_scope else 'research-runtime' if runtime_candidate else plan(repo,[f['path'] for f in patch['files']])
                     receipt,artifact=checks.execute(self.store,repo,directory,self.image)
                     if not receipt['passed']:
                         save(workspace/'check-feedback.json',canonical(receipt))
@@ -295,7 +305,8 @@ class Controller:
                         self.persist_work(workspace)
                         if exhausted:raise Hold('Reservation exhausted and retained source failed fixed checks; original source and receipts remain retained.','budget')
                         raise Hold('Executed checks failed; native repair will continue from the retained source.','implementing')
-                    if source.freeze(original['snapshot'],directory)!=patch:raise Hold('Source changed during testing.')
+                    if source.freeze(original['snapshot'],directory,supervisor_scope=supervisor_scope)!=patch:raise Hold('Source changed during testing.')
+                    if supervisor_scope:self_runtime.qualify(self,directory,supervisor_scope,receipt,artifact)
                     if component=='research-runtime':
                         patch=research_runtime.qualify(self,directory,patch,receipt,artifact)
                         component=plan(repo,[f['path'] for f in patch['files']],self.state['research_runtime']['scope'])
@@ -339,6 +350,7 @@ class Controller:
                 workflow_revision=self.state.setdefault('release_workflow_revisions',{}).setdefault(workflow_repository,self.github.main(workflow_repository))
                 request=dict(repository=change['repository'],revision=change['merge_sha'],component=change['component'],workflow_revision=workflow_revision)
                 if change['component']=='research-runtime':request=research_runtime.release_request(self,change)
+                if change['component']=='supervisor-runtime':request=self_runtime.release_request(self,change)
                 sha=digest(canonical(request));op_id=identity(task['id'],'deploy:'+change['repository']+':'+sha)
                 release=dict(id=identity(task['id'],'release:'+change['repository']+':'+change['merge_sha']),component=change['component'],repository=change['repository'],revision=change['merge_sha'],status='deploying',external_id=op_id)
                 self.store.rpc('release',release)
@@ -366,6 +378,10 @@ class Controller:
             self.state['not_before']=(now()+dt.timedelta(minutes=2)).isoformat()
             self.store.checkpoint('blocked' if error.status=='auth-required' else 'investigating','Subscription credential recovery: '+error.reason+'. No paid fallback or replacement provider call was used.',self.state)
         except Exception as error:
+            failure=self_failure.capture(error,self.state)
+            original=self.store.artifact('supervisor-failure-original.json',self_failure.original(error))
+            failure['original_artifact_id']=original['id']
+            self.store.artifact('supervisor-failure.json',canonical(failure))
             self.state['not_before']=(now()+dt.timedelta(minutes=1)).isoformat()
             self.store.checkpoint('reconciling','Unexpected '+type(error).__name__+'; retained action identities must reconcile before new work.',self.state)
         finally:stop.set();thread.join(timeout=2)
