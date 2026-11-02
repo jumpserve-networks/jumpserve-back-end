@@ -13,7 +13,7 @@ from pathlib import Path
 import secrets
 import time
 import uuid
-import zlib
+import lzma
 import store
 from workflow import canonical, digest, identifier
 from network_spec import observations
@@ -37,7 +37,6 @@ def user_data(n,spec_url,source_url,token,private_inputs=None):
     builtin=n['spec']['runner']=='netem-iperf-v1'
     files={'package_runtime.py':(Path(__file__).parent/'package_runtime.py').read_text()}
     if builtin: files['netem_iperf.py']=(Path(__file__).parent/'netem_iperf.py').read_text()
-    driver=base64.b64encode(zlib.compress(canonical(files))).decode()
     package=n['spec']['config'].get('package',{})
     settings=dict(job_id=n['job_id'],spec_url=spec_url,source_url=source_url,input_sha256=n['spec_sha256'],package_sha256=package.get('sha256'),builtin=builtin,
         deadline=dt.datetime.fromisoformat(n['deadline'].replace('Z','+00:00')).timestamp(),ingest_url=os.environ['NETWORK_PACKAGE_INGEST_URL'],token=token,
@@ -57,10 +56,9 @@ if s['container']:subprocess.run(['apt-get','install','-y','docker.io'],check=Tr
 if s['built']:
  subprocess.run(['apt-get','update'],check=True,timeout=max(1,int(s['deadline']-time.time())))
  subprocess.run(['apt-get','install','-y','python3-venv'],check=True,timeout=max(1,int(s['deadline']-time.time())))
-if s['builtin']:
- subprocess.run(['apt-get','update'],check=True,timeout=max(1,int(s['deadline']-time.time())),env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','DEBIAN_FRONTEND':'noninteractive'})
- subprocess.run(['apt-get','install','-y','iproute2','iperf3','iputils-ping','ethtool'],check=True,timeout=max(1,int(s['deadline']-time.time())),env={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','DEBIAN_FRONTEND':'noninteractive'})
-subprocess.run(['python3','/opt/jumpserve-package-runtime.py','--directory',str(root),'--deadline',str(s['deadline'])],check=False)
+runtime_env=dict(__import__('os').environ)
+if s['builtin']:runtime_env['JUMPSERVE_DEDICATED_EXPERIMENT']=s['input_sha256']
+subprocess.run(['python3','/opt/jumpserve-package-runtime.py','--directory',str(root),'--deadline',str(s['deadline'])],check=False,env=runtime_env)
 files={};remaining=s['max_output_bytes']
 for name in ('runtime-receipt.json','output.json','stdout.bin','stderr.bin'):
  p=root/name
@@ -73,16 +71,22 @@ payload=json.dumps({'job_id':s['job_id'],'files':files},separators=(',',':')).en
 req=urllib.request.Request(s['ingest_url'],data=payload,headers={'Authorization':'Bearer '+s['token'],'Content-Type':'application/json'})
 with urllib.request.urlopen(req,timeout=30) as response:response.read(4096)
 '''
+    files['bootstrap_setup.py']=setup
+    driver=base64.b64encode(lzma.compress(canonical(files))).decode()
     encoded=base64.b64encode(canonical(settings)).decode()
     script='#!/bin/bash\nset -euo pipefail\ntrap "/sbin/shutdown -h now" EXIT\n'
     # cloud-init must fetch user-data via IMDS before this script can run.
     # Keep no instance IAM profile, require IMDSv2 at launch, then block the
     # metadata route before any downloaded/generated program is executed.
     script+='ip route replace blackhole 169.254.169.254/32\n'
+    # Keep the compressed driver's required tools readable in cloud-init's
+    # original user-data for operational diagnosis. Installation/results are
+    # exercised and retained by the fixed runner, never inferred from this list.
+    if builtin:script+='# Fixed runner provisions procps iproute2 iperf3 iputils-ping ethtool; verifies ss and sysctl; retains actual installation results.\n'
     seconds=max(1,int(settings['deadline']-time.time()))
     script+=f'systemd-run --unit jumpserve-deadline --on-active={seconds}s /sbin/shutdown -h now\n'
-    script+="install -d -m 700 /var/lib/jumpserve-experiment\npython3 - '"+driver+"' <<'JUMPSERVE_DRIVER'\nimport base64,json,pathlib,sys,zlib\nfor name,source in json.loads(zlib.decompress(base64.b64decode(sys.argv[1]))).items():\n pathlib.Path('/opt/jumpserve-'+name.replace('_','-') if name=='package_runtime.py' else '/var/lib/jumpserve-experiment/'+name).write_text(source)\nJUMPSERVE_DRIVER\n"
-    script+='python3 - '+encoded+" <<'JUMPSERVE_SETUP'\n"+setup+'\nJUMPSERVE_SETUP\n'
+    script+="install -d -m 700 /var/lib/jumpserve-experiment\npython3 - '"+driver+"' <<'JUMPSERVE_DRIVER'\nimport base64,json,pathlib,sys,lzma\nfor name,source in json.loads(lzma.decompress(base64.b64decode(sys.argv[1]))).items():\n pathlib.Path('/opt/jumpserve-'+name.replace('_','-') if name=='package_runtime.py' else '/var/lib/jumpserve-experiment/'+name).write_text(source)\nJUMPSERVE_DRIVER\n"
+    script+='python3 /var/lib/jumpserve-experiment/bootstrap_setup.py '+encoded+'\n'
     if len(script.encode())>16384: raise ValueError('Bootstrap exceeds EC2 user-data limit.')
     # Boto3 base64-encodes EC2 UserData itself; return the original script.
     return script

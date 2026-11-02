@@ -298,16 +298,17 @@ def inventory(task):
 
 def coverage_manifest(task):
  required=inventory(task);jobs=retained_jobs(task);completed=[]
- runs=[]
+ runs=[];environment_jobs=[]
  for job in jobs:
   if job.get('run_id'):
    run=one('runs',task['study_id'],job['run_id']);runs.append({k:run.get(k) for k in ('id','campaign_id','status','reason','input_sha256','output_sha256')})
+   if run['status'] in ('failed','partial') and run.get('provenance',{}).get('runner')=='netem-iperf-v1':environment_jobs.append(job['id'])
    if run['status']=='complete':completed.append(job['id'])
  expected={j['id'] for j in required};covered=expected&set(completed)
  return dict(version=evidence.VERSION,required_checks=[dict(id=j['id'],title=j['title'],execution_mode=j['execution_mode']) for j in required[:8]],next_check_cursor=8 if len(required)>8 else None,
   completed_check_ids=sorted(covered),remaining_check_ids=sorted(expected-covered),runs=runs[:8],run_count=len(runs),inline_run_count=min(8,len(runs)),
   required_count=len(expected),completed_count=len(covered),complete=bool(expected) and expected==covered,
-  inventory_sha256=digest(canonical([dict(id=j['id'],request=j['request']) for j in required])),
+  inventory_sha256=digest(canonical([dict(id=j['id'],request=j['request']) for j in required])),environment_failure_job_ids=environment_jobs,
   scope='Original frozen claim/check links only. Execution coverage is not a scientific verdict or whole-paper review.')
 
 def inspect_evidence(task,request):
@@ -460,6 +461,11 @@ def build_context(task):
   value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source','acquisition','runtime-contract','controller-turn'],page_byte_limit=evidence.READ_BYTES,
    instructions='Use supplied check/protocol/run/source IDs only. Pages explicitly identify omitted records; calculations use the complete frozen data. Inspection consumes a model attempt.')
  if context.get('evidence_read'):value['evidence_read']=context['evidence_read']
+ if task['stage'] in ('planning','assessment') and value.get('evidence_coverage',{}).get('environment_failure_job_ids'):
+  import experiment_environment
+  checking=copy.deepcopy(context)
+  incident=experiment_environment.historical(task,checking,rows,value['evidence_coverage']['environment_failure_job_ids'])
+  value['operational_environment_check']=dict(incident=incident,checked_job_ids=checking.get('environment_checked_job_ids',[]))
  if task['stage']=='assessment':
   finding=numeric_finding(task)
   value['controller_numeric_check']=dict(label=finding[0],coverage=finding[2],evidence_manifest_sha256=digest(canonical(finding[1])),evidence_count=len(finding[1]),scope='Complete exact matched recorded cells under frozen conditions only; shared inputs, not independent scientific validation. Individual records are available through scoped evidence reads.') if finding else None
@@ -700,9 +706,21 @@ def step(task):
  if task['stage']=='execution':
   jobs=rows('queue_jobs',task['study_id'],id='in.('+','.join(context['job_ids'])+')',limit=1000)
   if len(jobs)!=len(context['job_ids']):raise ValueError('Queue identity coverage is incomplete; do not create replacement jobs.')
+  import experiment_environment
+  incident=experiment_environment.collect(task,jobs,rows) if any(j.get('run_id') and j['status'] not in ('queued','running','manual') for j in jobs) else None
+  if incident:
+   context['experiment_environment']=incident
+   return advance(task,'blocked',context=context,reason='Experiment environment repair required: '+', '.join(sorted({f['code'] for i in incident['incidents'] for f in i['failures']}))+'. Original run artifacts retained; qualify the tools and host before a new reviewed acquisition.',label='inconclusive')
   if any(j['status'] in ('queued','running','manual') for j in jobs):return advance(task,'waiting',reason='Original experiment identities are still pending; no replacement invocation.',delay=30)
   return advance(task,'queued',stage='assessment',reason='Recorded experiment outcomes are ready for evidence assessment.',label='inconclusive')
  prompt_context=build_context(task)
+ environment_check=prompt_context.pop('operational_environment_check',None)
+ if environment_check:
+  context['environment_checked_job_ids']=environment_check['checked_job_ids']
+  incident=environment_check['incident']
+  if incident:
+   context['experiment_environment']=incident
+   return advance(task,'blocked',context=context,reason='Historical experiment environment repair required: '+', '.join(sorted({f['code'] for i in incident['incidents'] for f in i['failures']}))+'. Original settled jobs retained; new reviewed acquisition requires a qualified environment.',label='inconclusive')
  answer=model.call(task,prompt_context,control)
  if answer.get('denied'):return advance(task,answer['denied'],reason='Paper admission stopped by '+answer['denied']+'.')
  if task['stage']=='building' and (answer.get('runtime') or {}).get('checkpoint'):context['builder_checkpoint']=answer['runtime']['checkpoint']

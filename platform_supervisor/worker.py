@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence
+from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
@@ -121,7 +121,7 @@ class Controller:
                 source.extract(self.github.archive(repo,original['revision']),target)
             baseline=workspace.parent/'baseline'/name
             if not baseline.exists():source.extract(self.github.archive(repo,self.state['sources'][repo]['revision']),baseline)
-        save(workspace/'task.json',canonical(dict(id=self.store.task['id'],objective=self.store.task['objective'],repositories=self.store.task['repositories'],deadline_at=self.store.task['deadline_at'],limits=dict(max_reserved_cents=self.store.task['max_reserved_cents']),protected=POLICY['protected'])))
+        save(workspace/'task.json',canonical(dict(id=self.store.task['id'],objective=self.store.task['objective'],repositories=self.store.task['repositories'],deadline_at=self.store.task['deadline_at'],limits=dict(max_reserved_cents=self.store.task['max_reserved_cents']),protected=POLICY['protected'],standing_authority=standing_authority.MANDATE,standing_authority_sha256=standing_authority.MANDATE_SHA256)))
 
     def persist_work(self, workspace):
         patches={}

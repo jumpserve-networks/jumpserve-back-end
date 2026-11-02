@@ -17,11 +17,91 @@ import statistics
 import subprocess
 import time
 import uuid
+import io
+import tarfile
+import tempfile
+import urllib.request
 
 VERSION = 'netem-iperf-v1'
 MAX_COUNTER_BYTES = 100_000_000_000
 METRICS = {'throughput_mbit_s': 'Mbit/s', 'received_bytes': 'bytes', 'duration_seconds': 's', 'idle_rtt_ms': 'ms', 'retransmits': 'count'}
 FIELDS = {'cca', 'loss_levels_pct', 'rate_mbit', 'one_way_delay_ms', 'duration_seconds', 'queue_packets', 'mtu', 'socket_buffer_bytes', 'seed', 'loss_seed', 'ping_count'}
+ENVIRONMENT_VERSION = 'netem-environment-repair-v1'
+IPROUTE_URL = 'https://mirrors.edge.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.8.0.tar.xz'
+IPROUTE_SHA256 = '03a6cca3d71a908d1f15f7b495be2b8fe851f941458dc4664900d7f45fcf68ce'
+
+
+def environment_contract():
+    return dict(version=ENVIRONMENT_VERSION, tools=['ip','tc','ss','iperf3','ping','ethtool','sysctl'],
+        preparation='Trusted bootstrap on a disposable experiment EC2 host installs dependencies. The fixed runner raises socket maxima only as needed for the frozen -w value; it verifies actual socket settings in both endpoint namespaces before any trial.',
+        seeded_loss='If the installed tc cannot parse seed, build only the tc target from SHA256-pinned upstream iproute2 6.8.0. Verify the requested seed through kernel qdisc readback. Unsupported kernels remain explicit operational repair incidents; never omit the seed.',
+        authority='Host preparation requires the trusted dedicated-host flag bound to the exact spec SHA256. No host writes or installation on a shared worker, API host or unmarked development container.',
+        repair='Retain original command results and environment receipts. Known environment failures trigger an operational incident, not a scientific verdict or unchanged campaign replay. A qualified new implementation resumes prospective planning and fresh reviews under the original limits.')
+
+
+def install_seeded_tc(execute, provenance):
+    """Fixed upstream source, fixed package/build commands; no model-supplied code."""
+    execute(['apt-get','update'], timeout=120)
+    execute(['apt-get','install','-y','build-essential','bison','flex','pkg-config','libmnl-dev','libelf-dev','libcap-dev'], timeout=180)
+    with urllib.request.urlopen(IPROUTE_URL,timeout=30) as response: raw=response.read(4_000_001)
+    if len(raw)>4_000_000 or hashlib.sha256(raw).hexdigest()!=IPROUTE_SHA256:
+        raise ValueError('Experiment environment: upstream tc source hash differs; no source executed.')
+    provenance['tc_source']=dict(url=IPROUTE_URL,sha256=IPROUTE_SHA256,bytes=len(raw),version='6.8.0')
+    with tempfile.TemporaryDirectory(prefix='jumpserve-iproute-') as directory:
+        with tarfile.open(fileobj=io.BytesIO(raw),mode='r:xz') as archive:
+            # Accept regular source files/directories, never links or devices.
+            members=archive.getmembers()
+            for member in members:
+                path=Path(member.name)
+                if path.is_absolute() or '..' in path.parts or not (member.isdir() or member.isfile()):
+                    raise ValueError('Experiment environment: unsupported upstream archive member.')
+            archive.extractall(directory,members=members,filter='data')
+        root=Path(directory)/'iproute2-6.8.0'
+        execute(['make','-C',str(root),'-j2','SUBDIRS=lib tc'],timeout=180)
+        # Keep the distribution's ip/ss; install just this fixed, required tool.
+        execute(['install','-m','755',str(root/'tc/tc'),'/usr/local/sbin/tc'])
+
+
+def prepare_environment(config, execute, provenance, dedicated):
+    receipt=dict(version=ENVIRONMENT_VERSION,dedicated_host=dedicated,changes=[])
+    provenance['environment_preparation']=receipt
+    for key in ('net.core.rmem_max','net.core.wmem_max'):
+        before=execute(['sysctl','-n',key]); current=int(before.stdout.strip())
+        requested=config['socket_buffer_bytes']
+        if current<requested:
+            if not dedicated: raise ValueError('Experiment environment: socket maxima need dedicated-host preparation.')
+            execute(['sysctl','-w',key+'='+str(requested)])
+            receipt['changes'].append(dict(setting=key,before=current,requested=requested))
+        actual=int(execute(['sysctl','-n',key]).stdout.strip())
+        if actual<requested: raise ValueError('Experiment environment: socket maximum readback is below the frozen request.')
+    if config['loss_seed'] is not None:
+        help_result=execute(['tc','qdisc','add','dev','lo','root','netem','help'],check=False)
+        if not re.search(r'\bseed\b',help_result.stdout+' '+help_result.stderr):
+            if not dedicated: raise ValueError('Experiment environment: seeded tc needs dedicated-host preparation.')
+            install_seeded_tc(execute,provenance)
+            receipt['changes'].append(dict(tool='tc',version='6.8.0',source_sha256=IPROUTE_SHA256))
+    receipt['prepared']=True
+
+
+def prepare_tools(execute,provenance,dedicated):
+    missing=[tool for tool in environment_contract()['tools'] if not shutil.which(tool)]
+    provenance['initial_missing_tools']=missing
+    if missing:
+        if not dedicated:raise ValueError('Required Linux tool unavailable: '+', '.join(missing)+'; dedicated-host provisioning required.')
+        provenance['environment_preparation']=dict(version=ENVIRONMENT_VERSION,dedicated_host=True,phase='installing-required-tools',qualified=False)
+        execute(['apt-get','update'],timeout=120)
+        execute(['apt-get','install','-y','procps','iproute2','iperf3','iputils-ping','ethtool'],timeout=180)
+        remaining=[tool for tool in environment_contract()['tools'] if not shutil.which(tool)]
+        if remaining:raise ValueError('Required Linux tool unavailable after provisioning: '+', '.join(remaining))
+
+
+SOCKET_PROBE = '''import json,socket,sys
+n=int(sys.argv[1]);s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);actual={}
+for name in ('SO_SNDBUF','SO_RCVBUF'):
+ option=getattr(socket,name);s.setsockopt(socket.SOL_SOCKET,option,n);actual[name]=s.getsockopt(socket.SOL_SOCKET,option)
+print(json.dumps(dict(requested=n,actual=actual,linux_doubling=True)))
+if any(v<2*n for v in actual.values()):raise ValueError('Frozen socket buffer request was clamped')
+'''
 
 
 def validate(config):
@@ -86,12 +166,19 @@ def run(spec):
                       data_origin='new-empirical', environment='Single isolated Linux host; namespace emulation. Conditions on the same host are dependent.',
                       seed_scope='seed randomizes condition order; loss_seed=null leaves the kernel loss PRNG uncontrolled. No loss seed is claimed when null.',
                       limitation='No causal window/queue mechanism identification, competing flows, external Internet measurement or independent-host population inference.')
-    def command(args, ns=None, check=True, timeout=10):
+    def execute(args, ns=None, check=True, timeout=10):
         argv = (['ip','netns','exec',ns] if ns else []) + args
-        result = subprocess.run(argv, capture_output=True, text=True, timeout=timeout, env=dict(os.environ,LC_ALL='C'))
+        try:
+            result = subprocess.run(argv, capture_output=True, text=True, timeout=timeout, env=dict(os.environ,LC_ALL='C',DEBIAN_FRONTEND='noninteractive'))
+        except subprocess.TimeoutExpired as error:
+            def decoded(value):return value.decode(errors='replace') if isinstance(value,bytes) else value or ''
+            commands.append(dict(argv=argv,returncode=None,error_kind='timeout',stdout=decoded(error.stdout),stderr=decoded(error.stderr)))
+            raise
         commands.append(dict(argv=argv, returncode=result.returncode, stdout=result.stdout, stderr=result.stderr))
         if result.returncode and check: raise ValueError('Linux experiment command failed: '+args[0])
-        return result.stdout
+        return result
+    def command(args, ns=None, check=True, timeout=10):
+        return execute(args,ns,check,timeout).stdout
     def shape(dev, loss, seed):
         command(['tc','qdisc','del','dev',dev,'root'],router,check=False)
         command(['tc','qdisc','replace','dev',dev,'root','handle','1:','htb','default','10'],router)
@@ -102,9 +189,11 @@ def run(spec):
         command(args,router)
     try:
         if platform.system() != 'Linux' or os.geteuid() != 0: raise ValueError('An isolated Linux host with network namespace privileges is required.')
-        for tool in ('ip','tc','iperf3','ping','ethtool','sysctl'):
-            if not shutil.which(tool): raise ValueError('Required Linux tool unavailable: '+tool)
+        dedicated=os.environ.get('JUMPSERVE_DEDICATED_EXPERIMENT')==hashlib.sha256(json.dumps(spec,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()).hexdigest()
+        prepare_tools(execute,provenance,dedicated)
+        prepare_environment(config,execute,provenance,dedicated)
         provenance['iperf_version'] = command(['iperf3','--version']); provenance['iproute_version'] = command(['tc','-V'])
+        provenance['tool_binaries']={name:dict(path=shutil.which(name),sha256=hashlib.sha256(Path(shutil.which(name)).read_bytes()).hexdigest()) for name in ('tc','iperf3')}
         for ns in names:
             command(['ip','netns','add',ns]); created.append(ns); command(['ip','link','set','lo','up'],ns)
         for left,right,lns,rns,laddr,raddr in [('js0','jr0',sender,router,'10.224.0.2/30','10.224.0.1/30'),('jr1','jd0',router,receiver,'10.225.0.1/30','10.225.0.2/30')]:
@@ -120,13 +209,19 @@ def run(spec):
         command(['ip','route','add','default','via','10.224.0.1'],sender)
         command(['ip','route','add','default','via','10.225.0.1'],receiver)
         command(['sysctl','-w','net.ipv4.ip_forward=1'],router)
-        # net.core maxima are not exposed in child network namespaces on all
-        # kernels. Record host defaults without changing the host; iperf3's
-        # explicit -w sets each test socket or fails visibly if unsupported.
-        command(['sysctl','net.core.rmem_max','net.core.wmem_max'],check=False)
         for ns in (sender,receiver):
             command(['sysctl','-w','net.ipv4.tcp_congestion_control='+config['cca']],ns)
             command(['sysctl','net.ipv4.tcp_congestion_control','net.ipv4.tcp_rmem','net.ipv4.tcp_wmem'],ns)
+            # Test actual socket allocation before any traffic, on BOTH endpoints.
+            command(['python3','-c',SOCKET_PROBE,str(config['socket_buffer_bytes'])],ns)
+        # Qualify the actual kernel/userspace pair, not a version string. No
+        # scientific traffic is emitted; every trial replaces this qdisc afresh.
+        if config['loss_seed'] is not None:
+            shape('jr1',config['loss_levels_pct'][0],config['loss_seed'])
+            qdiscs=json.loads(command(['tc','-j','qdisc','show','dev','jr1'],router))
+            if not any(q.get('kind')=='netem' and q.get('options',{}).get('seed')==config['loss_seed'] for q in qdiscs):
+                raise ValueError('Experiment environment: kernel did not retain the explicit netem seed.')
+        provenance['environment_preparation']['qualified']=True
         for loss in order:
             key = observation_key(loss); metadata = dict(loss_pct=loss, replication=spec['replication'], requested_rtt_ms=2*config['one_way_delay_ms'])
             values = {}; reason = None
@@ -158,7 +253,9 @@ def run(spec):
                     command(['tc','-s','-j','class','show','dev',dev],router)
                 for ns in names: command(['ip','-s','-j','link','show'],ns)
             except (ValueError,KeyError,TypeError,subprocess.SubprocessError) as error:
-                reason = type(error).__name__+': '+str(error); values = {}
+                reason = type(error).__name__+': '+str(error)
+                # A failed transfer does not erase a separately observed RTT.
+                values = {k:v for k,v in values.items() if k=='idle_rtt_ms'}
             finally:
                 if server:
                     server.terminate()

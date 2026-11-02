@@ -24,6 +24,11 @@ def run(directory, deadline, allow_container=True):
     env={'PATH':'/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin','LANG':'C.UTF-8','JUMPSERVE_SPEC':str(root/'spec.json'),'JUMPSERVE_OUTPUT':str(root/'output.json'),'JUMPSERVE_INPUTS':str(root/'inputs')}
     arguments=spec['config'].get('arguments',[])
     if builtin:
+        # The trusted EC2 bootstrap binds permission to this immutable spec.
+        # Never grant host preparation merely because a package requests it.
+        identity=hashlib.sha256((root/'spec.json').read_bytes()).hexdigest()
+        if os.environ.get('JUMPSERVE_DEDICATED_EXPERIMENT')==identity:
+            env['JUMPSERVE_DEDICATED_EXPERIMENT']=identity
         command=['python3',str(root/'netem_iperf.py')]
     elif package['kind']=='python-script':
         raw=(root/'package.py').read_bytes()

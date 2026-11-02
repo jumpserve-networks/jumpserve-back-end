@@ -182,9 +182,11 @@ def evidence(job, campaign, protocol, spec, raw, external):
     uid=lambda name:str(uuid.uuid5(uuid.UUID(job['id']),name))
     producer=result['provenance']
     if spec['runner']=='netem-iperf-v1':
+        import experiment_environment
         # Original command results stay in the hash-bound raw artifact rather
         # than being copied into every observation and inflating SQL bundles.
         producer={k:v for k,v in producer.items() if k!='commands'}
+        producer['environment_failures']=experiment_environment.failures(result['provenance'])
         producer.update(command_count=len(result['provenance'].get('commands',[])),commands_sha256=digest(canonical(result['provenance'].get('commands',[]))),
             raw_envelope_sha256=digest(raw),raw_artifact_id=uid('network-output'),scope='Full original command outputs retained in the referenced raw envelope artifact.')
     rows=[validate_record('measurements',dict(id=uid('measurement:'+r['observation_key']+':'+r['metric']),run_id=job['id'],published_id=None,
