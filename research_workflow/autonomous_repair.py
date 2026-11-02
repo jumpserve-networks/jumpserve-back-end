@@ -41,6 +41,8 @@ def category(task, reason, context):
         return None
     if 'identity mismatch' in reason.lower() or 'hash differs' in reason.lower():
         return None  # An integrity violation is not permission to replace evidence.
+    if context.get('reading_stall'):
+        return 'runtime'
     if context.get('experiment_environment'):
         return 'runtime'
     if 'shared_campaigns' in reason or 'acquisition' in reason.lower():
@@ -57,6 +59,7 @@ def enqueue(task, context, reason, adopt=False):
     incident = dict(version=VERSION, stage=task['stage'], reason=reason,
         failed_turn_id=context.get('repair_failure_turn_id') or context.get('last_turn_id'),
         checkpoint=context.get('builder_checkpoint'), blockers=context.get('blockers', []),
+        **({'reading_stall':context['reading_stall']} if context.get('reading_stall') else {}),
         **({'experiment_environment':context['experiment_environment']} if context.get('experiment_environment') else {}))
     raw = canonical(incident).decode(); sha = digest(raw.encode())
     value = rpc(task, 'adopt' if adopt else 'enqueue', dict(version=VERSION,
@@ -232,6 +235,16 @@ def drive(task, normal_step, advance):
     record = found[0]
     if record['state'] == 'repairing':
         return normal_step(task)
+    if context.get('reading_stall'):
+        import autonomy_read_progress
+        if autonomy_read_progress.unchanged_recovery(context):
+            reason='Evidence reading stalled again after the same context correction. Waiting for a changed platform adapter; no further model calls or experiment replay.'
+            if record['state']!='waiting':
+                document=dict(version=VERSION,waiting=True,validated=False,reading_stall=context['reading_stall'],reason=reason)
+                artifact=save_diagnosis(task,document)
+                record=transition(task,record,'waiting',reason,dict(document,diagnosis=artifact))
+            context['repair_progress']=progress(record)
+            return advance(task,'waiting',context=context,reason=reason,delay=300)
     if record['state'] == 'waiting':
         record = transition(task, record, 'diagnosing', 'Rechecking original identities without a model call.', record['evidence'])
     if record['state'] == 'diagnosing':
@@ -245,7 +258,7 @@ def drive(task, normal_step, advance):
             context['builder_checkpoint'] = document['checkpoint']
         # Retain historical feedback in the incident; replace misleading stale
         # references with current catalogs and authoritative executable contracts.
-        context.pop('evidence_read', None)
+        if not context.get('reading_stall'):context.pop('evidence_read', None)
         context['last_feedback'] = 'Operational identities reconciled. Use the CURRENT shared_acquisitions catalog and exact runner_contracts. An empty catalog is not an existing acquisition: design the first applicable acquisition rather than request an invented ID. Preserve this claim and its original decision criterion. Inspect runtime contracts by their supplied references.'
         if document['native_repair']:
             record = transition(task, record, 'repairing', 'Native implementation repair with the retained checkpoint and fresh incident-specific instructions.', evidence)
@@ -261,17 +274,21 @@ def drive(task, normal_step, advance):
     if record['state'] == 'validating':
         import autonomy
         import autonomy_model as model
-        context.pop('evidence_read',None)
-        context['last_feedback']='Use the current source and runtime contracts, with the original claim and criterion. Only shared acquisitions actually listed in the current catalog exist for reuse; an empty catalog requires planning the first acquisition. Repair reconciliation is operational, not scientific evidence.'
+        reading=context.get('reading_stall')
+        if reading:
+            import autonomy_read_progress
+            context=autonomy_read_progress.recover(context,reading['phase'])
+        else:context.pop('evidence_read',None)
+        if not reading:context['last_feedback']='Use the current source and runtime contracts, with the original claim and criterion. Only shared acquisitions actually listed in the current catalog exist for reuse; an empty catalog requires planning the first acquisition. Repair reconciliation is operational, not scientific evidence.'
         environment=record['evidence'].get('experiment_environment')
         if environment:
             import experiment_environment
             context=experiment_environment.resume_context(context)
-        restored = dict(task, stage='planning' if environment else 'execution' if record['evidence'].get('original_jobs') else 'planning', context=context)
-        if restored['stage'] == 'planning':
+        restored = dict(task, stage=reading['phase'] if reading else 'planning' if environment else 'execution' if record['evidence'].get('original_jobs') else 'planning', context=context)
+        if restored['stage'] != 'execution':
             _, system = model.load_prompt()
             value = model.request(system, autonomy.build_context(restored))
-            validation = dict(record['evidence'], validated=True, request_sha256=digest(canonical(value)), request_bytes=len(canonical(value)), resume_stage='planning', validator='exact-model-request-preflight-v1')
+            validation = dict(record['evidence'], validated=True, request_sha256=digest(canonical(value)), request_bytes=len(canonical(value)), resume_stage=restored['stage'], validator='exact-model-request-preflight-v1')
         else:
             validation = dict(record['evidence'], validated=True, resume_stage='execution', validator='retained-experiment-identities-v1')
         record = transition(task, record, 'resuming', 'Operational correction passed preflight; original scientific reviews and limits remain required.', validation)

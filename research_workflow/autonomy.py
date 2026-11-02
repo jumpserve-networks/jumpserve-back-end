@@ -461,6 +461,9 @@ def build_context(task):
   value['evidence_access']=dict(action='inspect',kinds=['checks','check','protocol','measurements','published-values','source','acquisition','runtime-contract','controller-turn'],page_byte_limit=evidence.READ_BYTES,
    instructions='Use supplied check/protocol/run/source IDs only. Pages explicitly identify omitted records; calculations use the complete frozen data. Inspection consumes a model attempt.')
  if context.get('evidence_read'):value['evidence_read']=context['evidence_read']
+ import autonomy_read_progress
+ reading=autonomy_read_progress.prompt(context,task['stage'])
+ if reading:value['evidence_read_history']=reading
  if task['stage'] in ('planning','assessment') and value.get('evidence_coverage',{}).get('environment_failure_job_ids'):
   import experiment_environment
   checking=copy.deepcopy(context)
@@ -772,6 +775,11 @@ def step(task):
    context.setdefault('protocol_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
   if output['read_request']['kind']=='package' and task['stage'] in ('comprehension','critic'):
    context.setdefault('package_reads',{})[str(output['read_request']['cursor'])]=read['result'].get('next_cursor')
+  import autonomy_read_progress
+  stalled=autonomy_read_progress.retain(context,task['stage'],context['evidence_read'])
+  if stalled:
+   context['repair_failure_turn_id']=answer['id']
+   return advance(task,'blocked',context=context,reason='Evidence reading stalled: three unchanged page reads without new evidence. '+('The same context correction already failed; platform repair is required before more calls.' if stalled['repeated_recovery'] else 'Retain delivered pages and repair the planning context before more calls.'))
   return advance(task,'queued',context=context,reason='Read-only evidence page retained; the next numbered prompt includes its provenance.')
  external=any(b['kind'] in EXTERNAL for b in output['blockers'])
  # A partial assessment can name results a retained check has yet to collect.
