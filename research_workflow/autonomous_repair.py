@@ -41,6 +41,8 @@ def category(task, reason, context):
         return None
     if 'identity mismatch' in reason.lower() or 'hash differs' in reason.lower():
         return None  # An integrity violation is not permission to replace evidence.
+    if context.get('experiment_environment'):
+        return 'runtime'
     if 'shared_campaigns' in reason or 'acquisition' in reason.lower():
         return 'reference'
     if task['stage'] == 'building' or any(b.get('kind') in ('implementation', 'design', 'missing-data') for b in blockers):
@@ -54,7 +56,8 @@ def enqueue(task, context, reason, adopt=False):
         return None
     incident = dict(version=VERSION, stage=task['stage'], reason=reason,
         failed_turn_id=context.get('repair_failure_turn_id') or context.get('last_turn_id'),
-        checkpoint=context.get('builder_checkpoint'), blockers=context.get('blockers', []))
+        checkpoint=context.get('builder_checkpoint'), blockers=context.get('blockers', []),
+        **({'experiment_environment':context['experiment_environment']} if context.get('experiment_environment') else {}))
     raw = canonical(incident).decode(); sha = digest(raw.encode())
     value = rpc(task, 'adopt' if adopt else 'enqueue', dict(version=VERSION,
         id=str(uuid.uuid5(uuid.UUID(task['id']), VERSION + ':' + sha)), category=kind,
@@ -193,12 +196,22 @@ def diagnose(task, record):
     jobs = rows(task, 'queue_jobs', id='in.(' + ','.join(task['context'].get('job_ids', [])) + ')', limit=1000) if task['context'].get('job_ids') else []
     if len(jobs) != len(set(task['context'].get('job_ids', []))):
         raise ValueError('Original experiment identity coverage is incomplete.')
+    environment=None
+    if task['context'].get('experiment_environment'):
+        import experiment_environment
+        if any(j['status'] in ('queued','running','manual') for j in jobs):
+            return dict(waiting=True,reason='Original experiment is still pending; no environment replacement admitted.')
+        environment=experiment_environment.diagnosis(task['context']['experiment_environment'])
+        if environment['waiting']:
+            return dict(waiting=True,reason=environment['reason'],experiment_environment=environment,
+                reconciled_dispatches=reconciled,original_jobs=[dict(id=j['id'],status=j['status']) for j in jobs],validated=False)
     last_turns=rows(task,'autonomy_turns',task_id='eq.'+task['id'],order='number.desc',limit=3)
     import scheduler
     summaries,_=scheduler.shared_document([{k:t.get(k) for k in ('id','number','stage','status','reason','request_sha256','response_sha256')} for t in last_turns])
     return dict(version=VERSION, waiting=False, reconciled_dispatches=reconciled,failure_details=failure_details,last_turns=summaries,
         checkpoint=checkpoint, original_jobs=[dict(id=j['id'], status=j['status']) for j in jobs],
         native_repair=record['category'] == 'implementation', validated=False,
+        **({'experiment_environment':environment} if environment else {}),
         scope='Operational identity reconciliation only; no scientific readiness, verdict or provider replay.')
 
 
@@ -250,7 +263,11 @@ def drive(task, normal_step, advance):
         import autonomy_model as model
         context.pop('evidence_read',None)
         context['last_feedback']='Use the current source and runtime contracts, with the original claim and criterion. Only shared acquisitions actually listed in the current catalog exist for reuse; an empty catalog requires planning the first acquisition. Repair reconciliation is operational, not scientific evidence.'
-        restored = dict(task, stage='execution' if record['evidence'].get('original_jobs') else 'planning', context=context)
+        environment=record['evidence'].get('experiment_environment')
+        if environment:
+            import experiment_environment
+            context=experiment_environment.resume_context(context)
+        restored = dict(task, stage='planning' if environment else 'execution' if record['evidence'].get('original_jobs') else 'planning', context=context)
         if restored['stage'] == 'planning':
             _, system = model.load_prompt()
             value = model.request(system, autonomy.build_context(restored))

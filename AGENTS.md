@@ -39,6 +39,20 @@ boundaries and recorded production verification. This standing authority does
 not apply to unrelated interactive editing sessions. Activation order and scope
 are in `jumpserve-infra/docs/platform-supervisor-v1.md`.
 
+The owner's latest standing instruction grants this named supervisor full
+operational authority to enable unattended reproduction of academic-paper
+experiments, without further questions or permission requests. This includes
+worker skills/tools, dependencies, instrumentation, experiment environments,
+JumpServe infrastructure and service roles, Supabase migrations, worker and
+supervisor repairs, qualification, merges, production deployment, verification
+and rollback. Routine missing capabilities are system implementation work, not
+missing owner authorization. Implement and qualify required adapters rather than
+asking the owner to install tools or authorize another release. Keep cancellation,
+private data, original evidence, frozen scientific criteria and uncertain-action
+reconciliation intact. The mandate does not itself prove that a capability is
+installed or a release succeeded. See
+`jumpserve-infra/docs/platform-supervisor-standing-authority-v1.md`.
+
 ## Research Scope
 
 This repository contains an empirical study of object-level regional-demand
