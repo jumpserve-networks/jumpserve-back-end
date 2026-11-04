@@ -8,14 +8,14 @@ import shutil
 import threading
 import time
 import uuid
-from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority, call_recovery, self_runtime, self_failure
+from . import checks, native, source, documentation, research_runtime, repair, source_refresh, working_evidence, standing_authority, call_recovery, self_runtime, self_failure, capabilities
 from .common import POLICY, POLICY_SHA256, canonical, digest, identity, save, Hold
 from .github import GitHub
 from .releases import Releases, ReleaseFailure, plan
 from .store import Store, BUCKET
 
 def now():return dt.datetime.now(dt.timezone.utc)
-WORK_PACKET_FILES=('progress.json','proposal.json','check-feedback.json','dependency-feedback.json','rebase-conflicts.json','documentation-requests.json')
+WORK_PACKET_FILES=('progress.json','proposal.json','check-feedback.json','dependency-feedback.json','rebase-conflicts.json','documentation-requests.json','capability-request.json')
 
 class Controller:
     def __init__(self, store, github, image, documentation_key=None):
@@ -124,7 +124,10 @@ class Controller:
         packet=dict(id=self.store.task['id'],objective=self.store.task['objective'],repositories=self.store.task['repositories'],
             deadline_at=self.store.task['deadline_at'],limits=dict(max_reserved_cents=self.store.task['max_reserved_cents']),
             protected=POLICY['protected'],standing_authority=standing_authority.MANDATE,standing_authority_sha256=standing_authority.MANDATE_SHA256,
-            supervisor_self_repair=self_runtime.capabilities())
+            supervisor_self_repair=self_runtime.capabilities(),
+            capability_acquisition=dict(version=capabilities.VERSION,enabled=self.flags.get('capability_contract')==capabilities.VERSION,
+                instructions=capabilities.instruction() if self.flags.get('capability_contract')==capabilities.VERSION else
+                    'Capability acquisition is not active in the installed database contract. Existing standing authority does not prove that this implementation path is deployed. Retain the concrete missing capability and original evidence without claiming activation.'))
         save(workspace/'task.json',canonical(packet))
         if self.state.get('supervisor_failure'):save(workspace/'supervisor-failure.json',canonical(self.state['supervisor_failure']))
 
@@ -244,6 +247,12 @@ class Controller:
             self.boundary()
             self.originals(workspace)
             if not (root/'workspace-ready.json').exists():self.restore_work(workspace);save(root/'workspace-ready.json',canonical(dict(restored=True)))
+            if self.flags.get('capability_contract')==capabilities.VERSION:
+                try:capabilities.deliver(self,workspace)
+                except capabilities.CapabilityFault:
+                    self.persist_work(workspace)
+                    try:capabilities.request(self,workspace)
+                    finally:self.save_state()
             source_refresh.refresh(self,workspace,resume_only=True)
             self.boundary()
             if not self.state.get('tested'):
@@ -264,6 +273,9 @@ class Controller:
                         raise Hold('Required Context7 documentation is unavailable ('+type(error).__name__+'); retry is scheduled before further code generation.','investigating') from None
                     prefix='Read references/context7/index.json and relevant library documentation before coding. '
                     if not self.state.get('feedback','').startswith(prefix):self.state['feedback']=prefix+self.state.get('feedback','')
+                    if self.flags.get('capability_contract')==capabilities.VERSION:
+                        guidance=capabilities.instruction()
+                        if guidance not in self.state['feedback']:self.state['feedback']+=guidance
                     dependency_failures=[]
                     for repo in self.state['sources']:
                         receipt=checks.prepare_dependencies(self.store,repo,workspace/POLICY['repositories'][repo]['directory'],self.image,self.github)
@@ -278,6 +290,9 @@ class Controller:
                 self.validate_workspace(workspace)
                 self.persist_work(workspace)
                 self.boundary()
+                if self.flags.get('capability_contract')==capabilities.VERSION:
+                    try:capabilities.request(self,workspace)
+                    finally:self.save_state()
                 try:repair.observe(workspace,self.state,proposal,before)
                 finally:self.save_state()
                 exhausted=not self.coding_available()
@@ -362,6 +377,8 @@ class Controller:
                 if change['component']=='research-runtime':
                     research_runtime.record_pin_release(self,proof)
                     self.state['runtime_recovery']=research_runtime.resume(self,proof);self.save_state()
+            if self.flags.get('capability_contract')==capabilities.VERSION:
+                self.state['capability_activation']=capabilities.activate(self)
             self.store.checkpoint('completed','All tested changes merged; every scoped production revision was verified.',self.state)
         except Hold as error:
             if isinstance(error,native.CleanupUnknown):self.state['cleanup_unknown']=True

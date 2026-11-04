@@ -8,7 +8,7 @@ import tarfile
 import zipfile
 from .common import POLICY, canonical, digest, Hold
 
-FROZEN_SUPERVISOR_FILES={'__init__.py','common.py','credentials.py','store.py','github.py','source.py','releases.py','self_runtime.py','standing_authority.py','policy.json'}
+FROZEN_SUPERVISOR_FILES={'__init__.py','common.py','credentials.py','store.py','github.py','source.py','releases.py','self_runtime.py','standing_authority.py','capabilities.py','policy.json'}
 
 def safe_name(name):
     path=PurePosixPath(name)
