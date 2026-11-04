@@ -17,10 +17,12 @@ def gate():
 def capabilities():
  module=gate()
  return dict(version=VERSION,component='supervisor-runtime',workflow='supervisor-runtime-release.yml',
-  scope='Operational supervisor Python modules through frozen qualification; default protected paths still apply to ordinary publication.',
+  scope='Operational supervisor Python modules and declared capability tool packs through frozen qualification; default protected paths still apply to ordinary publication.',
   frozen_files=sorted(module.KERNEL),frozen_methods={k:sorted(v) for k,v in module.METHODS.items()},
   requires_further_owner_approval=False,qualification_and_installed_source_proof_required=True)
 def prepare(controller,workspace,directory):
+ from . import capabilities
+ capabilities.validate_candidate(controller,directory)
  original=controller.state['sources'][BACKEND]['snapshot'];current=source.snapshot(directory)
  if not any(p.startswith('platform_supervisor/') and original.get(p)!=current.get(p) for p in set(original)|set(current)):return None
  changed=[p for p in set(original)|set(current) if original.get(p)!=current.get(p)]
