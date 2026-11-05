@@ -137,7 +137,7 @@ artifact bytes. Unit and browser fixtures are development cases, not validation
 of title extraction across all publishers. A future explicitly requested release
 must include `paper_titles.py` in the pinned runtime manifest before deploying.
 
-`/research-verification/previous-assessments` lists all successfully created paper
+`/research-verification/assessments` lists all successfully created paper
 assessments, including submitted, running, stopped and cancelled work and earlier
 published imports. There is one entry per retained assessment identity, so repeat
 submissions of a paper remain distinct. Pending/rejected upload reservations are
@@ -155,6 +155,80 @@ are listed. Original filename-based titles are omitted; the UI resolves them wit
 at most two concurrent `GET /research/papers/{id}/title` requests using the existing
 hash-verified resolver. These reads never start, resume or assess work. Catalogue
 visibility does not publish an assessment or change source review status.
+
+Initiator attribution follows the recorded `intake` audit actor. A saved profile
+name takes precedence; if it is blank or missing, the backend reads that actor's
+Google identity display name through the server-only Auth admin API. It never
+substitutes the viewer/current owner, guesses name components, changes a profile,
+or returns account identifiers, email addresses, tokens or other Auth fields.
+Missing, conflicting and unavailable identity evidence remains unknown. At most
+ten actors are looked up per page, with four parallel three-second lookups.
+
+For local catalogue development, the existing API server supports:
+
+```bash
+python3 -B research_workflow/server.py --port 4101 --catalogue-only --origin http://localhost:6001
+```
+
+It uses the normal `SUPABASE_URL`, `SUPABASE_ANON_KEY` and server-only
+`SUPABASE_SERVICE_ROLE_KEY` environment variables (use the current publishable and
+secret keys, not disabled legacy keys). Keep secret values out of files and logs.
+Set frontend `NEXT_PUBLIC_RESEARCH_CATALOG_API_URL=http://127.0.0.1:4101` while
+this server is running; remove the override to resume the normal catalogue origin.
+The mode permits only catalogue/bibliography, authenticated prompt browsing and
+authenticated owner-status GETs.
+It rejects writes and private detail routes before dispatch. Other frontend
+research actions continue using their configured cloud API. This local process
+does not install or change AWS workers.
+
+### Saved prompt library
+
+The global **Prompts** link opens `/prompts`. Google-authenticated users can
+browse every saved `agent_prompt_versions` template, including drafts and older
+published versions, and open `/prompts/<version-id>` to read its exact system
+prompt and research context. Active status comes from `agent_prompt_settings`
+and requires a published version. This is a read-only template library; runtime
+messages, assessment conversations and source-controlled supplemental instructions
+are outside this catalogue.
+
+`GET /research/prompts` returns explicit version metadata only;
+`GET /research/prompts/<version-id>` loads one version's content. Both require the
+existing verified Google bearer session and return `Cache-Control: no-store`.
+No audit account fields or evaluations are projected, and no SQL grants, model
+calls, editing or publication operations are added. The index exhausts server
+page caps and fails visibly above 1,000 versions rather than omitting history.
+The frontend disables version-link prefetching to avoid downloading every body.
+
+A future explicitly authorized release must deploy the research API and its two
+GET routes before enabling the frontend link. Existing Supabase grants remain
+unchanged; no database migration is needed.
+
+The catalogue at `/research-verification/assessments` defaults to **All
+Assessments**. **My Assessments** uses `?mine=1` and a Google-authenticated
+`GET /research/papers?mine=1` request. The API derives ownership from the verified
+session, filters through `research_study_owners` before keyset pagination, and
+returns the same narrow metadata with `access: owner-read-only`. It never exposes
+ownership records or accepts a caller-supplied owner ID. With older services that
+ignore `mine=1` on the catalogue, the client verifies membership using the existing
+authenticated `GET /research/studies?mine=1&status=1` API, then collects owned papers
+across public keyset pages. It never treats a public catalogue as ownership proof.
+Compatibility retains that API's 100-study bound and stops after 100 public pages
+or 30 seconds without returning a partial list. Modern personal pages avoid these
+compatibility bounds. Switching filters
+resets the cursor; pagination, reload, browser history and sign-in return paths
+preserve the selected filter. The retired `/research-verification/my-assessments`
+list redirects to `/research-verification/assessments?mine=1`; private assessment
+detail routes keep their owner checks.
+
+Catalogue cards open `/research-verification/assessment/{id}`, a public overview
+of the paper, recorded preparation status, workflow stage, parallel claim stages
+and findings, experiment job count and recorded update time. It polls the existing
+public queue projection every ten seconds and keeps stale status labeled after
+failed reads. `GET /research/papers/{id}` supplies the same narrow bibliographic
+metadata as the catalogue plus `preparation_status`; it never retrieves private
+review contents or original files. Invalid IDs, ideas and unknown papers do not
+produce metadata. Published reports remain at `/research-verification/assessments/{id}`
+and are linked explicitly from the overview; experiment details remain in the queue.
 
 Development uses the existing queue browser verifier with explicit synthetic
 store data and the actual API handler. Production is unchanged on editing turns.

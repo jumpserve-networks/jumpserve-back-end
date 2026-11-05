@@ -22,6 +22,12 @@ import store
 from workflow import PUBLIC_KINDS, canonical,digest
 
 mode = 'normal'
+CATALOGUE_ACTORS = {'a':'99999999-2222-4222-8222-222222222222', 'b':'88888888-2222-4222-8222-222222222222', 'empty':'77777777-2222-4222-8222-222222222222'}
+
+def authenticate(event):
+    token = event.get('headers', {}).get('authorization', '').rsplit('.', 1)[-1].removeprefix('local-catalogue-owner-')
+    if token not in CATALOGUE_ACTORS: raise api.HttpError(401, 'Synthetic session rejected.')
+    return CATALOGUE_ACTORS[token]
 title_packet = canonical(packet())
 NATIVE_CALL='70000000-0000-4000-8000-000000000001'
 NATIVE_REQUEST='70000000-0000-4000-8000-000000000002'
@@ -29,6 +35,10 @@ NATIVE_RESPONSE='70000000-0000-4000-8000-000000000003'
 native_request=canonical(dict(model='gpt-6.1-sol',input=[dict(role='user',content='Write and test a bounded experiment.')]))
 native_response=b'data: {"type":"response.completed","response":{"output":[{"type":"function_call","name":"exec","arguments":"{\\"command\\":\\"python3 experiment.py\\"}"}]}}\n\n'
 def artifact_bytes(study,identity,**kwargs):return native_request if identity==NATIVE_REQUEST else native_response if identity==NATIVE_RESPONSE else title_packet
+def auth_user(path,**kwargs):
+    actor=CATALOGUE_ACTORS['a']
+    if mode!='catalog-google' or path!='/auth/v1/admin/users/'+actor: raise AssertionError('Only the fixed Google-name fixture is allowed.')
+    return dict(id=actor,email=SECRET,identities=[dict(provider='google',identity_data=dict(full_name='Casey Google',email=SECRET))])
 def data():
     value = fixture()
     value['autonomy_workflows'][0]['reason'] = 'The assessment is waiting for archived inputs.'
@@ -48,12 +58,15 @@ def data():
         domain='Networking', scope='Synthetic software fixture; no scientific validation.', origin_module=None, paper_upload=None)
     value['studies'].extend(extra)
     value['studies'].append(dict(extra[0], id='dddddddd-1111-4111-8111-111111111111', study_kind='idea', title=SECRET))
+    other_ids = {row['id'] for row in extra[:2]}
+    value['study_owners'] = [dict(study_id=row['id'], owner_id=CATALOGUE_ACTORS['b' if row['id'] in other_ids else 'a']) for row in value['studies']]
     for paper, status in zip(extra, ('budget', 'cancelled', 'completed', 'completed-with-blockers', 'deadline')):
         value['autonomy_workflows'].append(dict(value['autonomy_workflows'][0], study_id=paper['id'], status=status))
     value['artifacts'] = [] if mode == 'title-missing' else [artifact(title_packet)]
     value['paper_reviews'] = []
     value['audit_events'] = [dict(id=1, study_id=STUDY, actor_id='99999999-2222-4222-8222-222222222222', action='intake', details=SECRET)]
     value['profiles'] = [dict(id='99999999-2222-4222-8222-222222222222', first_name='Casey', last_name='Researcher', email=SECRET, timezone=SECRET)]
+    if mode=='catalog-google':value['profiles'][0].update(first_name='',last_name='')
     if mode == 'review-title':
         value['studies'][0].update(title='TCP88.pdf', paper_upload=dict(filename='TCP88.pdf', sha256='a'*64))
         value['paper_reviews'] = [dict(study_id=STUDY, status='confirmed', title='Congestion Avoidance and Control',
@@ -78,10 +91,20 @@ def data():
     value['claims'].append(public_claim)
     value['publications'].append(dict(id='eeeeeeee-1111-4111-8111-111111111111', study_id=published,
         created_at=STAMP, version=1, status='published', record_ids={kind: [public_claim['id']] if kind == 'claims' else [] for kind in PUBLIC_KINDS}))
+    if mode in ('parallel-intake', 'parallel-intake-finished'):
+        root = next(task for task in value['autonomy_tasks'] if task['claim_id'] is None)
+        root.update(status='waiting' if mode == 'parallel-intake' else 'finished', reason='Independent source chunks retained; original root controls readiness.')
+        value['autonomy_tasks'].extend([
+            dict(root, id='a1000000-0000-4000-8000-000000000001', status='finished', reason='Source chunk 1 completed; exact page/quote validation passed.'),
+            dict(root, id='a1000000-0000-4000-8000-000000000002', status='running' if mode == 'parallel-intake' else 'finished', reason='Source chunk 2 has its own recorded intake turn.')])
     if mode == 'empty':
         value['queue_jobs'] = []
         value['autonomy_tasks'] = value['autonomy_tasks'][:1]
     if mode == 'running': value['queue_jobs'][1]['status'] = 'running'
+    if mode in ('review-ready', 'review-preparing', 'review-confirmed', 'review-failed'):
+        value['paper_reviews'] = [dict(study_id=STUDY, status=mode.removeprefix('review-'))]
+        value['queue_jobs'] = []
+        value['autonomy_tasks'] = [dict(value['autonomy_tasks'][0], status='running' if mode == 'review-preparing' else 'finished')]
     if mode == 'details-missing':
         value['queue_jobs'][0]['reason'] = None; value['runs'][0]['reason'] = None
         value['autonomy_tasks'][1].update(reason=None, required_inputs=[])
@@ -101,7 +124,10 @@ def data():
 
 def rows(kind, params, public=False):
     value = data()[kind]
-    if kind == 'profiles':
+    if kind == 'study_owners':
+        if public: raise AssertionError('Ownership must remain private.')
+        value = [r for r in value if r['owner_id'] == params['owner_id'][3:]]
+    elif kind == 'profiles':
         if public: raise AssertionError('Profiles must remain private.')
         ids=params['id'][4:-1].split(',');value=[r for r in value if r['id'] in ids]
     elif kind == 'studies':
@@ -109,6 +135,11 @@ def rows(kind, params, public=False):
             value = [p for p in value if p['id'] == paper_fixture()[2]['id']]
             if params.get('select') == 'id': value = [dict(id=p['id']) for p in value]
         if params.get('study_kind'): value = [p for p in value if p.get('study_kind') == 'paper']
+        if 'catalog_owner.owner_id' in params:
+            actor = params['catalog_owner.owner_id'][3:]
+            other = {row['id'] for row in paper_fixture()[:2]}
+            value = [dict(p, catalog_owner=dict(owner_id=actor)) for p in value
+                if actor == CATALOGUE_ACTORS['b' if p['id'] in other else 'a']]
         if params.get('id', '').startswith('eq.'): value = [p for p in value if p['id'] == params['id'][3:]]
         if 'or' in params:
             boundary = params['or']; stamp=boundary.split('created_at.lt.')[1].split(',')[0]; identity=boundary.split('id.lt.')[1].split(')')[0]
@@ -141,23 +172,25 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urlsplit(self.path)
         if parsed.path == '/fixture/health': return self.reply(200, dict(fixture='public-queue-synthetic-store-v1', study=STUDY))
         if mode == 'unavailable': return self.reply(503, dict(error='Explicit software transport failure.'))
-        response = api.handler(dict(rawPath=parsed.path, queryStringParameters={k: v[-1] for k, v in parse_qs(parsed.query).items()},
+        query = {k: v[-1] for k, v in parse_qs(parsed.query).items()}
+        if mode == 'catalog-legacy' and parsed.path == '/research/papers': query.pop('mine', None)
+        response = api.handler(dict(rawPath=parsed.path, queryStringParameters=query,
             headers={k.lower(): v for k, v in self.headers.items()}, requestContext={'http': {'method': 'GET'}}))
         result = json.loads(response['body'])
-        if mode == 'invalid' and response['statusCode'] == 200: result['coverage']['jobs'] += 1
+        if mode == 'invalid' and response['statusCode'] == 200 and parsed.path.endswith('/queue'): result['coverage']['jobs'] += 1
         if mode == 'catalog-invalid' and response['statusCode'] == 200 and parsed.path == '/research/papers': result['coverage']['papers'] += 1
         self.reply(response['statusCode'], result)
     def do_POST(self):
         global mode
         if self.path != '/fixture/mode': return self.reply(405, dict(error='Fixture does not accept research writes.'))
         request = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
-        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid', 'review-title', 'details-missing', 'turns-missing','builder','builder-missing','builder-invalid','repair-diagnosing','repair-repairing','repair-validating','repair-resuming','repair-waiting','repair-resolved'): return self.reply(400, dict(error='Fixed fixture states only.'))
+        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid', 'catalog-legacy', 'catalog-google', 'review-title', 'review-ready', 'review-preparing', 'review-confirmed', 'review-failed', 'details-missing', 'turns-missing','builder','builder-missing','builder-invalid','repair-diagnosing','repair-repairing','repair-validating','repair-resuming','repair-waiting','repair-resolved','parallel-intake','parallel-intake-finished'): return self.reply(400, dict(error='Fixed fixture states only.'))
         os.environ['RESEARCH_BUILDER_ENABLED']='true' if request['mode'].startswith('builder') else 'false'
         mode = request['mode']; paper_titles.retained_title.cache_clear(); self.reply(200, dict(mode=mode))
 
 if __name__ == '__main__':
     if len(sys.argv) != 1: raise SystemExit('Fixed fixture only; no external address or commands.')
-    with patch.object(store, 'rows', side_effect=rows), patch.object(store, 'artifact_bytes', side_effect=artifact_bytes), patch.object(autonomy, 'runtime_health', return_value=dict(
+    with patch.object(api, 'authenticate', side_effect=authenticate), patch.object(store, 'request', side_effect=auth_user), patch.object(store, 'rows', side_effect=rows), patch.object(store, 'artifact_bytes', side_effect=artifact_bytes), patch.object(autonomy, 'runtime_health', return_value=dict(
         runtime='openclaw-production-v1', model_id='explicit-software-fixture', status='ready')):
         server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
         print(json.dumps(dict(fixture='public-queue-synthetic-store-v1', port=server.server_port, study=STUDY)), flush=True)
