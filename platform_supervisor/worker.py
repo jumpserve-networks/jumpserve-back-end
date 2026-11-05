@@ -132,6 +132,10 @@ class Controller:
             from . import runtime_sources
             runtime_sources.deliver(self,workspace)
             packet['runtime_source_reference']='references/runtime-source/index.json'
+        from . import service_work
+        service_work.deliver(self,workspace)
+        if self.flags.get('service_work_contract')==service_work.VERSION:
+            packet['infrastructure_service_reference']='references/service-work/index.json'
         save(workspace/'task.json',canonical(packet))
         if self.state.get('supervisor_failure'):save(workspace/'supervisor-failure.json',canonical(self.state['supervisor_failure']))
 
