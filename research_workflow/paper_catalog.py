@@ -9,6 +9,8 @@ import datetime as dt
 import json
 import re
 import unicodedata
+import urllib.error
+from concurrent.futures import ThreadPoolExecutor
 import store
 import paper_titles
 from workflow import canonical, identifier
@@ -50,7 +52,7 @@ def prepared_bibliography(studies):
     ids = {row['id'] for row in studies}
     if not ids: return {}
     reviews = collect('paper_reviews', dict(study_id='in.(' + ','.join(sorted(ids)) + ')',
-        select='study_id,status,title,authors:metadata->authors', order='study_id.asc'), len(ids)+1)
+        select='study_id,status,title,authors:metadata->authors,owner_authors:metadata->owner_authors', order='study_id.asc'), len(ids)+1)
     titles, seen = {}, set()
     for review in reviews:
         study_id = review.get('study_id')
@@ -59,11 +61,30 @@ def prepared_bibliography(studies):
         seen.add(study_id)
         candidate = paper_titles.clean(review.get('title'))
         titles[study_id] = dict(title=candidate if paper_titles.valid(candidate) else None,
-            authors=paper_titles.saved_authors(review.get('authors')))
+            authors=paper_titles.review_authors(review),authors_confirmed=review.get('owner_authors') is not None)
     return titles
 
+def display_name(value):
+    if not isinstance(value, str): return None
+    name = value.strip()
+    if not name or len(name) > 201 or any(unicodedata.category(c) == 'Cc' for c in name) or re.search(r'@|https?://|[<>]', name, re.I): return None
+    return name
+
+def google_display_name(actor):
+    """Read one recorded actor's Google name on the server; emit no auth data."""
+    try: user = store.request('/auth/v1/admin/users/' + identifier(actor), timeout=3)
+    except (store.StoreError, urllib.error.URLError, ValueError, TypeError): return None
+    if not isinstance(user, dict) or user.get('id') != actor or user.get('is_anonymous'): return None
+    identities = user.get('identities')
+    if not isinstance(identities, list): return None
+    google = [identity.get('identity_data') for identity in identities if isinstance(identity, dict) and identity.get('provider') == 'google' and isinstance(identity.get('identity_data'), dict)]
+    names = {name for identity in google if (name := display_name(identity.get('full_name')) or display_name(identity.get('name')))}
+    if len(names) == 1: return next(iter(names))
+    # Do not guess between conflicting linked accounts or use an email address.
+    return None
+
 def initiator_names(studies):
-    """Publish only the current profile name of the recorded intake actor."""
+    """Publish the recorded intake actor's profile name, then Google name."""
     ids = {row['id'] for row in studies}
     if not ids: return {}
     events = collect('audit_events', dict(study_id='in.(' + ','.join(sorted(ids)) + ')',
@@ -88,12 +109,26 @@ def initiator_names(studies):
         seen.add(actor)
         parts = [profile.get('first_name'), profile.get('last_name')]
         if any(not isinstance(part, str) or len(part) > 100 or any(unicodedata.category(c) == 'Cc' for c in part) for part in parts): continue
-        name = ' '.join(part.strip() for part in parts if part.strip())
-        if name and not re.search(r'@|https?://|[<>]', name, re.I): names[actor] = name
+        name = display_name(' '.join(part.strip() for part in parts if part.strip()))
+        if name: names[actor] = name
+    missing = sorted(actor_ids - names.keys())
+    if missing:
+        # At most ten distinct page actors; bounded parallel lookups keep a slow
+        # optional Google name from serially delaying the catalogue.
+        with ThreadPoolExecutor(max_workers=min(4, len(missing))) as pool:
+            for actor, name in zip(missing, pool.map(google_display_name, missing)):
+                if name: names[actor] = name
     return {study: names.get(next(iter(value))) for study, value in actors.items() if len(value) == 1}
 
-def papers(before=None, include_authors=False, include_initiator=False):
+def papers(before=None, include_authors=False, include_initiator=False, owner_id=None, study_id=None):
     params = dict(study_kind='eq.paper', select='id,title,study_kind,paper_upload,created_at', order='created_at.desc,id.desc')
+    if study_id is not None: params['id'] = 'eq.' + identifier(study_id)
+    if owner_id is not None:
+        owner_id = identifier(owner_id)
+        # Filter in Postgres before applying the keyset boundary and page size.
+        # The ownership relation stays service-only and is never returned.
+        params['select'] += ',catalog_owner:research_study_owners!inner(owner_id)'
+        params['catalog_owner.owner_id'] = 'eq.' + owner_id
     boundary = before_cursor(before) if before is not None else None
     if boundary:
         params['or'] = '(created_at.lt.' + boundary['created_at'] + ',and(created_at.eq.' + boundary['created_at'] + ',id.lt.' + boundary['id'] + '))'
@@ -101,6 +136,11 @@ def papers(before=None, include_authors=False, include_initiator=False):
     keys = []
     for row in rows:
         if row.get('study_kind') != 'paper' or not isinstance(row.get('title'), str): raise store.StoreError('Paper catalogue identity is invalid.')
+        if owner_id is not None:
+            owners = row.get('catalog_owner')
+            if isinstance(owners, dict): owners = [owners]
+            if not isinstance(owners, list) or len(owners) != 1 or not isinstance(owners[0], dict) or owners[0].get('owner_id') != owner_id:
+                raise store.StoreError('Paper catalogue ownership coverage is invalid.')
         keys.append((timestamp(row['created_at']), identifier(row['id'])))
     if len(set(k[1] for k in keys)) != len(keys) or any(a <= b for a, b in zip(keys, keys[1:])):
         raise store.StoreError('Paper catalogue ordering/coverage is invalid.')
@@ -125,10 +165,20 @@ def papers(before=None, include_authors=False, include_initiator=False):
         **({'authors':bibliography.get(row['id'], {}).get('authors')} if include_authors else {}),
         **({'initiated_by':initiators.get(row['id'])} if include_initiator else {}),
         created_at=row['created_at'], workflow_status=states.get(row['id']), published=row['id'] in public_ids) for row in selected]
-    result = dict(version=VERSION, access='public-read-only', papers=results, coverage=dict(papers=len(results)),
+    result = dict(version=VERSION, access='owner-read-only' if owner_id is not None else 'public-read-only', papers=results, coverage=dict(papers=len(results)),
         next_cursor=cursor(selected[-1]) if len(rows)>PAGE_SIZE else None)
     if len(canonical(result)) > 200_000: raise store.StoreError('Paper catalogue exceeds its response budget.')
     return result
+
+def detail(study_id):
+    study_id = identifier(study_id)
+    page = papers(include_authors=True, include_initiator=True, study_id=study_id)
+    if not page['papers']: return None
+    reviews = store.rows('paper_reviews', dict(study_id='eq.' + study_id, select='study_id,status', limit=2))
+    if len(reviews) > 1 or any(row.get('study_id') != study_id or row.get('status') not in ('preparing','ready','failed','confirmed') for row in reviews):
+        raise store.StoreError('Paper preparation status coverage is invalid.')
+    return dict(version='research-paper-detail-v1', access='public-read-only', paper=page['papers'][0],
+        preparation_status=reviews[0]['status'] if reviews else None)
 
 def title(study_id, include_authors=False):
     study_id = identifier(study_id)
@@ -137,5 +187,5 @@ def title(study_id, include_authors=False):
     if len(rows) != 1 or rows[0]['id'] != study_id: raise store.StoreError('Paper title identity differs.')
     saved = prepared_bibliography(rows).get(study_id, {})
     result = dict(version=VERSION, access='public-read-only', id=study_id, title=saved.get('title') or paper_titles.display_title(rows[0]))
-    if include_authors: result['authors'] = saved.get('authors') or paper_titles.display_authors(rows[0])
+    if include_authors: result['authors'] = saved.get('authors') if saved.get('authors_confirmed') else saved.get('authors') or paper_titles.display_authors(rows[0])
     return result
