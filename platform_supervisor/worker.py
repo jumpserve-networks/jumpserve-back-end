@@ -128,6 +128,10 @@ class Controller:
             capability_acquisition=dict(version=capabilities.VERSION,enabled=self.flags.get('capability_contract')==capabilities.VERSION,
                 instructions=capabilities.instruction() if self.flags.get('capability_contract')==capabilities.VERSION else
                     'Capability acquisition is not active in the installed database contract. Existing standing authority does not prove that this implementation path is deployed. Retain the concrete missing capability and original evidence without claiming activation.'))
+        if self.flags.get('capability_contract')==capabilities.VERSION:
+            from . import runtime_sources
+            runtime_sources.deliver(self,workspace)
+            packet['runtime_source_reference']='references/runtime-source/index.json'
         save(workspace/'task.json',canonical(packet))
         if self.state.get('supervisor_failure'):save(workspace/'supervisor-failure.json',canonical(self.state['supervisor_failure']))
 
