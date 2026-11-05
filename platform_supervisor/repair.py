@@ -162,6 +162,8 @@ def deliver(store,workspace,state):
 
 
 def observe(workspace,state,proposal,before):
+    from . import service_work
+    service_work.capture(workspace,state)
     guard=state.get('repair_guard')
     blocked=blocked_progress(workspace)
     if blocked:
