@@ -171,7 +171,7 @@ class Handler(BaseHTTPRequestHandler):
         response = api.handler(dict(rawPath=parsed.path, queryStringParameters=query,
             headers={k.lower(): v for k, v in self.headers.items()}, requestContext={'http': {'method': 'GET'}}))
         result = json.loads(response['body'])
-        if mode == 'invalid' and response['statusCode'] == 200: result['coverage']['jobs'] += 1
+        if mode == 'invalid' and response['statusCode'] == 200 and parsed.path.endswith('/queue'): result['coverage']['jobs'] += 1
         if mode == 'catalog-invalid' and response['statusCode'] == 200 and parsed.path == '/research/papers': result['coverage']['papers'] += 1
         self.reply(response['statusCode'], result)
     def do_POST(self):
