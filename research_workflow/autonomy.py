@@ -142,7 +142,7 @@ def intake(task):
  review_pending=bool(reviews and reviews[0]['status']!='confirmed')
  if review_pending and context.get('organize_existing_only'):
   return organize_review(task,study,context,reviews[0],rows('claims',study['id'],limit=201))
- if not context:
+ if not context or context=={'intake_pool_version':'warm-intake-v1'}:
   plan,raw=preparation.registered(study)
   if plan and not review_pending:
    prepared=preparation.prepare(study,task['actor_id'],dict(action='prepare',request_id=uid(task['id'],'prepare')))
@@ -150,7 +150,7 @@ def intake(task):
    if len(claims)>200:raise ValueError('Claim inventory exceeds 200; source coverage is incomplete.')
    seed(task,claims,dict(prepared_id=prepared['prepared']['id']))
    return advance(task,'finished',reason='Registered source-grounded claim inventory retained; per-claim attempts continue independently.',context=dict(prepared_id=prepared['prepared']['id'],inventory_origin='registered-source-grounded-plan',coverage='Original plan scope only; not a fresh full-paper review.'))
-  context=sources.original(study,task['actor_id'])
+  context=dict(context,**sources.original(study,task['actor_id']))
   if plan and review_pending:
    prepared=preparation.prepare(study,task['actor_id'],dict(action='prepare',request_id=uid(task['id'],'prepare')))
    claims=rows('claims',study['id'],limit=201)
