@@ -135,6 +135,9 @@ def choices(study,claim_id,prepared_id):
 
 def intake(task):
  study=one('studies',task['study_id'],task['study_id']);context=copy.deepcopy(task['context'])
+ if task.get('intake_parent_id'):
+  import intake_parallel
+  return intake_parallel.extract(task,study)
  reviews=rows('paper_reviews',study['id'],limit=1)
  review_pending=bool(reviews and reviews[0]['status']!='confirmed')
  if review_pending and context.get('organize_existing_only'):
@@ -157,6 +160,9 @@ def intake(task):
   return advance(task,'queued',context=context,reason='Original paper and derived text retained; candidate extraction is pending.')
  packet=json.loads(store.artifact_bytes(study['id'],context['text_artifact_id'],maximum=10_000_000))
  chunks=sources.chunks(packet);index=context['chunk_index']
+ if task.get('intake_pool') and not context.get('prepared_id') and index<len(chunks):
+  import intake_parallel
+  return intake_parallel.coordinate(task,context,chunks)
  if index>=len(chunks):
   claims=rows('claims',study['id'],limit=201)
   if review_pending and claims:return organize_review(task,study,context,reviews[0],claims)
@@ -191,7 +197,9 @@ def intake(task):
  return advance(task,'queued',context=context,reason='Grounded candidates recorded; next extracted-text chunk will be examined.')
 
 def organize_review(task,study,context,review,claims):
- values=paper_selection.candidates(claims,review['seeds']);manifest=digest(canonical(values))
+ values=paper_selection.candidates(claims,review['seeds'])
+ if context.get('parallel_intake')=='warm-intake-v1':values.sort(key=lambda c:c['id'])
+ manifest=digest(canonical(values))
  previous=context.get('review_selection',dict(cursor=0,central_claims=[],testable_findings=[],candidate_inventory_sha256=manifest))
  persisted=review.get('metadata',{}).get('selection',{})
  if persisted.get('version')==paper_selection.VERSION and persisted.get('candidate_inventory_sha256')==manifest and persisted.get('cursor',0)>previous['cursor']:previous=persisted
@@ -199,12 +207,19 @@ def organize_review(task,study,context,review,claims):
  cursor=previous['cursor']
  if cursor>=len(values):
   return advance(task,'finished',context=dict(context,review_selection=previous,text_candidates_organized=len(values),coverage='Source-linked candidate shortlist only; omitted figures, tables and supplements remain unreviewed.'),reason='Central claims and testable findings are ready for owner review; other extracted statements remain retained.')
- try:request=paper_selection.context(study,values,cursor,previous,context.get('selection_failure'))
+ fits_selection=None
+ if task.get('intake_pool'):
+  _,selection_system=model.load_prompt()
+  fits_selection=lambda value:model.context_fits(selection_system,value)
+ try:request=paper_selection.context(study,values,cursor,previous,context.get('selection_failure'),fits=fits_selection)
  except ValueError as error:
   manual=dict(version=paper_selection.VERSION,status='unorganized',central_claims=[],testable_findings=[],candidate_count=len(values),cursor=0,rationale=str(error))
   store.rpc('research_paper_review',dict(p_operation='metadata',p_actor=task['actor_id'],p_study=study['id'],p_payload=dict(task_id=task['id'],token=task['lease_token'],metadata=dict(selection=manual))))
   return advance(task,'finished',context=dict(context,review_selection_unavailable=str(error)),reason='Automatic review grouping is unavailable for this retained text; owner classification is required. No statement was truncated.')
- answer=model.call(task,request,control)
+ if task.get('intake_pool'):
+  import intake_parallel
+  answer=intake_parallel.recorded_call(task,request)
+ else:answer=model.call(task,request,control)
  if answer.get('denied'):return advance(task,answer['denied'],reason='Original paper authorization cannot admit more organization work.',context=context)
  if answer['status']!='complete':return advance(task,'queued',context=dict(context,selection_failure=answer['reason']),reason='Invalid organization answer retained; the next numbered prompt includes its error.')
  output=answer['output']
@@ -216,6 +231,9 @@ def organize_review(task,study,context,review,claims):
   provenance='AI review suggestions over retained source-linked statements; derived labels do not replace original claims. Not independent or human review.')
  store.rpc('research_paper_review',dict(p_operation='organization',p_actor=task['actor_id'],p_study=study['id'],p_payload=dict(task_id=task['id'],token=task['lease_token'],selection=result)))
  context.pop('selection_failure',None)
+ if task.get('intake_pool') and result['status']=='ready':
+  return advance(task,'finished',context=dict(context,review_selection=result,text_candidates_organized=len(values)),
+   reason='Central claims and testable findings are ready for owner review; original source coverage limits remain recorded.')
  return advance(task,'queued',context=dict(context,review_selection=result),reason='Organized '+str(result['cursor'])+' of '+str(len(values))+' retained statements; no experiments have started.')
 
 def blocked(task,output):

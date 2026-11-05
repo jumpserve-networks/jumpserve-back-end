@@ -53,11 +53,20 @@ def selection_ids(value, allowed):
  if not ids or len(ids)>200 or len(set(ids))!=len(ids) or not set(ids)<=set(allowed):raise ValueError('Select distinct retained statements from this paper.')
  return ids
 
-def context(study, values, cursor, previous, feedback=None):
- incoming=batch(values,cursor)
+def context(study, values, cursor, previous, feedback=None, fits=None):
+ incoming=batch(values,cursor) if fits is None else []
  manifest=digest(canonical(values))
- return dict(task='paper-review-selection',paper_review_selection_requested=True,
+ def envelope(incoming):return dict(task='paper-review-selection',paper_review_selection_requested=True,
   paper=dict(title=study['title']),policy=POLICY,policy_sha256=digest(canonical(POLICY)),
   candidate_inventory_sha256=manifest,total_candidates=len(values),cursor=cursor,
   candidates=incoming,prior_shortlist={name:previous.get(name,[]) for name in GROUPS},previous_feedback=feedback,
   input_scope='Full immutable statement text for this batch; prior shortlist labels are derived summaries. This is candidate organization, not complete source review.')
+ if fits is not None:
+  # Test the COMPLETE logical and provider wire, including policy, prior
+  # shortlist and schemas. Never truncate statements or impose an item quota.
+  for row in values[cursor:]:
+   candidate=incoming+[row]
+   if not fits(envelope(candidate)):break
+   incoming=candidate
+  if not incoming:raise ValueError('A complete review statement cannot fit the model request budget. Preserve it for manual classification.')
+ return envelope(incoming)

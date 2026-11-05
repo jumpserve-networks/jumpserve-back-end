@@ -50,21 +50,22 @@ def transient_read(error):
  return isinstance(error,store.StoreError) and any('HTTP '+str(code) in str(error) for code in (429,500,502,503,504))
 
 def invoke(task,turn_id,request):
+ dispatch_rpc=(lambda operation,payload:store.rpc('research_intake_dispatch',dict(p_operation=operation,p_payload=payload))) if task.get('intake_pool') else rpc
  if request['modelId']!=MODEL:raise ValueError('OpenClaw model identity mismatch; no fallback.')
  raw=canonical(request).decode()
  until=time.monotonic()+(BUILDER_WAIT_SECONDS if task.get('stage')=='building' else WAIT_SECONDS)
- try:admitted=rpc('enqueue',dict(id=turn_id,study_id=task['study_id'],task_id=task['id'],request_raw=raw,request_sha256=digest(raw.encode()),runtime=VERSION))
+ try:admitted=dispatch_rpc('enqueue',dict(id=turn_id,study_id=task['study_id'],task_id=task['id'],request_raw=raw,request_sha256=digest(raw.encode()),runtime=VERSION))
  except Exception as error:
   if not transient_read(error):raise
   # A timed-out POST may already have committed. Read its exact identity; never
   # resend enqueue. Absent, conflicting or unreadable admission stays uncertain.
-  retained=rpc('result',dict(id=turn_id,study_id=task['study_id']))
+  retained=dispatch_rpc('result',dict(id=turn_id,study_id=task['study_id']))
   if any(retained.get(k)!=v for k,v in dict(id=turn_id,study_id=task['study_id'],task_id=task['id'],request_sha256=digest(raw.encode()),runtime=VERSION).items()):raise ValueError('Unconfirmed dispatch admission does not match the original request.')
   admitted=dict(replayed=False)
  if admitted.get('replayed'):raise ValueError('Retained model dispatch must be reconciled, never replayed.')
  pending=Backoff(2,5);unavailable=Backoff(2,10);previous_status=None
  while time.monotonic()<until:
-  try:result=rpc('result',dict(id=turn_id,study_id=task['study_id']))
+  try:result=dispatch_rpc('result',dict(id=turn_id,study_id=task['study_id']))
   except Exception as error:
    if not transient_read(error):raise
    # Repeat only this bounded read, never enqueue or provider transport. The

@@ -98,7 +98,7 @@ def translate(request,logical):
   else:raise RequestRejected('native-message-role','native.messages[].role','Only system/developer/user/assistant roles are admitted')
  return dict(modelId=MODEL,system=systems,messages=messages,toolConfig=logical['toolConfig'])
 
-def execute(logical,directory,token_source=credential,transport=http_request):
+def execute(logical,directory,token_source=credential,transport=http_request,native_runner=None):
  """Return parsed answer plus original-byte directory; no database side effects."""
  directory=Path(directory);directory.mkdir(mode=0o700,parents=True,exist_ok=False)
  original=canonical(logical);(directory/'logical.json').write_bytes(original)
@@ -195,7 +195,7 @@ def execute(logical,directory,token_source=credential,transport=http_request):
  config_path=directory/'config.json';config_path.write_bytes(canonical(config));env=environment(directory);env.update(OPENCLAW_CONFIG_PATH=str(config_path),OPENCLAW_STATE_DIR=str(state))
  began=time.monotonic()
  try:
-  cli=subprocess.run([str(NODE),str(PACKAGE/'openclaw.mjs'),'agent','exec','--config',str(config_path),'--state-dir',str(state),'--cwd',str(workspace),'--message-file',str(native_message),'--model','lab/'+MODEL,'--code-mode','direct','--thinking','off','--timeout',str(DATA_CLI_SECONDS),'--json'],capture_output=True,timeout=DATA_PROCESS_SECONDS,env=env)
+  cli=(native_runner or subprocess.run)([str(NODE),str(PACKAGE/'openclaw.mjs'),'agent','exec','--config',str(config_path),'--state-dir',str(state),'--cwd',str(workspace),'--message-file',str(native_message),'--model','lab/'+MODEL,'--code-mode','direct','--thinking','off','--timeout',str(DATA_CLI_SECONDS),'--json'],capture_output=True,timeout=DATA_PROCESS_SECONDS,env=env)
   (directory/'stdout.bin').write_bytes(cli.stdout);(directory/'stderr.bin').write_bytes(cli.stderr)
   if cli.returncode or not result.get('answer'):raise ValueError('OpenClaw CLI did not complete its retained turn.')
   envelope=json.loads(cli.stdout);payloads=envelope.get('payloads') or envelope.get('result',{}).get('payloads') or [];texts=[p['text'] for p in payloads if p.get('text')]
