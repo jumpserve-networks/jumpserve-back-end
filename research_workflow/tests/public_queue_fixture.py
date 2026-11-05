@@ -91,6 +91,12 @@ def data():
     value['claims'].append(public_claim)
     value['publications'].append(dict(id='eeeeeeee-1111-4111-8111-111111111111', study_id=published,
         created_at=STAMP, version=1, status='published', record_ids={kind: [public_claim['id']] if kind == 'claims' else [] for kind in PUBLIC_KINDS}))
+    if mode in ('parallel-intake', 'parallel-intake-finished'):
+        root = next(task for task in value['autonomy_tasks'] if task['claim_id'] is None)
+        root.update(status='waiting' if mode == 'parallel-intake' else 'finished', reason='Independent source chunks retained; original root controls readiness.')
+        value['autonomy_tasks'].extend([
+            dict(root, id='a1000000-0000-4000-8000-000000000001', status='finished', reason='Source chunk 1 completed; exact page/quote validation passed.'),
+            dict(root, id='a1000000-0000-4000-8000-000000000002', status='running' if mode == 'parallel-intake' else 'finished', reason='Source chunk 2 has its own recorded intake turn.')])
     if mode == 'empty':
         value['queue_jobs'] = []
         value['autonomy_tasks'] = value['autonomy_tasks'][:1]
@@ -178,7 +184,7 @@ class Handler(BaseHTTPRequestHandler):
         global mode
         if self.path != '/fixture/mode': return self.reply(405, dict(error='Fixture does not accept research writes.'))
         request = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
-        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid', 'catalog-legacy', 'catalog-google', 'review-title', 'review-ready', 'review-preparing', 'review-confirmed', 'review-failed', 'details-missing', 'turns-missing','builder','builder-missing','builder-invalid','repair-diagnosing','repair-repairing','repair-validating','repair-resuming','repair-waiting','repair-resolved'): return self.reply(400, dict(error='Fixed fixture states only.'))
+        if request.get('mode') not in ('normal', 'empty', 'running', 'invalid', 'unavailable', 'title-missing', 'catalog-empty', 'catalog-invalid', 'catalog-legacy', 'catalog-google', 'review-title', 'review-ready', 'review-preparing', 'review-confirmed', 'review-failed', 'details-missing', 'turns-missing','builder','builder-missing','builder-invalid','repair-diagnosing','repair-repairing','repair-validating','repair-resuming','repair-waiting','repair-resolved','parallel-intake','parallel-intake-finished'): return self.reply(400, dict(error='Fixed fixture states only.'))
         os.environ['RESEARCH_BUILDER_ENABLED']='true' if request['mode'].startswith('builder') else 'false'
         mode = request['mode']; paper_titles.retained_title.cache_clear(); self.reply(200, dict(mode=mode))
 
