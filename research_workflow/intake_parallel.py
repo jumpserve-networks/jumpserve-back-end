@@ -1,7 +1,6 @@
 """Independent, source-bound intake tasks using the ordinary durable turn ledger."""
 import copy
 import json
-from concurrent.futures import ThreadPoolExecutor
 import autonomy_model as model
 import autonomy_sources as sources
 import store
@@ -74,9 +73,7 @@ def extract(task,study):
  return a.advance(task,'finished',context=dict(context,last_turn_id=result['id'],quote_page_validated=True),
   reason='Source chunk '+str(index+1)+' completed; exact page/quote validation passed.')
 
-def controller_slots(maximum=4):
+def controller_slot():
  import autonomy as a
- def slot(_):
-  task=rpc('lease')
-  return a.process(task) if task else dict(status='idle')
- with ThreadPoolExecutor(max_workers=maximum) as pool:return list(pool.map(slot,range(maximum)))
+ task=rpc('lease')
+ return a.process(task) if task else dict(status='idle')

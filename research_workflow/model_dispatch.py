@@ -8,6 +8,7 @@ VERSION='openclaw-production-v1'
 MODEL='gpt-6.1-sol'
 WAIT_SECONDS=250
 BUILDER_WAIT_SECONDS=350
+INTAKE_WAIT_SECONDS=330 # Two warm inference slots may serve four controller leases.
 VALIDATION_LABELS={
  'logical-model-mismatch':'logical model identity',
  'logical-request-byte-limit':'complete logical request size',
@@ -53,7 +54,7 @@ def invoke(task,turn_id,request):
  dispatch_rpc=(lambda operation,payload:store.rpc('research_intake_dispatch',dict(p_operation=operation,p_payload=payload))) if task.get('intake_pool') else rpc
  if request['modelId']!=MODEL:raise ValueError('OpenClaw model identity mismatch; no fallback.')
  raw=canonical(request).decode()
- until=time.monotonic()+(BUILDER_WAIT_SECONDS if task.get('stage')=='building' else WAIT_SECONDS)
+ until=time.monotonic()+(INTAKE_WAIT_SECONDS if task.get('intake_pool') else BUILDER_WAIT_SECONDS if task.get('stage')=='building' else WAIT_SECONDS)
  try:admitted=dispatch_rpc('enqueue',dict(id=turn_id,study_id=task['study_id'],task_id=task['id'],request_raw=raw,request_sha256=digest(raw.encode()),runtime=VERSION))
  except Exception as error:
   if not transient_read(error):raise

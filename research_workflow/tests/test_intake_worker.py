@@ -5,7 +5,8 @@ from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import intake_worker as worker,openclaw_runtime as runtime
-from workflow import canonical
+import model_dispatch as dispatch
+from workflow import canonical,digest
 from test_openclaw import request,Response,stream
 
 class IntakeWorker(unittest.TestCase):
@@ -31,6 +32,13 @@ class IntakeWorker(unittest.TestCase):
   value=worker.configuration(Path('/synthetic'),'http://127.0.0.1:1234','synthetic-bridge','synthetic-gateway')
   self.assertEqual(value['gateway']['bind'],'loopback');self.assertEqual(value['tools']['deny'],['*'])
   self.assertEqual(value['agents']['defaults']['maxConcurrent'],2);self.assertFalse(value['plugins']['enabled'])
+ def test_queued_parallel_turn_keeps_one_admission_and_can_finish_after_legacy_wait_window(self):
+  clock=[0];raw=canonical(dict(output={},usage={}));t=dict(id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),intake_pool=True)
+  result=dict(status='complete',response_artifact_id=str(uuid.uuid4()),response_sha256=digest(raw),provenance={})
+  with patch.object(dispatch.time,'monotonic',side_effect=lambda:clock[0]),patch.object(dispatch,'wait',side_effect=lambda *args:clock.__setitem__(0,260)),patch.object(dispatch.store,'rpc',side_effect=[dict(replayed=False),dict(status='queued'),result]) as rpc,patch.object(dispatch.store,'artifact_bytes',return_value=raw):
+   self.assertEqual(dispatch.invoke(t,str(uuid.uuid4()),request())['output'],{})
+  self.assertEqual([call.args[0] for call in rpc.call_args_list],['research_intake_dispatch']*3)
+  self.assertEqual([call.args[1]['p_operation'] for call in rpc.call_args_list],['enqueue','result','result'])
  def test_persistent_native_runner_still_retains_exact_provider_bytes_and_one_inference(self):
   calls=[]
   def upstream(*args):calls.append(args[3]);return Response(stream())

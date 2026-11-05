@@ -179,8 +179,8 @@ def worker_loop():
   marker=runtime.save_completion(job,directory,answer,receipt,spool/'pending-completions')
   if runtime.persist_completed(job,directory):marker.unlink()
  try:
-  with ThreadPoolExecutor(max_workers=2) as inference,ThreadPoolExecutor(max_workers=1) as controller,ThreadPoolExecutor(max_workers=1) as reconciliation:
-   calls=[];control=None;recovering=None;heartbeat=0;recovery=0;next_control=0;next_claim=0;claim_idle=1;idle=1;status='unavailable'
+  with ThreadPoolExecutor(max_workers=2) as inference,ThreadPoolExecutor(max_workers=4) as controller,ThreadPoolExecutor(max_workers=1) as reconciliation:
+   calls=[];controls=[];recovering=None;heartbeat=0;recovery=0;next_control=0;next_claim=0;claim_idle=1;idle=1;status='unavailable'
    while True:
     if gateway.process.poll() is not None:raise ValueError('Original warm Gateway stopped; retain all running calls.')
     if time.monotonic()-heartbeat>=10:
@@ -202,10 +202,16 @@ def worker_loop():
       except Exception as error:print(json.dumps(dict(status='intake-operation-unconfirmed',error_type=type(error).__name__)),flush=True)
      else:pending.append(future)
     calls=pending
-    if control is not None and control.done():
-     try:outcomes=control.result();idle=min(15,idle*2) if all(x.get('status')=='idle' for x in outcomes) else 1
-     except Exception:idle=min(15,idle*2)
-     control=None;next_control=time.monotonic()+idle
+    pending=[];outcomes=[]
+    for future in controls:
+     if future.done():
+      try:outcomes.append(future.result())
+      except Exception:outcomes.append(dict(status='idle'))
+     else:pending.append(future)
+    controls=pending
+    if outcomes:
+     idle=min(15,idle*2) if all(x.get('status')=='idle' for x in outcomes) else 1
+     next_control=time.monotonic()+idle
     if status=='ready':
      if len(calls)<2 and time.monotonic()>=next_claim:
       try:job=dispatch('claim')
@@ -213,8 +219,11 @@ def worker_loop():
       if job:calls.append(inference.submit(process,job));claim_idle=1
       else:claim_idle=min(10,claim_idle*2)
       next_claim=time.monotonic()+claim_idle
-     if status=='ready' and control is None and time.monotonic()>=next_control:
-      control=controller.submit(intake_parallel.controller_slots)
+     if status=='ready' and time.monotonic()>=next_control:
+      controls.extend(controller.submit(intake_parallel.controller_slot) for _ in range(4-len(controls)))
+      next_control=time.monotonic()+idle
+     if controls and claim_idle>1:
+      claim_idle=1;next_claim=min(next_claim,time.monotonic()+1)
     time.sleep(1)
  finally:gateway.close()
 

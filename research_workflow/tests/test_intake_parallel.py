@@ -53,6 +53,7 @@ class IntakeParallel(unittest.TestCase):
   with patch.object(model,'load_prompt',return_value=({},'Policy')),patch.object(a,'rows',return_value=[]),patch.object(model,'call',return_value=dict(id='turn',status='complete',output=value)),patch.object(a.store,'rpc'),patch.object(a,'advance') as advance:
    a.organize_review(t,dict(id=t['study_id'],title='Fixture'),{},review,values)
   self.assertEqual(advance.call_args.args[1],'finished');self.assertEqual(advance.call_args.kwargs['context']['review_selection']['cursor'],9)
+  self.assertIn('remain unreviewed',advance.call_args.kwargs['context']['coverage'])
 
  def test_restart_reuses_only_the_exact_complete_captured_chunk(self):
   t=task('intake');context=dict(task='discover',source_chunk=dict(page=1,text='Original'),prior_attempt=1)

@@ -232,7 +232,7 @@ def organize_review(task,study,context,review,claims):
  store.rpc('research_paper_review',dict(p_operation='organization',p_actor=task['actor_id'],p_study=study['id'],p_payload=dict(task_id=task['id'],token=task['lease_token'],selection=result)))
  context.pop('selection_failure',None)
  if task.get('intake_pool') and result['status']=='ready':
-  return advance(task,'finished',context=dict(context,review_selection=result,text_candidates_organized=len(values)),
+  return advance(task,'finished',context=dict(context,review_selection=result,text_candidates_organized=len(values),coverage='Source-linked candidate shortlist only; omitted figures, tables and supplements remain unreviewed.'),
    reason='Central claims and testable findings are ready for owner review; original source coverage limits remain recorded.')
  return advance(task,'queued',context=dict(context,review_selection=result),reason='Organized '+str(result['cursor'])+' of '+str(len(values))+' retained statements; no experiments have started.')
 
