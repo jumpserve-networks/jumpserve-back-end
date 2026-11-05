@@ -84,6 +84,26 @@ def saved_authors(value):
     if not isinstance(value, dict) or value.get('version') != AUTHORS_VERSION or value.get('page') != 1: return None
     return author_names(value.get('names'))
 
+REVIEW_AUTHORS_VERSION = 'paper-review-authors-v1'
+
+def owner_author_names(value):
+    """An explicit ordered owner edit, including an intentionally empty list."""
+    if not isinstance(value,list) or len(value)>100 or any(not isinstance(name,str) or any(unicodedata.category(c)=='Cc' for c in name) for name in value):
+        raise ValueError('Supply up to 100 author names, each at most 200 characters.')
+    if not value:return []
+    names=author_names(value)
+    if names is None:raise ValueError('Supply author names without contact details or URLs, each at most 200 characters.')
+    return names
+
+def review_authors(metadata):
+    """Owner-confirmed bibliography takes precedence; extracted evidence is kept."""
+    owner=metadata.get('owner_authors')
+    if owner is not None:
+        if not isinstance(owner,dict) or owner.get('version')!=REVIEW_AUTHORS_VERSION:return None
+        try:return owner_author_names(owner.get('names')) or None
+        except ValueError:return None
+    return saved_authors(metadata.get('authors'))
+
 AFFILIATION = re.compile(r'\b(?:university|institute|department|dept|laborator(?:y|ies)|college|school|research|group|centre|center|science|engineering)\b', re.I)
 
 def byline_names(raw):

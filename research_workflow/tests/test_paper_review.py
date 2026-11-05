@@ -5,7 +5,7 @@ import sys
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-import autonomy_model as model, autonomy_sources as sources, paper_uploads, store
+import autonomy_model as model, autonomy_sources as sources, paper_uploads, paper_titles, store
 
 TITLE='Cache observations in controlled networks'
 TEXT=TITLE+'\nNetworking experiments compare latency.'
@@ -37,5 +37,28 @@ class PaperReview(unittest.TestCase):
    with patch.object(store,'owns',return_value=False),patch.object(store,'rows') as rows,patch.object(store,'rpc') as rpc,self.assertRaises(ValueError):
     paper_uploads.submit('10000000-0000-4000-8000-000000000001',dict(action=action,request_id='10000000-0000-4000-8000-000000000002'))
    rows.assert_not_called();rpc.assert_not_called()
+ def confirmation(self,**changes):
+  return dict(action='confirm',request_id='10000000-0000-4000-8000-000000000002',title=TITLE,domain='Networking',revision=4,claim_ids=['10000000-0000-4000-8000-000000000003'],**changes)
+ def test_confirmation_passes_ordered_author_edits_only_after_installed_sql_capability(self):
+  authors=['Doe, Jane','María José de la Cruz']
+  with patch.object(store,'owns',return_value=True),patch.object(store,'rpc',side_effect=[dict(version=paper_titles.REVIEW_AUTHORS_VERSION),{}]) as rpc,patch.object(paper_uploads,'review',return_value={}),patch.object(paper_uploads.autonomy,'wake'):
+   paper_uploads.submit('10000000-0000-4000-8000-000000000001',self.confirmation(authors=authors))
+  self.assertEqual([call.args[1]['p_operation'] for call in rpc.call_args_list],['authors-capability','confirm'])
+  self.assertEqual(rpc.call_args.args[1]['p_payload']['authors'],authors)
+  with patch.object(store,'owns',return_value=True),patch.object(store,'rpc',return_value={}) as rpc,self.assertRaisesRegex(ValueError,'unavailable'):
+   paper_uploads.submit('10000000-0000-4000-8000-000000000001',self.confirmation(authors=authors))
+  self.assertEqual(rpc.call_count,1)
+ def test_invalid_author_edits_cannot_begin_confirmation(self):
+  for authors in (None,'One Name',[123],[''],['A'*201],['mail@example.org'],['https://example.org'],['Line\nbreak'],['Name']*101):
+   with patch.object(store,'owns',return_value=True),patch.object(store,'rpc') as rpc,self.assertRaises(ValueError):
+    paper_uploads.submit('10000000-0000-4000-8000-000000000001',self.confirmation(authors=authors))
+   rpc.assert_not_called()
+ def test_owner_bibliography_does_not_rewrite_extracted_byline_and_can_be_cleared(self):
+  extracted=dict(version='paper-authors-v1',names=['Extracted Name'],page=1,method='Synthetic fixture')
+  metadata=dict(authors=extracted,owner_authors=dict(version=paper_titles.REVIEW_AUTHORS_VERSION,names=['Doe, Jane','María José de la Cruz']))
+  original=copy.deepcopy(metadata)
+  self.assertEqual(paper_titles.review_authors(metadata),metadata['owner_authors']['names']);self.assertEqual(metadata,original)
+  metadata['owner_authors']['names']=[];self.assertIsNone(paper_titles.review_authors(metadata))
+  self.assertEqual(paper_titles.review_authors(dict(authors=extracted)),['Extracted Name'])
 
 if __name__=='__main__':unittest.main()

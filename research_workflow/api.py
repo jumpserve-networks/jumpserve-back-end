@@ -16,6 +16,7 @@ import gap_queue
 import autonomy
 import paper_uploads
 import paper_catalog
+import prompt_catalog
 import paper_titles
 from workflow import LABELS, VERSION, canonical, digest, identifier, paper_details, protocol_record, validate_record
 
@@ -128,10 +129,26 @@ def dispatch(event, actor=None):
     path = event.get("rawPath", "").rstrip("/")
     method = event.get("requestContext", {}).get("http", {}).get("method", "GET")
     query = event.get("queryStringParameters") or {}
+    if method == 'GET' and (path == '/research/prompts' or path.startswith('/research/prompts/')):
+        if not actor: raise HttpError(401, 'Sign in to view prompts.')
+        if path == '/research/prompts': return prompt_catalog.index()
+        parts = path.split('/')
+        if len(parts) != 4: raise HttpError(404, 'Prompt endpoint not found.')
+        result = prompt_catalog.detail(parts[3])
+        if result is None: raise HttpError(404, 'Prompt version not found.')
+        return result
     if path == '/research/papers' and method == 'GET':
-        return paper_catalog.papers(query.get('before'), include_authors=query.get('bibliography') == '1', include_initiator=query.get('initiator') == '1')
+        if query.get('mine') not in (None, '0', '1'): raise ValueError('Invalid assessment filter.')
+        mine = query.get('mine') == '1'
+        if mine and not actor: raise HttpError(401, 'Sign in to view your assessments.')
+        return paper_catalog.papers(query.get('before'), include_authors=query.get('bibliography') == '1',
+            include_initiator=query.get('initiator') == '1', owner_id=actor if mine else None)
     if path.startswith('/research/papers/') and method == 'GET':
         parts = path.split('/')
+        if len(parts) == 4:
+            result = paper_catalog.detail(parts[3])
+            if result is None: raise HttpError(404, 'Paper not found.')
+            return result
         if len(parts) != 5 or parts[4] != 'title': raise HttpError(404, 'Paper endpoint not found.')
         result = paper_catalog.title(parts[3], include_authors=query.get('bibliography') == '1')
         if result is None: raise HttpError(404, 'Paper not found.')
@@ -155,10 +172,10 @@ def dispatch(event, actor=None):
                 if status_only: study_query['select'] = 'id,title,domain,study_kind'
                 studies = store.rows("studies", study_query) if ids else []
                 designs = {row['study_id'] for row in store.rows('claim_designs', {'study_id': 'in.(' + ','.join(ids) + ')', 'select': 'study_id', 'limit': 101})} if ids and not status_only else set()
-                review_select = 'study_id,status,title,domain' + ('' if status_only else ',authors:metadata->authors')
+                review_select = 'study_id,status,title,domain' + ('' if status_only else ',authors:metadata->authors,owner_authors:metadata->owner_authors')
                 reviews = {row['study_id']:row for row in store.rows('paper_reviews', {'study_id':'in.('+','.join(ids)+')','select':review_select,'limit':101})} if ids else {}
                 studies = [dict(row,paper_review_status=reviews[row['id']]['status'],title=reviews[row['id']]['title'] or row['title'],domain=reviews[row['id']]['domain'] or row['domain'],
-                    **({'authors':paper_titles.saved_authors(reviews[row['id']].get('authors'))} if not status_only and row.get('study_kind') != 'idea' else {})) if row['id'] in reviews else row for row in studies]
+                    **({'authors':paper_titles.review_authors(reviews[row['id']])} if not status_only and row.get('study_kind') != 'idea' else {})) if row['id'] in reviews else row for row in studies]
                 studies = [dict(row, claim_design=True) if row['id'] in designs else row for row in studies]
                 if status_only:
                     statuses = assessment_statuses(studies)

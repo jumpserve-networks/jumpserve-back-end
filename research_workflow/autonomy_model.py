@@ -89,6 +89,12 @@ def request_fits(value):
   if len(canonical(siwc_protocol.response_request(value)))>MAX_REQUEST_BYTES:return False
  return True
 
+def context_fits(system,context):
+ try:return request_fits(request(system,context))
+ except ValueError as error:
+  if str(error)=='Autonomous context exceeds 96 KB; retain explicit coverage rather than truncate evidence.':return False
+  raise
+
 def request(system, context):
  phase=context.get('task');allowed=request_actions(context);tools=copy.deepcopy(TOOLS)
  if allowed:tools['tools'][0]['toolSpec']['inputSchema']['json']['properties']['action']['enum']=allowed

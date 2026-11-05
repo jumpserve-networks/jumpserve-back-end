@@ -23,7 +23,7 @@ def service_key():
     if arn.split(":")[4] != ACCOUNT: raise StoreError("AWS secret account mismatch.")
     return boto3.client("secretsmanager", region_name="us-east-1").get_secret_value(SecretId=arn)["SecretString"]
 
-def request(path, method="GET", body=None, public=False, raw=False):
+def request(path, method="GET", body=None, public=False, raw=False, timeout=12):
     base = os.environ.get("SUPABASE_URL", "").rstrip("/")
     if base != f"https://{PROJECT}.supabase.co": raise StoreError("JumpServe Supabase project mismatch.")
     key = os.environ["SUPABASE_ANON_KEY"] if public else service_key()
@@ -31,7 +31,7 @@ def request(path, method="GET", body=None, public=False, raw=False):
     headers = {"apikey": key, "Authorization": "Bearer " + key, "Content-Type": "application/octet-stream" if isinstance(body, bytes) else "application/json"}
     req = urllib.request.Request(base + path, data=payload, method=method, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=12) as response:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
             data = response.read(20_000_001)
             if len(data) > 20_000_000: raise StoreError("Persistence response exceeds the bounded size.")
             return data if raw else json.loads(data) if data else None
@@ -119,6 +119,7 @@ def rows(kind, params=None, public=False):
     return result
 
 def rpc(name, payload):
+    if name in ('research_intake_control','research_intake_dispatch'):return request('/rest/v1/rpc/'+name,'POST',payload)
     if name=='research_controller_dispatch_reconcile':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name=='research_autonomy_runtime_observe':return request('/rest/v1/rpc/'+name,'POST',payload)
     if name=='autonomy_budget_snapshot':return request('/rest/v1/rpc/'+name,'POST',payload)
