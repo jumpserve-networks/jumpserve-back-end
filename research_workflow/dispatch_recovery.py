@@ -13,6 +13,170 @@ CALL_VERSION='builder-native-call-reconciliation-v1'
 QUEUED_VERSION='queued-dispatch-reconciliation-v1'
 QUEUED_CONTROLLER_VERSION='queued-dispatch-reconciliation-v2'
 CONTROLLER_VERSION='controller-terminal-reconciliation-v1'
+FAILURE_VERSION='captured-provider-failure-v1'
+
+def captured_failure(request_raw,response,http_status,reason):
+    """Account for an explicit rejected buffered response, never a lost one.
+
+    The bridge persists bytes and raises on the first error before delivering
+    this response to the local tool runner. Bytes after that complete error
+    frame need not form a complete response. Provider processing/charges remain
+    unknown; this is not a successful inference or a zero-call certificate.
+    """
+    if type(http_status) is not int or http_status not in (200,429,500,502,503,504):return None
+    if not isinstance(reason,str) or not reason or len(response)>1048576:return None
+    request=json.loads(request_raw)
+    tools=request.get('tools')
+    if (request.get('model')!='gpt-6.1-sol' or request.get('store') is not False
+        or request.get('stream') is not True or request.get('previous_response_id') is not None
+        or request.get('background',False) is not False or not isinstance(tools,list)
+        or any(not isinstance(t,dict) or t.get('type')!='function' for t in tools)):
+        return None
+    if http_status!=200:
+        try:error=json.loads(response).get('error')
+        except (ValueError,UnicodeError,AttributeError):return None
+        if not isinstance(error,dict) or error.get('code')!=reason:return None
+        kind='explicit-http-error';observed=len(response)
+    else:
+        # Parse only complete SSE frames up to the first explicit failure, in
+        # the same order as the buffered bridge. Missing/malformed frames before
+        # it, a prior completion, or an incomplete event never establish this.
+        position=0;kind=None;observed=None
+        for boundary in re.finditer(rb'\r?\n\r?\n',response):
+            end=boundary.end();block=response[position:end];position=end
+            lines=[line[5:].lstrip() for line in block.splitlines() if line.startswith(b'data:')]
+            if not lines:continue
+            payload=b'\n'.join(lines)
+            if payload==b'[DONE]':return None
+            try:event=json.loads(payload)
+            except (ValueError,UnicodeError):return None
+            if not isinstance(event,dict):return None
+            event_type=event.get('type');value=event.get('response') or {}
+            if not isinstance(value,dict):return None
+            if value.get('model') not in (None,'gpt-6.1-sol'):return None
+            if event_type in ('response.completed','response.incomplete'):return None
+            if event_type not in ('response.failed','error'):continue
+            error=value.get('error') or event.get('error') or event
+            if not isinstance(error,dict) or error.get('code')!=reason:return None
+            if event_type=='response.failed' and value.get('status')!='failed':return None
+            kind='framed-stream-error';observed=end;break
+        if kind is None:return None
+    return dict(version=FAILURE_VERSION,evidence_kind=kind,http_status=http_status,error_code=reason,
+        request_sha256=digest(request_raw),response_sha256=digest(response),response_bytes=len(response),
+        inspected_prefix_bytes=observed,model='gpt-6.1-sol',response_forwarded_to_agent=False,
+        tool_calls_executed_from_response=0,provider_processing_unknown=True,measured_charges_usd=None,
+        provider_replay=False,scientific_completion=False)
+
+def controller_failure(task,dispatch,receipt,original,rows):
+    if dispatch['status']!='failed':return None
+    if any(dispatch.get(k)!=task[v] for k,v in (('task_id','id'),('study_id','study_id'))):return None
+    expected=dict(runtime='openclaw-production-v1',model_id='gpt-6.1-sol',status='failed',provider_calls=1,
+        provider_request_sent=True,response_received=True,provider_retries=0,paid_fallback=False)
+    if any(type(receipt.get(k)) is not type(v) or receipt[k]!=v or (dispatch.get('provenance') or {}).get(k)!=v for k,v in expected.items()):return None
+    if rows(task,'builder_calls',dispatch_id='eq.'+dispatch['id'],limit=1):return None
+    refs={}
+    for ref in (dispatch.get('provenance') or {}).get('artifacts',[]):
+        if ref.get('name') not in ('logical.json','provider-request.json','provider-response.bin','receipt.json'):continue
+        if ref['name'] in refs:raise ValueError('Ambiguous original failure artifact.')
+        refs[ref['name']]=ref
+    if len(refs)!=4:return None
+    logical_raw=original(task,refs['logical.json'],maximum=96000)
+    if digest(logical_raw)!=dispatch['request_sha256']:raise ValueError('Original failed logical hash differs.')
+    logical=json.loads(logical_raw)
+    if not isinstance(logical,dict) or 'builder' in logical:return None
+    request=original(task,refs['provider-request.json'],maximum=96000)
+    if json.loads(request)!=wire.response_request(logical):raise ValueError('Original failed provider request differs.')
+    if json.loads(original(task,refs['receipt.json']))!=receipt:raise ValueError('Original failure receipt differs.')
+    response=original(task,refs['provider-response.bin'],maximum=1048576)
+    proof=captured_failure(request,response,receipt.get('http_status'),receipt.get('error_code'))
+    if proof is None:return None
+    return dict(version=FAILURE_VERSION,dispatch_id=dispatch['id'],study_id=task['study_id'],task_id=task['id'],
+        request_sha256=dispatch['request_sha256'],original_status=dispatch['status'],request_kind='controller',
+        provider_calls=1,provider_request_sent=True,response_received=True,provider_retries=0,
+        status='failed',failure=proof,references={name:dict(artifact_id=ref.get('id') or ref['artifact_id'],sha256=ref['sha256']) for name,ref in refs.items()},
+        scientific_completion=False,provider_replay=False)
+
+def runtime_diagnostic(task,dispatch,spool,retain):
+    """Persist bounded observations at the worker, with no provider/cleanup call.
+
+    Only the fixed installed runtime filenames and exact task/dispatch spool
+    names are inspected. Absence, denied access and unsafe links are distinct.
+    Source originals stay private; callers receive artifact/hash references.
+    """
+    import datetime as dt,stat
+    source_root=Path(__file__).resolve().parent
+    names=('autonomy_read_progress.py','autonomy.py','autonomy_model.py','dispatch_recovery.py','siwc_protocol.py')
+    sources=[]
+    for name in names:
+        path=source_root/name
+        try:
+            info=path.lstat()
+            if not stat.S_ISREG(info.st_mode) or info.st_size>262144:raise ValueError('Installed diagnostic source is unsafe or oversized.')
+            raw=path.read_bytes()
+            if len(raw)!=info.st_size:raise ValueError('Installed diagnostic source changed during read.')
+            # These fixed executable source files must never carry literal keys.
+            if re.search(rb'(?:sb_secret_|github_pat_|xox[baprs]-)[A-Za-z0-9_-]{16,}|-----BEGIN (?:RSA |EC )?PRIVATE KEY',raw):
+                raise ValueError('Installed source cannot be safely delivered.')
+            sources.append(dict(filename=name,sha256=digest(raw),byte_count=len(raw),raw=raw))
+        except FileNotFoundError:sources.append(dict(filename=name,status='absent'))
+        except PermissionError:sources.append(dict(filename=name,status='inaccessible'))
+    binding=digest(canonical([{k:v for k,v in s.items() if k!='raw'} for s in sources]))
+    root=Path(spool);directory=root/str(uuid.UUID(dispatch['id']))
+    calls=__import__('autonomous_repair').rows(task,'builder_calls',dispatch_id='eq.'+dispatch['id'],order='number.asc',limit=101)
+    if len(calls)>100:raise ValueError('Diagnostic native call coverage exceeds its bound.')
+    def observe(path,maximum):
+        try:
+            # Do not follow a link at any original spool component.
+            for parent in [path,*path.parents]:
+                if parent==root.parent:break
+                if parent.is_symlink():return dict(status='unsafe-link')
+            info=path.lstat()
+            if not stat.S_ISREG(info.st_mode):return dict(status='unsafe-file')
+            if info.st_size>maximum:return dict(status='oversized',byte_count=info.st_size)
+            raw=path.read_bytes()
+            if len(raw)!=info.st_size:return dict(status='changed-during-read')
+            return dict(status='captured',sha256=digest(raw),byte_count=len(raw))
+        except FileNotFoundError:return dict(status='absent')
+        except PermissionError:return dict(status='inaccessible')
+    observations=[]
+    for call in calls:
+        if call['status']=='complete':continue
+        number=call.get('number')
+        if type(number) is not int or not 1<=number<=100:raise ValueError('Original native call number differs.')
+        response=observe(directory/('call-'+str(number)+'-response.bin'),1048576)
+        completion=observe(directory/('call-'+str(number)+'-completion.json'),16000)
+        observations.append(dict(call_id=call['id'],number=number,original_status=call['status'],request_sha256=call['request_sha256'],
+            indexed_response=call.get('response_artifact_id') is not None,response=response,completion=completion,
+            provider_outcome='uncertain' if call['status']=='unknown' else call['status']))
+    value=dict(version='worker-runtime-diagnostics-v1',study_id=task['study_id'],task_id=task['id'],dispatch_id=dispatch['id'],
+        request_sha256=dispatch['request_sha256'],runtime_source_binding=binding,worker_pid=os.getpid(),
+        observation_request_id=dispatch.get('runtime_observation_request_id'),
+        calls=observations,provider_calls=0,reconciliation_performed=False,cleanup_performed=False,scientific_completion=False,
+        sources=[{k:v for k,v in s.items() if k!='raw'} for s in sources])
+    fingerprint=digest(canonical(value));cache=root/'runtime-diagnostics'/dispatch['id']/(fingerprint+'.json')
+    if cache.exists():return
+    intent=cache.with_suffix('.intent')
+    if intent.exists():value=json.loads(intent.read_bytes())
+    else:
+        for s in sources:
+            if 'raw' in s:
+                ref=retain('installed-'+s['filename'],s.pop('raw'),'worker-installed-source-v1')
+                s['artifact']=ref
+        value['sources']=sources;value['observed_at']=dt.datetime.now(dt.timezone.utc).isoformat()
+        intent.parent.mkdir(parents=True,exist_ok=True);write_once(intent,canonical(value))
+    ref=retain('worker-runtime-diagnostics.json',canonical(value),'worker-runtime-diagnostics-v1')
+    # A private service-only observation row authenticates this report. Owner-
+    # authored artifact provenance alone never certifies installed worker bytes.
+    store.rpc('research_model_reconcile',dict(p_dispatch=dispatch['id'],p_artifact=ref['artifact_id'],p_sha256=ref['sha256'],p_proof=value))
+    cache.parent.mkdir(parents=True,exist_ok=True);write_once(cache,canonical(ref))
+
+def recovery_artifact(task,dispatch,owner,name,raw,kind):
+    identity=str(uuid.uuid5(uuid.UUID(dispatch['id']),'reconciliation:'+name+':'+digest(raw)))
+    provenance=dict(kind=kind,version=VERSION,dispatch_id=dispatch['id'],task_id=task['id'],filename=name.removeprefix('installed-'))
+    record=store.artifact(dispatch['study_id'],owner,raw,identity,'application/octet-stream',provenance)
+    store.append(dispatch['study_id'],owner,'artifacts',record)
+    if store.artifact_bytes(dispatch['study_id'],identity,maximum=len(raw)+1)!=raw:raise ValueError('Reconciliation artifact hash differs after retrieval.')
+    return dict(artifact_id=identity,sha256=record['sha256'])
 
 def controller_terminal(task,dispatch,receipt,original,rows):
     """Prove one rejected, completed data-only response; never reuse its decision.
@@ -109,6 +273,21 @@ def reconciled_call(task,call,original,rows):
     if not found:return None
     if len(found)!=1:raise ValueError('Ambiguous native call reconciliation.')
     row=found[0];proof=json.loads(original(task,dict(artifact_id=row['artifact_id'],sha256=row['sha256'])))
+    if proof.get('version')==FAILURE_VERSION:
+        if (proof!=row['proof'] or proof.get('status')!='failed'
+            or any(proof.get(k)!=call[k] for k in ('dispatch_id','task_id','study_id','request_sha256'))
+            or proof.get('call_id')!=call['id'] or row['call_id']!=call['id']
+            or row['request_sha256']!=call['request_sha256'] or proof.get('original_status')!=call['status']
+            or proof.get('response_received') is not True or proof.get('container_cleanup')!='stopped'):
+            raise ValueError('Captured native failure identity differs.')
+        request=original(task,dict(artifact_id=call['request_artifact_id'],sha256=call['request_sha256']),maximum=256000)
+        response=original(task,proof['response'],maximum=1048576)
+        expected=captured_failure(request,response,proof.get('http_status'),proof.get('error_code'))
+        if expected is None or proof.get('failure')!=expected:raise ValueError('Captured native failure differs from original bytes.')
+        captured=json.loads(original(task,proof['completion'],maximum=16000))
+        if captured!=proof.get('completion_record'):raise ValueError('Original failure capture differs.')
+        return dict(call,status='failed',response_received=True,http_status=proof['http_status'],reason=proof['error_code'],
+            response_artifact_id=proof['response']['artifact_id'],response_sha256=proof['response']['sha256'],failure_accounted=True)
     if (proof!=row['proof'] or proof.get('version')!=CALL_VERSION or
         any(proof.get(k)!=call[k] for k in ('dispatch_id','task_id','study_id','request_sha256')) or
         proof.get('call_id')!=call['id'] or row['call_id']!=call['id'] or row['request_sha256']!=call['request_sha256'] or
@@ -127,6 +306,9 @@ def ledger(task,dispatch,original,rows):
         if call['status']!='complete':
             call=reconciled_call(task,call,original,rows)
             if call is None:return None
+        if call.get('failure_accounted') is True:
+            proofs.append(dict(id=call['id'],request_sha256=call['request_sha256'],response_sha256=call['response_sha256'],status='failed'))
+            continue
         if call.get('response_received') is not True or call.get('http_status')!=200:return None
         request=original(task,dict(id=call['request_artifact_id'],sha256=call['request_sha256']),maximum=256000)
         value=json.loads(request)
@@ -146,7 +328,7 @@ def reconcile_native_calls(task,dispatch,directory,retain):
     if len(receipts)>100:raise ValueError('Native completion receipt coverage exceeds its bound.')
     for call in calls:
         if call['status']=='complete' or reconciled_call(task,call,repair.original,repair.rows):continue
-        if call['status']!='unknown':continue
+        if call['status'] not in ('unknown','failed'):continue
         matches=[]
         for path in receipts:
             if path.is_symlink() or path.stat().st_size>16000:raise ValueError('Invalid native completion receipt.')
@@ -165,11 +347,31 @@ def reconcile_native_calls(task,dispatch,directory,retain):
             # Older workers predate sidecars. Their retained transport fields
             # and original response can still establish a terminal completion;
             # an absent field or merely missing local output cannot do so.
-            if not (call.get('response_received') is True and call.get('http_status')==200 and call.get('response_artifact_id') and call.get('response_sha256')):continue
+            if not (call.get('response_received') is True and call.get('http_status') in (200,429,500,502,503,504) and call.get('response_artifact_id') and call.get('response_sha256')):continue
             raw=repair.original(task,dict(artifact_id=call['response_artifact_id'],sha256=call['response_sha256']),maximum=1048576)
             captured_raw=canonical(dict(version='retained-native-call-record-v1',record=call,scope='Canonical projection of the unchanged original database call, not original HTTP receipt bytes.'))
             receipt=dict(version=CALL_VERSION,call_id=call['id'],dispatch_id=call['dispatch_id'],task_id=call['task_id'],study_id=call['study_id'],request_sha256=call['request_sha256'],
-                response_sha256=digest(raw),status='complete',response_received=True,http_status=200,capture_origin='retained-database-transport-metadata-and-terminal-stream')
+                response_sha256=digest(raw),status=call['status'] if call['status']=='failed' else 'complete',response_received=True,http_status=call['http_status'],capture_origin='retained-database-transport-metadata-and-terminal-stream')
+        if receipt.get('status')=='failed':
+            if (receipt.get('version')!=CALL_VERSION or receipt.get('call_id')!=call['id']
+                or any(receipt.get(k)!=call[k] for k in ('dispatch_id','task_id','study_id','request_sha256'))
+                or receipt.get('response_received') is not True or receipt.get('http_status')!=call.get('http_status')
+                or call['status']!='failed' or call['response_received'] is not True
+                or digest(raw)!=receipt.get('response_sha256') or digest(raw)!=call.get('response_sha256')):
+                raise ValueError('Original native failure capture identity differs.')
+            request=repair.original(task,dict(artifact_id=call['request_artifact_id'],sha256=call['request_sha256']),maximum=256000)
+            failure=captured_failure(request,raw,call['http_status'],call.get('reason'))
+            if failure is None:continue
+            response=retain('native-'+call['id']+'-response.bin',raw,'builder-reconciled-native-response')
+            captured=retain('native-'+call['id']+'-completion.json',captured_raw,'builder-reconciled-native-completion')
+            proof=dict(version=FAILURE_VERSION,call_id=call['id'],dispatch_id=call['dispatch_id'],task_id=call['task_id'],study_id=call['study_id'],
+                request_sha256=call['request_sha256'],response_sha256=digest(raw),original_status=call['status'],status='failed',
+                http_status=call['http_status'],response_received=True,error_code=call['reason'],failure=failure,
+                response=response,completion=captured,completion_record=json.loads(captured_raw),container_cleanup='stopped',
+                provider_replay=False,scientific_completion=False)
+            evidence=retain('native-'+call['id']+'-proof.json',canonical(proof),'builder-native-call-reconciliation')
+            store.rpc('research_builder_call_reconcile',dict(p_call=call['id'],p_artifact=evidence['artifact_id'],p_sha256=evidence['sha256'],p_proof=proof))
+            continue
         if (receipt.get('version')!=CALL_VERSION or any(receipt.get(k)!=call[k] for k in ('dispatch_id','task_id','study_id','request_sha256')) or
             call['dispatch_id']!=dispatch['id'] or receipt.get('status')!='complete' or receipt.get('response_received') is not True or receipt.get('http_status')!=200):
             raise ValueError('Original native completion identity mismatch.')
@@ -207,6 +409,13 @@ def confirmed(task,dispatch,receipt,original,rows):
             return dict(id=dispatch['id'],kind='hash-verified-terminal-controller-failure',request_sha256=dispatch['request_sha256'],
                 provider_calls=1,native_calls=0,reconciliation_artifact_id=row['artifact_id'],error_code=proof['error_code'],
                 scope='Original completed invalid decision accounted for; no replay, outcome rewrite or scientific validation.')
+        if proof.get('version')==FAILURE_VERSION:
+            expected=controller_failure(task,dispatch,receipt,original,rows)
+            if expected is None or expected!=proof or row.get('study_id')!=task['study_id'] or row.get('dispatch_id')!=dispatch['id']:
+                raise ValueError('Captured controller failure differs from its originals.')
+            return dict(id=dispatch['id'],kind='hash-verified-captured-controller-failure',request_sha256=dispatch['request_sha256'],
+                provider_calls=1,native_calls=0,reconciliation_artifact_id=row['artifact_id'],error_code=proof['failure']['error_code'],
+                provider_processing_unknown=True,scientific_completion=False)
         if proof.get('version')!=VERSION or proof.get('dispatch_id')!=dispatch['id'] or proof.get('request_sha256')!=dispatch['request_sha256'] or proof.get('container_cleanup')!='stopped':raise ValueError('Reconciliation proof differs.')
     elif receipt.get('native_tool_cleanup') is True and receipt.get('container_cleanup') in ('stopped','confirmed') and 'logical.json' in refs:
         logical=original(task,refs['logical.json'])
@@ -251,23 +460,30 @@ def _reconcile_dispatches(spool,dispatches):
     import autonomous_repair as repair,experiment_builder as builder
     recovered=[]
     for d in dispatches:
+        if d.get('runtime_observation_only') is True:
+            task=store.rows('autonomy_tasks',dict(id='eq.'+d['task_id'],study_id='eq.'+d['study_id'],limit=1))[0]
+            if task['status']=='running':continue
+            owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id']
+            runtime_diagnostic(task,d,spool,lambda name,raw,kind:recovery_artifact(task,d,owner,name,raw,kind))
+            continue
         if d['status']=='queued':
             result=store.rpc('research_model_reconcile_queued',dict(p_dispatch=d['id'],p_request_sha256=d['request_sha256']))
             if result.get('reconciled') is True:recovered.append(d['id'])
             continue
         if not json.loads(d['request_raw']).get('builder'):
-            if d['status']!='invalid-output':continue
+            if d['status'] not in ('invalid-output','failed'):continue
             if store.rows('model_reconciliations',dict(dispatch_id='eq.'+d['id'],limit=1)):continue
             task=store.rows('autonomy_tasks',dict(id='eq.'+d['task_id'],study_id='eq.'+d['study_id'],limit=1))[0]
             if task['status']=='running':continue
+            owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id']
+            if d['status']=='failed':runtime_diagnostic(task,d,spool,lambda name,raw,kind:recovery_artifact(task,d,owner,name,raw,kind))
             refs=[r for r in (d.get('provenance') or {}).get('artifacts',[]) if r.get('name')=='receipt.json']
             if len(refs)!=1:continue
             receipt=json.loads(repair.original(task,refs[0]))
-            proof=controller_terminal(task,d,receipt,repair.original,repair.rows)
+            proof=(controller_failure if d['status']=='failed' else controller_terminal)(task,d,receipt,repair.original,repair.rows)
             if proof is None:continue
-            owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id']
-            raw=canonical(proof);identity=str(uuid.uuid5(uuid.UUID(d['id']),CONTROLLER_VERSION+':'+digest(raw)))
-            record=store.artifact(d['study_id'],owner,raw,identity,'application/json',dict(kind='controller-dispatch-reconciliation',version=CONTROLLER_VERSION,dispatch_id=d['id']))
+            raw=canonical(proof);identity=str(uuid.uuid5(uuid.UUID(d['id']),proof['version']+':'+digest(raw)))
+            record=store.artifact(d['study_id'],owner,raw,identity,'application/json',dict(kind='controller-dispatch-reconciliation',version=proof['version'],dispatch_id=d['id']))
             store.append(d['study_id'],owner,'artifacts',record)
             if store.artifact_bytes(d['study_id'],identity,maximum=len(raw)+1)!=raw:raise ValueError('Controller reconciliation readback differs.')
             store.rpc('research_controller_dispatch_reconcile',dict(p_dispatch=d['id'],p_artifact=identity,p_sha256=record['sha256'],p_proof=proof))
@@ -276,6 +492,12 @@ def _reconcile_dispatches(spool,dispatches):
         if (d.get('provenance') or {}).get('queued_admission_reconciliation'):continue
         if store.rows('model_reconciliations',dict(dispatch_id='eq.'+d['id'],limit=1)):continue
         directory=Path(spool)/d['id'];task_root=Path(spool)/'builder-workspaces'/d['task_id']
+        task=store.rows('autonomy_tasks',dict(id='eq.'+d['task_id'],study_id='eq.'+d['study_id'],limit=1))[0]
+        if task['status']=='running':continue
+        owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id']
+        calls=repair.rows(task,'builder_calls',dispatch_id='eq.'+d['id'],order='number.asc',limit=101)
+        if any(c['status']!='complete' for c in calls) or not directory.is_dir() or not task_root.is_dir():
+            runtime_diagnostic(task,d,spool,lambda name,raw,kind:recovery_artifact(task,d,owner,name,raw,kind))
         if not directory.is_dir() or directory.is_symlink() or not task_root.is_dir() or task_root.is_symlink():continue
         with (task_root/'workspace.lock').open('a+b') as lock:
             try:fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -292,11 +514,7 @@ def _reconcile_dispatches(spool,dispatches):
             if history_path.exists():builder.save_history(workspace,json.loads(history_path.read_bytes()))
             metadata=builder.normalize_workspace(workspace,__import__('os').environ.get('OPENCLAW_BUILDER_IMAGE',''))
             def retain(name,raw,kind):
-                identity=str(uuid.uuid5(uuid.UUID(d['id']),'reconciliation:'+name+':'+digest(raw)))
-                record=store.artifact(d['study_id'],owner,raw,identity,'application/octet-stream',dict(kind=kind,version=VERSION,dispatch_id=d['id']))
-                store.append(d['study_id'],owner,'artifacts',record)
-                if store.artifact_bytes(d['study_id'],identity,maximum=len(raw)+1)!=raw:raise ValueError('Reconciliation artifact hash differs after retrieval.')
-                return dict(artifact_id=identity,sha256=record['sha256'])
+                return recovery_artifact(task,d,owner,name,raw,kind)
             reconcile_native_calls(task,d,directory,retain)
             calls=ledger(task,d,repair.original,repair.rows)
             if calls is None:continue

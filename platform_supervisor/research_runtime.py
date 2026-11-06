@@ -24,6 +24,13 @@ def gate():
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     return module
 
+def captured_failure_gate():
+    path=ROOT/'captured-failure-runtime-gate.py'
+    if not path.exists():path=ROOT.parent/'jumpserve-infra/assets/platform/captured-failure-runtime-gate.py'
+    if not path.is_file():raise Hold('Captured-result recovery needs its dedicated installed qualification adapter.','blocked')
+    spec=importlib.util.spec_from_file_location('trusted_captured_failure_gate',path)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+
 def derived_patch(directory,baseline,files):
     """Only the caller's fixed derived filenames, never candidate-supplied paths."""
     changes=[];current=source.snapshot(directory)
@@ -44,18 +51,39 @@ def qualify(controller,directory,patch,check_receipt,check_artifact):
     manifest=json.loads((infra/'research-workflow-runtime.json').read_bytes())
     previous=root/manifest['source_revision']/'backend'
     if not previous.exists():source.extract(controller.github.archive(BACKEND,manifest['source_revision']),previous)
+    qualified_directory=directory;source_overlay=None
     try:scope=module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)
     except module.ScopeError as error:
-        raise Hold('Research runtime qualification refused: '+str(error)+'. Retain the candidate and original assessment evidence; a dedicated qualified runtime adapter is required before release or resumption.','blocked') from None
+        original_error=str(error);module=captured_failure_gate()
+        try:
+            # The proposal delta must be isolated, even if unrelated backend
+            # main files advanced after the installed component's source pin.
+            permitted={'research_workflow/dispatch_recovery.py','research_workflow/tests/test_captured_provider_failures.py',APPROVAL}
+            if any(f['path'] not in permitted for f in patch['files']):raise module.ScopeError('Mixed research source proposal requires separate qualification.')
+            source_overlay=module.overlay(manifest)
+            base=root/source_overlay['base_revision']/'backend'
+            if not base.exists():source.extract(controller.github.archive(BACKEND,source_overlay['base_revision']),base)
+            if manifest.get('source_overlay'):
+                rebuilt=root/('installed-overlay-'+__import__('uuid').uuid4().hex)
+                previous=module.compose(base,previous,rebuilt)
+            qualified_directory=module.compose(base,directory,root/('candidate-overlay-'+__import__('uuid').uuid4().hex))
+            scope=module.inspect(previous/'research_workflow',qualified_directory/'research_workflow',manifest)
+            scope['source_overlay']=source_overlay
+        except module.ScopeError:
+            raise Hold('Research runtime qualification refused: '+original_error+'. Retain the candidate and original assessment evidence; a dedicated qualified runtime adapter is required before release or resumption.','blocked') from None
     if check_receipt['passed'] is not True:raise Hold('Frozen backend checks are required before runtime qualification.')
-    driver=ROOT/'research-runtime-checks.py'
-    if not driver.exists():driver=ROOT.parent/'jumpserve-infra/assets/platform/research-runtime-checks.py'
+    failure_profile=scope.get('qualification_profile')=='captured-provider-failures-v1'
+    filename='captured-failure-runtime-checks.py' if failure_profile else 'research-runtime-checks.py';driver=ROOT/filename
+    if not driver.exists():driver=ROOT.parent/'jumpserve-infra/assets/platform'/filename
     controller.boundary()
     flags=controller.flags
     remaining=(dt.datetime.fromisoformat(flags['deadline_at'].replace('Z','+00:00'))-dt.datetime.now(dt.timezone.utc)).total_seconds()
     if remaining<30:raise Hold('Original deadline prevents operational qualification.','deadline')
     name='js-platform-'+store.task['id'].replace('-','')+'-runtime-qualification'
-    command=['docker','run','--rm','--name',name,'--network','none','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','1g','--user',str(__import__('os').getuid())+':'+str(__import__('os').getgid()),'--read-only','--tmpfs','/tmp:rw,nosuid,nodev,size=64m','--env','HOME=/tmp','--mount','type=bind,source='+str(directory.resolve())+',target=/workspace,readonly','--mount','type=bind,source='+str(driver.resolve())+',target=/qualification/checks.py,readonly','--workdir','/workspace',controller.image,'python3','-B','/qualification/checks.py']
+    command=['docker','run','--rm','--name',name,'--network','none','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','1g','--user',str(__import__('os').getuid())+':'+str(__import__('os').getgid()),'--read-only','--tmpfs','/tmp:rw,nosuid,nodev,size=64m','--env','HOME=/tmp','--mount','type=bind,source='+str(qualified_directory.resolve())+',target=/workspace,readonly','--mount','type=bind,source='+str(driver.resolve())+',target=/qualification/checks.py,readonly','--workdir','/workspace',controller.image,'python3','-B','/qualification/checks.py']
+    if failure_profile:
+        base=driver.with_name('research-runtime-checks.py')
+        command[2:2]=['--mount','type=bind,source='+str(base.resolve())+',target=/qualification/base-checks.py,readonly']
     try:result=subprocess.run(command,capture_output=True,timeout=min(120,remaining-5))
     except subprocess.TimeoutExpired:
         try:subprocess.run(['docker','rm','-f',name],check=True,capture_output=True,timeout=30)
@@ -66,7 +94,9 @@ def qualify(controller,directory,patch,check_receipt,check_artifact):
     log=store.artifact('research-runtime-frozen-checks.json',canonical(dict(exit_code=result.returncode,stdout=result.stdout[-100000:].decode(errors='replace'),stderr=result.stderr[-100000:].decode(errors='replace'),network='none',source_read_only=True)))
     if result.returncode:raise Hold('Frozen operational qualification failed; original source and output retained.','testing')
     # Recheck every protected byte after the isolated process.
-    try:verified_scope=module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)
+    try:
+        verified_scope=module.inspect(previous/'research_workflow',qualified_directory/'research_workflow',manifest)
+        if source_overlay:verified_scope['source_overlay']=source_overlay
     except module.ScopeError as error:
         raise Hold('Research runtime recheck refused: '+str(error)+'. Retain the candidate and qualification output; no approval, pin, release or resumption is admitted.','blocked') from None
     if verified_scope!=scope:raise Hold('Runtime source changed during qualification.')
@@ -91,6 +121,7 @@ def add_pin(controller,backend_change,workspace):
     if previous!=runtime['previous_manifest']:raise Hold('Pinned runtime advanced. Retain this candidate and qualify against the new predecessor before release.')
     files=dict(runtime['scope']['files']);files[module.APPROVAL]=runtime['approval_sha256']
     manifest=module.pin(previous,backend_change['merge_sha'],files)
+    if runtime['scope'].get('source_overlay'):manifest['source_overlay']=runtime['scope']['source_overlay']
     certificate=dict(runtime['certificate'],backend_revision=backend_change['merge_sha'],previous_manifest=previous,manifest=manifest)
     path='research-runtime-qualifications/'+runtime['scope']['source_binding']+'.json'
     patch=derived_patch(directory,baseline,{'research-workflow-runtime.json':canonical(manifest)+b'\n',path:canonical(certificate)+b'\n'})
