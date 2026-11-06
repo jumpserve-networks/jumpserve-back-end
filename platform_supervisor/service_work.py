@@ -49,6 +49,10 @@ def capture(workspace,state):
     try:spec=validate(progress['service_work'])
     except (ValueError,TypeError):
         raise Hold('Correct the infrastructure service request contract in progress.json.','implementing') from None
+    # A retained progress packet can survive process/host recovery. Its already
+    # recorded refinement is implementation feedback, not another handoff.
+    refinement=state.get('service_refinement') or {}
+    if refinement.get('refinement_spec_sha256')==digest(canonical(spec)):return False
     state['pending_service_work']=dict(spec=spec,progress_sha256=digest(path.read_bytes()))
     raise Hold('Infrastructure service request retained; the trusted controller will assign its owning repository.','implementing')
 
@@ -136,12 +140,37 @@ def prepare(controller,workspace,request):
     controller.store.event('service-manifest-qualified','Trusted service configuration derived from its immutable request. Protected branch CI and actual service execution remain required.',receipt)
 
 
+def runtime_observations(controller,workspace,evidence):
+    """Deliver exact private observations through a separately hashed safe view."""
+    from scheduler import shared_document
+    entries=[]
+    records=evidence.get('runtime_observations') or []
+    if not isinstance(records,list) or len(records)>32:raise Hold('Runtime observation coverage exceeds its bound.','reconciling')
+    if not records:return entries
+    study=str(uuid.UUID(evidence['assessment_id']));task=str(uuid.UUID(evidence['assessment_task_id']))
+    for row in records:
+        ident=str(uuid.UUID(row['id']));sha=row.get('sha256','');provenance=row.get('provenance') or {}
+        if (provenance.get('task_id')!=task or provenance.get('kind') not in ('worker-runtime-diagnostics-v1','worker-installed-source-v1')
+            or type(row.get('byte_count')) is not int or not 0<=row['byte_count']<=262144
+            or len(sha)!=64 or any(c not in '0123456789abcdef' for c in sha)):
+            raise Hold('Runtime observation task, hash or bound differs.','reconciling')
+        raw=controller.store.request('/storage/v1/object/research-workflow-raw/'+study+'/'+sha,raw=True)
+        if len(raw)!=row['byte_count'] or digest(raw)!=sha:raise Hold('Original runtime observation bytes differ.','reconciling')
+        value=json.loads(raw) if provenance['kind']=='worker-runtime-diagnostics-v1' else dict(source=raw.decode('utf-8'))
+        view,projection=shared_document(value);view_raw=canonical(dict(original_artifact_id=ident,original_sha256=sha,view=view,projection=projection))
+        relative='references/service-work/observations/'+ident+'.json';save(Path(workspace)/relative,view_raw)
+        entries.append(dict(artifact_id=ident,original_sha256=sha,original_bytes=row['byte_count'],view_path=relative,view_sha256=digest(view_raw),
+            kind=provenance['kind'],filename=provenance.get('filename'),observation_created_at=row.get('created_at')))
+    return entries
+
+
 def deliver(controller,workspace):
     if controller.flags.get('service_work_contract')!=VERSION:return
     packet=rpc(controller,'context')
     if not isinstance(packet,dict) or packet.get('version')!=VERSION:raise Hold('Installed infrastructure service contract differs.')
     evidence=packet.get('evidence')
     if evidence:
+        packet['runtime_observation_views']=runtime_observations(controller,workspace,evidence)
         failures=[]
         for artifact in evidence.get('artifacts',[]):
             if artifact.get('kind')!='failed-text-extraction':continue
@@ -178,6 +207,12 @@ def deliver(controller,workspace):
         artifact=controller.store.artifact('infrastructure-service-request.json',canonical(spec))
         result=rpc(controller,'request',dict(id=identity(controller.store.task['id'],'service:'+digest(canonical(spec))),
             spec=spec,artifact_id=artifact['id']))
+        if result.get('requires_implementation') is True:
+            controller.state['service_refinement']=dict(result,artifact_id=artifact['id'])
+            controller.state.pop('pending_service_work',None)
+            controller.state['feedback']=result['reason']+' The exact new objective and acceptance checks remain in artifact '+artifact['id']+'. Existing activation is not proof that these requirements were implemented.'
+            controller.save_state()
+            raise Hold('Additional infrastructure requirements retained; the existing fixed adapter cannot certify them. Worker runtime evidence and dedicated implementation are required.','blocked')
         controller.state['service_work_wait']=result;controller.save_state()
         raise Hold('Infrastructure service work assigned to '+result['implementation_task_id']+'; retained parent waits for a verified release.','blocked')
     implementation=packet.get('implementation')
