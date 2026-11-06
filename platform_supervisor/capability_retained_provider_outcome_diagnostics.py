@@ -6,6 +6,7 @@ from .common import Hold
 
 CAPABILITY = {'version': 'platform-capability-pack-v1', 'id': 'retained-provider-outcome-diagnostics', 'revision': 1, 'description': 'Task-bound structural inspection of hash-verified retained provider evidence; no reconciliation.', 'instructions': 'The trusted controller invokes collect only from verified installed supervisor source after frozen qualification. Read the delivered diagnostics JSON. Inconclusive results retain the uncertain-call fence. No replay, ledger write, resumption or scientific finding is authorized by this report.', 'files': {'README.md': 'This pack supplies an installed host collector, not a provider client. The controller verifies its installed module hash before invocation. Reports contain only structural facts and source hashes. A terminal observation is not reconciliation, admission, assessment resumption or scientific completion. Missing or ambiguous originals remain inconclusive.\n'}}
 
+# Legacy exported fixture identifiers are passive compatibility data, not bindings.
 ASSESSMENT = 'fe761052-6e57-4d47-a3de-163c6cad905b'
 TASK = '2d8aa97a-5c01-50ea-a32f-c5025aaf3f9c'
 INCIDENT = 'ef881bcd-9310-413a-be6b-53ef75ba59dc'
@@ -156,22 +157,107 @@ def stream_facts(raw, request):
         return facts
 
 
+def bound_identity(value):
+    return isinstance(value, str) and re.fullmatch(
+        r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}', value) is not None
+
+
+def original_fact(context, packet, ident, digest):
+    """Availability only, never proof of absence, completion or cleanup."""
+    fact = dict(indexed=False, available=False, reason='reference-unavailable')
+    if not ident or not digest:
+        return fact
+    if not bound_identity(ident) or not isinstance(digest, str) or not re.fullmatch('[a-f0-9]{64}', digest):
+        return dict(fact, reason='invalid-reference')
+    fact.update(artifact_id=ident, sha256=digest)
+    # Mirror Evidence's allowed index, including direct native request pointers.
+    matches = []
+    for key in ('artifacts', 'native_calls', 'dispatches'):
+        for row in packet.get(key, []):
+            for ik, hk in (('id', 'sha256'), ('request_artifact_id', 'request_sha256'),
+                           ('response_artifact_id', 'response_sha256')):
+                if row.get(ik) == ident:
+                    matches.append(row.get(hk))
+    if not matches:
+        return dict(fact, reason='original-not-indexed')
+    if any(value != digest for value in matches):
+        return dict(fact, reason='index-conflict')
+    fact['indexed'] = True
+    try:
+        raw = context.original(ident)
+    except Hold:
+        raise
+    except (ValueError, OSError, KeyError):
+        return dict(fact, reason='original-unavailable')
+    if not isinstance(raw, bytes) or len(raw) > MAX_BYTES:
+        return dict(fact, reason='original-byte-bound')
+    if sha(raw) != digest:
+        return dict(fact, reason='original-hash-mismatch')
+    return dict(fact, available=True, bytes=len(raw), reason='hash-verified-bytes-only')
+
+
+def native_diagnostics(context, packet, report, calls):
+    report.update(reason='original-evidence-inspected', calls=[], unresolved_calls=len(calls),
+                  truncated=len(calls) > 16)
+    for call in calls[:16]:
+        item = dict(call_id=call.get('id'), dispatch_id=call.get('dispatch_id'),
+                    request_sha256=call.get('request_sha256'), status=call.get('status'),
+                    terminal_completion_proven=False, cleanup_proven=False, evidence={})
+        report['calls'].append(item)
+        dispatches = [d for d in packet.get('dispatches', []) if d.get('id') == call.get('dispatch_id')]
+        if (not bound_identity(call.get('id')) or len(dispatches) != 1 or
+                any(call.get(k, expected) != expected for k, expected in
+                    (('study_id', report['assessment_id']), ('task_id', report['assessment_task_id'])))):
+            item['reason'] = 'call-or-dispatch-identity-mismatch'
+            continue
+        dispatch = dispatches[0]
+        if any(dispatch.get(k, expected) != expected for k, expected in
+               (('study_id', report['assessment_id']), ('task_id', report['assessment_task_id']))):
+            item['reason'] = 'dispatch-identity-mismatch'
+            continue
+        item['dispatch_request_sha256'] = dispatch.get('request_sha256')
+        evidence = item['evidence']
+        for label, prefix in (('request', 'request'), ('response', 'response')):
+            evidence[label] = original_fact(context, packet, call.get(prefix + '_artifact_id'),
+                                             call.get(prefix + '_sha256'))
+        # Only exact original dispatch + call-number names may supply sidecars.
+        number = call.get('number')
+        names = {'completion': 'call-' + str(number) + '-completion.json', 'cleanup': 'receipt.json'}
+        refs = dispatch.get('provenance', {}).get('artifacts', [])
+        for label, name in names.items():
+            found = [r for r in refs if r.get('name') == name]
+            evidence[label] = (original_fact(context, packet, found[0].get('id'), found[0].get('sha256'))
+                               if len(found) == 1 and type(number) is int and number > 0 else
+                               dict(indexed=False, available=False, reason='reference-unavailable-or-ambiguous'))
+        item['reason'] = 'availability-only-not-reconciliation'
+    return report
+
+
 def collect(context):
-    report = dict(version='retained-provider-outcome-diagnostics-v1', assessment_id=ASSESSMENT,
-                  assessment_task_id=TASK, incident_id=INCIDENT, dispatch_id=DISPATCH,
+    report = dict(version='retained-provider-outcome-diagnostics-v2',
                   status='inconclusive', reason='identity-unavailable', sources={},
                   reconciled=False, scientific_completion=False, replacement_admitted=False,
-                  bounds=dict(bytes_per_original=MAX_BYTES, events=MAX_EVENTS, originals=4))
+                  bounds=dict(bytes_per_original=MAX_BYTES, events=MAX_EVENTS, originals=64, calls=16))
     try:
         packet = context.packet
-        if (packet.get('assessment_id') != ASSESSMENT or packet.get('assessment_task_id') != TASK or
-            packet.get('blocker', {}).get('id') != INCIDENT or packet['blocker'].get('source_id') != DISPATCH or
-            packet['blocker'].get('source_kind') != 'dispatch' or not packet.get('platform_task_id')):
+        identities = dict(assessment_id=packet.get('assessment_id'),
+                          assessment_task_id=packet.get('assessment_task_id'),
+                          incident_id=packet.get('blocker', {}).get('id'))
+        if not all(bound_identity(v) for v in identities.values()) or not packet.get('platform_task_id'):
             return report
-        dispatches = [d for d in packet.get('dispatches', []) if d.get('id') == DISPATCH]
+        report.update(identities)
+        calls = [c for c in packet.get('native_calls', []) if c.get('status') in ('unknown', 'running', 'reserved')]
+        if calls:
+            return native_diagnostics(context, packet, report, calls)
+        blocker = packet['blocker']
+        dispatch_id = blocker.get('source_id')
+        if blocker.get('source_kind') != 'dispatch' or not bound_identity(dispatch_id):
+            return dict(report, reason='unresolved-call-or-dispatch-unavailable')
+        report['dispatch_id'] = dispatch_id
+        dispatches = [d for d in packet.get('dispatches', []) if d.get('id') == dispatch_id]
         if len(dispatches) != 1: return dict(report, reason='dispatch-ambiguous-or-missing')
         dispatch = dispatches[0]
-        for key, expected in (('study_id', ASSESSMENT), ('task_id', TASK)):
+        for key, expected in (('study_id', identities['assessment_id']), ('task_id', identities['assessment_task_id'])):
             if key in dispatch and dispatch[key] != expected: return dict(report, reason='dispatch-identity-mismatch')
         refs = {}
         for ref in dispatch.get('provenance', {}).get('artifacts', []):
