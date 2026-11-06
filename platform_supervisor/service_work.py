@@ -68,9 +68,51 @@ def restore(controller,workspace,activation):
     controller.save_state()
 
 
+def candidate_id(controller,request,revision):
+    return identity(controller.store.task['id'],'service-manifest:'+request['id']+':'+revision)
+
+
+def recover_superseded_candidate(controller,request):
+    """Retain a checkpoint stopped while superseding an earlier candidate."""
+    changes=controller.state.get('changes') or []
+    legacy=identity(controller.store.task['id'],'service-manifest:'+request['id'])
+    if len(changes)!=1:return
+    candidate=changes[0]
+    ident=candidate.get('id')
+    if (ident==candidate_id(controller,request,controller.state['sources'][INFRA]['revision'])
+        and candidate.get('status')!='superseded'):return
+    if ident not in (legacy,candidate_id(controller,request,candidate.get('base_sha',''))):return
+    if candidate.get('merge_sha'):return
+    if (candidate.get('head_sha') or candidate.get('pr_number')) and candidate.get('status')!='superseded':return
+    rows=controller.store.rows('changes',id='eq.'+ident)
+    if len(rows)!=1:raise Hold('Retained service candidate requires its original change record.','reconciling')
+    original=rows[0]
+    if original['status']!='superseded':
+        fields=('base_sha','tree_sha256','patch_artifact_id','checks_artifact_id')
+        if any(original.get(k)!=candidate.get(k) for k in fields):
+            raise Hold('Retained service candidate differs from an unsettled original.','reconciling')
+        return
+    operations=controller.store.rows('operations')
+    if (original.get('merge_sha') or len(operations)>=1000
+        or any(o['status'] in ('pending','unknown') for o in operations)
+        or original.get('pr_number') and not any(o['kind']=='publish' and o['status']=='confirmed'
+            and o['request'].get('action')=='close-superseded'
+            and o['request'].get('repository')==INFRA
+            and o['request'].get('pr_number')==original['pr_number']
+            and (o.get('result') or {}).get('closed') is True for o in operations)):
+        raise Hold('Original service publication must reconcile before another candidate.','reconciling')
+    if ident==candidate_id(controller,request,controller.state['sources'][INFRA]['revision']):
+        raise Hold('A superseded service candidate needs a fresh retained base.','reconciling')
+    retained=controller.store.artifact('superseded-service-candidate.json',canonical(dict(original=original,checkpoint=candidate)))
+    controller.state.update(tested=False,changes=[],service_candidate_recovery=dict(
+        original_change_id=ident,artifact_id=retained['id']))
+    controller.save_state()
+
+
 def prepare(controller,workspace,request):
     """Derive configuration only; executable code is the installed release broker."""
     if controller.store.task['repositories']!=[INFRA]:raise Hold('Infrastructure service work requires its owning repository only.')
+    if controller.state.get('tested'):recover_superseded_candidate(controller,request)
     if controller.state.get('tested'):return
     directory=Path(workspace)/'jumpserve-infra';original=controller.state['sources'][INFRA]
     name='services/'+request['id']+'.json';value=manifest(request);raw=canonical(value)+b'\n'
@@ -85,7 +127,7 @@ def prepare(controller,workspace,request):
     patch=source.freeze(original['snapshot'],directory)
     checks=controller.store.artifact('service-contract-checks.json',canonical(receipt))
     artifact=controller.store.artifact('service-manifest-patch.json',canonical(patch))
-    change=dict(id=identity(controller.store.task['id'],'service-manifest:'+request['id']),repository=INFRA,
+    change=dict(id=candidate_id(controller,request,original['revision']),repository=INFRA,
         base_sha=original['revision'],head_sha=None,tree_sha256=patch['tree_sha256'],summary='Activate qualified '+request['profile'],
         patch_artifact_id=artifact['id'],checks_artifact_id=checks['id'],pr_number=None,pr_url=None,merge_sha=None,
         status='tested',component='infrastructure',patch=patch)
