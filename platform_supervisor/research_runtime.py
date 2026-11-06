@@ -57,7 +57,7 @@ def qualify(controller,directory,patch,check_receipt,check_artifact):
         original_error=str(error)
         try:module=captured_failure_gate()
         except Hold:
-            raise Hold('Research runtime qualification refused: '+original_error+'. Retain the candidate and original assessment evidence; the dedicated captured-result qualification adapter is not installed.','blocked') from None
+            raise Hold('Research runtime qualification refused: '+original_error+'. Retain the candidate and original assessment evidence; a dedicated qualified runtime adapter is required before release or resumption.','blocked') from None
         try:
             # The proposal delta must be isolated, even if unrelated backend
             # main files advanced after the installed component's source pin.
