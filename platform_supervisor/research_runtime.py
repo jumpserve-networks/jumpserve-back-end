@@ -44,7 +44,9 @@ def qualify(controller,directory,patch,check_receipt,check_artifact):
     manifest=json.loads((infra/'research-workflow-runtime.json').read_bytes())
     previous=root/manifest['source_revision']/'backend'
     if not previous.exists():source.extract(controller.github.archive(BACKEND,manifest['source_revision']),previous)
-    scope=module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)
+    try:scope=module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)
+    except module.ScopeError as error:
+        raise Hold('Research runtime qualification refused: '+str(error)+'. Retain the candidate and original assessment evidence; a dedicated qualified runtime adapter is required before release or resumption.','blocked') from None
     if check_receipt['passed'] is not True:raise Hold('Frozen backend checks are required before runtime qualification.')
     driver=ROOT/'research-runtime-checks.py'
     if not driver.exists():driver=ROOT.parent/'jumpserve-infra/assets/platform/research-runtime-checks.py'
@@ -64,7 +66,10 @@ def qualify(controller,directory,patch,check_receipt,check_artifact):
     log=store.artifact('research-runtime-frozen-checks.json',canonical(dict(exit_code=result.returncode,stdout=result.stdout[-100000:].decode(errors='replace'),stderr=result.stderr[-100000:].decode(errors='replace'),network='none',source_read_only=True)))
     if result.returncode:raise Hold('Frozen operational qualification failed; original source and output retained.','testing')
     # Recheck every protected byte after the isolated process.
-    if module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)!=scope:raise Hold('Runtime source changed during qualification.')
+    try:verified_scope=module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)
+    except module.ScopeError as error:
+        raise Hold('Research runtime recheck refused: '+str(error)+'. Retain the candidate and qualification output; no approval, pin, release or resumption is admitted.','blocked') from None
+    if verified_scope!=scope:raise Hold('Runtime source changed during qualification.')
     certificate=dict(version=module.VERSION,scope=scope,passed=True,backend_checks_artifact=check_artifact['sha256'],operational_checks_artifact=log['sha256'],driver_sha256=digest(driver.read_bytes()),gate_sha256=digest(Path(module.__file__).read_bytes()),image=controller.image,provider_calls=0,credential_free=True,scientific_completion=False)
     raw=canonical(certificate);artifact=store.artifact('research-runtime-qualification.json',raw)
     approval=canonical(module.approval(scope,artifact['sha256']))+b'\n'
