@@ -54,7 +54,10 @@ def qualify(controller,directory,patch,check_receipt,check_artifact):
     qualified_directory=directory;source_overlay=None
     try:scope=module.inspect(previous/'research_workflow',directory/'research_workflow',manifest)
     except module.ScopeError as error:
-        original_error=str(error);module=captured_failure_gate()
+        original_error=str(error)
+        try:module=captured_failure_gate()
+        except Hold:
+            raise Hold('Research runtime qualification refused: '+original_error+'. Retain the candidate and original assessment evidence; the dedicated captured-result qualification adapter is not installed.','blocked') from None
         try:
             # The proposal delta must be isolated, even if unrelated backend
             # main files advanced after the installed component's source pin.
