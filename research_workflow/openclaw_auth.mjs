@@ -3,7 +3,7 @@ import {DatabaseSync} from 'node:sqlite';
 import * as fs from 'node:fs';
 import {createHash, randomUUID} from 'node:crypto';
 import {dirname, resolve} from 'node:path';
-import {fileURLToPath, pathToFileURL} from 'node:url';
+import {pathToFileURL} from 'node:url';
 
 const SLOT = 131072, HEADER = 36, WINDOW = 900000, ATTEMPTS = 3;
 const INVALID = new Set(['invalid_grant','invalid_refresh_token','token_expired','refresh_token_expired','refresh_token_invalidated','refresh_token_reused']);
@@ -147,7 +147,7 @@ export async function ensureCredential({databasePath,refresh,now,clock=Date.now,
   }
 }
 
-if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
+if(import.meta.main) {
   const [databasePath,pluginPath,flag]=process.argv.slice(2);
   try {
     if(![4,5].includes(process.argv.length)||!databasePath||!pluginPath||flag&&flag!=='--force')throw new AuthFailure('client-configuration');
