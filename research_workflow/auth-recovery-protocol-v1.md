@@ -46,3 +46,25 @@ documentation at https://developers.openai.com/siwc/token-sharing-open-source/;
 the pinned native OpenClaw 2026.10.5 refresh implementation; Node 24 SQLite and
 filesystem documentation. Recovery state stays beside the native grant on the
 existing protected encrypted host storage, outside all research artifact spools.
+
+## Versioned installation entrypoint
+
+The production worker installer now exposes its immutable release through the
+`/opt/jumpserve/runtime` directory symlink. Node resolves an ES module's URL to
+its real path while retaining the invoked link in `process.argv[1]`. Comparing
+those two paths caused the authentication CLI to exit with status zero and no
+JSON response; the Python owner correctly retained `refresh-unconfirmed`.
+
+Use Node 24's `import.meta.main` for the CLI guard. Token validation, refresh
+serialization, journal recovery, identity checks, provider transport and unknown
+outcome fences are unchanged. Importing the module still has no CLI effects.
+
+`tests/openclaw_auth_entrypoint_test.mjs` reproduces the versioned directory link
+and a direct file link with actual Node, SQLite and child processes. Its four
+synthetic cases cover valid-grant reuse, a single persisted rotation across
+restart, import safety and retained uncertain-rotation fencing. Run it alongside
+the unchanged seventeen cases in `tests/openclaw_auth_test.mjs`. The Python
+discovery wrapper includes the new cases when the pinned local Node is present;
+release qualification must run all twenty-one native cases explicitly rather
+than count a missing-runtime skip as qualification. No real provider calls or
+scientific results are part of these regressions.
