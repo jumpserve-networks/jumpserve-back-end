@@ -151,14 +151,17 @@ def execute(store, workspace, directory, image, feedback='', token_source=None, 
     lock=threading.Lock(); failures=[]; rejections=[]; local_stops=[]; invalid_tools=[]; cache={}; admitted=set(); began=time.monotonic()
     def inference(received):
         with lock:
-            if len(received)>4000000:raise Hold('Native request exceeds its byte limit.')
             request=json.loads(received)
-            if request.get('model')!=POLICY['model'] or request.get('previous_response_id') or request.get('background'):raise Hold('Pinned stateless model request required.')
+            if request.get('model')!=POLICY['model'] or request.get('previous_response_id') or request.get('background'):
+                raise Hold('Pinned stateless model request required.')
             tools=request.get('tools') or []
-            if not tools or any(t.get('type')!='function' or t.get('name') not in builder.TOOLS for t in tools):raise Hold('Native tool surface exceeds the five sandbox coding tools.')
+            if not tools or any(t.get('type')!='function' or t.get('name') not in builder.TOOLS for t in tools):
+                raise Hold('Native tool surface exceeds the five sandbox coding tools.')
             request.update(store=False,stream=True,model=POLICY['model']);body=canonical(request);sha=digest(body)
-            if sha in cache:return cache[sha]
-            if sha in admitted:raise Hold('Retained provider call cannot be replayed.','reconciling')
+            if sha in cache:
+                return cache[sha]
+            if sha in admitted:
+                raise Hold('Retained provider call cannot be replayed.','reconciling')
             if time.monotonic()-began>POLICY['slice_seconds']-95:
                 local_stops.append('slice');raise Hold('Slice checkpoint before another provider admission.','implementing')
             if blocked_progress(workspace):

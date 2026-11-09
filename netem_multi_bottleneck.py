@@ -38,8 +38,6 @@ import json
 import math
 import os
 import random
-import socket
-import struct
 import subprocess
 import sys
 import tempfile
@@ -47,7 +45,6 @@ import threading
 import time
 import urllib.request
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
@@ -217,8 +214,8 @@ class TopologyBuilder:
 
     def _create_ns(self, name: str) -> None:
         run_cmd(["ip", "netns", "add", name])
-        ns_exec(name, ["ip", "link", "set", "lo", "up"])
         self.namespaces.append(name)
+        ns_exec(name, ["ip", "link", "set", "lo", "up"])
 
     def _create_veth_pair(self, name_a: str, name_b: str) -> None:
         run_cmd(["ip", "link", "add", name_a, "type", "veth", "peer", "name", name_b])
@@ -256,10 +253,9 @@ class TopologyBuilder:
 
 
 class ParkingLotTopology(TopologyBuilder):
-    """Parking-lot: sender → [BN1] → relay → [BN2] → clients.
+    """Parking-lot: sender → [BN1] → relay → [BN2] → router → clients.
 
-    All clients attach to the relay. Flows traverse both bottlenecks.
-    The first bottleneck is on the sender→relay link, the second on relay→client links.
+    All clients share both bottlenecks; each client's delay remains on its own link.
     """
 
     def setup(self) -> None:
@@ -270,6 +266,8 @@ class ParkingLotTopology(TopologyBuilder):
         self._create_ns(self.sender_ns)
         relay_ns = "ns_relay"
         self._create_ns(relay_ns)
+        router_ns = "ns_router"
+        self._create_ns(router_ns)
         for c in self.clients:
             c.namespace = f"ns_client{c.index}"
             self._create_ns(c.namespace)
@@ -282,7 +280,14 @@ class ParkingLotTopology(TopologyBuilder):
         # TBF bottleneck 1 on sender egress
         self._add_tbf(self.sender_ns, "veth_s", self.bottleneck_rates[0], self.bottleneck_buffers[0])
 
-        # Relay ↔ Client links
+        # The second shared egress must precede the client fan-out. A per-client
+        # shaper would give each flow its own capacity rather than a bottleneck.
+        self._create_veth_pair("veth_r_out", "veth_router_in")
+        self._assign_veth("veth_r_out", relay_ns, "10.11.0.1/24")
+        self._assign_veth("veth_router_in", router_ns, "10.11.0.254/24")
+        self._add_tbf(relay_ns, "veth_r_out", self.bottleneck_rates[1], self.bottleneck_buffers[1])
+
+        # Router ↔ Client links
         for c in self.clients:
             subnet = c.index + 1
             c.veth_client = f"veth_c{c.index}"
@@ -292,34 +297,24 @@ class ParkingLotTopology(TopologyBuilder):
 
             self._create_veth_pair(c.veth_client, c.veth_router)
             self._assign_veth(c.veth_client, c.namespace, f"{c.ip}/24")
-            self._assign_veth(c.veth_router, relay_ns, f"{c.router_ip}/24")
+            self._assign_veth(c.veth_router, router_ns, f"{c.router_ip}/24")
 
-            # Netem delay on relay → client
-            self._add_netem(relay_ns, c.veth_router, c.delay_ms)
-
-        # TBF bottleneck 2 on relay → all clients (applied per-link since relay has multiple veths)
-        # We apply rate limiting on the relay's sender-facing veth ingress using an IFB or
-        # more practically, we shape on each client veth from relay side
-        # For simplicity: apply TBF on each relay→client veth, dividing rate by num_clients
-        # OR apply a single TBF on the relay's sender-side veth (egress toward clients)
-        # Best approach: use a common bridge or apply TBF on each client link
-        # We'll apply per-client TBF to model the shared second bottleneck
-        rate_per_client = self.bottleneck_rates[1]  # Each link gets the full rate (shared via relay)
-        for c in self.clients:
-            # Add TBF as a child of netem using handle/parent
-            # Actually, replace netem with netem+tbf hierarchy
-            # Simpler: add TBF on client ingress (client's veth)
-            pass  # TBF on relay egress already covered by netem; add explicit shaping below
+            self._add_netem(router_ns, c.veth_router, c.delay_ms)
 
         # Routing
         self._add_default_route(self.sender_ns, "10.10.0.254")
         self._enable_forwarding(relay_ns)
+        self._add_default_route(relay_ns, "10.11.0.254")
+        self._enable_forwarding(router_ns)
+        self._add_route(router_ns, "10.10.0.0/24", "10.11.0.1")
         for c in self.clients:
             self._add_default_route(c.namespace, c.router_ip)
 
         self.bottlenecks = [
             BottleneckLink(0, self.sender_ns, relay_ns, "veth_s", "veth_r0",
                           "10.10.0.1", "10.10.0.254", self.bottleneck_rates[0], self.bottleneck_buffers[0]),
+            BottleneckLink(1, relay_ns, router_ns, "veth_r_out", "veth_router_in",
+                          "10.11.0.1", "10.11.0.254", self.bottleneck_rates[1], self.bottleneck_buffers[1]),
         ]
 
 
@@ -400,72 +395,6 @@ class DumbbellTopology(TopologyBuilder):
 
 
 # ---------------------------------------------------------------------------
-# Sender / Receiver (simplified inline versions)
-# ---------------------------------------------------------------------------
-
-def receiver_process(namespace: str, listen_ip: str, port: int, ready_file: str, name: str) -> dict:
-    """Run a TCP receiver in a namespace. Returns {bytes_received, duration_ms}."""
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind((listen_ip, port))
-    sock.listen(1)
-
-    # Signal ready
-    Path(ready_file).touch()
-
-    conn, addr = sock.accept()
-    start = time.monotonic()
-    total_bytes = 0
-    while True:
-        data = conn.recv(65536)
-        if not data:
-            break
-        total_bytes += len(data)
-    end = time.monotonic()
-
-    conn.close()
-    sock.close()
-    duration_ms = int((end - start) * 1000)
-    return {"name": name, "bytes_received": total_bytes, "duration_ms": duration_ms}
-
-
-def sender_to_target(host: str, port: int, cca: str, file_size_bytes: int,
-                     start_delay_ms: float) -> dict:
-    """Send data to a single target. Returns {bytes_sent, duration_ms, rtt_ms}."""
-    if start_delay_ms > 0:
-        time.sleep(start_delay_ms / 1000.0)
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Set CCA
-    try:
-        sock.setsockopt(socket.IPPROTO_TCP, 13, cca.encode())  # TCP_CONGESTION = 13
-    except OSError:
-        pass  # CCA may not be available
-
-    sock.connect((host, port))
-    start = time.monotonic()
-    sent = 0
-    chunk = b'\x00' * 65536
-    while sent < file_size_bytes:
-        remaining = file_size_bytes - sent
-        to_send = chunk[:remaining] if remaining < len(chunk) else chunk
-        sent += sock.send(to_send)
-
-    # Get final RTT
-    rtt_ms = 0.0
-    try:
-        tcp_info = sock.getsockopt(socket.IPPROTO_TCP, socket.TCP_INFO, 104)
-        rtt_us = struct.unpack_from("I", tcp_info, 68)[0]
-        rtt_ms = rtt_us / 1000.0
-    except Exception:
-        pass
-
-    sock.close()
-    end = time.monotonic()
-    return {"bytes_sent": sent, "duration_ms": int((end - start) * 1000), "rtt_ms": rtt_ms}
-
-
-# ---------------------------------------------------------------------------
 # Benchmark orchestrator
 # ---------------------------------------------------------------------------
 
@@ -480,9 +409,8 @@ class MultiBottleneckBench:
 
     def run(self) -> dict:
         """Run the full benchmark. Returns result dict."""
-        self.topology.setup()
-
         try:
+            self.topology.setup()
             result = self._run_benchmark()
         finally:
             if not self.args.keep_namespaces:
@@ -495,6 +423,12 @@ class MultiBottleneckBench:
         receiver_threads = []
         receiver_results: Dict[str, dict] = {}
         ready_files = []
+        errors: List[Tuple[str, Exception]] = []
+
+        def raise_transfer_errors():
+            if errors:
+                name, error = errors[0]
+                raise RuntimeError(f"Transfer failed for {name}; partial results are not valid measurements") from error
 
         # Start receivers
         for c in self.clients:
@@ -502,8 +436,11 @@ class MultiBottleneckBench:
             ready_files.append(ready_file)
 
             def run_receiver(client=c, rf=ready_file):
-                result = self._spawn_receiver(client, rf)
-                receiver_results[client.name] = result
+                try:
+                    result = self._spawn_receiver(client, rf)
+                    receiver_results[client.name] = result
+                except Exception as error:
+                    errors.append((client.name, error))
 
             t = threading.Thread(target=run_receiver)
             t.start()
@@ -513,7 +450,11 @@ class MultiBottleneckBench:
         deadline = time.monotonic() + 10
         for rf in ready_files:
             while not os.path.exists(rf) and time.monotonic() < deadline:
+                raise_transfer_errors()
                 time.sleep(0.05)
+            raise_transfer_errors()
+            if not os.path.exists(rf):
+                raise RuntimeError("Receiver readiness timed out; no senders were started")
 
         # Start senders
         sender_threads = []
@@ -522,8 +463,11 @@ class MultiBottleneckBench:
 
         for c in self.clients:
             def run_sender(client=c):
-                result = self._spawn_sender(client)
-                sender_results[client.name] = result
+                try:
+                    result = self._spawn_sender(client)
+                    sender_results[client.name] = result
+                except Exception as error:
+                    errors.append((client.name, error))
 
             t = threading.Thread(target=run_sender)
             t.start()
@@ -544,6 +488,9 @@ class MultiBottleneckBench:
             t.join(timeout=10)
         for t in receiver_threads:
             t.join(timeout=10)
+        raise_transfer_errors()
+        if any(t.is_alive() for t in receiver_threads):
+            raise RuntimeError("Receiver did not finish; partial results are not valid measurements")
 
         # Build result
         result = {
@@ -602,7 +549,7 @@ print(json.dumps({{"bytes_received": total, "duration_ms": int((end-start)*1000)
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         if proc.returncode == 0 and proc.stdout.strip():
             return json.loads(proc.stdout.strip())
-        return {"bytes_received": 0, "duration_ms": 0}
+        raise RuntimeError(f"Receiver process failed or returned no result (exit {proc.returncode})")
 
     def _spawn_sender(self, client: ClientConfig) -> dict:
         """Spawn sender in sender's namespace via subprocess."""
@@ -650,7 +597,7 @@ print(json.dumps({{"bytes_sent": sent, "duration_ms": int((end-start)*1000), "rt
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         if proc.returncode == 0 and proc.stdout.strip():
             return json.loads(proc.stdout.strip())
-        return {"bytes_sent": 0, "duration_ms": 0, "rtt_ms": 0}
+        raise RuntimeError(f"Sender process failed or returned no result (exit {proc.returncode})")
 
     def _collect_snapshot(self, index: int, elapsed_us: int) -> dict:
         """Collect metrics from all interfaces."""
@@ -860,11 +807,8 @@ def main():
     # Build topology
     if args.topology == "parking-lot":
         topo = ParkingLotTopology(clients, rates, buffers, args.loss_pct)
-    elif args.topology == "dumbbell":
-        topo = DumbbellTopology(clients, rates, buffers, args.loss_pct)
     else:
-        print(f"Unknown topology: {args.topology}", file=sys.stderr)
-        sys.exit(1)
+        topo = DumbbellTopology(clients, rates, buffers, args.loss_pct)
 
     bench = MultiBottleneckBench(args, clients, topo)
     print(f"Running {args.topology} benchmark with {n} clients...", file=sys.stderr)

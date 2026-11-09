@@ -112,6 +112,7 @@ def bounded_response(job,state,spec):
     artifact=store.artifact(job['study_id'],owner,original,str(uuid.uuid5(uuid.UUID(job['id']),'bounded-original-response')),'application/json',receipt)
     store.append(job['study_id'],owner,'artifacts',artifact)
     if len(original)>32000:raise ValueError('TCP executor output exceeded its approved transport bound; retained prefix is not complete output.')
+    if receipt['response_status_code']!=200:raise ValueError('TCP executor transport did not confirm a completed synchronous response; original receipt retained without replay.')
     data=bounded_data(state,spec,original,artifact,receipt)
     store.rpc('research_network_update',dict(p_job=job['id'],p_phase=data['status'],p_data=data,p_ingest_hash=None))
     return data

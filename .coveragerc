@@ -1,0 +1,28 @@
+[run]
+branch = True
+# CTracer on CPython 3.13 loses conditional-raise exits inside `with`.
+# Keep the pinned executor unchanged and measure its actual exception paths.
+core = pytrace
+parallel = True
+source = ${UNIT_COVERAGE_ROOT-.}
+patch = subprocess
+omit =
+    */.venv-unit-tests/*
+    */.test-artifacts/*
+    */experiments/*
+    */tests/*
+    */test_*.py
+
+[report]
+precision = 2
+show_missing = True
+fail_under = 100
+
+[html]
+directory = coverage/python/html
+
+[json]
+output = coverage/python/coverage.json
+
+[xml]
+output = coverage/python/coverage.xml

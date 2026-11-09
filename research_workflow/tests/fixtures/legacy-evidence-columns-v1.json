@@ -1,0 +1,301 @@
+{
+  "description": "Synthetic packets frozen from the retired lossless-record-columns-v1 encoder; compatibility decoding only, not scientific measurements.",
+  "cases": {
+    "scientific-values": {
+      "records": [
+        {
+          "id": "r0",
+          "run_id": "run",
+          "study_id": "study",
+          "created_at": "fixed",
+          "configuration_identity": "config0",
+          "observation_id": "cell0",
+          "metric": "latency",
+          "units": "ms",
+          "value": "0",
+          "status": "recorded",
+          "reason": null,
+          "details": {
+            "metric": "latency",
+            "units": "ms",
+            "value": "0",
+            "reference": "0.00000000000000000001"
+          }
+        },
+        {
+          "id": "r1",
+          "run_id": "run",
+          "study_id": "study",
+          "created_at": "fixed",
+          "configuration_identity": "config1",
+          "observation_id": "cell1",
+          "metric": "latency",
+          "units": "ms",
+          "value": null,
+          "status": "missing",
+          "reason": null,
+          "details": {
+            "metric": "latency",
+            "units": "ms",
+            "value": null,
+            "reference": "0.00000000000000000001"
+          }
+        },
+        {
+          "id": "r2",
+          "run_id": "run",
+          "study_id": "study",
+          "created_at": "fixed",
+          "configuration_identity": "config0",
+          "observation_id": "cell2",
+          "metric": "latency",
+          "units": "ms",
+          "value": "0.00000000000000000001",
+          "status": "recorded",
+          "reason": null,
+          "details": {
+            "metric": "latency",
+            "units": "ms",
+            "value": "0.00000000000000000001",
+            "reference": "0.00000000000000000001"
+          }
+        },
+        {
+          "id": "r3",
+          "run_id": "run",
+          "study_id": "study",
+          "created_at": "fixed",
+          "configuration_identity": "config1",
+          "observation_id": "cell3",
+          "metric": "latency",
+          "units": "ms",
+          "value": "1000000000000000000000000001",
+          "status": "recorded",
+          "reason": null,
+          "details": {
+            "metric": "latency",
+            "units": "ms",
+            "value": "1000000000000000000000000001",
+            "reference": "0.00000000000000000001"
+          }
+        }
+      ],
+      "packet": {
+        "representation": "lossless-record-columns-v1",
+        "record_count": 4,
+        "original_records_sha256": "c6bae382683f15a29664abbc2e326000b68d5b2ada3570d340fb6c1ddb807ad4",
+        "common": {
+          "created_at": "fixed",
+          "details": [],
+          "metric": "latency",
+          "reason": null,
+          "run_id": "run",
+          "study_id": "study",
+          "units": "ms"
+        },
+        "columns": [
+          "configuration_identity",
+          "id",
+          "observation_id",
+          "status",
+          "value"
+        ],
+        "rows": [
+          [
+            "config0",
+            "r0",
+            "cell0",
+            "recorded",
+            "0"
+          ],
+          [
+            "config1",
+            "r1",
+            "cell1",
+            "missing",
+            null
+          ],
+          [
+            "config0",
+            "r2",
+            "cell2",
+            "recorded",
+            "0.00000000000000000001"
+          ],
+          [
+            "config1",
+            "r3",
+            "cell3",
+            "recorded",
+            "1000000000000000000000000001"
+          ]
+        ],
+        "dictionaries": {},
+        "shared_detail_fields": [
+          "metric",
+          "units",
+          "value"
+        ],
+        "detail_columns": [],
+        "detail_common": {
+          "reference": "0.00000000000000000001"
+        },
+        "legend": "For every row, combine common fields with columns in row order. For columns listed in dictionaries, a cell is an index into that column dictionary, never a measured value. If detail_columns is not null, details is an array in that order; merge it with detail_common. Then restore shared_detail_fields in details from that same parent row. All original fields and values are retained; no sampling, rounding or zero imputation."
+      }
+    },
+    "dictionary": {
+      "records": [
+        {
+          "id": "0",
+          "value": "0",
+          "label": "Original historical status with repeated descriptive text 0"
+        },
+        {
+          "id": "1",
+          "value": "1",
+          "label": "Original historical status with repeated descriptive text 1"
+        },
+        {
+          "id": "2",
+          "value": "0",
+          "label": "Original historical status with repeated descriptive text 0"
+        },
+        {
+          "id": "3",
+          "value": "1",
+          "label": "Original historical status with repeated descriptive text 1"
+        },
+        {
+          "id": "4",
+          "value": "0",
+          "label": "Original historical status with repeated descriptive text 0"
+        },
+        {
+          "id": "5",
+          "value": "1",
+          "label": "Original historical status with repeated descriptive text 1"
+        },
+        {
+          "id": "6",
+          "value": "0",
+          "label": "Original historical status with repeated descriptive text 0"
+        },
+        {
+          "id": "7",
+          "value": "1",
+          "label": "Original historical status with repeated descriptive text 1"
+        }
+      ],
+      "packet": {
+        "representation": "lossless-record-columns-v1",
+        "record_count": 8,
+        "original_records_sha256": "08ee4332315b6d762f559f73569ed74d4c7286178f4c748fd58cff49e38631cd",
+        "common": {},
+        "columns": [
+          "id",
+          "label",
+          "value"
+        ],
+        "rows": [
+          [
+            "0",
+            0,
+            "0"
+          ],
+          [
+            "1",
+            1,
+            "1"
+          ],
+          [
+            "2",
+            0,
+            "0"
+          ],
+          [
+            "3",
+            1,
+            "1"
+          ],
+          [
+            "4",
+            0,
+            "0"
+          ],
+          [
+            "5",
+            1,
+            "1"
+          ],
+          [
+            "6",
+            0,
+            "0"
+          ],
+          [
+            "7",
+            1,
+            "1"
+          ]
+        ],
+        "dictionaries": {
+          "label": [
+            "Original historical status with repeated descriptive text 0",
+            "Original historical status with repeated descriptive text 1"
+          ]
+        },
+        "shared_detail_fields": [],
+        "detail_columns": null,
+        "detail_common": {},
+        "legend": "For every row, combine common fields with columns in row order. For columns listed in dictionaries, a cell is an index into that column dictionary, never a measured value. If detail_columns is not null, details is an array in that order; merge it with detail_common. Then restore shared_detail_fields in details from that same parent row. All original fields and values are retained; no sampling, rounding or zero imputation."
+      }
+    },
+    "details": {
+      "records": [
+        {
+          "id": "one",
+          "details": {
+            "value": 0
+          }
+        },
+        {
+          "id": "two",
+          "details": {
+            "value": null
+          }
+        }
+      ],
+      "packet": {
+        "representation": "lossless-record-columns-v1",
+        "record_count": 2,
+        "original_records_sha256": "f7459533b2e3a3bcc586a911b2678b05e26b08643679ea986c0145fb69ea3eea",
+        "common": {},
+        "columns": [
+          "details",
+          "id"
+        ],
+        "rows": [
+          [
+            [
+              0
+            ],
+            "one"
+          ],
+          [
+            [
+              null
+            ],
+            "two"
+          ]
+        ],
+        "dictionaries": {},
+        "shared_detail_fields": [],
+        "detail_columns": [
+          "value"
+        ],
+        "detail_common": {},
+        "legend": "For every row, combine common fields with columns in row order. For columns listed in dictionaries, a cell is an index into that column dictionary, never a measured value. If detail_columns is not null, details is an array in that order; merge it with detail_common. Then restore shared_detail_fields in details from that same parent row. All original fields and values are retained; no sampling, rounding or zero imputation."
+      }
+    }
+  }
+}

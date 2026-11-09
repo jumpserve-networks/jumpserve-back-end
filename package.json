@@ -1,0 +1,24 @@
+{
+  "name": "jumpserve-back-end-unit-tests",
+  "private": true,
+  "scripts": {
+    "test:coverage": "node tests/run-all-coverage.mjs --check",
+    "test:coverage:report": "node tests/run-all-coverage.mjs",
+    "test:coverage:python": ".venv-unit-tests/bin/python tests/run_unit_coverage.py --check",
+    "test:coverage:python:report": ".venv-unit-tests/bin/python tests/run_unit_coverage.py",
+    "test:coverage:native": "node tests/run_native_coverage.mjs --check",
+    "test:coverage:native:report": "node tests/run_native_coverage.mjs"
+  },
+  "devDependencies": {
+    "c8": "12.0.0",
+    "node": "24.16.0"
+  },
+  "overrides": {
+    "c8": {
+      "test-exclude": {
+        "glob": "14.0.2",
+        "minimatch": "11.0.1"
+      }
+    }
+  }
+}

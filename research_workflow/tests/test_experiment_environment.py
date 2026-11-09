@@ -135,6 +135,26 @@ class Environment(unittest.TestCase):
 
 
 class Incidents(unittest.TestCase):
+    def test_successful_commands_and_nonfailed_runs_do_not_become_environment_incidents(self):
+        self.assertEqual(repair.failures(dict(commands=[dict(argv=['iperf3'],returncode=0,stderr='Original success')])),[])
+        current,job,run,_=self.run_fixture();run['status']='complete'
+        with patch.object(repair.store,'artifact_bytes') as read:self.assertIsNone(repair.collect(current,[job],lambda *args,**kw:[run]))
+        read.assert_not_called()
+        with self.assertRaisesRegex(ValueError,'run identity coverage'):repair.collect(current,[job],lambda *args,**kw:[])
+        current['context']['job_ids']=['original']
+        with self.assertRaisesRegex(ValueError,'Historical environment job identity'):repair.historical(current,current['context'],lambda *args,**kw:[])
+
+    def test_legacy_inspection_stops_at_eight_originals_without_inventing_results_for_the_remainder(self):
+        current,job,run,_=self.run_fixture();runs=[];jobs=[];raws={}
+        for index in range(9):
+            original=dict(provenance=dict(implementation_sha256='a'*64,commands=[]));raw=workflow.canonical(original);artifact='artifact-'+str(index);raws[artifact]=raw;item=copy.deepcopy(run);item.update(id='run-'+str(index),output_sha256=workflow.digest(raw));item['provenance']['producer'].update(raw_artifact_id=artifact,raw_envelope_sha256=workflow.digest(raw));runs.append(item);jobs.append(dict(job,id='job-'+str(index),run_id=item['id']))
+        with patch.object(repair.store,'artifact_bytes',side_effect=lambda study,key,**kw:raws[key]) as read:self.assertIsNone(repair.collect(current,jobs,lambda *args,**kw:runs))
+        self.assertEqual(read.call_count,8)
+    def test_incomplete_or_foreign_incident_contract_is_rejected(self):
+        for packet in ({},dict(version=repair.VERSION,runner='other',incidents=[{}]),dict(version=repair.VERSION,runner='netem-iperf-v1',incidents=[])):
+            with self.subTest(packet=packet),self.assertRaisesRegex(ValueError,'incident contract differs'):
+                repair.diagnosis(packet)
+
     def envelope(self):
         return dict(provenance=dict(implementation_sha256='a'*64,commands=[
             dict(argv=['iperf3','-w','4194304'],returncode=1,stdout='',stderr='iperf3: error - socket buffer size not set correctly'),
@@ -158,6 +178,8 @@ class Incidents(unittest.TestCase):
         self.assertEqual(r,before);self.assertEqual(packet['incidents'][0]['run_id'],'run')
         with patch.object(repair.store,'artifact_bytes',return_value=raw+b' '):
             with self.assertRaisesRegex(ValueError,'hash differs'):repair.collect(t,[j],lambda *a,**k:[r])
+        r['provenance']['producer']['implementation_sha256']='b'*64
+        with patch.object(repair.store,'artifact_bytes',return_value=raw),self.assertRaisesRegex(ValueError,'implementation identity mismatch'):repair.collect(t,[j],lambda *a,**k:[r])
 
     def test_structured_failures_need_no_repeated_raw_download(self):
         t,j,r,raw=self.run_fixture();r['provenance']['producer']['environment_failures']=repair.failures(json.loads(raw)['provenance'])
@@ -178,6 +200,8 @@ class Incidents(unittest.TestCase):
         self.assertTrue(repair.diagnosis(packet)['waiting'])
         packet['incidents'][0]['implementation_sha256']='a'*64
         self.assertFalse(repair.diagnosis(packet)['waiting']);self.assertEqual(repair.diagnosis(packet)['resume_stage'],'planning')
+        packet['incidents'][0]['implementation_sha256']=None
+        with self.assertRaisesRegex(ValueError,'original implementation identity'):repair.diagnosis(packet)
 
     def test_resume_keeps_failed_jobs_and_scientific_criterion_and_requires_new_reviews(self):
         context=dict(job_ids=['one','two'],completed_job_ids=['old'],experiment_environment={'version':repair.VERSION},proposal={'frozen':'original'},reviews=['prior'],criterion={'original':True},deadline_at='fixed',prior_design_hashes=['original'])

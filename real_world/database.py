@@ -46,6 +46,8 @@ def request(path, method="GET", body=None, headers=None, raw=False, max_bytes=64
             detail = json.loads(error.read(4096))
         except (ValueError, UnicodeDecodeError):
             detail = {}
+        if not isinstance(detail, dict):
+            detail = {}
         if path.startswith("/storage/v1/") and (error.code == 404 or detail.get("code") in ("NoSuchKey", "NoSuchObject")
                 or str(detail.get("statusCode")) == "404"):
             raise StorageMissing() from None

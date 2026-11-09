@@ -1,5 +1,6 @@
 """Pinned native OpenClaw + SIWC; private one-inference-per-turn bridge."""
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import fcntl,io,json,os,secrets,sqlite3,ssl,subprocess,threading,time,urllib.error,urllib.request,uuid
 from pathlib import Path
@@ -41,17 +42,29 @@ def credential(force_refresh=False):
    except subprocess.TimeoutExpired:raise CredentialFailure('refresh-unconfirmed') from None
    try:state=json.loads(result.stdout)
    except (ValueError,UnicodeError):raise CredentialFailure('refresh-unconfirmed') from None
+   if not isinstance(state,dict):
+       raise CredentialFailure('refresh-unconfirmed')
    reasons={'credential-missing','grant-invalid','client-configuration','permission-required','storage-unavailable','storage-low','refresh-temporary','refresh-unconfirmed','refresh-backoff','refresh-rejected','credential-size'}
    if result.returncode or state.get('status')!='ready':
     reason=state.get('reason');status=state.get('status');delay=state.get('retry_after_seconds',0)
-    if reason not in reasons or status not in ('auth-required','unavailable') or type(delay) is not int or not 0<=delay<=900:raise CredentialFailure('refresh-unconfirmed')
+    if reason not in reasons or status not in ('auth-required','unavailable') or type(delay) is not int or not 0<=delay<=900:
+        raise CredentialFailure('refresh-unconfirmed')
     raise CredentialFailure(reason,status,delay)
-   with sqlite3.connect(path.as_uri()+'?mode=ro',uri=True) as db:row=db.execute("select value_json from config_machine_state where state_key='authProfiles.store'").fetchone()
-   values=list((json.loads(row[0]) if row else {}).get('profiles',{}).values())
-   if len(values)!=1:raise CredentialFailure('client-configuration')
-   value=values[0];scopes=set((value.get('grantedScope') or '').split())
-   if value.get('type')!='oauth' or value.get('provider')!='openai' or value.get('authFlow')!='chatgpt-token-sharing' or value.get('issuer')!='https://auth.openai.com' or not {'resource.invoke','chatgpt.tokens.use.direct'}<=scopes or not isinstance(value.get('access'),str) or value['access'].startswith('sk-'):raise CredentialFailure('client-configuration')
-   if value.get('expires',0)<=time.time()*1000+30000:raise CredentialFailure('refresh-backoff',retry_after_seconds=1)
+   with closing(sqlite3.connect(path.as_uri()+'?mode=ro',uri=True)) as db:row=db.execute("select value_json from config_machine_state where state_key='authProfiles.store'").fetchone()
+   document=json.loads(row[0]) if row else {}
+   if not isinstance(document,dict) or not isinstance(document.get('profiles',{}),dict):
+       raise CredentialFailure('client-configuration')
+   values=list(document.get('profiles',{}).values())
+   if len(values)!=1:
+       raise CredentialFailure('client-configuration')
+   value=values[0]
+   if not isinstance(value,dict) or not isinstance(value.get('grantedScope',''),str):
+       raise CredentialFailure('client-configuration')
+   scopes=set(value.get('grantedScope','').split())
+   if value.get('type')!='oauth' or value.get('provider')!='openai' or value.get('authFlow')!='chatgpt-token-sharing' or value.get('issuer')!='https://auth.openai.com' or not {'resource.invoke','chatgpt.tokens.use.direct'}<=scopes or not isinstance(value.get('access'),str) or value['access'].startswith('sk-'):
+       raise CredentialFailure('client-configuration')
+   if value.get('expires',0)<=time.time()*1000+30000:
+       raise CredentialFailure('refresh-backoff',retry_after_seconds=1)
    return value['access']
  except CredentialFailure:raise
  except (OSError,sqlite3.Error,ValueError,KeyError,TypeError):raise CredentialFailure('storage-unavailable') from None
@@ -129,7 +142,8 @@ def execute(logical,directory,token_source=credential,transport=http_request,nat
   nonlocal started
   with lock:
    if started:
-    if result.get('request_hash')==digest(raw) and result.get('answer'):return result['answer']
+    if result.get('request_hash')==digest(raw) and result.get('answer'):
+        return result['answer']
     raise RequestRejected('retained-provider-operation','native','A provider operation is already retained; no retry')
    started=True;result['request_hash']=digest(raw)
   (directory/'openclaw-http-body.bin').write_bytes(raw)
@@ -168,7 +182,8 @@ def execute(logical,directory,token_source=credential,transport=http_request,nat
     result['request_sizes']['native_bridge_bytes']=length
     if not 0<length<=96000:raise RequestRejected('native-bridge-byte-limit','native.content_length','Complete UTF-8 JSON bytes',length,96000)
     received=self.rfile.read(length)
-    if len(received)!=length:raise RequestRejected('native-incomplete-body','native.body','Body must match Content-Length',len(received),length)
+    if len(received)!=length:
+     raise RequestRejected('native-incomplete-body','native.body','Body must match Content-Length',len(received),length)
     try:request=json.loads(received)
     except (ValueError,UnicodeError):
      (directory/'rejected-native-body.bin').write_bytes(received)
@@ -199,7 +214,8 @@ def execute(logical,directory,token_source=credential,transport=http_request,nat
   (directory/'stdout.bin').write_bytes(cli.stdout);(directory/'stderr.bin').write_bytes(cli.stderr)
   if cli.returncode or not result.get('answer'):raise ValueError('OpenClaw CLI did not complete its retained turn.')
   envelope=json.loads(cli.stdout);payloads=envelope.get('payloads') or envelope.get('result',{}).get('payloads') or [];texts=[p['text'] for p in payloads if p.get('text')]
-  if len(texts)!=1 or json.loads(texts[0])!=model.parse(result['answer']):raise ValueError('OpenClaw final answer differs from its original provider decision.')
+  if len(texts)!=1 or json.loads(texts[0])!=model.parse(result['answer']):
+   raise ValueError('OpenClaw final answer differs from its original provider decision.')
  except Exception as error:
   if result.get('status')=='complete':result['status']='invalid-output'
   result.setdefault('status','unknown');result.setdefault('error_code','runtime-'+type(error).__name__)
@@ -222,7 +238,8 @@ def _persist_completed(job,directory):
  import model_dispatch as dispatch,store
  directory=Path(directory);completed=json.loads((directory/'completion.json').read_bytes())
  receipt=completed['receipt'];answer=completed['answer']
- if digest((directory/'logical.json').read_bytes())!=job['request_sha256']:raise ValueError('Pending completion original request hash differs.')
+ if digest((directory/'logical.json').read_bytes())!=job['request_sha256']:
+  raise ValueError('Pending completion original request hash differs.')
  prior=dispatch.rpc('result',dict(id=job['id'],study_id=job['study_id']))
  if prior['status'] not in ('queued','running'):
   # A missed lease is reconciled separately, never overwrite a terminal row.
@@ -258,7 +275,8 @@ def retry_completions(spool):
  pending=Path(spool)/'pending-completions'
  if not pending.exists():return
  for marker in sorted(pending.glob('*.json'))[:4]:
-  if marker.is_symlink():raise ValueError('Completion outbox cannot follow symlinks.')
+  if marker.is_symlink():
+   raise ValueError('Completion outbox cannot follow symlinks.')
   job=json.loads(marker.read_bytes());directory=Path(spool)/str(uuid.UUID(job['id']))
   try:
    if persist_completed(job,directory):marker.unlink()

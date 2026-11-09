@@ -126,7 +126,8 @@ class WarmGateway:
    try:
     request=urllib.request.Request('http://127.0.0.1:'+str(PORT)+'/v1/models',headers={'Authorization':'Bearer '+self.token})
     with self.opener.open(request,timeout=2) as response:
-     if response.status==200:self.verified=True;return
+     if response.status==200:
+         self.verified=True;return
    except Exception:time.sleep(1)
   raise ValueError('Warm intake Gateway did not become ready.')
 
@@ -182,7 +183,8 @@ def worker_loop():
   with ThreadPoolExecutor(max_workers=2) as inference,ThreadPoolExecutor(max_workers=4) as controller,ThreadPoolExecutor(max_workers=1) as reconciliation:
    calls=[];controls=[];recovering=None;heartbeat=0;recovery=0;next_control=0;next_claim=0;claim_idle=1;idle=1;status='unavailable'
    while True:
-    if gateway.process.poll() is not None:raise ValueError('Original warm Gateway stopped; retain all running calls.')
+    if gateway.process.poll() is not None:
+        raise ValueError('Original warm Gateway stopped; retain all running calls.')
     if time.monotonic()-heartbeat>=10:
      status=availability.check()['status']
      if status=='auth-required':status='paused-auth'

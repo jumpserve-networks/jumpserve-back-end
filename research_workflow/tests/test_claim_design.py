@@ -101,18 +101,19 @@ class ClaimDesign(unittest.TestCase):
         before=plan();before['hypothesis']=self.claim['description'];before['falsification']=claim_design.POLICY['decision_rule']
         before['protocol'].update(hypotheses=self.claim['description'],stage='pilot',statistics=claim_design.POLICY['statistics'],decision_policy=claim_design.POLICY_IDENTITY)
         before['protocol']['input_versions'].append(dict(identity='Source',sha256=self.source['sha256']))
-        for key in ('configurations','execution','planned_units','resource_limits','input_versions','metrics'):
+        for key in ('configurations','execution','planned_units','resource_limits','input_versions','metrics','unanswered-question'):
             proposal=copy.deepcopy(before)
             if key=='execution':proposal['protocol'][key]={'runner':'changed'}
             elif key=='planned_units':proposal['protocol'][key]=2
             elif key=='configurations':proposal['protocol'][key][0]['identity']='changed'
             elif key=='resource_limits':proposal['protocol'][key]['wall_seconds']+=1
             elif key=='metrics':proposal['protocol'][key][0]['planned_observations']=2
-            else:proposal['protocol'][key].append(dict(identity='Unexpected input',sha256='e'*64))
+            elif key=='input_versions':proposal['protocol'][key].append(dict(identity='Unexpected input',sha256='e'*64))
             policy=dict(claim_design.POLICY_IDENTITY,origin='server-policy',model_authored=False)
             run=dict(status='complete',task='planning',packet_id=self.claim['id'],output=dict(proposal=proposal,decision_policy=policy,response_version=claim_design.RESPONSE_VERSION,response_mode='propose'))
+            if key=='unanswered-question':run['output']['questions']=['Which exact workload is available?']
             with self.subTest(key=key),patch.object(store,'rows',return_value=[run]),patch.object(claim_design,'context',return_value=dict(document=origin)),patch.object(ideas,'packet',return_value={'document':before}),patch.object(ideas,'save') as save:
-                with self.assertRaisesRegex(ValueError,'changed saved'):
+                with self.assertRaisesRegex(ValueError,'retained proposal questions' if key=='unanswered-question' else 'changed saved'):
                     claim_design.adopt(self.study['id'],ACTOR,dict(action='adopt',request_id=self.claim['id'],run_id=self.claim['id'],packet_id=self.claim['id']))
                 save.assert_not_called()
 
@@ -144,6 +145,15 @@ class ClaimDesign(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'entire saved packet'):
                 claim_design.adopt(self.study['id'], ACTOR, body)
             rpc.assert_not_called()
+
+    def test_a_valid_first_protocol_can_be_adopted_when_the_saved_packet_has_no_protocol(self):
+        from test_ideas import plan
+        _,origin=claim_design.selection(self.study['id'],ACTOR,self.claim['id']);value=plan();value['hypothesis']=self.claim['description'];value['falsification']=claim_design.POLICY['decision_rule']
+        value['protocol'].update(hypotheses=self.claim['description'],stage='pilot',statistics=claim_design.POLICY['statistics'],decision_policy=claim_design.POLICY_IDENTITY);value['protocol']['input_versions'].append(dict(identity='Original source',sha256=self.source['sha256']))
+        policy=dict(claim_design.POLICY_IDENTITY,origin='server-policy',model_authored=False);run=dict(status='complete',task='planning',packet_id=self.claim['id'],output=dict(proposal=value,decision_policy=policy,response_version=claim_design.RESPONSE_VERSION,response_mode='propose',questions=[]))
+        with patch.object(store,'rows',return_value=[run]),patch.object(claim_design,'context',return_value=dict(document=origin)),patch.object(ideas,'packet',return_value=dict(document=dict(value,protocol=None))),patch.object(ideas,'save',return_value={'saved':True}) as save:
+            result=claim_design.adopt(self.study['id'],ACTOR,dict(action='adopt',request_id=self.claim['id'],run_id=self.claim['id'],packet_id=self.claim['id']))
+        self.assertEqual(result,{'saved':True});save.assert_called_once();self.assertEqual(save.call_args.args[2]['document'],value)
 
 
 if __name__ == '__main__': unittest.main()

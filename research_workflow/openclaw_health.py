@@ -42,10 +42,12 @@ class WorkerAvailability:
     if observed>state['quota_event']:state.update(quota=True,quota_event=observed)
   elif receipt.get('status')=='paused-auth' and receipt.get('credential_status')!='auth-required':
    change=lambda state:state.update(force_refresh=str(uuid.uuid4()),not_before=self.clock()+30,reason='provider-access')
-  elif receipt.get('http_status') in (401,403):change=lambda state:state.update(not_before=self.clock()+300,reason='provider-access')
+  elif receipt.get('http_status') in (401,403):
+   change=lambda state:state.update(not_before=self.clock()+300,reason='provider-access')
   elif receipt.get('http_status') in (429,500,502,503,504) or receipt.get('error_code') in ('subscription_sharing_usage_unavailable','subscription_sharing_user_unavailable'):
    change=lambda state:state.update(not_before=self.clock()+30,reason='provider-temporary')
-  else:return
+  else:
+   return
   try:self._edit(change)
   except (OSError,ValueError):
    # Do not lose an observed pause if its durable write temporarily fails.

@@ -154,6 +154,7 @@ class PaperTitles(unittest.TestCase):
     def test_author_metadata_needs_source_corroboration_and_affiliations_are_not_names(self):
         value = packet(); value['document_metadata'] = dict(title=TITLE, author='Unrelated Document Creator')
         self.assertEqual(paper_titles.extract_authors(value)['names'], ['Cyrus Illick', 'Michael Roger'])
+        metadata=packet();metadata['pages'][0]['text']=TITLE+'\nCyrus Illick\nMichael Roger\nAbstract\nOriginal body.';metadata['document_metadata']={'title':TITLE,'author':'Cyrus Illick; Michael Roger'};corroborated=paper_titles.extract_authors(metadata);self.assertEqual(corroborated['names'],['Cyrus Illick','Michael Roger']);self.assertEqual(corroborated['method'],'PDF author metadata corroborated by first-page text')
         self.assertEqual(paper_titles.byline_names('María José de la Cruz; Anne O’Connor'), ['María José de la Cruz', 'Anne O’Connor'])
         for line in ('Columbia University', 'Department of Computer Science', 'mail@example.edu', 'Introduction', 'line\nbreak'):
             self.assertIsNone(paper_titles.byline_names(line))

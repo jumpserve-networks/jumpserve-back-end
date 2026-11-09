@@ -5,6 +5,11 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from unittest.mock import patch
 import autonomy,store
 class ControllerHealth(unittest.TestCase):
+ def test_ready_subscription_health_admits_the_ordinary_fixed_slots_without_a_replacement_model_call(self):
+  def rpc(name,payload):return None if name=='research_autonomy_control' else []
+  with patch.object(autonomy.model,'OPENCLAW',True),patch.object(autonomy,'runtime_health',return_value={'status':'ready'}),patch.object(autonomy.model,'load_prompt'),patch('autonomous_repair.discover',return_value=[]),patch.object(store,'rpc',side_effect=rpc),patch.dict('os.environ',RESEARCH_AUTONOMY_CONTEXT_RECOVERY=''):
+   result=autonomy.handler({},None)
+  self.assertEqual(result['slots'],2);self.assertEqual([row['status'] for row in result['outcomes']],['idle']*2)
  def exercise(self,failed):
   calls=[]
   def rpc(name,payload):

@@ -81,11 +81,17 @@ def read_terminal_stream(response, sink, deadline, maximum):
                 event = json.loads(payload)
             except (ValueError, UnicodeError):
                 raise StreamFailure('malformed-provider-stream', observed_usage=observed_usage)
+            if not isinstance(event, dict):
+                raise StreamFailure('malformed-provider-stream', observed_usage=observed_usage)
             kind = event.get('type')
             value = event.get('response') or {}
+            if not isinstance(value, dict):
+                raise StreamFailure('malformed-provider-stream', observed_usage=observed_usage)
             observed_usage = usage(value) or observed_usage
             if kind in ('response.failed', 'response.incomplete', 'error'):
                 error = value.get('error') or event.get('error') or event
+                if not isinstance(error, dict):
+                    raise StreamFailure('malformed-provider-stream', observed_usage=observed_usage)
                 code = error.get('code') or kind
                 raise failure(code, observed_usage=observed_usage) if kind != 'response.incomplete' else StreamFailure(code, observed_usage=observed_usage)
             if kind == 'response.completed':

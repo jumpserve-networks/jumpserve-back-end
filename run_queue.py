@@ -18,7 +18,6 @@ import yaml
 
 PROJECT_DIR = Path(__file__).resolve().parent
 QUEUE_DIR = PROJECT_DIR / "queues"
-DEFAULT_QUEUE_FILE = "default.yaml"
 
 
 @dataclass
@@ -159,10 +158,7 @@ def _default_base_dir(config_path: Path) -> Path:
     return config_dir
 
 
-def _config_candidates(config_arg: str | None) -> list[Path]:
-    if config_arg is None:
-        return [QUEUE_DIR / DEFAULT_QUEUE_FILE]
-
+def _config_candidates(config_arg: str) -> list[Path]:
     raw = Path(config_arg)
     candidates = [raw]
 
@@ -188,7 +184,7 @@ def _config_candidates(config_arg: str | None) -> list[Path]:
     return unique_candidates
 
 
-def resolve_config_path(config_arg: str | None) -> tuple[Path, list[Path]]:
+def resolve_config_path(config_arg: str) -> tuple[Path, list[Path]]:
     candidates = _config_candidates(config_arg)
     for candidate in candidates:
         if candidate.exists():
@@ -239,6 +235,8 @@ def matching_queue_scenarios(prefix: str | None) -> list[Path]:
 
 
 def load_jobs(config_path: Path) -> list[Job]:
+    if config_path.resolve().is_relative_to((PROJECT_DIR / 'archive/queues').resolve()):
+        raise ValueError('This is a historical queue archive, not an executable scenario. Choose a maintained queue with --list.')
     with config_path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh)
     if not isinstance(data, dict):
@@ -280,7 +278,7 @@ def load_jobs(config_path: Path) -> list[Job]:
         else:
             params = _as_map(raw_params, f"jobs[{idx}].params")
             python_bin = _as_str(item.get("python", "python3"), f"jobs[{idx}].python")
-            script = _as_str(item.get("script", "netem_cubic_benchmark.py"), f"jobs[{idx}].script")
+            script = _as_str(item.get("script"), f"jobs[{idx}].script")
             use_sudo = _as_bool(item.get("sudo", False), f"jobs[{idx}].sudo")
             command = _build_params_command(params, python_bin=python_bin, script=script, use_sudo=use_sudo)
 
@@ -390,7 +388,7 @@ def parse_args() -> argparse.Namespace:
         "config",
         nargs="?",
         default=None,
-        help="Scenario name or path to queue YAML file (default: queues/default.yaml). Incompatible with --prefix.",
+        help="Explicit scenario name or path to a maintained queue YAML file. Incompatible with --prefix.",
     )
     parser.add_argument("--list", action="store_true", help="List scenario files under queues/ recursively and exit.")
     parser.add_argument("--dry-run", action="store_true", help="Print jobs without executing commands.")
@@ -405,6 +403,8 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     if args.prefix is not None and args.config is not None:
         parser.error("config may not be used together with --prefix")
+    if not args.list and args.prefix is None and args.config is None:
+        parser.error("Choose an explicit scenario or --prefix. Use --list to see maintained queues; the old default queue is archived.")
     return args
 
 

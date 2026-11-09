@@ -26,6 +26,17 @@ def small_plan():
     return plan
 
 class Preparation(unittest.TestCase):
+    def test_registered_builder_rejects_changed_bytes_and_incomplete_reviewed_panels(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'assessment.json';path.write_bytes(b'{}')
+            with self.assertRaisesRegex(ValueError,'pinned v1 source'):build_ipv6_plan.build(path)
+            original=json.loads(gzip.decompress((Path(__file__).parent/'fixtures/ipv6-assessment-v2.json.gz').read_bytes()))
+            original['published']=[value for value in original['published'] if not value['id'].startswith('fig13a-')]
+            raw=workflow.canonical(original);path.write_bytes(raw)
+            # Admit this synthetic version only inside the test to reach the independent panel census.
+            with patch.object(build_ipv6_plan,'ASSESSMENT_SHA256',workflow.digest(raw)),self.assertRaisesRegex(ValueError,'all 192 cells'):
+                build_ipv6_plan.build(path)
+
     def setUp(self):
         self.study=dict(id=str(uuid.uuid4()),paper_url='https://pure.mpg.de/pubman/item/item_3670144_1')
         self.plan=small_plan(); self.raw=workflow.canonical(self.plan)

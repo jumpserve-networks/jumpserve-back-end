@@ -148,6 +148,9 @@ class NativeRepairHandoff(unittest.TestCase):
         self.assertEqual(routed['context']['repair_progress']['state'],'budget')
         self.assertEqual(routed['context']['native_repair_completion']['status'],'validated-candidate;fresh-scientific-reviews-pending')
         self.assertEqual(ctx,before)
+        missing=copy.deepcopy(ctx);missing.pop('repair_validation')
+        with patch.object(repair,'enabled',return_value=True),self.assertRaisesRegex(ValueError,'validation receipt required'):
+            repair.route(t,'queued',missing,'comprehension','Pending')
         for changed in (dict(report,passed=False),dict(report,project_sha256='d'*64),dict(report,source_change=dict(changed=False)),dict(report,incident_sha256='d'*64)):
             with patch.object(repair,'enabled',return_value=True),patch.object(repair,'original',return_value=canonical(changed)):
                 with self.assertRaisesRegex(ValueError,'exact incident'):repair.route(t,'queued',ctx,'comprehension','Pending')

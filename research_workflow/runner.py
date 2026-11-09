@@ -55,7 +55,6 @@ def execute(raw, protocol, campaign, request_id, clock=time.monotonic):
         if len(data["published"]) + len(data["observed"]) > 2 * limits["max_observations"]: raise ValueError("Observation budget exceeded.")
         metrics = {row["name"]: row for row in document["metrics"]}
         configs = {row["identity"]: row for row in document["configurations"]}
-        if len(configs) != len(document["configurations"]): raise ValueError("Duplicate configuration declarations.")
         indexed = {}
         for group in ("published", "observed"):
             indexed[group] = {}
@@ -67,7 +66,8 @@ def execute(raw, protocol, campaign, request_id, clock=time.monotonic):
                 if row.get("status") not in ("recorded", "missing", "invalid", "ambiguous", "excluded"): raise ValueError("Unknown observation status.")
                 if row["status"] != "recorded" and (row.get("value") is not None or not row.get("reason")): raise ValueError("Non-recorded observations need null values and explicit reasons.")
                 indexed[group][row_key] = row
-        if len(set(indexed["published"]) | set(indexed["observed"])) > limits["max_observations"]: raise ValueError("Unique observation budget exceeded.")
+        if len(set(indexed["published"]) | set(indexed["observed"])) > limits["max_observations"]:
+            raise ValueError("Unique observation budget exceeded.")
         for row_key, published in sorted(indexed["published"].items()):
             if clock() - tick > limits["wall_seconds"]: raise ValueError("Wall-time budget exceeded; no observations retried.")
             if published["status"] != "recorded": raise ValueError("This adapter needs recorded published values; it does not infer missing publication cells.")

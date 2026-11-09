@@ -173,18 +173,22 @@ class Controller:
         raw=self.store.request('/storage/v1/object/'+BUCKET+'/'+pointer['path'],raw=True)
         if digest(raw)!=pointer['sha256']:raise Hold('Working checkpoint hash differs.')
         with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-            if len(archive.infolist())>4 or sum(f.file_size for f in archive.infolist())>12000000:raise Hold('Working checkpoint expansion exceeds its limit.')
+            if len(archive.infolist())>4 or sum(f.file_size for f in archive.infolist())>12000000:
+                raise Hold('Working checkpoint expansion exceeds its limit.')
             for repo in self.state['sources']:
                 name=POLICY['repositories'][repo]['directory'];patch=json.loads(archive.read(name+'.json'))
                 for item in patch['files']:
-                    if not source.safe_name(item['path']):raise Hold('Working checkpoint contains an unsafe path.')
+                    if not source.safe_name(item['path']):
+                        raise Hold('Working checkpoint contains an unsafe path.')
                     path=workspace/name/item['path']
                     if item['content'] is None:path.unlink(missing_ok=True)
                     else:path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(base64.b64decode(item['content'],validate=True));path.chmod(0o755 if item['mode']=='100755' else 0o644)
             metadata=json.loads(archive.read('work-packet.json'))
-            if not isinstance(metadata,dict) or len(metadata)>200:raise Hold('Invalid work packet.')
+            if not isinstance(metadata,dict) or len(metadata)>200:
+                raise Hold('Invalid work packet.')
             for name,encoded in metadata.items():
-                if not source.safe_name(name) or (name not in WORK_PACKET_FILES and not name.startswith('previous-candidates/')):raise Hold('Unsafe work packet path.')
+                if not source.safe_name(name) or (name not in WORK_PACKET_FILES and not name.startswith('previous-candidates/')):
+                    raise Hold('Unsafe work packet path.')
                 save(workspace/name,base64.b64decode(encoded,validate=True))
 
     def patch_bytes(self,change):
@@ -227,7 +231,8 @@ class Controller:
         save(workspace/'rebase-conflicts.json',canonical(conflicts))
         self.state.pop('research_runtime',None)
         self.state.pop('supervisor_runtime',None)
-        if self.state.get('runtime_reviewed_source'):self.state['runtime_reviewed_source']=advances[research_runtime.BACKEND]
+        if self.state.get('runtime_reviewed_source') and research_runtime.BACKEND in advances:
+            self.state['runtime_reviewed_source']=advances[research_runtime.BACKEND]
         self.state.update(tested=False,changes=[],generation=self.state.get('generation',0)+1,feedback='Main advanced. Non-overlapping changes were preserved on the fresh main source. Read rebase-conflicts.json and previous-candidates/ for overlapping edits; preserve concurrent work, repair the proposal and rerun checks. Original patches, tests and PRs remain recorded.')
         self.persist_work(workspace)
         raise Hold('Fresh main revisions acquired; native repair and all fixed checks will run again.','implementing')

@@ -37,6 +37,8 @@ class Releases:
             runs=self.github.get(repository,'actions/workflows/'+workflow+'/runs?event=workflow_dispatch&per_page=100&page='+str(page))['workflow_runs']
             matches.extend(r for r in runs if r.get('display_title')=='Platform release '+operation['id'])
             if len(runs)<100:break
+        else:
+            raise Hold('Release workflow history reached its inventory limit; reconcile the original operation before dispatch.','reconciling')
         if len(matches)>1:raise Hold('Multiple release runs claim one operation identity.','reconciling')
         if not matches:return None
         run=matches[0]
@@ -80,7 +82,8 @@ class Releases:
         if len(raw)>5000000:raise Hold('Release artifact exceeds its download limit.')
         with zipfile.ZipFile(io.BytesIO(raw)) as archive:
             files=archive.infolist()
-            if len(files)!=1 or files[0].filename!='production-verification.json' or files[0].file_size>100000:raise Hold('Release artifact has an unexpected layout.')
+            if len(files)!=1 or files[0].filename!='production-verification.json' or files[0].file_size>100000:
+                raise Hold('Release artifact has an unexpected layout.')
             proof=json.loads(archive.read(files[0]))
         expected=operation['request']
         if proof.get('passed') is not True or proof.get('revision')!=expected['revision'] or proof.get('repository')!=expected['repository'] or proof.get('operation_id')!=operation['id'] or proof.get('component')!=expected['component']:raise Hold('Production verification does not bind the requested release.')

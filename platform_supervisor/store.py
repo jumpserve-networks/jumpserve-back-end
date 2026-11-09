@@ -31,8 +31,8 @@ class Store:
         try:
             with self.opener.open(urllib.request.Request(ORIGIN+path,data=data,method=method,headers=headers),timeout=30) as response:
                 original=response.read(5000001)
-                if len(original)>5000000: raise Hold('Persistence response exceeds its bound.')
-                return original if raw else json.loads(original) if original else None
+            if len(original)>5000000: raise Hold('Persistence response exceeds its bound.')
+            return original if raw else json.loads(original) if original else None
         except urllib.error.HTTPError as error:
             raise Hold('Platform persistence request failed (HTTP '+str(error.code)+'); original action identities are retained.','reconciling') from None
 

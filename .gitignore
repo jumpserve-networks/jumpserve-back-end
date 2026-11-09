@@ -7,3 +7,8 @@ sslogs
 __pycache__/
 *.py[cod]
 .test-artifacts/
+.venv-unit-tests/
+.coverage*
+!.coveragerc
+coverage/
+node_modules/

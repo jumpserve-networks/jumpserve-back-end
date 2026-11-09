@@ -1,0 +1,282 @@
+{
+  "version": "retired-queue-archive-v1",
+  "scope": "Historical configuration bytes only; not executable scenarios or new scientific results.",
+  "reason": "27 configurations reference a removed runner; two meta-queues reference absent queues/_nines files. No modern runner or experiment settings were substituted.",
+  "files": [
+    {
+      "original_path": "queues/default.yaml",
+      "archived_path": "archive/queues/retired/default.yaml",
+      "sha256": "f70af009f088bdf331ae6deac97a082033b354bee75d1576915606e865bbf18a",
+      "bytes": 515,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-to-19ms-10flows-all-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-to-19ms-10flows-all-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "sha256": "937425938aff708b6817a7cd08a8ebcb9b83f025e587e0c013535f12e2197a4b",
+      "bytes": 1311,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-to-19ms-10flows-all-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-to-19ms-10flows-all-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "sha256": "bec40da7483f84be2800fe56b5e481abf2df38c5493be01b5a9e02d8bef378af",
+      "bytes": 1333,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "sha256": "566501e490e9e607c030f6cad72bcf2065a97358684c645db61468820fe83e76",
+      "bytes": 6160,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth.yaml",
+      "sha256": "dbf9912917341573341e902322c17521eabdd8231b8de9ca60dad35d9325fcd6",
+      "bytes": 6052,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-bbr-bbr-200MB-workload.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-bbr-bbr-200MB-workload.yaml",
+      "sha256": "76973d3bb4a659ce945be66d2108cb57503399a8bc87ee2c01ce13c79d036824",
+      "bytes": 5953,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-bbr-bbr-500k-queue-200MB-workload.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-bbr-bbr-500k-queue-200MB-workload.yaml",
+      "sha256": "f4fb4c41aea50c29d0d57050f5be0c0e584a1cca429d4dc2da3548bfa3a75b2a",
+      "bytes": 6052,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-bbr-bbr-500k-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-bbr-bbr-500k-queue.yaml",
+      "sha256": "172c78d8f0ef762cc13e0759873f378f16758729f85f67be67e37ee65b6afaca",
+      "bytes": 5917,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-bbr-bbr.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-bbr-bbr.yaml",
+      "sha256": "20269fafc65d61c37c03a3f49113eeeb0f34aa6184b8c4c5395ab306e83693c3",
+      "bytes": 5818,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "sha256": "4f31d3dcb5cf27656ecd1aadb8587fc604a53bd15c43e3e8369ea7943b67c2b9",
+      "bytes": 6196,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth.yaml",
+      "sha256": "8238f603829de5123b90cb18ff02416d15a21fb257f4e958b10569848268c918",
+      "bytes": 6088,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+      "sha256": "cd81238288e4e7d1c5508fa8a23697394b62440960e0f7139a4125f9360c74e0",
+      "bytes": 6232,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth.yaml",
+      "sha256": "7bfcaa567080b40a4cd07df603a8757686aa751a5f1b3ec231a1238db5c38059",
+      "bytes": 6124,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-cubic-200MB-workload.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-cubic-200MB-workload.yaml",
+      "sha256": "4498e887880abeff01bf8f9a883ce2b04ccc84561f23581920764cb2f4336292",
+      "bytes": 6025,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-cubic-500k-queue-200MB-workload.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-cubic-500k-queue-200MB-workload.yaml",
+      "sha256": "bd68a7f052d7080aa45919f7b0761e7cc906406d357680a75bd8e707e2decb17",
+      "bytes": 6124,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-cubic-500k-queue.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-cubic-500k-queue.yaml",
+      "sha256": "b02b9e50bad717cff553fbf920c0c9d3c0296b80b81e0118ebb42e9d621365a9",
+      "bytes": 5989,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms-cubic-cubic.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms-cubic-cubic.yaml",
+      "sha256": "f60d07d41bd16ce9ac72eecb65f9be52609fbea865aa83448aa69f713046777a",
+      "bytes": 5890,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/delay-10ms-vs-10-70ms.yaml",
+      "archived_path": "archive/queues/retired/delay-10ms-vs-10-70ms.yaml",
+      "sha256": "1b2507ebcaa4ea7b7d31c1157bfd3c90e9b0d8a8998520df17bb93f2cc1bf57a",
+      "bytes": 5782,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/nines.yaml",
+      "archived_path": "archive/queues/retired/nines.yaml",
+      "sha256": "5e4fb1d3cd6fcd259e23ed0f306e4db3903b9f1ab0c06dfd41084b7e69cd7abb",
+      "bytes": 1614,
+      "missing_dependencies": [
+        "queues/_nines/delay-10ms-to-19ms-10flows-all-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-to-19ms-10flows-all-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-125kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-125kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-125kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml"
+      ]
+    },
+    {
+      "original_path": "queues/run_queue_nines.yaml",
+      "archived_path": "archive/queues/retired/run_queue_nines.yaml",
+      "sha256": "5e4fb1d3cd6fcd259e23ed0f306e4db3903b9f1ab0c06dfd41084b7e69cd7abb",
+      "bytes": 1614,
+      "missing_dependencies": [
+        "queues/_nines/delay-10ms-to-19ms-10flows-all-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-to-19ms-10flows-all-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-125kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-bbr-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-125kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-bbr-10MB-bottleneck-bandwidth-500kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-125kb-queue.yaml",
+        "queues/_nines/delay-10ms-vs-10-70ms-cubic-cubic-10MB-bottleneck-bandwidth-500kb-queue.yaml"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-bottleneck-all-client-rate-mbit.yaml",
+      "archived_path": "archive/queues/retired/shortflows-bottleneck-all-client-rate-mbit.yaml",
+      "sha256": "611aadd3e38b4388f8ac65f260f1bc99ea044aabe096dde18d32fc19c4092f39",
+      "bytes": 2093,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-bottleneck-buffer-kbytes.yaml",
+      "archived_path": "archive/queues/retired/shortflows-bottleneck-buffer-kbytes.yaml",
+      "sha256": "834d94c9cc452c93571f59d0dee0b8d0e505bb9cef4b7b4104ff5c62f9147025",
+      "bytes": 2115,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-client-ccas.yaml",
+      "archived_path": "archive/queues/retired/shortflows-client-ccas.yaml",
+      "sha256": "21cb8ebb4e7fedda250f82f9ad80c09b207b059d0ffe84994e4b7949d1b46115",
+      "bytes": 1563,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-client-delays-ms.yaml",
+      "archived_path": "archive/queues/retired/shortflows-client-delays-ms.yaml",
+      "sha256": "6b0cc17bdd5b33563b50b6cb622935968c6d6d2a0053c3d318610d46028ff6ff",
+      "bytes": 238138,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-client-start-delays-ms.yaml",
+      "archived_path": "archive/queues/retired/shortflows-client-start-delays-ms.yaml",
+      "sha256": "ac55708160aa1fab691e19615418398651b45599e7a505d4d32a8dc212d19e68",
+      "bytes": 2120,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-loss-pct.yaml",
+      "archived_path": "archive/queues/retired/shortflows-loss-pct.yaml",
+      "sha256": "cab9c0d95d9a82b3062dbd60ac55133a2918b18d985db94733053d4733ea1137",
+      "bytes": 2097,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows-num-clients.yaml",
+      "archived_path": "archive/queues/retired/shortflows-num-clients.yaml",
+      "sha256": "9db3838cf98ab19a0b8792dc64f9328f4fc881899d2ddcc4e145bf9fc9baa461",
+      "bytes": 1649,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/shortflows.yaml",
+      "archived_path": "archive/queues/retired/shortflows.yaml",
+      "sha256": "8e0a0ebf949533763f6c19b61fbdf2f9f838d594317507d4b3e5d654096bede8",
+      "bytes": 12875,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    },
+    {
+      "original_path": "queues/staggered-start.yaml",
+      "archived_path": "archive/queues/retired/staggered-start.yaml",
+      "sha256": "cd088d519987f2ebf114c304131459dcf3fd7a33eeb67088189d1c931379d792",
+      "bytes": 599,
+      "missing_dependencies": [
+        "netem_cubic_benchmark.py"
+      ]
+    }
+  ]
+}

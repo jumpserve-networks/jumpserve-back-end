@@ -1,0 +1,6 @@
+# Unit-test and coverage tooling; isolated from production runtime dependencies.
+boto3==1.42.4
+coverage==7.17.2
+pydantic==2.13.5
+pypdf==6.19.0
+PyYAML==6.0.3
