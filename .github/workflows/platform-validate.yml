@@ -26,7 +26,7 @@ jobs:
           sparse-checkout: assets/platform/supervisor-runtime-gate.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
-      - run: python3 -m pip install pydantic==2.13.5 boto3==1.42.4
+      - run: python3 -m pip install -r requirements-dev.txt
       - run: python3 -B -m unittest test_benchmark_ingest test_sender_metrics -v
       - run: python3 -B -m unittest discover -s research_workflow/tests -v
       - run: python3 -B -m unittest discover -s platform_supervisor/tests -v
