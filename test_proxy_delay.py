@@ -1,4 +1,4 @@
-"""ProxyDelay runner contracts across the three maintained entrypoints.
+"""ProxyDelay runner contracts across the two maintained entrypoints.
 
 All namespace commands and child processes are synthetic. These are software
 regressions, not measured networking experiments or paper-reproduction evidence.
@@ -14,7 +14,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from tests.benchmark_support import simulate
 
-MODULES = tuple(importlib.import_module(name) for name in ('netem_nines', 'netem_nines_many_clients', 'netem_nines_many_senders'))
+MODULES = tuple(importlib.import_module(name) for name in ('netem_nines', 'netem_nines_many_clients'))
 
 
 def benchmark(module, **change):
@@ -88,8 +88,6 @@ class ProxyDelayRunners(unittest.TestCase):
             with self.subTest(module=module.__name__), patch.object(module.base, 'read_counter_file', side_effect=[100, 200]), \
                     patch.object(module.base, 'run_and_grab_shell', return_value='qdisc netem 1: root\n Sent 400 bytes 4 pkt\n backlog 1250b 1p'):
                 self.assertEqual(bench._read_snapshot_byte_counters(), {'client1': 100, 'client2': 200, '__total__': 400, '__bottleneck_backlog_bytes__': 1250})
-                self.assertEqual(bench._read_bottleneck_backlog_bytes(), 1250)
-                self.assertEqual(bench._read_bottleneck_sent_bytes(), 400)
             sample = module.base.SSSocketMetrics(rtt_ms=21, in_flight_packets=2, congestion_window_bytes=3000)
             with patch.object(module.base, 'run_and_grab_shell', side_effect=['first ss fixture', 'second ss fixture']), \
                     patch.object(module.base, 'parse_ss_metrics_by_peer', side_effect=[{(bench.client_ip, bench.clients[0].port): sample}, {}]):

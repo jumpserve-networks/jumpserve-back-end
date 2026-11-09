@@ -1,0 +1,26 @@
+{
+  "version": "maintained-manual-tools-v1",
+  "purpose": "Current Linux/native qualification, retained-control checks and fixture/image preparation; program-specific prerequisites and explicit live-call guards remain in force.",
+  "automated_entrypoints": "Existing package scripts, workflow files and fixed test-suite configuration remain authoritative. This registry reads as documentation and never executes commands.",
+  "manual_programs": [
+    "platform_supervisor/tests/check_documentation.py",
+    "platform_supervisor/tests/check_platform_native.py",
+    "platform_supervisor/tests/check_platform_resume.py",
+    "research_workflow/tests/build_experiment_builder_image.py",
+    "research_workflow/tests/check_experiment_builder_linux.py",
+    "research_workflow/tests/check_experiment_environment_linux.py",
+    "research_workflow/tests/check_generated_package_linux.py",
+    "research_workflow/tests/check_native_repair_handoff_linux.py",
+    "research_workflow/tests/check_netem_iperf_linux.py",
+    "research_workflow/tests/check_repair_completion_retained.py",
+    "research_workflow/tests/check_repair_validation_linux.py",
+    "research_workflow/tests/prepare_builder_image.py",
+    "research_workflow/tests/prepare_builder_vendor.py"
+  ],
+  "protected_protocol_directories": [
+    "experiments/cdn_comparison",
+    "experiments/cloudflare_cache",
+    "experiments/fastly_cache"
+  ],
+  "historical_archive": "archive/historical-tools/manifest.json"
+}

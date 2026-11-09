@@ -28,7 +28,7 @@ class IngestionTests(unittest.TestCase):
     def test_missing_configuration_fails_before_network_setup(self):
         with patch.dict(os.environ, {}, clear=True):
             for module_name in ('netem_cubic_benchmark_hotnets', 'netem_cubic_benchmark_nines', 'netem_nines',
-                                'netem_nines_many_clients', 'netem_nines_many_senders'):
+                                'netem_nines_many_clients'):
                 module = importlib.import_module(module_name)
                 args = module.build_parser().parse_args([])
                 self.assertEqual(args.supabase_service_role_key, '')

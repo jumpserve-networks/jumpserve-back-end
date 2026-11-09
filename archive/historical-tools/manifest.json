@@ -1,0 +1,480 @@
+{
+  "version": "historical-tools-archive-v1",
+  "repository": "jumpserve-back-end",
+  "source_revision": "b6ed2016e5f545230f3a1bb140bd47eb97c1f870",
+  "retirement_basis": "Reviewed programs without references from current checked-in application/runtime, automated test/workflow entrypoints, package commands or declared maintained manual tools. Historical-only dependencies are retained in the archives across all three repositories.",
+  "reproduction": "Use source_revision and original_path in isolated checkouts of the repositories for historical execution. Programs are preserved byte-for-byte and retain their original relative-root and sibling-repository assumptions; this archive is not a current command entrypoint.",
+  "preserved": [
+    "Original source bytes and executable modes",
+    "Existing protocols, measurements, reports, literature, data and evidence manifests",
+    "Current automated tests, runtime code, package commands and supported manual tooling",
+    "Explicitly retained CDN protocols and local runtime/credential directories"
+  ],
+  "files": [
+    {
+      "original_path": "experiments/claim_flow_verification/prepare_pilot.py",
+      "archived_path": "archive/historical-tools/experiments/claim_flow_verification/prepare_pilot.py",
+      "sha256": "3abeeb778209c2d3de42645e1d8e2806e5a0bf779d6f7557959c9f92e6543033",
+      "bytes": 9236,
+      "lines": 86,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/http2_compliance/assemble.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/assemble.py",
+      "sha256": "653aadae5dff7bd46f90bfc5211daba470b9cf6375eb63c43a17c01c65fcab9e",
+      "bytes": 7069,
+      "lines": 76,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/http2_compliance/finalize_sources.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/finalize_sources.py",
+      "sha256": "5478a95fa7206def1c96b5d7e9b91d975b43b8e10037620361ebe6d24d9413e4",
+      "bytes": 2850,
+      "lines": 31,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/http2_compliance/loopback-server.mjs",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/loopback-server.mjs",
+      "sha256": "e260d5ef936e09ec2915b070d6ffcea036415e2edd28c25118566b87040cbfc1",
+      "bytes": 800,
+      "lines": 19,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/http2_compliance/loopback.py",
+        "jumpserve-back-end:experiments/http2_compliance/loopback_v2.py"
+      ]
+    },
+    {
+      "original_path": "experiments/http2_compliance/loopback.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/loopback.py",
+      "sha256": "3aa39bd3862639d748d887a971b692c34c084e38f14462679994c9b83201c179",
+      "bytes": 7177,
+      "lines": 100,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/http2_compliance/evidence/loopback-main-v1.json",
+        "jumpserve-back-end:experiments/http2_compliance/evidence/loopback-pilot-v2.json",
+        "jumpserve-back-end:experiments/http2_compliance/protocol-loopback-main-v1.json",
+        "jumpserve-back-end:experiments/http2_compliance/protocol-loopback-pilot-v1.json",
+        "jumpserve-back-end:experiments/http2_compliance/protocol-loopback-pilot-v2.json"
+      ]
+    },
+    {
+      "original_path": "experiments/http2_compliance/loopback_v2.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/loopback_v2.py",
+      "sha256": "64859d47ad6ebd2c82bbbdda5ed84482f3e0ad34a985cd729a9fea268ff94107",
+      "bytes": 7438,
+      "lines": 105,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/http2_compliance/retrieve.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/retrieve.py",
+      "sha256": "668f6fd875bf84ae65f12a5c5061ef071c4c7320bd95bc6c5e80d98f598ecd64",
+      "bytes": 7496,
+      "lines": 111,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/assessment.py"
+      ]
+    },
+    {
+      "original_path": "experiments/http2_compliance/retrieve_web.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/retrieve_web.py",
+      "sha256": "bcb17a51bfa3ade826a816611d3094310dcc791ca3b47959df54eb0c0701923b",
+      "bytes": 3274,
+      "lines": 40,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/http2_compliance/verify_sources.py",
+      "archived_path": "archive/historical-tools/experiments/http2_compliance/verify_sources.py",
+      "sha256": "14a94131b3ac10d96e9279f0d6ef8bc1af9036afeb287461cc6c095968bb5534",
+      "bytes": 1813,
+      "lines": 22,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/ipv6_dns/assessment.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/assessment.py",
+      "sha256": "d3eeddc29852eecc3b2f0847ffbb5960403a01cf3e7cbeb70d7b0ff18dd235a1",
+      "bytes": 24098,
+      "lines": 72,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/ipv6_dns/bootstrap.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/bootstrap.py",
+      "sha256": "b179439811f8f3287480a1db929e8b215f228d45cf6c8b47d14cc486f8c12636",
+      "bytes": 1833,
+      "lines": 25,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/ipv6_dns/controls.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/controls.py",
+      "sha256": "2770a6ac051cbb6c30702908a56ee8fae23510cbc70cb39190869b45a1bbee55",
+      "bytes": 4822,
+      "lines": 31,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/ipv6_dns/corrected.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/corrected.py",
+      "sha256": "5036eef957f3b38a79493187420f145657e2af966e8b6abc425da9e1534e40e2",
+      "bytes": 1337,
+      "lines": 22,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/assessment.py",
+        "jumpserve-back-end:experiments/ipv6_dns/controls.py"
+      ]
+    },
+    {
+      "original_path": "experiments/ipv6_dns/export.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/export.py",
+      "sha256": "364e79e0319ed630f1025cec37c854da9e5094fad0dbd945bb5dfedd8d2326df",
+      "bytes": 2161,
+      "lines": 22,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/ipv6_dns/followup.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/followup.py",
+      "sha256": "fed5dca628c5293534ba37631ea4dcf9ccdfa96f0bc86525d87c040ba7df054a",
+      "bytes": 78071,
+      "lines": 810,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/artifacts-manifest-v4.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_followup.py"
+      ]
+    },
+    {
+      "original_path": "experiments/ipv6_dns/followups/20261007-v1/analysis-main-v1.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/followups/20261007-v1/analysis-main-v1.py",
+      "sha256": "a979cf7c7dbfa7d251346bab4f414c196fcefb4ab48964b35045f4a50afb6192",
+      "bytes": 37881,
+      "lines": 473,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/followup.py"
+      ]
+    },
+    {
+      "original_path": "experiments/ipv6_dns/retrieve.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/retrieve.py",
+      "sha256": "cbfa81165cf5545e9d2426c7ae7f676937fd8eff0e36199413649658609a1b8a",
+      "bytes": 3864,
+      "lines": 49,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/assessment.py"
+      ]
+    },
+    {
+      "original_path": "experiments/ipv6_dns/sources.py",
+      "archived_path": "archive/historical-tools/experiments/ipv6_dns/sources.py",
+      "sha256": "a1c51bf103d8910fd4e44c2fc780dbb2c0618c2fc609d2fe542fafd71b5b66e9",
+      "bytes": 11875,
+      "lines": 131,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/leo_failover/retrieve.py",
+      "archived_path": "archive/historical-tools/experiments/leo_failover/retrieve.py",
+      "sha256": "32b607633012627e4572db8c6b34441725bd5f517ae8f342f195aeb045a9515f",
+      "bytes": 7920,
+      "lines": 131,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/assessment.py"
+      ]
+    },
+    {
+      "original_path": "experiments/leo_failover/saturation.py",
+      "archived_path": "archive/historical-tools/experiments/leo_failover/saturation.py",
+      "sha256": "3e8143a6cf6f88f2a77428d2e77a36d5541cffea70b9635342d71faa57cf5ff7",
+      "bytes": 1596,
+      "lines": 25,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/analysis.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/analysis.py",
+      "sha256": "1bd3f06bec8db0b2c87a2a20de01ab20f7eabc19038cee63e8de1ddd3020953f",
+      "bytes": 8475,
+      "lines": 152,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/nines2026_delay_equalization/export_figures.py",
+        "jumpserve-back-end:experiments/nines2026_delay_equalization/persist.py",
+        "jumpserve-back-end:experiments/nines2026_delay_equalization/test_analysis.py"
+      ]
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/audit_evidence.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/audit_evidence.py",
+      "sha256": "1833314f24d1909c91d8db5aa244a77efd14bc445ba2559d0d0589ed5f057037",
+      "bytes": 10242,
+      "lines": 172,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/nines2026_delay_equalization/persist.py"
+      ]
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/audit_public_exports.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/audit_public_exports.py",
+      "sha256": "4e5d35df3f7f7527e46bd647f5e40b321368b565b2f4886e9b707d3eb956a33e",
+      "bytes": 7769,
+      "lines": 134,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/export_figures.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/export_figures.py",
+      "sha256": "003153b140e2534007cb7ba1f24a50f2d10f3b6f04415b812fefe5534d94330c",
+      "bytes": 8089,
+      "lines": 125,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/fetch_literature.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/fetch_literature.py",
+      "sha256": "896c75c50cbdcfd38e09031188eb5006fc86bba7c91be08f6b353356438444a3",
+      "bytes": 4097,
+      "lines": 88,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/make_manifest.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/make_manifest.py",
+      "sha256": "d092546829a06cf08c80cb617094ead10ae1eb0601b92d5b8805f8562f0b1c7c",
+      "bytes": 3680,
+      "lines": 74,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/persist.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/persist.py",
+      "sha256": "cc0c51f290e2da3db7a0dc0a1df3d8768fc1a3ac0cda001712565cff82281865",
+      "bytes": 20276,
+      "lines": 336,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/read_paper.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/read_paper.py",
+      "sha256": "da75a246d962a5f5794c6af3c5b54ecd46d114d5c0d3c2ee6cc0c14304400f98",
+      "bytes": 2783,
+      "lines": 61,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/nines2026_delay_equalization/test_analysis.py",
+      "archived_path": "archive/historical-tools/experiments/nines2026_delay_equalization/test_analysis.py",
+      "sha256": "2584a1a5f0979b89ca20b2aa1e8a280ae728aae81e75d58e1e3ea2a6a1377012",
+      "bytes": 3044,
+      "lines": 55,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/followup.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/followup.py",
+      "sha256": "2238cf9566b94ffb424de44640a6ae9672895bff711d5ce492472adb13f7cc9a",
+      "bytes": 13182,
+      "lines": 172,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/followup.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/artifacts-manifest-v4.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_followup.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/report.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/report.py",
+      "sha256": "019bd34a653e3446ff5217dd65f337e5eb7739c5877bd81b7abbb62ee4aaa302",
+      "bytes": 7604,
+      "lines": 95,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/subscription.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/subscription.py",
+      "sha256": "c4a3db2c0c4ae836d80466959647c4124b456148ba8954e920560e024b2503d7",
+      "bytes": 38189,
+      "lines": 636,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_followup.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_report.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_status.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_stream.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_stream_followup.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_subscription.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_subscription_followup.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_subscription_stream.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/subscription_followup.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/subscription_followup.py",
+      "sha256": "cdc95bdfa63f9f9c7734e935abcf1ce0edeef2b2bdc58d466f277a2b550f2931",
+      "bytes": 13522,
+      "lines": 180,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_stream_followup.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_subscription_followup.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/subscription_report.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/subscription_report.py",
+      "sha256": "ba724262447e384c062b9dc57624dc053bdc16a1a441dadcd1ea936069328a79",
+      "bytes": 8939,
+      "lines": 103,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/subscription_status.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/subscription_status.py",
+      "sha256": "1fb43f9930d00b81306150a44578a5f5d3b8ead5de6c38cec087d9652e909f25",
+      "bytes": 3212,
+      "lines": 42,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_report.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/subscription_stream.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/subscription_stream.py",
+      "sha256": "7ffe3f8d288547d2660b28ea92b94d9ea0e448234ef0697986ff705df7a860da",
+      "bytes": 3612,
+      "lines": 60,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_stream_followup.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_subscription_stream.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/subscription_stream_followup.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/subscription_stream_followup.py",
+      "sha256": "8146b5a9f5892e081c137e5114ad4f03933c8949fced7d02c86376581ac4d7d0",
+      "bytes": 6446,
+      "lines": 95,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/test_followup.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/test_followup.py",
+      "sha256": "e4f82521b88d81da1c22838d03ac6e7540814a7c0483dd7316c4dff5f372ea62",
+      "bytes": 2794,
+      "lines": 42,
+      "mode": 420,
+      "previous_references": []
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/test_subscription.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/test_subscription.py",
+      "sha256": "02c413288da05e2e788f98f79c8ac9014b364e7c18f3ad145f410d97ddc5449d",
+      "bytes": 16272,
+      "lines": 259,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription.py",
+        "jumpserve-back-end:experiments/openclaw_pilot/test_subscription_stream.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/test_subscription_followup.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/test_subscription_followup.py",
+      "sha256": "06adc4d71a9bf9597824d895094d191522c03dc9cf365d38b35bd7e6bc6b2f18",
+      "bytes": 5762,
+      "lines": 69,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_followup.py"
+      ]
+    },
+    {
+      "original_path": "experiments/openclaw_pilot/test_subscription_stream.py",
+      "archived_path": "archive/historical-tools/experiments/openclaw_pilot/test_subscription_stream.py",
+      "sha256": "09ef6fd19fa2a47e3df2c77c8053597380bba2a3fb1f959a0cb7d4e1353bfa29",
+      "bytes": 2940,
+      "lines": 55,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription-artifacts-v1.json",
+        "jumpserve-back-end:experiments/openclaw_pilot/subscription_stream_followup.py"
+      ]
+    },
+    {
+      "original_path": "experiments/reliable_sketch/assemble.py",
+      "archived_path": "archive/historical-tools/experiments/reliable_sketch/assemble.py",
+      "sha256": "00e222dcc0e0e6f37a1587e824a4a5fd571f556b6a19bbd21db4b334ad60311e",
+      "bytes": 15790,
+      "lines": 84,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/http2_compliance/assemble.py"
+      ]
+    },
+    {
+      "original_path": "experiments/reliable_sketch/retrieve.py",
+      "archived_path": "archive/historical-tools/experiments/reliable_sketch/retrieve.py",
+      "sha256": "cebe23ddc8a750534799652b6ac22bc809b984ff569d7fbc0169c9169134bebb",
+      "bytes": 12410,
+      "lines": 130,
+      "mode": 420,
+      "previous_references": [
+        "jumpserve-back-end:experiments/ipv6_dns/assessment.py"
+      ]
+    },
+    {
+      "original_path": "experiments/reliable_sketch/review_v1.py",
+      "archived_path": "archive/historical-tools/experiments/reliable_sketch/review_v1.py",
+      "sha256": "556cbe748dadc11f3ebcc49b4c8b20042c8c79789af38778da0ef28cf6bbc602",
+      "bytes": 7527,
+      "lines": 25,
+      "mode": 420,
+      "previous_references": []
+    }
+  ]
+}

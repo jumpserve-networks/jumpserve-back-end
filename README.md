@@ -36,8 +36,8 @@ socket permission. They do not call live AWS, Supabase or model providers.
 
 Python branch coverage includes every maintained module in `research_workflow/`,
 `platform_supervisor/`, `real_world/`, and the root benchmark/queue runners,
-including unloaded files. Archived research utilities in `experiments/`, vendor
-dependencies and test harnesses are excluded. Native helper tests use the
+including unloaded files. Standalone experiment programs, historical-tool archives,
+vendor dependencies and test harnesses are excluded. Native helper tests use the
 development-only Node 24.16.0 installed by `npm ci`; synthetic grants exercise
 real SQLite, filesystem recovery and child-process entrypoints.
 
@@ -59,6 +59,22 @@ pinned bytes.
 `coverage/summary.json` records the repository result; per-language HTML, JSON
 and interchange reports live under `coverage/python/` and `coverage/native/`.
 These generated artifacts and isolated dependencies stay out of version control.
+
+## Maintained and historical tools
+
+The current automated suites remain in their existing test entrypoints.
+`maintained-tools.json` lists supported manual Linux/native qualification and
+fixture-preparation programs, plus the explicitly retained CDN protocol directories.
+Completed one-off experiment/pilot programs live under `archive/historical-tools/`.
+Its manifest preserves their original paths, source revisions, sizes and SHA-256
+hashes. Raw measurements, protocols, evidence, literature and reports retain their
+existing locations and contents. Archive integrity is checked by the queue unit
+suite included in `npm run test:coverage`.
+
+For historical reproduction, use the recorded source revisions and original paths
+in isolated checkouts, with the original protocol and evidence. Archived programs
+retain their original path and sibling-repository assumptions. Add recurring checks
+to the automated suites; archive completed one-off campaigns with their provenance.
 
 For a focused Python diagnostic, run
 `.venv-unit-tests/bin/python tests/run_unit_coverage.py --suite research --pattern test_builder_native_execution.py`.
