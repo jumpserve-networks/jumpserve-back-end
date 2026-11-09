@@ -24,9 +24,11 @@ def extract(raw, destination):
             if len(parts)<2: continue
             name='/'.join(parts[1:])
             if not safe_name(name) or item.isdir(): continue
-            if not item.isfile() or item.size>20000000 or name in names: raise Hold('Source archive contains a link, oversized file or duplicate path.')
+            if not item.isfile() or item.size>20000000 or name in names:
+                raise Hold('Source archive contains a link, oversized file or duplicate path.')
             total+=item.size; names.add(name)
-            if total>200000000 or len(names)>15000: raise Hold('Source archive exceeds the installed source limit.')
+            if total>200000000 or len(names)>15000:
+                raise Hold('Source archive exceeds the installed source limit.')
             path=destination/name; path.parent.mkdir(parents=True,exist_ok=True)
             path.write_bytes(archive.extractfile(item).read()); path.chmod(0o755 if item.mode&0o111 else 0o644)
 

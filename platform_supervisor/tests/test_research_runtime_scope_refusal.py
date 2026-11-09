@@ -90,6 +90,10 @@ class RuntimeScopeRefusalTests(unittest.TestCase):
         self.controller.store.artifact.assert_not_called()
         self.assert_no_admission()
 
+    def test_missing_dedicated_runtime_gate_preserves_the_original_refusal_and_blocks_before_execution(self):
+        with patch.object(research_runtime,'gate',return_value=self.gate),patch.object(research_runtime,'captured_failure_gate',side_effect=Hold('Original dedicated gate unavailable')),patch.object(research_runtime.subprocess,'run') as executed,self.assertRaises(Hold) as caught:self.qualify()
+        self.assertEqual(caught.exception.status,'blocked');self.assertIn('Frozen scientific/request/module content changed',str(caught.exception));executed.assert_not_called();self.assert_no_admission()
+
     def test_recheck_scope_rejection_retains_output_without_approval(self):
         gate = Mock(ScopeError=self.gate.ScopeError)
         gate.inspect.side_effect = [{'source_binding': 'e' * 64}, self.gate.ScopeError('Source binding differs')]

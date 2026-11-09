@@ -411,6 +411,8 @@ def public_snapshot(study_id, include_diagnostics=False):
             dt.datetime.fromisoformat(repair['updated_at'].replace('Z','+00:00'))
             row['repair_progress']=repair
         if progress is not None:
+            if not isinstance(progress,dict):
+                raise store.StoreError('Shared recorded-check coverage is invalid.')
             required, completed = progress.get('required_checks'), progress.get('completed_checks')
             if type(required) is not int or type(completed) is not int or not 0 <= completed <= required <= 1000:
                 raise store.StoreError('Shared recorded-check coverage is invalid.')

@@ -10,7 +10,7 @@ import uuid
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import autonomy, autonomy_evidence as evidence, autonomy_model as model, autonomy_costs
-import bounded_network, network_execution, preparation, runner, workflow
+import bounded_network, network_execution, preparation, runner, workflow,source_arithmetic,experiment_builder
 from test_autonomy import task
 
 
@@ -81,6 +81,16 @@ class Retained:
 
 
 class Followups(unittest.TestCase):
+    def test_invalid_retained_decimal_does_not_become_a_comparison_or_silent_zero(self):
+        db=Retained();next(iter(db.data['measurements'].values()))['value']='not a decimal';a,b,c=db.mocks()
+        with a,b,c:self.assertIsNone(autonomy.numeric_finding(db.task))
+
+    def test_fresh_source_arithmetic_review_receives_a_preview_bound_to_the_exact_source_and_text_artifact(self):
+        db=Retained();db.task['stage']='critic';artifact_id=str(uuid.uuid4());configuration={'identity':'original-arithmetic','details':{'test_config':{'text_artifact_id':artifact_id}}};db.task['context']['proposal']={'protocol':{'execution':{'runner':'source-arithmetic-v1'},'configurations':[configuration]}};a,b,c=db.mocks()
+        with a,b,c,patch.object(autonomy.inputs,'source_text',return_value=({},{})),patch.object(workflow,'now',return_value='2026-11-01T00:00:00Z'),patch.object(autonomy.store,'artifact_bytes',return_value=b'Original retained text') as read,patch.object(source_arithmetic,'preview',return_value={'software_check':'original source arithmetic'}) as preview:
+            result=autonomy.build_context(db.task)
+        self.assertEqual(result['source_arithmetic_preview'],[{'configuration':'original-arithmetic','software_check':'original source arithmetic'}]);self.assertEqual(read.call_args.args,(db.task['study_id'],artifact_id));self.assertEqual(preview.call_args.args[:2],(configuration['details']['test_config'],b'Original retained text'));self.assertEqual(preview.call_args.args[2],result['source']['sha256'])
+
     def test_valid_discrepancy_in_partial_run_survives_later_complete_agreement(self):
         db=Retained().partial_alternative();a,b,c=db.mocks()
         with a,b,c:result=autonomy.numeric_finding(db.task)
@@ -138,6 +148,9 @@ class Followups(unittest.TestCase):
         with a,b,c:
             with self.assertRaisesRegex(ValueError,'outside'):autonomy.inspect_evidence(db.task,dict(kind='measurements',id=str(uuid.uuid4()),cursor=0))
             result=autonomy.inspect_evidence(db.task,dict(kind='measurements',id=db.jobs[0]['id'],cursor=0))
+            db.task['context']['proposal']={'protocol':{}}
+            campaign=db.one('campaigns',db.task['study_id'],db.jobs[0]['campaign_id'])
+            with self.assertRaisesRegex(ValueError,'outside this exact candidate'):autonomy.inspect_evidence(db.task,dict(kind='protocol',id=campaign['protocol_id'],cursor=0))
         page=result['result'];self.assertEqual(page['total_records'],192);self.assertLessEqual(page['returned_records'],20);self.assertIsNotNone(page['next_cursor']);self.assertFalse(page['complete'])
         self.assertLessEqual(len(workflow.canonical(page)),evidence.READ_BYTES)
 

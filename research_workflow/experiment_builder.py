@@ -15,6 +15,7 @@ import secrets
 import shlex
 import subprocess
 import threading
+import tempfile
 import time
 import uuid
 import zipfile
@@ -430,12 +431,7 @@ For experiment tool, dependency, privilege or kernel failures, read network-envi
     while len(message.encode())>BOOTSTRAP_BYTES and len(focus)>3:
         # Remove whole optional inline fields only. Their exact full values and
         # hashes remain in the indexed context; trusted instructions stay whole.
-        key=next(reversed(focus))
-        if key=='builder_feedback':
-            raw=canonical(context[key]);focus[key]=dict(excerpt=raw[:400].decode(errors='ignore'),complete=False,sha256=digest(raw),read=['context',key,0])
-            message=render()
-            if len(message.encode())<=BOOTSTRAP_BYTES:break
-        focus.pop(key);message=render()
+        focus.pop(next(reversed(focus)));message=render()
     if len(message.encode())>BOOTSTRAP_BYTES:
         raise ValueError('Trusted builder instructions exceed the bootstrap bound; reconcile the versioned instructions rather than truncate them.')
     manifest.update(bootstrap_sha256=digest(message.encode()),bootstrap_bytes=len(message.encode()),inline_fields=list(focus))
@@ -557,11 +553,14 @@ def reap(spool):
             try:fcntl.flock(held.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
             except BlockingIOError:continue
             tasks=store.rows('autonomy_tasks',dict(id='eq.'+task_id,select='id,study_id,status',limit=1))
-            if len(tasks)!=1:continue
+            if len(tasks)!=1:
+                continue
             task=tasks[0];workflows=store.rows('autonomy_workflows',dict(study_id='eq.'+task['study_id'],select='status,deadline_at',limit=1))
-            if len(workflows)!=1:continue
+            if len(workflows)!=1:
+                continue
             w=workflows[0]
-            if task['status'] in ('queued','waiting','running') and w['status']=='running' and dt.datetime.fromisoformat(w['deadline_at'].replace('Z','+00:00'))>dt.datetime.now(dt.timezone.utc):continue
+            if task['status'] in ('queued','waiting','running') and w['status']=='running' and dt.datetime.fromisoformat(w['deadline_at'].replace('Z','+00:00'))>dt.datetime.now(dt.timezone.utc):
+                continue
             pending=path/'retirement-pending.json'
             retired=path/'retired.json'
             completed=retired.read_bytes() if retired.exists() else None
@@ -569,7 +568,8 @@ def reap(spool):
                 # A resumed task can create a fresh container after retirement.
                 # Retain the old receipt; its marker cannot exempt new resources
                 # from cleanup when that task next stops.
-                if not container_action(task_id,'list'):continue
+                if not container_action(task_id,'list'):
+                    continue
                 history=path/'retirement-history';history.mkdir(exist_ok=True)
                 (history/(digest(completed)+'.json')).write_bytes(completed)
             if pending.exists() and pending.read_bytes()!=completed:receipt=pending.read_bytes()
@@ -607,10 +607,12 @@ def checkpoint(workspace):
     stream = io.BytesIO(); total = 0; count = 0
     with zipfile.ZipFile(stream, 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(workspace.rglob('*')):
-            if path.is_symlink(): raise ValueError('Builder checkpoint contains a symlink.')
+            if path.is_symlink():
+                raise ValueError('Builder checkpoint contains a symlink.')
             if not path.is_file(): continue
             size = path.stat().st_size; total += size; count += 1
-            if size > 1000000 or total > 4000000 or count > 128: raise ValueError('Builder checkpoint exceeds 128 files / 4 MB; retain large inputs separately.')
+            if size > 1000000 or total > 4000000 or count > 128:
+                raise ValueError('Builder checkpoint exceeds 128 files / 4 MB; retain large inputs separately.')
             info=zipfile.ZipInfo(path.relative_to(workspace).as_posix(),date_time=(1980,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
             archive.writestr(info,path.read_bytes())
     if stream.tell() > 4000000: raise ValueError('Builder checkpoint transport exceeds 4 MB.')
@@ -618,15 +620,33 @@ def checkpoint(workspace):
 
 def restore(raw, workspace):
     if len(raw) > 4000000: raise ValueError('Builder checkpoint transport bound exceeded.')
+    if workspace.is_symlink():raise ValueError('Builder checkpoint workspace cannot be a symlink.')
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         files = archive.infolist()
-        if len(files) > 128 or sum(f.file_size for f in files) > 4000000: raise ValueError('Builder checkpoint expanded bound exceeded.')
+        if len(files) > 128 or sum(f.file_size for f in files) > 4000000:
+            raise ValueError('Builder checkpoint expanded bound exceeded.')
         names = set()
         for item in files:
             path = Path(item.filename)
             if path.is_absolute() or '..' in path.parts or '\\' in item.filename or path.as_posix() != item.filename or item.is_dir() or (item.external_attr >> 16) & 0o170000 == 0o120000 or item.file_size > 1000000 or item.filename in names:
                 raise ValueError('Unsafe builder checkpoint path.')
-            names.add(item.filename); target = workspace / path; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(archive.read(item))
+            current=workspace
+            for part in path.parts:
+                current=current/part
+                if current.is_symlink():
+                    raise ValueError('Builder checkpoint cannot follow an existing workspace symlink.')
+            names.add(item.filename);target=workspace/path;target.parent.mkdir(parents=True,exist_ok=True)
+            # Replace the directory entry instead of writing through a possible
+            # hardlink. A failed restore cannot alter another original inode.
+            temporary=None
+            try:
+                with tempfile.NamedTemporaryFile(dir=target.parent,prefix='.checkpoint-restore-',delete=False) as output:
+                    temporary=Path(output.name)
+                    output.write(archive.read(item))
+                os.replace(temporary,target)
+            except BaseException:
+                if temporary is not None:temporary.unlink(missing_ok=True)
+                raise
 
 def decision(proposal=None):
     return dict(action='propose' if proposal else 'blocked', reason='prospective-pilot' if proposal else 'missing-required-inputs',
@@ -815,8 +835,10 @@ def _execute(logical,directory,job,token_source,transport,task_root):
             result['slice_exhausted']=True
             raise ValueError('Worker slot ended before another provider request; no call was admitted or sent.')
         with lock:
-            if key in responses: return responses[key]
-            if key in in_flight: raise ValueError('In-flight native call cannot be replayed.')
+            if key in responses:
+                return responses[key]
+            if key in in_flight:
+                raise ValueError('In-flight native call cannot be replayed.')
             index = len(responses) + 1; in_flight.add(key)
         try:
             artifact = retain(job, 'call-' + str(index) + '-request.json', body)

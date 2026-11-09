@@ -127,5 +127,72 @@ class RepairSourceRefresh(unittest.TestCase):
             source_refresh.refresh(self.controller,self.workspace)
         self.github.main.assert_not_called()
 
+    def test_refresh_rejects_active_changes_or_invalid_revision_and_leaves_current_main_untouched(self):
+        before=source.snapshot(self.workspace/'jumpserve-back-end')
+        for defect in ['active-change','bad-revision']:
+            with self.subTest(defect=defect):
+                self.controller.state['changes']=[dict(status='proposed')] if defect=='active-change' else []
+                self.github.main.return_value='invalid'
+                with self.assertRaises(Hold):source_refresh.refresh(self.controller,self.workspace)
+                self.assertEqual(source.snapshot(self.workspace/'jumpserve-back-end'),before)
+        self.controller.state['changes']=[];self.github.main.return_value='a'*40
+        source_refresh.refresh(self.controller,self.workspace);self.github.archive.assert_not_called()
+
+    def test_atomic_swap_recovery_checks_backups_current_sources_and_staged_bytes(self):
+        for defect in ['bad-backup','changed-target','staged-before-rename','staged-after-rename','resume-after-backup']:
+            with self.subTest(defect=defect),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);target=root/'target';staged=root/'staged';backup=root/'backup'
+                before_dir=root/'before';before_dir.mkdir();(before_dir/'code.py').write_text('before');before=source.snapshot(before_dir)
+                staged.mkdir();(staged/'code.py').write_text('after');after=source.snapshot(staged)
+                if defect in ['bad-backup','changed-target','staged-after-rename','resume-after-backup']:
+                    backup.mkdir();(backup/'code.py').write_text('wrong' if defect=='bad-backup' else 'before')
+                if defect=='changed-target':target.mkdir();(target/'code.py').write_text('changed')
+                if defect=='staged-before-rename':target.mkdir();(target/'code.py').write_text('before')
+                if defect in ['staged-before-rename','staged-after-rename']:(staged/'code.py').write_text('different')
+                if defect=='resume-after-backup':
+                    source_refresh.replace(target,staged,backup,before,after)
+                    self.assertEqual(source.snapshot(target),after);self.assertEqual(source.snapshot(backup),before)
+                else:
+                    with self.assertRaises(Hold):source_refresh.replace(target,staged,backup,before,after)
+
+    def test_pending_plan_requires_original_hash_predecessor_and_rebuilt_identity(self):
+        with patch.object(source_refresh,'finish',side_effect=RuntimeError('before swap')),self.assertRaises(RuntimeError):source_refresh.refresh(self.controller,self.workspace)
+        pointer=self.controller.state['source_refresh_pending'];original=self.store.originals[pointer['path']]
+        self.store.originals[pointer['path']]=original+b'changed'
+        with self.assertRaisesRegex(Hold,'plan hash differs'):source_refresh.finish(self.controller,self.workspace,pointer)
+        self.store.originals[pointer['path']]=original
+        previous=copy.deepcopy(self.controller.state['sources']);self.controller.state['sources'][REPO]['revision']='c'*40
+        with self.assertRaisesRegex(Hold,'predecessor differs'):source_refresh.finish(self.controller,self.workspace,pointer)
+        self.controller.state['sources']=previous
+        root=self.workspace.parent/'source-refresh'/pointer['sha256'];__import__('shutil').rmtree(root/'baseline')
+        with patch.object(source_refresh,'prepare',return_value={}),self.assertRaisesRegex(Hold,'Rebuilt refresh plan differs'):source_refresh.finish(self.controller,self.workspace,pointer)
+
+    def test_existing_refresh_sources_are_reused_but_empty_baselines_are_refused(self):
+        self.controller.persist_work(self.workspace);root=self.root/'prepared';root.mkdir()
+        (root/'incoming-baseline').mkdir();(root/'incoming-baseline/stale').write_text('partial transfer')
+        first=source_refresh.prepare(self.controller,self.workspace,REPO,'b'*40,root)
+        self.github.archive.reset_mock();second=source_refresh.prepare(self.controller,self.workspace,REPO,'b'*40,root)
+        self.assertEqual(first,second);self.github.archive.assert_not_called()
+        __import__('shutil').rmtree(root/'baseline');(root/'baseline').mkdir()
+        with self.assertRaisesRegex(Hold,'main source is empty'):source_refresh.prepare(self.controller,self.workspace,REPO,'b'*40,root)
+
+    def test_retained_overlap_and_previous_readiness_report_cannot_be_replaced_by_changed_bytes(self):
+        local=self.workspace/'jumpserve-back-end';(local/'code.py').write_text('original proposal')
+        with patch.object(source_refresh,'finish',side_effect=RuntimeError('before swap')),self.assertRaises(RuntimeError):source_refresh.refresh(self.controller,self.workspace)
+        pointer=self.controller.state['source_refresh_pending'];retained=self.workspace/'previous-candidates'/('source-refresh-'+pointer['sha256'])/'jumpserve-back-end/code.py';retained.parent.mkdir(parents=True);retained.write_text('changed proposal')
+        with self.assertRaisesRegex(Hold,'overlapping proposal differs'):source_refresh.finish(self.controller,self.workspace,pointer)
+        retained.write_text('original proposal');(self.workspace/'proposal.json').mkdir()
+        with self.assertRaisesRegex(Hold,'Unsafe previous readiness report'):source_refresh.finish(self.controller,self.workspace,pointer)
+
+    def test_existing_plan_directory_is_not_overwritten_after_uncertain_artifact_publication(self):
+        publish=self.store.artifact
+        def retain(name,raw):
+            result=publish(name,raw)
+            if name=='repair-source-refresh-plan.json':(self.workspace.parent/'source-refresh'/result['sha256']).mkdir()
+            return result
+        with patch.object(self.store,'artifact',side_effect=retain),patch.object(source_refresh,'finish') as finish,self.assertRaisesRegex(Hold,'plan already exists'):
+            source_refresh.refresh(self.controller,self.workspace)
+        finish.assert_not_called();self.assertEqual(self.controller.state['sources'][REPO]['revision'],'a'*40)
+
 
 if __name__=='__main__':unittest.main()

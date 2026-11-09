@@ -84,7 +84,8 @@ class IngestBuffer:
             raise ValueError("Compressed benchmark report exceeds the 3 MiB ingestion limit")
         body = json.dumps({"job_id": job_id, "action": "results",
                            "report_gzip": base64.b64encode(compressed).decode()}).encode()
-        for attempt in range(3):
+        attempt = 0
+        while True:
             request = urllib.request.Request(url, data=body, method="POST", headers={
                 "Authorization": "Bearer " + token, "Content-Type": "application/json"})
             try:
@@ -97,3 +98,4 @@ class IngestBuffer:
                 if attempt == 2:
                     raise RuntimeError("Benchmark ingestion could not be reached") from None
             time.sleep(2 ** attempt)
+            attempt += 1

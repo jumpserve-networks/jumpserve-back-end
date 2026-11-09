@@ -18,10 +18,12 @@ class Credentials:
         if not arn.startswith('arn:aws:secretsmanager:us-east-1:395567831870:secret:jumpserve/'):raise Hold('Service secret target differs.')
         with self.lock:
             cached=self.cache.get(arn)
-            if cached and time.monotonic()-cached[0]<300:return cached[1]
-            raw=self.client.get_secret_value(SecretId=arn)['SecretString']
-            self.cache[arn]=(time.monotonic(),raw)
-            return raw
+            if cached and time.monotonic()-cached[0]<300:
+                raw=cached[1]
+            else:
+                raw=self.client.get_secret_value(SecretId=arn)['SecretString']
+                self.cache[arn]=(time.monotonic(),raw)
+        return raw
 
     def supabase(self):return self.secret(os.environ['SUPABASE_SECRET_ARN'])
     def github(self):

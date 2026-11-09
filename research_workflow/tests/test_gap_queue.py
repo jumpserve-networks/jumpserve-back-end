@@ -35,6 +35,11 @@ class GapQueue(unittest.TestCase):
         p = patch.object(preparation, 'registered', side_effect=lambda study: (self.plan, canonical(self.plan)))
         p.start(); self.addCleanup(p.stop)
 
+    def test_unknown_retained_check_cannot_create_an_experiment(self):
+        body=self.body();body['key']='unregistered-check'
+        with patch.object(scheduler,'enqueue') as enqueue,self.assertRaisesRegex(ValueError,'no matching retained check'):gap_queue.enqueue(self.study['id'],ACTOR,body)
+        enqueue.assert_not_called()
+
     def body(self, action='enqueue'):
         preview = gap_queue.preview(self.study['id'], ACTOR, self.gap['id'])
         return dict(request_id=str(uuid.uuid4()), gap_id=self.gap['id'], gap_sha256=preview['gap_sha256'], plan_sha256=preview['plan_sha256'], key=self.item['key'], action=action)
@@ -92,6 +97,21 @@ class GapQueue(unittest.TestCase):
             with patch.object(store, 'owns', return_value=True), patch.object(store, 'rows', return_value=[]):
                 with self.assertRaisesRegex(ValueError, 'Prepare'): gap_queue.enqueue(self.study['id'], ACTOR, body)
             enqueue.assert_not_called()
+
+    def test_shared_prerequisites_are_queued_once_and_an_expired_invocation_remains_resumable(self):
+        shared=self.plan['campaigns'][-3];left=self.plan['campaigns'][-2];right=self.plan['campaigns'][-1]
+        self.item['dependencies']=[dict(key=row['key'],requirement='complete-run') for row in [left,right]]
+        for row in [left,right]:row['dependencies']=[dict(key=shared['key'],requirement='complete-run')]
+        self.plan=preparation.parse(canonical(self.plan));body=self.body();calls=[]
+        def enqueue(study,actor,request):calls.append(request['job_id']);return dict(job=dict(id=request['job_id']))
+        with patch.object(store,'owns',return_value=True),patch.object(store,'rows',return_value=[{}]),patch.object(preparation,'enqueue',side_effect=enqueue):result=gap_queue.enqueue(self.study['id'],ACTOR,body)
+        self.assertTrue(result['complete']);self.assertEqual(len(calls),4);self.assertEqual(len(set(calls)),4)
+        with patch.object(store,'owns',return_value=True),patch.object(store,'rows',return_value=[{}]),patch.object(preparation,'enqueue') as queue,patch.object(gap_queue.time,'monotonic',side_effect=[0,25]):result=gap_queue.enqueue(self.study['id'],ACTOR,body)
+        self.assertFalse(result['complete']);self.assertEqual(result['queued_job_ids'],[]);queue.assert_not_called()
+
+    def test_an_enqueue_acknowledgement_for_another_job_cannot_confirm_the_selected_experiment(self):
+        body=self.body()
+        with patch.object(store,'owns',return_value=True),patch.object(store,'rows',return_value=[{}]),patch.object(preparation,'enqueue',return_value=dict(job=dict(id='foreign'))),self.assertRaisesRegex(store.StoreError,'selected job identity'):gap_queue.enqueue(self.study['id'],ACTOR,body)
 
     def test_routes_require_authentication_without_trusting_client_identity(self):
         for path in ['/research/queue', '/research/studies/' + self.study['id'] + '/gap-experiments']:

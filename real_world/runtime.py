@@ -110,16 +110,20 @@ def receiver_command(config):
 
 def upload(url, data):
     payload = json.dumps(data).encode()
-    for attempt in range(5):
+    def send():
+        with urllib.request.urlopen(urllib.request.Request(url, data=payload, method="PUT",
+                headers={"Content-Type": "application/json"}), timeout=30) as response:
+            if response.status != 200:
+                raise RuntimeError(f"Report upload did not confirm storage (HTTP {response.status}).")
+    # Four retryable attempts, followed by one final attempt whose failure is
+    # propagated. A completed loop must never silently imply upload success.
+    for attempt in range(4):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, data=payload, method="PUT",
-                    headers={"Content-Type": "application/json"}), timeout=30) as response:
-                if response.status == 200:
-                    return
+            send()
+            return
         except Exception:
-            if attempt == 4:
-                raise
             time.sleep(2 ** attempt)
+    send()
 
 
 def measure(config):

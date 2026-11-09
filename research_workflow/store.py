@@ -33,7 +33,8 @@ def request(path, method="GET", body=None, public=False, raw=False, timeout=12):
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
             data = response.read(20_000_001)
-            if len(data) > 20_000_000: raise StoreError("Persistence response exceeds the bounded size.")
+            if len(data) > 20_000_000:
+                raise StoreError("Persistence response exceeds the bounded size.")
             return data if raw else json.loads(data) if data else None
     except urllib.error.HTTPError as error:
         # No signed URLs, credentials, owner identifiers or SQL details in errors.
@@ -231,13 +232,15 @@ def snapshot(study_id, owner=False, maximum=10000, byte_budget=4_000_000):
     used = len(canonical(data))
     for kind in PUBLIC_KINDS:
         collected = []
-        for offset in range(0, maximum + 1, 1000):
+        offset = 0
+        while True:
             page = rows(kind, {"study_id": "eq." + study_id, "created_at": "lte." + boundary, "offset": offset}, public=not owner)
             used += len(canonical(page))
             if used > byte_budget: raise StoreError("Study export exceeds the interactive byte budget; use an operator export. Data were not truncated or zero-filled.")
             collected.extend(page)
             if len(collected) > maximum: raise StoreError("Study export exceeds interactive coverage limits; use the operator export. No truncated dataset is presented as complete.")
             if len(page) < 1000: break
+            offset += 1000
         data["records"][kind] = collected
         data["coverage"][kind] = len(collected)
         if not owner and kind != "publications" and set(row["id"] for row in collected) != set(current[0]["record_ids"].get(kind, [])):

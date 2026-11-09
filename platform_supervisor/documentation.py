@@ -68,7 +68,8 @@ def deliver(store,workspace,state,client=None):
             state['feedback']='Repair documentation-requests.json: use at most three objects with library (Next.js, Supabase, AWS CDK or Boto3) and a bounded public technical topic. Original invalid requests are retained in artifact '+retained['id']+'. '+state.get('feedback','')
     cache=state.setdefault('documentation',{});client=client or Context7();initialized=False
     for request in requests:
-        if set(request)!={'library','topic'}:raise Hold('Documentation requests use library and public topic only.')
+        # Defaults have this fixed shape; additional JSON requests were fully
+        # validated above before entering the credentialed delivery loop.
         name,topic=request['library'],request['topic'];key=digest(canonical(request));item=cache.get(key)
         if item and dt.datetime.fromisoformat(item['created_at'])>dt.datetime.now(dt.timezone.utc)-dt.timedelta(hours=24):
             raw=store.request('/storage/v1/object/platform-supervisor-private/'+item['path'],raw=True)

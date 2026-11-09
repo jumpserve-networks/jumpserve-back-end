@@ -36,39 +36,43 @@ class PinnedHTTPS(http.client.HTTPSConnection):
   self.sock=self._context.wrap_socket(sock,server_hostname=self.host)
 
 def fetch(url):
- started=time.monotonic();audit=[]
- for _ in range(6):
-  u,ip=address(url); remaining=35-(time.monotonic()-started)
-  if remaining<=0: raise ValueError('Paper retrieval wall-time limit reached.')
-  connection=PinnedHTTPS(u.hostname,ip,min(10,remaining));chunks=[]
-  try:
-   connection.request('GET',(u.path or '/')+('?' +u.query if u.query else ''),headers={'User-Agent':'JumpServeResearch/1.0','Accept':'application/pdf,text/html','Accept-Encoding':'identity'})
-   response=connection.getresponse()
-   audit.append(dict(url=url,status_code=response.status,retrieved_at=now(),media_type=response.getheader('Content-Type')))
-   if response.status in (301,302,303,307,308):
-    location=response.getheader('Location')
-    if not location: raise ValueError('Redirect omitted its destination.')
-    url=urljoin(url,location);continue
-   if response.status!=200: raise ValueError('Public full-text retrieval returned HTTP '+str(response.status)+'.')
-   length=response.getheader('Content-Length')
-   if length and int(length)>MAX_BYTES: raise ValueError('Paper exceeds the 10 MB original-byte limit.')
-   chunks=[];size=0
-   while size<=MAX_BYTES:
-    remaining=35-(time.monotonic()-started)
-    if remaining<=0: raise ValueError('Paper retrieval wall-time limit reached.')
-    if connection.sock: connection.sock.settimeout(min(10,remaining))
-    chunk=response.read1(min(65536,MAX_BYTES+1-size))
-    if not chunk: break
-    chunks.append(chunk);size+=len(chunk)
-   raw=b''.join(chunks)
-   if size>MAX_BYTES or length and size!=int(length): raise ValueError('Incomplete or oversized original; no truncated paper is treated as full text.')
-   return raw,url,audit
-  except Exception as error:
-   error.retrieval_attempts=audit
-   error.captured_response=b''.join(chunks)
-   raise
-  finally: connection.close()
- raise ValueError('Paper redirect limit reached.')
+ started=time.monotonic();audit=[];chunks=[]
+ try:
+  for _ in range(6):
+   # Reset per-response bytes before validating the next redirect. Retain prior
+   # attempts even when DNS/address validation fails before a connection opens.
+   chunks=[]
+   u,ip=address(url); remaining=35-(time.monotonic()-started)
+   if remaining<=0: raise ValueError('Paper retrieval wall-time limit reached.')
+   connection=PinnedHTTPS(u.hostname,ip,min(10,remaining))
+   try:
+    connection.request('GET',(u.path or '/')+('?' +u.query if u.query else ''),headers={'User-Agent':'JumpServeResearch/1.0','Accept':'application/pdf,text/html','Accept-Encoding':'identity'})
+    response=connection.getresponse()
+    audit.append(dict(url=url,status_code=response.status,retrieved_at=now(),media_type=response.getheader('Content-Type')))
+    if response.status in (301,302,303,307,308):
+     location=response.getheader('Location')
+     if not location: raise ValueError('Redirect omitted its destination.')
+     url=urljoin(url,location);continue
+    if response.status!=200: raise ValueError('Public full-text retrieval returned HTTP '+str(response.status)+'.')
+    length=response.getheader('Content-Length')
+    if length and int(length)>MAX_BYTES: raise ValueError('Paper exceeds the 10 MB original-byte limit.')
+    size=0
+    while size<=MAX_BYTES:
+     remaining=35-(time.monotonic()-started)
+     if remaining<=0: raise ValueError('Paper retrieval wall-time limit reached.')
+     if connection.sock: connection.sock.settimeout(min(10,remaining))
+     chunk=response.read1(min(65536,MAX_BYTES+1-size))
+     if not chunk: break
+     chunks.append(chunk);size+=len(chunk)
+    raw=b''.join(chunks)
+    if size>MAX_BYTES or length and size!=int(length): raise ValueError('Incomplete or oversized original; no truncated paper is treated as full text.')
+    return raw,url,audit
+   finally: connection.close()
+  raise ValueError('Paper redirect limit reached.')
+ except Exception as error:
+  error.retrieval_attempts=audit
+  error.captured_response=b''.join(chunks)
+  raise
 
 class PDFLink(HTMLParser):
  def __init__(self): super().__init__();self.url=None

@@ -56,16 +56,20 @@ def retrieve(url, output_directory, expected_media_type='application/pdf', max_b
                 entry.update(status_code=response.status,retrieved_url=response.url,media_type=response.headers.get_content_type())
                 validate_url(response.url)
                 length=response.headers.get('Content-Length')
-                if length is not None and int(length)>max_bytes:raise ValueError('Resource exceeds the frozen retrieval byte limit; no truncated paper is reviewed.')
+                if length is not None and int(length)>max_bytes:
+                    raise ValueError('Resource exceeds the frozen retrieval byte limit; no truncated paper is reviewed.')
                 received=0
                 while received<=max_bytes:
                     chunk=response.read1(min(65536,max_bytes+1-received))
                     if not chunk:break
                     chunks.append(chunk);received+=len(chunk);audit['usage']['downloaded_bytes']+=len(chunk)
                 raw=b''.join(chunks)
-                if len(raw)>max_bytes:raise ValueError('Resource exceeds the retrieval byte limit; partial body is not a full text.')
-                if length is not None and len(raw)!=int(length):raise ValueError('Incomplete original response body.')
-                if expected_media_type=='application/pdf' and not raw[:1024].lstrip().startswith(b'%PDF-'):raise ValueError('Response is not the requested PDF; landing-page bytes do not establish paper access.')
+                if len(raw)>max_bytes:
+                    raise ValueError('Resource exceeds the retrieval byte limit; partial body is not a full text.')
+                if length is not None and len(raw)!=int(length):
+                    raise ValueError('Incomplete original response body.')
+                if expected_media_type=='application/pdf' and not raw[:1024].lstrip().startswith(b'%PDF-'):
+                    raise ValueError('Response is not the requested PDF; landing-page bytes do not establish paper access.')
                 with (directory/'original.bin').open('xb') as stream:stream.write(raw)
                 audit.update(status='retrieved',sha256=digest(raw),bytes=len(raw),retrieved_url=response.url,original_path='original.bin')
                 entry['status']='retrieved'

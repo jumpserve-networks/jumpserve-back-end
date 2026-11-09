@@ -22,6 +22,7 @@ import argparse
 from benchmark_ingest import IngestBuffer, ingest_settings, require_persistence
 import datetime
 import json
+import math
 import os
 import platform
 import random
@@ -298,9 +299,8 @@ def parse_tc_backlog_bytes(raw: str) -> int:
     }
     values: List[int] = []
     for number, prefix in matches:
-        try:
-            value = float(number) * scale[prefix.upper()]
-        except (ValueError, KeyError):
+        value = float(number) * scale[prefix.upper()]
+        if not math.isfinite(value):
             continue
         values.append(int(round(value)))
     if not values:
@@ -428,9 +428,8 @@ def parse_ss_metrics_by_peer(raw: str) -> Dict[tuple[str, int], SSSocketMetrics]
             delivery_rate_bps = int(delivery_rate_text or "0")
         except ValueError:
             delivery_rate_bps = 0
-        try:
-            rtt_ms = float(rtt_ms_text or "0")
-        except ValueError:
+        rtt_ms = float(rtt_ms_text or "0")
+        if not math.isfinite(rtt_ms):
             rtt_ms = 0.0
         try:
             mss = int(mss_text or "0")
@@ -1090,8 +1089,6 @@ def sender_mode(args: argparse.Namespace) -> int:
     stop_writer = threading.Event()
 
     def flush_snapshot_counters() -> None:
-        if not counter_paths and not rtt_paths and not in_flight_paths and not cwnd_paths:
-            return
         with lock:
             byte_snapshot = dict(sent_by_target)
             rtt_snapshot = dict(rtt_ms_by_target)

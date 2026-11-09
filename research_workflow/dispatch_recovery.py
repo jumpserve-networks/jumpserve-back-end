@@ -127,8 +127,7 @@ def runtime_diagnostic(task,dispatch,spool,retain):
     def observe(path,maximum):
         try:
             # Do not follow a link at any original spool component.
-            for parent in [path,*path.parents]:
-                if parent==root.parent:break
+            for parent in [path,*path.parents][:len(path.parts)-len(root.parts)+1]:
                 if parent.is_symlink():return dict(status='unsafe-link')
             info=path.lstat()
             if not stat.S_ISREG(info.st_mode):return dict(status='unsafe-file')
@@ -503,10 +502,12 @@ def _reconcile_dispatches(spool,dispatches):
             try:fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
             except BlockingIOError:continue
             task=store.rows('autonomy_tasks',dict(id='eq.'+d['task_id'],study_id='eq.'+d['study_id'],limit=1))[0]
-            if task['status']=='running' or store.rows('model_dispatches',dict(task_id='eq.'+task['id'],status='in.(queued,running)',limit=1)):continue
+            if task['status']=='running' or store.rows('model_dispatches',dict(task_id='eq.'+task['id'],status='in.(queued,running)',limit=1)):
+                continue
             owner=store.rows('study_owners',dict(study_id='eq.'+d['study_id'],limit=1))[0]['owner_id'];task=dict(task,actor_id=owner)
             logical=(directory/'logical.json').read_bytes()
-            if logical!=d['request_raw'].encode() or digest(logical)!=d['request_sha256']:raise ValueError('Interrupted worker logical hash differs.')
+            if logical!=d['request_raw'].encode() or digest(logical)!=d['request_sha256']:
+                raise ValueError('Interrupted worker logical hash differs.')
             builder.container_action(task['id'],'stop')
             workspace=task_root/'workspace'
             # Preserve exact history, including the last pre-transport input.
@@ -517,7 +518,8 @@ def _reconcile_dispatches(spool,dispatches):
                 return recovery_artifact(task,d,owner,name,raw,kind)
             reconcile_native_calls(task,d,directory,retain)
             calls=ledger(task,d,repair.original,repair.rows)
-            if calls is None:continue
+            if calls is None:
+                continue
             normalization=retain('normalization.json',metadata,'builder-reconciliation-metadata')
             checkpoint=retain('checkpoint.zip',builder.checkpoint(workspace),'builder-reconciled-workspace')
             proof=dict(version=VERSION,dispatch_id=d['id'],request_sha256=d['request_sha256'],original_status=d['status'],calls=calls,container_cleanup='stopped',checkpoint=checkpoint,normalization=normalization,

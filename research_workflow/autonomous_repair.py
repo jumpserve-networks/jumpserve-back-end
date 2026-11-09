@@ -105,7 +105,8 @@ def original(task, pointer, maximum=150000):
 def diagnose(task, record):
     """Read stored identities; never invoke a provider or submit an experiment."""
     pending = rows(task, 'builder_calls', task_id='eq.' + task['id'], status='in.(running,unknown)', limit=101)
-    if len(pending)>100:raise ValueError('Uncertain native call coverage exceeds the bounded diagnosis.')
+    if len(pending)>100:
+        raise ValueError('Uncertain native call coverage exceeds the bounded diagnosis.')
     import dispatch_recovery
     pending=[c for c in pending if c['status']=='running' or not dispatch_recovery.reconciled_call(task,c,original,rows)]
     live = rows(task, 'autonomy_turns', task_id='eq.' + task['id'], status='eq.running', limit=1)
@@ -313,7 +314,8 @@ def route(task, status, context, stage, reason):
         import experiment_builder
         handoff=experiment_builder.repair_handoff(context)
         validation=context.get('repair_validation')
-        if not validation:raise ValueError('Original server repair validation receipt required before resumption.')
+        if not validation:
+            raise ValueError('Original server repair validation receipt required before resumption.')
         report=json.loads(original(task,validation))
         hashes={c['details']['test_config']['private_inputs']['project.zip']['sha256'] for c in context['proposal']['protocol']['configurations']}
         changed=report.get('source_change') or {}
@@ -345,7 +347,8 @@ def route(task, status, context, stage, reason):
             # The normal path already froze exact package bytes and performed
             # semantic protocol validation. Fresh scientific reviews follow.
             validation=context.get('repair_validation')
-            if not validation:raise ValueError('Original server repair validation receipt required before resumption.')
+            if not validation:
+                raise ValueError('Original server repair validation receipt required before resumption.')
             report=json.loads(original(task,validation))
             configs=context['proposal']['protocol']['configurations']
             hashes={c['details']['test_config']['private_inputs']['project.zip']['sha256'] for c in configs}

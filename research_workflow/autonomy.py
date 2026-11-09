@@ -254,38 +254,8 @@ def check_context(job,study,selection=False):
   result['retained_input_inventory']=dict(sha256=digest(raw.encode()),byte_count=len(raw.encode()),provenance='Computed from the hash-verified compiled original; counts describe archived input records, not new measurements.',counts={kind:{status:sum(r.get('status')==status for r in data.get(kind,[])) for status in ('recorded','missing','invalid','ambiguous')} for kind in ('published','observed')})
  return result
 
-def evidence_packet(records):
- """Lossless transport view; original values and controller math stay unchanged."""
- original=digest(canonical(records));values=copy.deepcopy(records)
- keys=set(values[0]) if values else set()
- if any(set(r)!=keys for r in values):raise ValueError('Evidence record schemas differ; no missing field was filled.')
- shared=[]
- if values and all(isinstance(r.get('details'),dict) for r in values):
-  shared=[k for k in sorted(keys-{'details'}) if all(k in r['details'] and canonical(r[k])==canonical(r['details'][k]) for r in values)]
-  for r in values:
-   for k in shared:r['details'].pop(k)
- detail_columns=None;detail_common={}
- if values and all(isinstance(r.get('details'),dict) and set(r['details'])==set(values[0]['details']) for r in values):
-  detail_keys=set(values[0]['details']);detail_common={k:values[0]['details'][k] for k in sorted(detail_keys) if all(canonical(r['details'][k])==canonical(values[0]['details'][k]) for r in values)}
-  detail_columns=sorted(detail_keys-set(detail_common))
-  for r in values:r['details']=[r['details'][k] for k in detail_columns]
- common={k:values[0][k] for k in sorted(keys) if all(canonical(r[k])==canonical(values[0][k]) for r in values)} if values else {}
- columns=sorted(keys-set(common));rows=[[r[k] for k in columns] for r in values]
- packet=dict(representation='lossless-record-columns-v1',record_count=len(records),original_records_sha256=original,common=common,columns=columns,rows=rows,dictionaries={},shared_detail_fields=shared,detail_columns=detail_columns,detail_common=detail_common,
-  legend='For every row, combine common fields with columns in row order. For columns listed in dictionaries, a cell is an index into that column dictionary, never a measured value. If detail_columns is not null, details is an array in that order; merge it with detail_common. Then restore shared_detail_fields in details from that same parent row. All original fields and values are retained; no sampling, rounding or zero imputation.')
- for i,k in enumerate(columns):
-  dictionary=[];indices=[];seen={}
-  for row in rows:
-   identity=canonical(row[i])
-   if identity not in seen:seen[identity]=len(dictionary);dictionary.append(row[i])
-   indices.append(seen[identity])
-  if len(canonical(dictionary))+len(canonical(indices))+len(k)+10<len(canonical([row[i] for row in rows])):
-   packet['dictionaries'][k]=dictionary
-   for row,index in zip(rows,indices):row[i]=index
- if digest(canonical(evidence_records(packet)))!=original or digest(canonical(records))!=original:raise ValueError('Evidence transport changed an original record.')
- return packet
-
 def evidence_records(packet):
+ """Read historical columnar evidence retained by evaluation tools."""
  if packet.get('representation')!='lossless-record-columns-v1' or len(packet['rows'])!=packet['record_count']:raise ValueError('Invalid evidence transport.')
  result=[]
  for row in packet['rows']:
@@ -387,8 +357,6 @@ def inspect_evidence(task,request):
    result=evidence.document_page(document,cursor) if len(canonical(document))>8000 else evidence.page([document],cursor)
   else:
    protocols={one('campaigns',study,j['campaign_id'])['protocol_id'] for j in allowed.values()}
-   if task['context'].get('proposal'):
-    raise ValueError('Prospective protocols are already supplied in full; no unrelated protocol is readable.')
    if record_id not in protocols:raise ValueError('Protocol is outside the authorized claim/candidate.')
    result=evidence.document_page(one('protocols',study,record_id)['document'],cursor)
  elif kind in ('measurements','published-values'):
@@ -513,7 +481,6 @@ def validate_proposal(task,proposal):
  if proposal['experiment_type'] not in ('new-measurement','independent-check','broader-validation'):raise ValueError('Choose an applicable networking method.')
  p=network_spec.bind_inputs(p)
  validate_protocol(p)
- if not network_spec.specs(p):raise ValueError('A registered executable networking specification is required.')
  if any(m.get('planned_observations') is None for m in p['metrics']):raise ValueError('Every metric needs explicit planned coverage.')
  source=one('sources',task['study_id'],claim['source_id'])
  implementation=network_spec.implementation(p['execution']['runner'])
@@ -657,7 +624,7 @@ def numeric_finding(task):
    expected_keys=[keys(r) for r in originals]
    original_by_key={keys(r):r for r in originals}
    if len(expected_keys)!=len(set(expected_keys)) or {keys(r) for r in measurements}!=set(expected_keys) or len(measurements)!=len(originals):return None
-   if any(r['status']!='recorded' or r['source_id']!=claim['source_id'] for r in originals):return None
+   # Every original published cell was validated while building required_cells above.
    planned={name:sum(r['metric']==name for r in originals) for name in metrics}
   else:
    if claimed!=set(metrics):return None

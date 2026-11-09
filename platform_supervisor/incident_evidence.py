@@ -129,11 +129,13 @@ def checkpoint_view(raw):
                             or type(index.get('records')) is not int or index['records']<0):
                         raise Hold('Original native history index is invalid.', 'reconciling')
                     compressed = read('native-tool-history.json.gz',1000000)
-                    if digest(compressed)!=index.get('compressed_sha256'): raise Hold('Compressed original history hash differs.', 'reconciling')
+                    if digest(compressed)!=index.get('compressed_sha256'):
+                        raise Hold('Compressed original history hash differs.', 'reconciling')
                     with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as source: history = source.read(HISTORY_BYTES+1)
                     if len(history)>HISTORY_BYTES or len(history)!=index['bytes'] or digest(history)!=index.get('sha256'):
                         raise Hold('Expanded original history identity differs.', 'reconciling')
-                    if len(json.loads(history))!=index['records']: raise Hold('Original history coverage differs.', 'reconciling')
+                    if len(json.loads(history))!=index['records']:
+                        raise Hold('Original history coverage differs.', 'reconciling')
                 result['native_history'] = history_view(history)
             else:
                 result['native_history'] = dict(available=False,reason='No native history member was retained in this checkpoint.')

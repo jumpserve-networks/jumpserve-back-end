@@ -1,5 +1,5 @@
 """Exposed OpenClaw protocol/dispatch regressions; synthetic provider, real CLI."""
-import io,json,os,sys,tempfile,unittest,uuid,urllib.error,urllib.request
+import io,json,os,socket,sys,tempfile,unittest,uuid,urllib.error,urllib.parse,urllib.request
 from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
@@ -17,7 +17,7 @@ def stream():
  text=json.dumps(decision());return b'data: '+json.dumps(dict(type='response.completed',response=dict(status='completed',model=runtime.MODEL,output=[dict(type='message',role='assistant',content=[dict(type='output_text',text=text)])],usage=dict(input_tokens=100,output_tokens=30,total_tokens=130)))).encode()+b'\n\n'
 
 class OpenClaw(unittest.TestCase):
- def local_bridge(self,mutate=lambda request:None,transport=None,repeats=1):
+ def local_bridge(self,mutate=lambda request:None,transport=None,repeats=1,body=None,headers=None,path='/chat/completions',repeat_mutation=None,incomplete=False,final_text=lambda text:text):
   """Real loopback HTTP handler, explicitly emulated native CLI and upstream."""
   calls=[];errors=[]
   def upstream(method,url,token,body):
@@ -28,16 +28,55 @@ class OpenClaw(unittest.TestCase):
    settings=cfg['models']['providers']['lab'];message=Path(arguments[arguments.index('--message-file')+1]).read_text()
    value=dict(model=runtime.MODEL,messages=[dict(role='user',content=message)],stream=False);mutate(value)
    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}));output=None
-   for _ in range(repeats):
-    request=urllib.request.Request(settings['baseUrl']+'/chat/completions',data=workflow.canonical(value),headers={'Content-Type':'application/json','Authorization':'Bearer '+settings['apiKey']})
+   for index in range(repeats):
+    if index and repeat_mutation:repeat_mutation(value)
+    if incomplete:
+     url=urllib.parse.urlsplit(settings['baseUrl']+path);raw=workflow.canonical(value)
+     with socket.create_connection((url.hostname,url.port),timeout=3) as connection:
+      connection.sendall(('POST '+url.path+' HTTP/1.0\r\nAuthorization: Bearer '+settings['apiKey']+'\r\nContent-Length: '+str(len(raw)+1)+'\r\n\r\n').encode()+raw);connection.shutdown(socket.SHUT_WR)
+      received=b''
+      while chunk:=connection.recv(65536):received+=chunk
+     errors.append(json.loads(received.split(b'\r\n\r\n',1)[1]));continue
+    request=urllib.request.Request(settings['baseUrl']+path,data=workflow.canonical(value) if body is None else body,headers={'Content-Type':'application/json','Authorization':'Bearer '+settings['apiKey'],**(headers or {})})
     try:
      with opener.open(request,timeout=3) as response:output=json.loads(response.read())['choices'][0]['message']['content']
     except urllib.error.HTTPError as error:errors.append(json.loads(error.read()))
-   return SimpleNamespace(returncode=1 if output is None else 0,stdout=workflow.canonical(dict(payloads=[] if output is None else [dict(text=output)])),stderr=b'')
+   return SimpleNamespace(returncode=1 if output is None else 0,stdout=workflow.canonical(dict(payloads=[] if output is None else [dict(text=final_text(output))])),stderr=b'')
   with tempfile.TemporaryDirectory() as tmp,patch.object(runtime.subprocess,'run',side_effect=cli):
    directory=Path(tmp)/'turn';answer,receipt=runtime.execute(request(),directory,token_source=lambda:'synthetic',transport=upstream)
    artifacts={p.name:p.read_bytes() for p in directory.iterdir() if p.is_file() and p.name!='config.json'}
   return answer,receipt,calls,errors,artifacts
+
+ def test_changed_second_native_request_cannot_replace_or_replay_a_retained_provider_operation(self):
+  answer,receipt,calls,errors,artifacts=self.local_bridge(repeats=2,repeat_mutation=lambda value:value['messages'][0].update(content='Different second request'))
+  self.assertEqual(len(calls),1);self.assertEqual(errors[-1]['error']['code'],'retained-provider-operation');self.assertIn('provider-response.bin',artifacts)
+
+ def test_identical_native_request_reuses_the_complete_retained_answer_without_provider_replay(self):
+  answer,receipt,calls,errors,artifacts=self.local_bridge(repeats=2)
+  self.assertIsNotNone(answer);self.assertEqual(receipt['status'],'complete');self.assertEqual(len(calls),1);self.assertEqual(errors,[]);self.assertIn('provider-response.bin',artifacts)
+
+ def test_text_part_translation_preserves_roles_and_rejects_nontext_and_invalid_message_shapes(self):
+  value=dict(model=runtime.MODEL,messages=[dict(role=role,content=[dict(type='text',text='Original '+role),dict(type='text',text='Zero: 0')]) for role in ['system','developer','user','assistant']])
+  translated=runtime.translate(value,request());self.assertEqual(translated['system'],[{'text':'Original system\nZero: 0'},{'text':'Original developer\nZero: 0'}]);self.assertEqual([item['role'] for item in translated['messages']],['user','assistant'])
+  for invalid in [None,False,{},[{}],[None],[dict(type='image',text='original')],[dict(type='text',text=0)]]:
+   with self.subTest(content=invalid),self.assertRaisesRegex(runtime.RequestRejected,'native-content-type'):runtime.translate(dict(model=runtime.MODEL,messages=[dict(role='user',content=invalid)]),request())
+  for invalid in [None,{},dict(model=runtime.MODEL,messages=[]),dict(model=runtime.MODEL,messages=[None]),dict(model=runtime.MODEL,messages=[{}])]:
+   with self.subTest(request=invalid),self.assertRaises(runtime.RequestRejected):runtime.translate(invalid,request())
+
+ def test_private_bridge_rejects_bad_path_auth_lengths_and_original_invalid_json_before_provider_admission(self):
+  cases=[({'path':'/foreign'},'native-bridge-authorization'),({'headers':{'Authorization':'Bearer foreign'}},'native-bridge-authorization'),({'headers':{'Content-Length':'invalid'}},'native-content-length'),({'body':b''},'native-bridge-byte-limit'),({'body':b'not json'},'native-json-invalid'),({'body':b'\xff'},'native-json-invalid')]
+  for options,code in cases:
+   with self.subTest(code=code,options=options):
+    answer,receipt,calls,errors,artifacts=self.local_bridge(**options);self.assertIsNone(answer);self.assertEqual(calls,[]);self.assertFalse(receipt['provider_request_sent']);self.assertEqual(receipt['error_code'],code);self.assertEqual(errors[0]['error']['code'],code)
+    if 'body' in options and options['body']:self.assertEqual(artifacts['rejected-native-body.bin'],options['body'])
+
+ def test_received_provider_errors_and_invalid_decisions_keep_original_bytes_without_an_automatic_retry(self):
+  for raw in [b'{"error":{"code":"rate_limit_exceeded"}}',b'Original non-JSON error',b'[]']:
+   response=Response(raw);response.status=429
+   with self.subTest(raw=raw):
+    answer,receipt,calls,errors,artifacts=self.local_bridge(transport=lambda *args:response);self.assertIsNone(answer);self.assertEqual(len(calls),1);self.assertTrue(receipt['response_received']);self.assertEqual(receipt['http_status'],429);self.assertEqual(artifacts['provider-response.bin'],raw);self.assertEqual(receipt['status'],'paused-quota')
+  invalid=b'data: '+workflow.canonical(dict(type='response.completed',response=dict(status='completed',model='foreign',output=[dict(type='message',role='assistant',content=[dict(type='output_text',text='{}')])])))+b'\n\n'
+  answer,receipt,calls,errors,artifacts=self.local_bridge(transport=lambda *args:Response(invalid));self.assertIsNone(answer);self.assertEqual(receipt['status'],'invalid-output');self.assertEqual(receipt['error_code'],'invalid-structured-decision');self.assertEqual(artifacts['provider-response.bin'],invalid)
 
  def test_hash_bound_handoff_keeps_exact_provider_content_and_original_prompt(self):
   answer,receipt,calls,errors,artifacts=self.local_bridge()

@@ -141,6 +141,8 @@ def split_ipv6_coverage(summaries):
 def build(export_path, definition, root, declared_protocol_sha):
     tick = now(); raw = Path(export_path).read_bytes(); exported = json.loads(raw)
     native = exported['data']; module = exported['module']
+    if module not in ('ipv6-dns-study','http2-compliance-study','leo-emergency-failover','propagation-delay-study','reliable-sketch-study'):
+        raise ValueError('Unknown historical assessment module.')
     study = str(uuid.uuid5(NAMESPACE, module + ':' + VERSION))
     audit_run = uid(study, 'import-audit-run'); campaign = uid(study, 'import-audit-campaign')
     source, main_source = source_rows(native, definition['source'], study, root)
@@ -238,7 +240,7 @@ def build(export_path, definition, root, declared_protocol_sha):
                 p=s.get('published_counts'); target=p.get(metric) if p is not None else None
                 pub=published(key,key,s['configuration_id'],'author '+metric,'cases',target,s.get('published_source') or 'Table 5') if p is not None else None
                 measurement(key,s['configuration_id'],'author '+metric,'cases',value,pub,
-                    published=number(target), difference=number(value)-number(target) if target is not None else None,
+                    published=number(target), difference=number(value)-number(target) if value is not None and target is not None else None,
                     label=s['assessment'] if target is not None else 'unmatched historical aggregate', tolerance_absolute=0 if target is not None else None,
                     denominator=s['planned'], classifier='Authors classifier; rejection is not RFC compliance.')
     elif module == 'leo-emergency-failover':
@@ -260,7 +262,7 @@ def build(export_path, definition, root, declared_protocol_sha):
             for metric,value in c['published_values'].items():
                 units='ms' if metric.endswith('_ms') else 'fraction' if 'share' in metric else 'log2(max/min)'
                 published(c['claim_id']+':'+metric,c['claim_id'],c['claim_id'],metric,units,value,c['figure'])
-    elif module == 'reliable-sketch-study':
+    else:  # The remaining supported module is reliable-sketch-study.
         for s in native['summaries']:
             for metric, values in s['statistics'].items():
                 measurement(s['configuration_id']+':'+metric,s['configuration_id'],metric,values['units'],values['median'],
@@ -271,9 +273,9 @@ def build(export_path, definition, root, declared_protocol_sha):
     summaries = split_ipv6_coverage(native['summaries']) if module == 'ipv6-dns-study' else native['summaries']
     for i,s in enumerate(summaries):
         if module == 'ipv6-dns-study':
-            values=list(s['statistics'].values()); coverage={(v['planned'],v['n'],v['missing'],v['invalid']) for v in values}
-            if len(coverage)!=1: raise ValueError('IPv6 metrics have different coverage; split rather than conflate.')
-            planned,recorded,missing,invalid=next(iter(coverage)); ambiguous=excluded=0
+            # split_ipv6_coverage already groups each nonempty summary by these counts.
+            value=next(iter(s['statistics'].values()))
+            planned,recorded,missing,invalid=(value[key] for key in ('planned','n','missing','invalid')); ambiguous=excluded=0
             interval='descriptive'; uncertainty='Daily min/max are descriptive; dates and NS sets are correlated, and no inferential interval is supported.'
         elif module == 'reliable-sketch-study':
             planned=s['planned'];recorded=s['recorded'];invalid=s['failed'];excluded=s['excluded'];missing=planned-recorded-invalid-excluded;ambiguous=0

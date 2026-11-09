@@ -155,27 +155,27 @@ def main():
             if audit_raw is not None:entries.append(dict(kind='artifacts',record=store.artifact(args.study_id,args.actor_id,audit_raw,str(uuid.uuid5(uuid.UUID(args.request_id),'retrieval-audit')),'application/json',{'source_id':args.request_id,'transformation':'none; original retrieval audit'})))
             store.append_bundle(args.study_id,args.actor_id,entries+[dict(kind="sources",record=row)])
         print(json.dumps({"source_id":args.request_id,"sha256":digest(raw),"persisted":args.persist,"review_status":"retrieved-unreviewed"})); return
-    if args.command=="run":
-        path=Path(args.input); protocol=json.loads(Path(args.protocol).read_bytes()); campaign=json.loads(Path(args.campaign).read_bytes())
-        if path.stat().st_size>10_000_000: raise ValueError("Input exceeds the hard operator limit; no truncated input is analyzed.")
-        raw=path.read_bytes()
-        if args.persist:
-            prior=store.rows("runs",{"id":"eq."+args.request_id,"study_id":"eq."+args.study_id,"limit":1})
-            if prior:
-                if prior[0]["input_sha256"]!=digest(raw) or prior[0]["campaign_id"]!=campaign["id"]: raise ValueError("Run ID was already used for different inputs.")
-                save(args.output,dict(run=prior[0],replayed=True,limitation='Existing run returned without re-execution; export the study for its measurements.'))
-                print(json.dumps(dict(run_id=args.request_id,replayed=True,persisted=True,status=prior[0]['status'])));return
-            saved_campaign=store.rows('campaigns',{'id':'eq.'+campaign['id'],'study_id':'eq.'+args.study_id,'limit':1})
-            saved_protocol=store.rows('protocols',{'id':'eq.'+protocol['id'],'study_id':'eq.'+args.study_id,'limit':1})
-            if not saved_campaign or any(campaign.get(key)!=saved_campaign[0].get(key) for key in ('protocol_id','adapter','experiment_type','planned_units')) or not saved_protocol or saved_protocol[0]['document']!=protocol['document'] or saved_protocol[0]['sha256']!=protocol['sha256']:
-                raise ValueError('Local campaign or protocol differs from the stored frozen configuration; preserve it and use an amendment.')
-        value=runner.execute(raw,protocol,campaign,args.request_id);save(args.output,value)
-        if args.persist:
-            artifacts=[store.artifact(args.study_id,args.actor_id,data,str(uuid.uuid5(uuid.UUID(args.request_id),label)),"application/json",{"run_id":args.request_id,"transformation":label}) for label,data in (("original-input",raw),("parsed-output",canonical(value)))]
-            entries=[dict(kind="artifacts",record=r) for r in artifacts]+[dict(kind="runs",record=value["run"])]
-            for kind in ("published_values","measurements","summaries"): entries.extend(dict(kind=kind,record=r) for r in value[kind])
-            store.append_bundle(args.study_id,args.actor_id,entries)
-        print(json.dumps({"run_id":args.request_id,"status":value["run"]["status"],"reason":value["run"]["reason"],"persisted":args.persist,"usage":value["run"]["usage"]}))
-        if value["run"]["status"]=="failed": raise SystemExit(1)
+    # All other argparse commands above return after handling their operation.
+    path=Path(args.input); protocol=json.loads(Path(args.protocol).read_bytes()); campaign=json.loads(Path(args.campaign).read_bytes())
+    if path.stat().st_size>10_000_000: raise ValueError("Input exceeds the hard operator limit; no truncated input is analyzed.")
+    raw=path.read_bytes()
+    if args.persist:
+        prior=store.rows("runs",{"id":"eq."+args.request_id,"study_id":"eq."+args.study_id,"limit":1})
+        if prior:
+            if prior[0]["input_sha256"]!=digest(raw) or prior[0]["campaign_id"]!=campaign["id"]: raise ValueError("Run ID was already used for different inputs.")
+            save(args.output,dict(run=prior[0],replayed=True,limitation='Existing run returned without re-execution; export the study for its measurements.'))
+            print(json.dumps(dict(run_id=args.request_id,replayed=True,persisted=True,status=prior[0]['status'])));return
+        saved_campaign=store.rows('campaigns',{'id':'eq.'+campaign['id'],'study_id':'eq.'+args.study_id,'limit':1})
+        saved_protocol=store.rows('protocols',{'id':'eq.'+protocol['id'],'study_id':'eq.'+args.study_id,'limit':1})
+        if not saved_campaign or any(campaign.get(key)!=saved_campaign[0].get(key) for key in ('protocol_id','adapter','experiment_type','planned_units')) or not saved_protocol or saved_protocol[0]['document']!=protocol['document'] or saved_protocol[0]['sha256']!=protocol['sha256']:
+            raise ValueError('Local campaign or protocol differs from the stored frozen configuration; preserve it and use an amendment.')
+    value=runner.execute(raw,protocol,campaign,args.request_id);save(args.output,value)
+    if args.persist:
+        artifacts=[store.artifact(args.study_id,args.actor_id,data,str(uuid.uuid5(uuid.UUID(args.request_id),label)),"application/json",{"run_id":args.request_id,"transformation":label}) for label,data in (("original-input",raw),("parsed-output",canonical(value)))]
+        entries=[dict(kind="artifacts",record=r) for r in artifacts]+[dict(kind="runs",record=value["run"])]
+        for kind in ("published_values","measurements","summaries"): entries.extend(dict(kind=kind,record=r) for r in value[kind])
+        store.append_bundle(args.study_id,args.actor_id,entries)
+    print(json.dumps({"run_id":args.request_id,"status":value["run"]["status"],"reason":value["run"]["reason"],"persisted":args.persist,"usage":value["run"]["usage"]}))
+    if value["run"]["status"]=="failed": raise SystemExit(1)
 
 if __name__=="__main__": main()

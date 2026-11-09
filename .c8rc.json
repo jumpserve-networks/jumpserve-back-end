@@ -1,0 +1,13 @@
+{
+  "all": true,
+  "include": ["research_workflow/**/*.mjs", "platform_supervisor/**/*.mjs", "real_world/**/*.mjs"],
+  "exclude": ["**/tests/**"],
+  "extension": [".mjs"],
+  "reporter": ["text-summary", "json", "json-summary", "lcov", "html"],
+  "reports-dir": "coverage/native",
+  "lines": 100,
+  "branches": 100,
+  "functions": 100,
+  "statements": 100,
+  "per-file": true
+}

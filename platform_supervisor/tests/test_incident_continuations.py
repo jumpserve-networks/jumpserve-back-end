@@ -28,6 +28,10 @@ class ContinuationDelivery(unittest.TestCase):
   for field,value in [('task_id',str(uuid.uuid4())),('sha256','0'*64),('byte_count',5000001),('storage_path','another-task/path')]:
    store,packet,_=self.fixture();packet['incident_continuation']['predecessor_checkpoint'][field]=value
    with tempfile.TemporaryDirectory() as tmp,self.assertRaises(Hold):continuations.deliver(store,Path(tmp),packet)
+ def test_changed_downloaded_checkpoint_bytes_cannot_be_delivered_as_the_predecessor(self):
+  store,packet,raw=self.fixture();store.request.return_value=raw+b'changed'
+  with tempfile.TemporaryDirectory() as tmp,self.assertRaisesRegex(Hold,'checkpoint bytes differ'):continuations.deliver(store,Path(tmp),packet)
+  store.artifact.assert_not_called()
  def test_missing_contract_or_other_attempt_cannot_supply_a_checkpoint(self):
   for change in ('contract','task','replay'):
    store,packet,_=self.fixture()

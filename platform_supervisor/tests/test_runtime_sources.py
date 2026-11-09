@@ -2,6 +2,7 @@
 import copy
 import io
 import json
+import os
 import tarfile
 import tempfile
 import sys
@@ -107,6 +108,23 @@ class RuntimeSources(unittest.TestCase):
  def test_unrelated_frontend_tasks_do_not_acquire_runtime_sources(self):
   self.store.task['repositories']=['jumpserve-networks/jumpserve-front-end']
   self.assertIsNone(self.deliver());self.store.request.assert_not_called();self.controller.github.main.assert_not_called()
+
+ def test_unselected_reference_files_are_omitted_and_required_release_source_is_mandatory(self):
+  self.owning['assets/platform/notes.txt']=b'Unselected file';self.predecessor['platform_supervisor/tests/notes.txt']=b'Unselected test notes'
+  self.deliver();retained=self.store.artifact.call_args.args[1]
+  with zipfile.ZipFile(io.BytesIO(retained)) as bundle:self.assertFalse(any(name.endswith('notes.txt') for name in bundle.namelist()))
+  del self.owning['bin/research-runtime-release.py'];other=self.root/'second';other.mkdir()
+  self.controller.store.spool=self.root/'other-spool'
+  with patch.object(self_runtime,'ROOT',self.installed),self.assertRaisesRegex(Hold,'release source is incomplete'):sources.deliver(self.controller,other)
+
+ def test_linked_index_and_oversized_compressed_evidence_cannot_be_published(self):
+  self.deliver();index=self.workspace/'references/runtime-source/index.json';index.unlink();private=self.root/'private.json';private.write_bytes(b'Original private data');index.symlink_to(private)
+  with self.assertRaisesRegex(Hold,'index cannot be a link'):self.deliver()
+  self.assertEqual(private.read_bytes(),b'Original private data');index.unlink()
+  reference,owning=sources.infrastructure(self.controller);owning['assets/platform/large.py']=os.urandom(5_000_001)
+  reference['files']['assets/platform/large.py']=digest(owning['assets/platform/large.py']);self.controller.state.clear();self.store.artifact.reset_mock()
+  with patch.object(sources,'infrastructure',return_value=(reference,owning)),self.assertRaisesRegex(Hold,'artifact exceeds its bound'):self.deliver()
+  self.store.artifact.assert_not_called()
 
 
 if __name__=='__main__':unittest.main()

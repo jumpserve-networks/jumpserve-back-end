@@ -16,6 +16,55 @@ The CDN research experiments below are independent of the application's emulated
 test module. They are not yet exposed as a selectable frontend module. Preserve
 their protocols and result formats when adding future CDN application tools.
 
+## Unit-test coverage
+
+Prepare local test dependencies with:
+
+```sh
+python3 -m venv .venv-unit-tests
+.venv-unit-tests/bin/python -m pip install -r requirements-dev.txt
+npm ci
+npm run test:coverage:report
+```
+
+`npm run test:coverage` runs the same fixed local suites and enforces 100%
+coverage. A failing
+suite or invalid source inventory exits 1; valid reports below the target exit
+2. The Python suites run in separate processes to isolate their bare-module
+imports. Their HTTP fixtures bind only to loopback, so the runner needs local
+socket permission. They do not call live AWS, Supabase or model providers.
+
+Python branch coverage includes every maintained module in `research_workflow/`,
+`platform_supervisor/`, `real_world/`, and the root benchmark/queue runners,
+including unloaded files. Archived research utilities in `experiments/`, vendor
+dependencies and test harnesses are excluded. Native helper tests use the
+development-only Node 24.16.0 installed by `npm ci`; synthetic grants exercise
+real SQLite, filesystem recovery and child-process entrypoints.
+
+Benchmark transfer tests use synthetic sockets, clocks and subprocesses to check
+byte counts, measurement units, cleanup and persistence. EC2 migration and release
+verification scripts are exercised with mocked cloud/storage adapters; those unit
+results do not establish a production migration or successful live experiment.
+
+Use `test:coverage:python:report` or `test:coverage:native:report` for one language;
+omit `:report` to enforce its target. Native reports require exact raw counts for
+lines, statements, branches and functions. Python requires no missing lines or
+branches, and both compare report files against the source inventory.
+Python uses coverage.py's supported `pytrace` core. The local CPython 3.13 C
+tracer loses conditional exception exits inside `with`; the tracer regression
+checks that each genuinely untested outcome remains missing and that exercising
+both outcomes covers both branches. These controls run before instrumentation
+to avoid interfering with the suite's tracer. This preserves the executor's
+pinned bytes.
+`coverage/summary.json` records the repository result; per-language HTML, JSON
+and interchange reports live under `coverage/python/` and `coverage/native/`.
+These generated artifacts and isolated dependencies stay out of version control.
+
+For a focused Python diagnostic, run
+`.venv-unit-tests/bin/python tests/run_unit_coverage.py --suite research --pattern test_builder_native_execution.py`.
+Focused reports go under `coverage/python-focused/`, retain the full source
+inventory and never replace the full-suite report or satisfy the repository gate.
+
 ## Network emulation benchmarks
 
 Measurements belong in Supabase. EC2 launches use `benchmark_ingest.py` with
@@ -141,7 +190,7 @@ This is the queue orchestrator for YAML scenario files under `queues/`.
 It:
 
 - loads a YAML file containing `defaults` plus `jobs`
-- resolves scenario names like `staggered-start` to files in `queues/`
+- resolves explicit scenario names or paths to files in `queues/`
 - expands `params` maps into command-line flags
 - runs jobs sequentially
 - supports per-job `cwd`, `env`, `retries`, `continue_on_error`, and `timeout_seconds`
@@ -151,9 +200,8 @@ Useful commands:
 
 ```bash
 python3 run_queue.py --list
-python3 run_queue.py --dry-run
-python3 run_queue.py queues/nines/netem-nines-delay-10ms-vs-11-19ms.yaml --dry-run
-python3 run_queue.py --prefix delay --dry-run
+python3 run_queue.py queues/nines/netem-nines-delay-10ms-vs-60ms-bbr-bbr.yaml --dry-run
+python3 run_queue.py --prefix nines/ --dry-run
 ```
 
 ## Snapshot metric tests
@@ -204,18 +252,21 @@ The current repo has a few different queue families:
 
 - `queues/nines/`: queue files that call `netem_nines.py`
 - `queues/hotnets/` and `queues/hotnets_short/`: queue files that currently call `netem_cubic_benchmark_nines.py`
-- top-level files in `queues/`: older scenario files, many of which still reference the legacy script name `netem_cubic_benchmark.py`
-- `queues/run_queue_nines.yaml`: a meta-queue that chains multiple queue files through `run_queue.py`
+- `archive/queues/retired/`: historical configurations excluded from discovery and execution.
 
 ## Current State Notes
 
-A few references in the repo still use the legacy script name `netem_cubic_benchmark.py`:
+The removed `netem_cubic_benchmark.py` runner is not a default or an alias for a
+modern experiment. Parameter-based jobs must name their `script` explicitly;
+the CLI also requires a scenario or `--prefix` unless using `--list`.
 
-- the old README examples did
-- `run_queue.py` still defaults `script` to `netem_cubic_benchmark.py` when a job omits `script`
-- many older top-level queue YAMLs still set `script: netem_cubic_benchmark.py`
-
-That means the README needed to be updated to describe the files that actually exist today, even though some queue content still reflects the older filename.
+Twenty-seven old configurations and two meta-queues referencing absent
+`queues/_nines/` files are archived unchanged. Their original paths, byte counts,
+missing dependencies and SHA-256 hashes are recorded in
+[`archive/queues/retired/manifest.json`](archive/queues/retired/manifest.json).
+These files preserve historical experiment definitions without substituting new
+methods or presenting them as runnable scenarios. The runner rejects explicit
+attempts to execute this archive. Current scenarios remain under `queues/`.
 
 ## Requirements
 

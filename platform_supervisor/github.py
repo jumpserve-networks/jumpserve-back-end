@@ -28,7 +28,8 @@ class GitHub:
         try:
             with self.opener.open(urllib.request.Request('https://api.github.com'+path,method=method,data=canonical(body) if body is not None else None,headers=headers),timeout=30) as response:
                 raw=response.read(5000001)
-                if len(raw)>5000000:raise Hold('GitHub response exceeds its bound.')
+                if len(raw)>5000000:
+                    raise Hold('GitHub response exceeds its bound.')
                 return json.loads(raw) if raw else None
         except urllib.error.HTTPError as error: raise ApiError(error.code) from None
 
@@ -47,7 +48,8 @@ class GitHub:
         url='https://codeload.github.com/'+repository+'/tar.gz/'+revision
         with self.opener.open(urllib.request.Request(url,headers={'User-Agent':'JumpServe-Platform-Supervisor'}),timeout=60) as response:
             raw=response.read(100000001)
-            if len(raw)>100000000: raise Hold('Repository archive exceeds 100 MB.')
+            if len(raw)>100000000:
+                raise Hold('Repository archive exceeds 100 MB.')
             return raw
 
     def protection(self,repository):

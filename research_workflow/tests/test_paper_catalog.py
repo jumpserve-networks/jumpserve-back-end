@@ -64,6 +64,15 @@ class PaperCatalog(unittest.TestCase):
     def event(self, path='/research/papers', query=None, method='GET'):
         return dict(rawPath=path, queryStringParameters=query or {}, headers={}, requestContext={'http': {'method': method}})
 
+    def test_invalid_timestamps_intake_actor_identities_boundaries_and_preparation_status_remain_unavailable(self):
+        for value in [None,0,'not a timestamp']:
+            with self.assertRaisesRegex(ValueError,'page timestamp'):catalog.timestamp(value)
+        self.events=[dict(study_id=self.studies[0]['id'],actor_id='invalid',action='intake')]
+        with self.assertRaisesRegex(store.StoreError,'initiator identity'):catalog.initiator_names(self.studies[:1])
+        boundary=catalog.cursor(self.studies[0])
+        with patch.object(catalog,'collect',return_value=self.studies[:1]),self.assertRaisesRegex(store.StoreError,'exceeds its boundary'):catalog.papers(before=boundary)
+        with patch.object(catalog,'papers',return_value={'papers':[{'id':self.studies[0]['id']}]}),patch.object(store,'rows',return_value=[{'study_id':self.studies[0]['id'],'status':'unknown'}]),self.assertRaisesRegex(store.StoreError,'preparation status'):catalog.detail(self.studies[0]['id'])
+
     def test_all_unpublished_states_and_missing_workflows_are_listed_without_private_data(self):
         # Filename is not bibliographic evidence and never enters the catalogue.
         row = self.studies[0]; row.update(title=SECRET, paper_upload=dict(filename=SECRET+'.pdf', sha256='a'*64))
