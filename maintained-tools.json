@@ -12,7 +12,6 @@
     "research_workflow/tests/check_generated_package_linux.py",
     "research_workflow/tests/check_native_repair_handoff_linux.py",
     "research_workflow/tests/check_netem_iperf_linux.py",
-    "research_workflow/tests/check_repair_completion_retained.py",
     "research_workflow/tests/check_repair_validation_linux.py",
     "research_workflow/tests/prepare_builder_image.py",
     "research_workflow/tests/prepare_builder_vendor.py"

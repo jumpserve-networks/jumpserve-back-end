@@ -147,7 +147,11 @@ def main():
         measured_charges_usd=None,unallocated_local_compute_cost_usd=None,reviewer=dict(identity='Codex implementing AI',type='AI',independent=False,human=False,held_out=False))
     if args.completion_v2:report.update(version='native-repair-completion-linux-v2',qualification_variant='fresh-completion-v2',maximum_actual_provider_calls=limits['maximum_actual_provider_calls'],credential_mode='access-token-only-no-refresh' if args.qualification_access_token else 'isolated-owner' if args.live else 'synthetic')
     names=['autonomy.py','autonomy_model.py','autonomous_repair.py','experiment_builder.py','repair_validation.py','source_project.py','generated_package.py','network_spec.py','netem_iperf.py','openclaw-builder-patch.json','policies/native-repair-handoff-validation-v1.json','tests/check_native_repair_handoff_linux.py','tests/test_native_repair_handoff.py']
-    if args.completion_v2:names+=['policies/repair-completion-validation-v1.json','tests/test_repair_completion.py','tests/check_repair_completion_retained.py']
+    if args.completion_v2:
+        names.extend([
+            'policies/repair-completion-validation-v1.json',
+            'tests/test_repair_completion.py',
+        ])
     report['source_files']={}
     for name in names:
         raw=(ROOT/'research_workflow'/name).read_bytes();dest=directory/'original-source'/name
