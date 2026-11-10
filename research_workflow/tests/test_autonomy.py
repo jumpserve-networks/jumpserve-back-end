@@ -27,17 +27,6 @@ def retained_ipv6_contexts():
  return planning,review,compiled,records
 
 class Autonomy(unittest.TestCase):
- def test_historical_evidence_decodes_exactly_without_changing_null_zero_precision_or_original_fields(self):
-  cases=json.loads((Path(__file__).parent/'fixtures/legacy-evidence-columns-v1.json').read_bytes())['cases']
-  for name,case in cases.items():
-   with self.subTest(name=name):
-    before=workflow.canonical(case['packet']);original=workflow.canonical(case['records']);decoded=autonomy.evidence_records(case['packet'])
-    self.assertEqual(workflow.canonical(decoded),original);self.assertEqual(case['packet']['original_records_sha256'],workflow.digest(original));self.assertEqual(workflow.canonical(case['packet']),before)
-  self.assertEqual(cases['scientific-values']['records'][0]['value'],'0');self.assertIsNone(cases['scientific-values']['records'][1]['value'])
- def test_historical_transport_rejects_invalid_dictionary_indices(self):
-  packet=json.loads((Path(__file__).parent/'fixtures/legacy-evidence-columns-v1.json').read_bytes())['cases']['dictionary']['packet'];self.assertTrue(packet['dictionaries'])
-  column=next(iter(packet['dictionaries']));packet['rows'][0][packet['columns'].index(column)]=True
-  with self.assertRaises(ValueError):autonomy.evidence_records(packet)
  def test_all_six_retained_checks_fit_the_bound_without_dropping_full_selected_conditions(self):
   planning,review,compiled,records=retained_ipv6_contexts();before=workflow.digest(workflow.canonical(compiled));choices=planning['registered_checks']
   self.assertEqual(len(choices),6);self.assertEqual({j['id'] for j in choices},{j['id'] for j in compiled['jobs'] if j['execution_mode']=='automatic'})

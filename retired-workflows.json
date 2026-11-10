@@ -37,5 +37,15 @@
       "bytes": 4181,
       "lines": 75
     }
+  ],
+  "relocated_members": [
+    {
+      "path": "research_workflow/autonomy.py",
+      "name": "evidence_records",
+      "source_revision": "665109c4ce4f56e1f611c71b7ac5422cdc0b48d3",
+      "source_span_sha256": "3f1975aba1d05393bc704731cd7413650a39f400eb0498d7bc90258174af51d7",
+      "destination": "research_workflow/tests/legacy_evidence.py",
+      "reason": "No current application caller; retain historical decoding and its existing checks as offline test support."
+    }
   ]
 }

@@ -62,6 +62,12 @@ These generated artifacts and isolated dependencies stay out of version control.
 
 ## Maintained and historical tools
 
+Historical columnar evidence decoding lives in
+`research_workflow/tests/legacy_evidence.py` with its compatibility checks and
+unchanged fixtures. It is offline test support; the production autonomy module
+has no caller for this retired transport. Its original source revision and
+function hash are recorded in `retired-workflows.json`.
+
 The completed five-study conversion module and original OpenClaw pilot runner
 have been retired together with their dedicated tests. `retired-workflows.json`
 records the original paths, Git revisions and SHA-256 hashes; recover source with

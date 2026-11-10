@@ -90,15 +90,7 @@ class RetainedInputContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'fragment offset'):inputs.retain_source_delivery(t,read)
         self.assertEqual(t,before)
 
-    def test_lossless_evidence_decoder_refuses_incomplete_rows_and_details(self):
-        packet=json.loads((Path(__file__).parent/'fixtures/legacy-evidence-columns-v1.json').read_bytes())['cases']['details']['packet']
-        for defect in ['representation','count','row','details']:
-            broken=copy.deepcopy(packet)
-            if defect=='representation':broken['representation']='unknown'
-            elif defect=='count':broken['record_count']+=1
-            elif defect=='row':broken['rows'][0].append('unbound value')
-            else:broken['rows'][0][broken['columns'].index('details')]=[]
-            with self.subTest(defect=defect),self.assertRaises(ValueError):autonomy.evidence_records(broken)
+    def test_retained_jobs_require_complete_identity_coverage(self):
         t=task();t['context']['job_ids']=['missing']
         with patch.object(autonomy,'rows',return_value=[]),self.assertRaisesRegex(ValueError,'identity coverage'):autonomy.retained_jobs(t)
 
