@@ -5,7 +5,6 @@
   "manual_programs": [
     "platform_supervisor/tests/check_documentation.py",
     "platform_supervisor/tests/check_platform_native.py",
-    "platform_supervisor/tests/check_platform_resume.py",
     "research_workflow/tests/build_experiment_builder_image.py",
     "research_workflow/tests/check_experiment_builder_linux.py",
     "research_workflow/tests/check_experiment_environment_linux.py",
