@@ -49,7 +49,7 @@ class PlanningPersistence(unittest.TestCase):
         with patch.object(store,'rows',return_value=[]),self.assertRaisesRegex(ValueError,'unavailable'):ideas.resume_campaign({'id':STUDY},ACTOR,{'action':'resume','prepared_id':prepared})
 
     def test_preparation_persists_original_and_compiled_plan_bytes_then_replays_without_duplicate_artifacts(self):
-        study=dict(id=STUDY,paper_url='https://pure.mpg.de/pubman/item/item_3670144_1');value=small_plan();raw=workflow.canonical(value)
+        study=dict(id=STUDY,paper_url='https://example.org/synthetic-preparation-paper');value=small_plan();raw=workflow.canonical(value)
         body=dict(action='prepare',request_id=str(uuid.uuid4()),plan_input=raw.decode());uploaded=[];saved={}
         def artifact(study,actor,original,identity,media,provenance):
             uploaded.append((original,copy.deepcopy(provenance)));return dict(id=identity,sha256=workflow.digest(original),byte_count=len(original))
@@ -65,7 +65,7 @@ class PlanningPersistence(unittest.TestCase):
         for body in [dict(request_id=request,extra=True),dict(request_id=request,plan_input={}),dict(request_id=request)]:
             with patch.object(store,'artifact') as artifact,self.assertRaises(ValueError):preparation.prepare(study,ACTOR,body)
             artifact.assert_not_called()
-        raw=workflow.canonical(small_plan());study['paper_url']='https://pure.mpg.de/pubman/item/item_3670144_1'
+        raw=workflow.canonical(small_plan());study['paper_url']='https://example.org/synthetic-preparation-paper'
         with patch.object(store,'rows',return_value=[]),patch.object(preparation.time,'monotonic',side_effect=[0,19]),patch.object(store,'artifact') as artifact,self.assertRaisesRegex(store.StoreError,'storage budget'):preparation.prepare(study,ACTOR,dict(request_id=request,plan_input=raw.decode()))
         artifact.assert_not_called()
 

@@ -60,40 +60,13 @@ pinned bytes.
 and interchange reports live under `coverage/python/` and `coverage/native/`.
 These generated artifacts and isolated dependencies stay out of version control.
 
-## Maintained and historical tools
+## Maintained tools
 
-Historical columnar evidence decoding lives in
-`research_workflow/tests/legacy_evidence.py` with its compatibility checks and
-unchanged fixtures. It is offline test support; the production autonomy module
-has no caller for this retired transport. Its original source revision and
-function hash are recorded in `retired-workflows.json`.
-
-The completed five-study conversion module and original OpenClaw pilot runner
-have been retired together with their dedicated tests. `retired-workflows.json`
-records the original paths, Git revisions and SHA-256 hashes; recover source with
-`git show <source_revision>:<path>` in isolated checkouts at those revisions.
-Pilot protocols, reports, artifact manifests, runtime dependencies and research
-evidence retain their existing locations. Current OpenClaw integration checks
-continue to use the retained runtime dependencies.
-
-The current automated suites remain in their existing test entrypoints.
-`maintained-tools.json` lists supported manual Linux/native qualification and
-fixture-preparation programs, plus the explicitly retained CDN protocol directories.
-Completed one-off experiment/pilot programs live under `archive/historical-tools/`.
-Its manifest preserves their original paths, source revisions, sizes and SHA-256
-hashes. Raw measurements, protocols, evidence, literature and reports retain their
-existing locations and contents. Archive integrity is checked by the queue unit
-suite included in `npm run test:coverage`.
-
-For historical reproduction, use the recorded source revisions and original paths
-in isolated checkouts, with the original protocol and evidence. Archived programs
-retain their original path and sibling-repository assumptions. Add recurring checks
-to the automated suites; archive completed one-off campaigns with their provenance.
-
-For a focused Python diagnostic, run
-`.venv-unit-tests/bin/python tests/run_unit_coverage.py --suite research --pattern test_builder_native_execution.py`.
-Focused reports go under `coverage/python-focused/`, retain the full source
-inventory and never replace the full-suite report or satisfy the repository gate.
+The supported commands are documented in `package.json`, CI workflows and
+`maintained-tools.json`. Automated tests use synthetic fixtures. Historical
+archives, completed experiment corpora and release-evidence bundles are no
+longer checked into the working tree. Current schema/bootstrap migrations,
+runtime pins and operational policies remain active platform inputs.
 
 ## Network emulation benchmarks
 
@@ -120,15 +93,6 @@ This repository currently centers on a small set of Python entrypoints for Linux
 - `netem_nines.py`
 - `netem_cubic_benchmark_hotnets.py`
 - `run_queue.py`
-
-An independent, real-network experiment for measuring Cloudflare cache residency
-from distributed vantage points is documented in
-[`experiments/cloudflare_cache/README.md`](experiments/cloudflare_cache/README.md).
-The provider-neutral paired Cloudflare/Fastly experiment is documented in
-[`experiments/cdn_comparison/README.md`](experiments/cdn_comparison/README.md).
-That directory also contains the isolated exploratory CloudFront extension and
-its external-VPN pilot; its same-provider Amazon S3 origin confound is documented
-separately from the frozen Cloudflare/Fastly protocol.
 
 ## What The Python Files Do
 
@@ -276,27 +240,11 @@ docker run --rm --network none --cap-add NET_ADMIN --cap-add SYS_ADMIN \
 The namespace capabilities are required for this test. Use a disposable container;
 the test mounts the checkout read-only and requires no external network access.
 
-## Queue Layout
-
-The current repo has a few different queue families:
-
-- `queues/nines/`: queue files that call `netem_nines.py`
-- `queues/hotnets/` and `queues/hotnets_short/`: queue files that currently call `netem_cubic_benchmark_nines.py`
-- `archive/queues/retired/`: historical configurations excluded from discovery and execution.
-
 ## Current State Notes
 
 The removed `netem_cubic_benchmark.py` runner is not a default or an alias for a
 modern experiment. Parameter-based jobs must name their `script` explicitly;
 the CLI also requires a scenario or `--prefix` unless using `--list`.
-
-Twenty-seven old configurations and two meta-queues referencing absent
-`queues/_nines/` files are archived unchanged. Their original paths, byte counts,
-missing dependencies and SHA-256 hashes are recorded in
-[`archive/queues/retired/manifest.json`](archive/queues/retired/manifest.json).
-These files preserve historical experiment definitions without substituting new
-methods or presenting them as runnable scenarios. The runner rejects explicit
-attempts to execute this archive. Current scenarios remain under `queues/`.
 
 ## Requirements
 
@@ -310,10 +258,10 @@ On macOS, the benchmark scripts exit with guidance because `ip netns` and `tc ne
 
 ## Benchmark deployment
 
-Pushes to `main` build a new benchmark AMI through the reusable workflow in
+The `Deploy benchmark AMI` workflow runs only on explicit dispatch and calls the
+reusable workflow in
 [jumpserve-infra](https://github.com/jumpserve-networks/jumpserve-infra/blob/main/.github/workflows/benchmark-ami.yml).
-Changes confined to Markdown or `experiments/` do not trigger a rebuild. The
-`Deploy benchmark AMI` workflow can also be run manually on `main`.
+Merging a backend change alone does not rebuild or deploy the image.
 
 The workflow pins the backend commit, tests successful and failed runs plus
 automatic EC2 termination, selects the image only after verification, and checks

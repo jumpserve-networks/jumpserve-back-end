@@ -1,9 +1,0 @@
-.venv/
-author-artifact/
-literature/*.pdf
-literature/*.html
-literature/*.txt
-literature/*-metadata.json
-literature/pages/
-results/
-__pycache__/

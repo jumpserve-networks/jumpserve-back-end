@@ -2,8 +2,6 @@
 import argparse
 import contextlib
 import io
-import hashlib
-import json
 from pathlib import Path
 import shlex
 import subprocess
@@ -183,44 +181,15 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('No queue scenarios found', result.stdout)
 
-    def test_archived_configuration_cannot_run_even_when_requested_explicitly(self):
-        path=self.config({'jobs':[{'run':'never-execute'}]},'original.yaml',self.root/'archive/queues/retired')
-        original=path.read_bytes()
-        with patch.object(q.subprocess,'run') as execute,contextlib.redirect_stderr(io.StringIO()) as errors:
-            self.assertEqual(q.run_scenarios([path],dry_run=False),2)
-        self.assertIn('historical queue archive',errors.getvalue());execute.assert_not_called();self.assertEqual(path.read_bytes(),original)
 
-    def test_retired_corpus_is_hash_preserved_and_every_listed_scenario_has_a_present_runner(self):
-        root=Path(q.__file__).resolve().parent;manifest=json.loads((root/'archive/queues/retired/manifest.json').read_bytes())
-        self.assertEqual(manifest['version'],'retired-queue-archive-v1');self.assertEqual(len(manifest['files']),29)
-        for record in manifest['files']:
-            raw=(root/record['archived_path']).read_bytes()
-            self.assertEqual(hashlib.sha256(raw).hexdigest(),record['sha256']);self.assertEqual(len(raw),record['bytes']);self.assertFalse((root/record['original_path']).exists())
+    def test_every_supported_scenario_has_a_present_runner(self):
+        root=Path(q.__file__).resolve().parent
         for scenario in (root/'queues').rglob('*.yaml'):
             data=yaml.safe_load(scenario.read_bytes())
             for job in data['jobs']:
-                self.assertIn('script',job);self.assertTrue((root/job['script']).is_file(),str(scenario));self.assertNotEqual(job['script'],'netem_cubic_benchmark.py')
-
-    def test_historical_programs_preserve_original_bytes_outside_supported_entrypoints(self):
-        root=Path(q.__file__).resolve().parent
-        manifest=json.loads((root/'archive/historical-tools/manifest.json').read_bytes())
-        self.assertEqual(manifest['version'],'historical-tools-archive-v1')
-        self.assertRegex(manifest['source_revision'],r'^[a-f0-9]{40}$')
-        self.assertTrue(manifest['files']);originals=set()
-        for row in manifest['files']:
-            self.assertEqual(row['archived_path'],'archive/historical-tools/'+row['original_path'])
-            self.assertNotIn(row['original_path'],originals);originals.add(row['original_path'])
-            original=(root/row['original_path']).resolve();archived=(root/row['archived_path']).resolve()
-            self.assertTrue(original.is_relative_to(root));self.assertTrue(archived.is_relative_to(root/'archive/historical-tools'))
-            self.assertFalse(original.exists());self.assertFalse((root/row['archived_path']).is_symlink())
-            raw=archived.read_bytes()
-            self.assertEqual(len(raw),row['bytes']);self.assertEqual(hashlib.sha256(raw).hexdigest(),row['sha256'])
-        tools=json.loads((root/'maintained-tools.json').read_bytes())
-        self.assertEqual(tools['version'],'maintained-manual-tools-v1')
-        for name in tools['manual_programs']:
-            self.assertNotIn(name,originals);self.assertTrue((root/name).is_file(),name)
-        for name in tools['protected_protocol_directories']:
-            self.assertTrue((root/name).is_dir(),name)
+                self.assertIn('script',job)
+                self.assertTrue((root/job['script']).is_file(),str(scenario))
+                self.assertNotEqual(job['script'],'netem_cubic_benchmark.py')
 
 
 if __name__ == '__main__':

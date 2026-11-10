@@ -64,7 +64,7 @@ def main():
     system=template['system_prompt']+'\n\n'+template['research_context']
     assert template['id']=='dfab5ecb-b8b9-5ad3-8771-f28a06b53b27' and digest(system.encode())==template['content_sha256']
     logical=dict(modelId=runtime.MODEL,system=[dict(text=system),dict(text=autonomy_model.TURN_POLICY['instruction']),dict(text=authority['document']['instruction']),dict(text=autonomy_methods.INSTRUCTION)],builder=dict(version=builder.VERSION,context={'task':'building','question':'Write and run a tiny Python calculation, then read its result.','large_source_fixture':'exact-retained-source-α;'*3200},checkpoint=None,execution_authority={k:authority[k] for k in ('version','sha256')}))
-    package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
+    package=ROOT/'openclaw_worker/node_modules/openclaw';node=package.parent/'node/bin/node'
     corrected=prepare(package,ROOT/'.test-artifacts/builder-vendor/node_modules/openclaw',builder.PATCH_PATH)
     protocol=ROOT/'research_workflow/policies/builder-continuation-validation-v2.json'
     report=dict(protocol='builder-continuation-validation-v2',protocol_sha256=digest(protocol.read_bytes()),kind='development-regression',provider_calls=0,measured_charges_usd=None,image=IMAGE,prompt_content_sha256=template['content_sha256'],full_published_system_composition=True,reviewer={'type':'AI','identity':'Codex','independent':False},status='failed',live_provider_calls=0)

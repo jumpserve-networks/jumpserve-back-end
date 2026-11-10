@@ -1,20 +1,16 @@
 import copy
-import gzip
 import json
 from pathlib import Path
 import sys
-import tempfile
 import unittest
 from unittest.mock import patch
 import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import api, preparation, scheduler, store, workflow
-import build_ipv6_plan
 
 def small_plan():
-    # Exposed development fixture derived from the released archived plan. This
-    # validates software behavior, not new or independent scientific evidence.
-    plan, _ = preparation.registered({'paper_url': 'https://pure.mpg.de/pubman/item/item_3670144_1'})
+    # Generated software fixture; it contains no original paper or measurements.
+    plan = json.loads((Path(__file__).parent/'fixtures/preparation/synthetic-plan.json').read_bytes())
     plan = copy.deepcopy(plan); campaign = plan['campaigns'][0]
     claim = next(e for e in plan['records'] if e['kind']=='claims' and e['record']['id']==campaign['claim_ids'][0])
     source = next(e for e in plan['records'] if e['kind']=='sources' and e['record']['id']==claim['record']['source_id'])
@@ -26,23 +22,14 @@ def small_plan():
     return plan
 
 class Preparation(unittest.TestCase):
-    def test_registered_builder_rejects_changed_bytes_and_incomplete_reviewed_panels(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path=Path(tmp)/'assessment.json';path.write_bytes(b'{}')
-            with self.assertRaisesRegex(ValueError,'pinned v1 source'):build_ipv6_plan.build(path)
-            original=json.loads(gzip.decompress((Path(__file__).parent/'fixtures/ipv6-assessment-v2.json.gz').read_bytes()))
-            original['published']=[value for value in original['published'] if not value['id'].startswith('fig13a-')]
-            raw=workflow.canonical(original);path.write_bytes(raw)
-            # Admit this synthetic version only inside the test to reach the independent panel census.
-            with patch.object(build_ipv6_plan,'ASSESSMENT_SHA256',workflow.digest(raw)),self.assertRaisesRegex(ValueError,'all 192 cells'):
-                build_ipv6_plan.build(path)
 
     def setUp(self):
-        self.study=dict(id=str(uuid.uuid4()),paper_url='https://pure.mpg.de/pubman/item/item_3670144_1')
+        self.enterContext(patch.object(preparation,'PLAN_DIRECTORY',Path(__file__).parent/'fixtures/preparation'))
+        self.study=dict(id=str(uuid.uuid4()),paper_url='https://example.org/synthetic-preparation-paper')
         self.plan=small_plan(); self.raw=workflow.canonical(self.plan)
     def test_registered_version_uses_exact_url_identity_not_title(self):
-        for url in ['https://pure.mpg.de/pubman/item/item_3670144_1','https://pure.mpg.de/pubman/item/item_3670144_1/component/file_3670145/main.pdf','https://doi.org/10.1145/3730567.3764439']:
-            plan, raw=preparation.registered({'paper_url':url}); self.assertEqual(plan['plan_id'],'ipv6-archive-v1'); self.assertEqual(workflow.digest(raw),'6bd31acb22a105c35ea9c54fa0a9381d0c5981bd554bed6443196b5eee3eebb3')
+        for url in ['https://example.org/synthetic-preparation-paper','https://example.org/synthetic-preparation-paper/full','https://doi.org/10.0000/synthetic-unit']:
+            plan, raw=preparation.registered({'paper_url':url}); self.assertEqual(plan['plan_id'],'synthetic-preparation-v1'); self.assertEqual(workflow.digest(raw),workflow.digest((Path(__file__).parent/'fixtures/preparation/synthetic-plan.json').read_bytes()))
         for url in ['https://evil.example/item_3670144_1','https://pure.mpg.de/pubman/item/item_3670144_2','https://example.org/paper']:
             self.assertEqual(preparation.registered({'paper_url':url}), (None,None))
     def test_original_preserved_and_study_identity_and_input_hash_rebound(self):
@@ -126,16 +113,5 @@ class Preparation(unittest.TestCase):
         for j in value['jobs']:
             if j['execution_mode']=='manual': self.assertIsNone(j['request']['raw_input'])
         self.assertEqual(sum(len(json.loads(j['request']['raw_input'])['published']) for j in value['jobs'] if j['execution_mode']=='automatic'),1152)
-    def test_registered_manifest_regenerates_identical_original_bytes(self):
-        # The exact original assessment is retained losslessly so a clean checkout
-        # needs no ignored researcher workspace or network artifact download.
-        fixture=Path(__file__).parent/'fixtures/ipv6-assessment-v2.json.gz'
-        raw=gzip.decompress(fixture.read_bytes())
-        self.assertEqual(workflow.digest(raw),build_ipv6_plan.ASSESSMENT_SHA256)
-        with tempfile.TemporaryDirectory(prefix='jumpserve-plan-regression-') as directory:
-            original=Path(directory)/'assessment-v2.json';original.write_bytes(raw)
-            rebuilt=workflow.canonical(build_ipv6_plan.build(original))+b'\n'
-        _,registered=preparation.registered(self.study)
-        self.assertEqual(rebuilt,registered)
 
 if __name__=='__main__': unittest.main()

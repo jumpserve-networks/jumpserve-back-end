@@ -22,7 +22,8 @@ class GapQueue(unittest.TestCase):
         self.assertEqual(result['queue']['overview_version'],'research-queue-overview-v1')
         self.assertEqual(result['preparation']['gap_queue_version'],gap_queue.VERSION)
     def setUp(self):
-        self.plan, _ = preparation.registered({'paper_url': 'https://pure.mpg.de/pubman/item/item_3670144_1'})
+        self.enterContext(patch.object(preparation,'PLAN_DIRECTORY',Path(__file__).parent/'fixtures/preparation'))
+        self.plan, _ = preparation.registered({'paper_url': 'https://example.org/synthetic-preparation-paper'})
         self.plan = copy.deepcopy(self.plan)
         self.item = self.plan['campaigns'][0]
         self.claim = next(e['record'] for e in self.plan['records'] if e['kind'] == 'claims' and e['record']['id'] == self.item['claim_ids'][0])

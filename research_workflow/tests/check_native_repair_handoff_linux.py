@@ -137,7 +137,7 @@ def main():
     protocol=ROOT/'research_workflow/policies'/('repair-completion-validation-v1.json' if args.completion_v2 else 'native-repair-handoff-validation-v1.json')
     image_report=json.loads((ROOT/'.test-artifacts/builder-image'/('selected-linux-amd64.json' if args.amd64 else 'continuation-v1.json')).read_bytes());image=image_report['image']
     from check_experiment_builder_linux import Response,sse
-    live_protocol=ROOT.parent/'jumpserve-infra/docs/autonomy-recovery-execution-protocol-v1.json'
+    live_protocol=ROOT/'research_workflow/policies/native-repair-live-limits-v1.json'
     limits=json.loads(live_protocol.read_bytes())['qualification']
     if args.completion_v2:
         maximum=json.loads(protocol.read_bytes())['fresh_live_qualification']['maximum_actual_provider_calls']
@@ -245,8 +245,8 @@ def main():
         answer['usage']['research_runtime']=receipt
         return answer
     task=dict(job,stage='building',attempts=270,context=copy.deepcopy(ctx))
-    package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
-    auth=args.qualification_auth or directory/'unused-auth' if args.completion_v2 and args.live else ROOT/'experiments/openclaw_pilot/.subscription-auth'
+    package=ROOT/'openclaw_worker/node_modules/openclaw';node=package.parent/'node/bin/node'
+    auth=args.qualification_auth or directory/'unused-auth' if args.completion_v2 and args.live else ROOT/'.local/openclaw-auth'
     try:
         subprocess.run(['docker','image','inspect',image],capture_output=True,check=True,timeout=15)
         corrected=prepare(package,ROOT/'.test-artifacts/builder-vendor/node_modules/openclaw',builder.PATCH_PATH)

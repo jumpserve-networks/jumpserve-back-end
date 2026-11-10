@@ -1,4 +1,4 @@
-"""Development checks: real archived arithmetic and loopback TCP, no AWS calls."""
+"""Development checks: synthetic arithmetic and loopback TCP, no AWS calls."""
 import copy
 import datetime as dt
 import json
@@ -16,13 +16,13 @@ from test_autonomy import task
 
 class Retained:
     def __init__(self):
-        raw=(Path(preparation.__file__).parent/'plans/ipv6-archive-v1.json').read_bytes()
+        raw=(Path(preparation.__file__).parent/'tests/fixtures/preparation/synthetic-plan.json').read_bytes()
         plan=json.loads(raw);self.task=task('assessment')
         self.compiled=preparation.compile_plan(plan,raw,dict(id=self.task['study_id'],paper_url=plan['paper_urls'][0]))
         self.data={}
         for entry in self.compiled['records']:
             self.put(entry['kind'],entry['record'])
-        self.claim=next(r for r in self.data['claims'].values() if r['description']=='Published absolute folded metrics')
+        self.claim=next(r for r in self.data['claims'].values() if r['description']=='Synthetic numerical claim')
         self.task['claim_id']=self.claim['id'];self.jobs=[j for j in self.compiled['jobs'] if j['execution_mode']=='automatic']
         self.task['context']=dict(prepared_id=self.compiled['id'],job_ids=[],completed_job_ids=[],completed_reviews={})
         for job in self.jobs:
@@ -99,7 +99,7 @@ class Followups(unittest.TestCase):
         self.assertEqual(db.data['runs'][db.jobs[0]['id']]['status'],'partial')
         self.assertEqual(db.data['runs'][db.jobs[-1]['id']]['status'],'complete')
         self.assertTrue(any(r['kind']=='runs' and r['id']==db.jobs[0]['id'] for r in result[1]))
-    def test_actual_six_figure_arithmetic_covers_1152_cells_without_claim_metric_invention(self):
+    def test_synthetic_six_campaign_arithmetic_covers_1152_cells_without_claim_metric_invention(self):
         db=Retained();self.assertEqual(db.claim['metrics'],[])
         a,b,c=db.mocks()
         with a,b,c:result=autonomy.numeric_finding(db.task)
@@ -127,7 +127,7 @@ class Followups(unittest.TestCase):
                 if mode=='one-figure':db.task['context']['completed_job_ids']=[]
                 elif mode=='missing':del db.data['measurements'][row['id']]
                 elif mode=='invalid':row.update(status='invalid',value=None)
-                elif mode=='units':row['units']='ms'
+                elif mode=='units':row['units']='bytes'
                 else:db.data['published_values'][row['published_id']]['value']='987654321'
                 a,b,c=db.mocks()
                 with a,b,c:self.assertIsNone(autonomy.numeric_finding(db.task))
