@@ -62,6 +62,14 @@ These generated artifacts and isolated dependencies stay out of version control.
 
 ## Maintained and historical tools
 
+The completed five-study conversion module and original OpenClaw pilot runner
+have been retired together with their dedicated tests. `retired-workflows.json`
+records the original paths, Git revisions and SHA-256 hashes; recover source with
+`git show <source_revision>:<path>` in isolated checkouts at those revisions.
+Pilot protocols, reports, artifact manifests, runtime dependencies and research
+evidence retain their existing locations. Current OpenClaw integration checks
+continue to use the retained runtime dependencies.
+
 The current automated suites remain in their existing test entrypoints.
 `maintained-tools.json` lists supported manual Linux/native qualification and
 fixture-preparation programs, plus the explicitly retained CDN protocol directories.
