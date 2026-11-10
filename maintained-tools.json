@@ -3,7 +3,6 @@
   "purpose": "Current Linux/native qualification and fixture/image preparation for maintained runtime behavior.",
   "automated_entrypoints": "Existing package scripts, workflow files and fixed test-suite configuration remain authoritative. This registry reads as documentation and never executes commands.",
   "manual_programs": [
-    "platform_supervisor/tests/check_documentation.py",
     "platform_supervisor/tests/check_platform_native.py",
     "research_workflow/tests/build_experiment_builder_image.py",
     "research_workflow/tests/check_experiment_builder_linux.py",
