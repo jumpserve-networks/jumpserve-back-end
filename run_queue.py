@@ -235,8 +235,6 @@ def matching_queue_scenarios(prefix: str | None) -> list[Path]:
 
 
 def load_jobs(config_path: Path) -> list[Job]:
-    if config_path.resolve().is_relative_to((PROJECT_DIR / 'archive/queues').resolve()):
-        raise ValueError('This is a historical queue archive, not an executable scenario. Choose a maintained queue with --list.')
     with config_path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh)
     if not isinstance(data, dict):

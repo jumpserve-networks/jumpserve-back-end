@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-NODE = ROOT / 'experiments/openclaw_pilot/runtime/node_modules/node/bin/node'
+NODE = ROOT / 'openclaw_worker/node_modules/node/bin/node'
 
 
 class AuthEntrypoints(unittest.TestCase):

@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import openclaw_runtime as runtime,siwc_protocol as wire
 from openclaw_health import WorkerAvailability
 ROOT=Path(__file__).resolve().parents[2]
-NODE=ROOT/'experiments/openclaw_pilot/runtime/node_modules/node/bin/node'
+NODE=ROOT/'openclaw_worker/node_modules/node/bin/node'
 
 class NativeRecovery(unittest.TestCase):
  def test_native_sqlite_rotation_and_crash_recovery(self):

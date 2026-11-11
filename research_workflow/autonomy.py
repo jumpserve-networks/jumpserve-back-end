@@ -254,24 +254,6 @@ def check_context(job,study,selection=False):
   result['retained_input_inventory']=dict(sha256=digest(raw.encode()),byte_count=len(raw.encode()),provenance='Computed from the hash-verified compiled original; counts describe archived input records, not new measurements.',counts={kind:{status:sum(r.get('status')==status for r in data.get(kind,[])) for status in ('recorded','missing','invalid','ambiguous')} for kind in ('published','observed')})
  return result
 
-def evidence_records(packet):
- """Read historical columnar evidence retained by evaluation tools."""
- if packet.get('representation')!='lossless-record-columns-v1' or len(packet['rows'])!=packet['record_count']:raise ValueError('Invalid evidence transport.')
- result=[]
- for row in packet['rows']:
-  if len(row)!=len(packet['columns']):raise ValueError('Incomplete evidence row.')
-  record=copy.deepcopy(packet['common'])
-  for k,value in zip(packet['columns'],row):
-   if k in packet['dictionaries']:
-    if isinstance(value,bool) or not isinstance(value,int) or not 0<=value<len(packet['dictionaries'][k]):raise ValueError('Invalid evidence dictionary index.')
-    value=packet['dictionaries'][k][value]
-   record[k]=copy.deepcopy(value)
-  if packet['detail_columns'] is not None:
-   if len(record['details'])!=len(packet['detail_columns']):raise ValueError('Incomplete evidence details.')
-   record['details']={**copy.deepcopy(packet['detail_common']),**dict(zip(packet['detail_columns'],record['details']))}
-  for k in packet['shared_detail_fields']:record['details'][k]=copy.deepcopy(record[k])
-  result.append(record)
- return result
 
 def retained_jobs(task):
  ids=list(dict.fromkeys(task['context'].get('job_ids',[])+task['context'].get('completed_job_ids',[])))

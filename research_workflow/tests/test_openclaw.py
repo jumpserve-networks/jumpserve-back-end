@@ -176,7 +176,7 @@ class OpenClaw(unittest.TestCase):
   task=dict(study_id=str(uuid.uuid4()),id=str(uuid.uuid4()))
   with patch.object(dispatch,'rpc',side_effect=[dict(replayed=False),dict(status='paused-quota',provenance=dict(paid_fallback=False))]),self.assertRaises(dispatch.DispatchError):dispatch.invoke(task,str(uuid.uuid4()),request())
  def test_real_native_cli_matches_retained_provider_decision(self):
-  package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
+  package=ROOT/'openclaw_worker/node_modules/openclaw';node=package.parent/'node/bin/node'
   if not node.exists():self.skipTest('Pinned local native OpenClaw runtime absent; required deployed equivalent remains a release gate.')
   calls=[];logical=request()
   def transport(method,url,token,body):calls.append(json.loads(body));return Response(stream())
@@ -187,7 +187,7 @@ class OpenClaw(unittest.TestCase):
    self.assertEqual(calls[0],wire.response_request(logical));self.assertEqual(receipt['provider_calls'],1);self.assertTrue(receipt['provider_request_sent'])
 
  def test_real_cli_preflight_rejection_is_confirmed_zero_provider_calls(self):
-  package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
+  package=ROOT/'openclaw_worker/node_modules/openclaw';node=package.parent/'node/bin/node'
   if not node.exists():self.skipTest('Pinned native CLI absent; equivalent native release check remains required.')
   from unittest.mock import Mock
   transport=Mock(side_effect=AssertionError('Provider must not be contacted'))

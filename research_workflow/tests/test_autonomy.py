@@ -15,31 +15,20 @@ def response(value):return dict(stopReason='tool_use',output=dict(message=dict(r
 def task(stage='planning'):
  return dict(id=str(uuid.uuid4()),study_id=str(uuid.uuid4()),actor_id=str(uuid.uuid4()),claim_id=str(uuid.uuid4()),lease_token=str(uuid.uuid4()),attempts=0,stage=stage,context={},workflow=dict(initial_prompt='Exact initial form',max_spend_cents=10000,committed_cents=500,deadline_at='2026-10-25T00:00:00Z'))
 
-def retained_ipv6_contexts():
- raw=(Path(__file__).resolve().parents[1]/'plans/ipv6-archive-v1.json').read_bytes();plan=json.loads(raw)
+def synthetic_plan_contexts():
+ raw=(Path(__file__).resolve().parents[1]/'tests/fixtures/preparation/synthetic-plan.json').read_bytes();plan=json.loads(raw)
  compiled=autonomy.preparation.compile_plan(plan,raw,dict(id='f776d397-a3d4-5f44-a558-e249002f0434',paper_url=plan['paper_urls'][0]))
  records={}
  for entry in compiled['records']:records.setdefault(entry['kind'],{})[entry['record']['id']]=entry['record']
- claim=next(c for c in records['claims'].values() if c['description']=='Published absolute folded metrics')
+ claim=next(c for c in records['claims'].values() if c['description']=='Synthetic numerical claim')
  available=[j for j in compiled['jobs'] if j['execution_mode']=='automatic'];t=task();t.update(study_id=compiled['study_id'],claim_id=claim['id']);t['context']={'prepared_id':compiled['id']};t['workflow']['initial_prompt']='Operational verification of retained archived numerical checks only, under original frozen conditions and complete recorded coverage. No new network measurements or broader validation.'
  with patch.object(autonomy,'one',side_effect=lambda kind,study,key:records[kind][key]),patch.object(autonomy,'rows',return_value=[]),patch.object(autonomy,'choices',return_value=(compiled,available)):
   planning=autonomy.build_context(t);t['stage']='comprehension';t['context']['selected_check_id']=available[0]['id'];review=autonomy.build_context(t)
  return planning,review,compiled,records
 
 class Autonomy(unittest.TestCase):
- def test_historical_evidence_decodes_exactly_without_changing_null_zero_precision_or_original_fields(self):
-  cases=json.loads((Path(__file__).parent/'fixtures/legacy-evidence-columns-v1.json').read_bytes())['cases']
-  for name,case in cases.items():
-   with self.subTest(name=name):
-    before=workflow.canonical(case['packet']);original=workflow.canonical(case['records']);decoded=autonomy.evidence_records(case['packet'])
-    self.assertEqual(workflow.canonical(decoded),original);self.assertEqual(case['packet']['original_records_sha256'],workflow.digest(original));self.assertEqual(workflow.canonical(case['packet']),before)
-  self.assertEqual(cases['scientific-values']['records'][0]['value'],'0');self.assertIsNone(cases['scientific-values']['records'][1]['value'])
- def test_historical_transport_rejects_invalid_dictionary_indices(self):
-  packet=json.loads((Path(__file__).parent/'fixtures/legacy-evidence-columns-v1.json').read_bytes())['cases']['dictionary']['packet'];self.assertTrue(packet['dictionaries'])
-  column=next(iter(packet['dictionaries']));packet['rows'][0][packet['columns'].index(column)]=True
-  with self.assertRaises(ValueError):autonomy.evidence_records(packet)
  def test_all_six_retained_checks_fit_the_bound_without_dropping_full_selected_conditions(self):
-  planning,review,compiled,records=retained_ipv6_contexts();before=workflow.digest(workflow.canonical(compiled));choices=planning['registered_checks']
+  planning,review,compiled,records=synthetic_plan_contexts();before=workflow.digest(workflow.canonical(compiled));choices=planning['registered_checks']
   self.assertEqual(len(choices),6);self.assertEqual({j['id'] for j in choices},{j['id'] for j in compiled['jobs'] if j['execution_mode']=='automatic'})
   for item in choices:
    original=records['protocols'][item['protocol_reference']['id']]['document'];self.assertEqual(item['protocol_reference']['document_sha256'],workflow.digest(workflow.canonical(original)))

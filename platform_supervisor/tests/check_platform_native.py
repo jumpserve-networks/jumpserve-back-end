@@ -62,10 +62,10 @@ def main():
             report['actual_provider_calls']+=1;save(out/'live-admissions.json',canonical(dict(actual_provider_calls=report['actual_provider_calls'],reserved_cents=100*report['actual_provider_calls'])))
             return native.runtime.http_request(method,url,token,body)
         return Response(sse(index,*steps[index-1])) if index<=len(steps) else Response(sse(index))
-    package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
+    package=ROOT/'openclaw_worker/node_modules/openclaw';node=package.parent/'node/bin/node'
     corrected=prepare(package,ROOT/'.test-artifacts/builder-vendor/node_modules/openclaw',native.builder.PATCH_PATH)
     try:
-        with patch.object(native.runtime,'NODE',node),patch.object(native.runtime,'PACKAGE',package),patch.object(native.runtime,'AUTH',ROOT/'experiments/openclaw_pilot/.subscription-auth'),patch.dict(os.environ,OPENCLAW_BUILDER_PACKAGE=str(corrected)):
+        with patch.object(native.runtime,'NODE',node),patch.object(native.runtime,'PACKAGE',package),patch.object(native.runtime,'AUTH',ROOT/'.local/openclaw-auth'),patch.dict(os.environ,OPENCLAW_BUILDER_PACKAGE=str(corrected)):
             result=native.execute(store,workspace,out/'slice',image,token_source=native.runtime.credential if args.live else lambda:'synthetic-not-a-credential',transport=transport)
         report['result']=result
         assert result['ready'],result

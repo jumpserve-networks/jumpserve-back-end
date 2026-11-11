@@ -12,3 +12,6 @@ __pycache__/
 !.coveragerc
 coverage/
 node_modules/
+
+# Local worker authorization state
+.local/

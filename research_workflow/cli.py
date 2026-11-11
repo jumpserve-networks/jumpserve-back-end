@@ -3,7 +3,6 @@ import argparse
 import json
 from pathlib import Path
 import uuid
-import bridge
 import intake
 import importer
 import preparation
@@ -39,8 +38,6 @@ def main():
     run = commands.add_parser("run",help="Execute a frozen campaign locally, optionally persist original bytes and output")
     run.add_argument("--input",required=True); run.add_argument("--protocol",required=True); run.add_argument("--campaign",required=True)
     run.add_argument("--request-id",required=True,type=identifier); run.add_argument("--output",required=True); persist_args(run)
-    imported = commands.add_parser("import-ipv6",help="Preserve the existing register and prepare nine evidence-gap records")
-    imported.add_argument("--assessment",required=True); imported.add_argument("--output",required=True); persist_args(imported)
     prepared=commands.add_parser('prepare-plan',help='Compile a source-grounded plan locally; explicit persistence prepares a verified owner study')
     prepared.add_argument('--paper-url',required=True);prepared.add_argument('--plan',help='Exact original plan JSON; otherwise use an exact registered paper URL')
     prepared.add_argument('--request-id',required=True,type=identifier);prepared.add_argument('--output',required=True);prepared.add_argument('--enqueue',action='store_true',help='Queue the retained jobs; requires --persist')
@@ -127,13 +124,6 @@ def main():
         value=store.snapshot(args.study_id,owner=args.owner,maximum=100000,byte_budget=128_000_000)
         if value is None: raise ValueError("No accessible study snapshot.")
         save(args.output,value); print(json.dumps({"coverage":value["coverage"],"sha256":digest(Path(args.output).read_bytes())})); return
-    if args.command=="import-ipv6":
-        value=bridge.ipv6(args.assessment,args.study_id)
-        save(args.output,value)
-        if args.persist:
-            store.rpc("research_create_study",dict(p_actor=args.actor_id,p_id=args.study_id,p_document=value["paper"]))
-            store.append_bundle(args.study_id,args.actor_id,value["records"])
-        print(json.dumps({"study_id":args.study_id,"records":len(value["records"]),"gaps":sum(r["kind"]=="gaps" for r in value["records"]),"persisted":args.persist,"provenance":value["provenance"]})); return
     if args.persist and not store.owns(args.study_id,args.actor_id): raise ValueError("Study ownership mismatch.")
     if args.command=="source":
         path=Path(args.file)

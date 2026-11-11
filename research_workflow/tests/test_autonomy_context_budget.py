@@ -7,12 +7,12 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import autonomy,autonomy_model as model,autonomy_evidence as evidence,workflow
-from test_autonomy import retained_ipv6_contexts,task
+from test_autonomy import synthetic_plan_contexts,task
 
 
 class ContextBudget(unittest.TestCase):
  def large(self):
-  context,_,_,_=retained_ipv6_contexts()
+  context,_,_,_=synthetic_plan_contexts()
   # Make only selection descriptions larger; no original fixture is overwritten.
   for check in context['registered_checks']:
    check['protocol']['configurations']*=6
@@ -35,7 +35,7 @@ class ContextBudget(unittest.TestCase):
   for key in set(context)-{'registered_checks'}:self.assertEqual(sent[key],context[key])
 
  def test_fitting_context_is_byte_for_byte_unchanged(self):
-  context,_,_,_=retained_ipv6_contexts();request=model.request('Server policy',context)
+  context,_,_,_=synthetic_plan_contexts();request=model.request('Server policy',context)
   self.assertEqual(request['messages'][0]['content'][0]['text'],workflow.canonical(context).decode())
   self.assertNotIn('context_transport',json.loads(request['messages'][0]['content'][0]['text']))
 

@@ -1,0 +1,13 @@
+{
+  "version": "native-repair-live-limits-v1",
+  "scope": "Current bounded software qualification; no paper experiment",
+  "qualification": {
+    "platform": "Record actual architecture; linux/amd64 qualification must be explicit, emulation is labelled.",
+    "maximum_actual_provider_calls": 12,
+    "maximum_provider_reservation_cents": 1200,
+    "maximum_live_elapsed_seconds": 480,
+    "provider": "Existing authorized subscription only, no paid fallback and no retry of an uncertain call.",
+    "new_cloud_experiment_instances": 0,
+    "production_assessment_writes": 0
+  }
+}
