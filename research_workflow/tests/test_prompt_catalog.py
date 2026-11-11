@@ -21,6 +21,7 @@ class PromptCatalog(unittest.TestCase):
             published_at='2026-11-01T00:00:00Z' if i < 3 else None, system_prompt='Exact template <script>text</script>',
             research_context='Exact context', created_by='private@example.org', updated_by='private@example.org') for i in range(1, 7)]
         self.settings = [dict(module_id='research-autonomy', active_version_id=self.prompts[1]['id'])]
+        self.paper_prompts = []
         self.calls = []
         self.patcher = patch.object(store, 'request', side_effect=self.read)
         self.patcher.start(); self.addCleanup(self.patcher.stop)
@@ -29,8 +30,8 @@ class PromptCatalog(unittest.TestCase):
         self.assertEqual(kwargs, {})  # GET only, never an update or RPC.
         self.calls.append(path)
         url = urllib.parse.urlsplit(path); params = dict(urllib.parse.parse_qsl(url.query))
-        self.assertIn(url.path, ('/rest/v1/agent_prompt_versions', '/rest/v1/agent_prompt_settings'))
-        rows = self.prompts if url.path.endswith('versions') else self.settings
+        self.assertIn(url.path, ('/rest/v1/agent_prompt_versions', '/rest/v1/agent_prompt_settings', '/rest/v1/research_paper_prompt_versions'))
+        rows = self.paper_prompts if url.path.endswith('research_paper_prompt_versions') else self.prompts if url.path.endswith('versions') else self.settings
         self.assertNotIn('created_by', params['select']); self.assertNotIn('updated_by', params['select'])
         if params.get('id'): rows = [row for row in rows if row['id'] == params['id'][3:]]
         offset = int(params.get('offset', 0)); limit = min(2, int(params['limit']))  # Actual API may cap a page.
@@ -80,6 +81,17 @@ class PromptCatalog(unittest.TestCase):
     def test_catalogue_limit_does_not_silently_omit_versions(self):
         with patch.object(catalog, 'MAX_VERSIONS', 3):
             with self.assertRaises(store.StoreError): catalog.index()
+
+    def test_recorded_paper_templates_are_browsable_without_reading_private_requests(self):
+        paper=dict(id='30000000-0000-4000-8000-000000000001',version='paper-assessment-'+('b'*64),content_sha256='b'*64,created_at='2026-11-01T00:00:00Z',instructions='Exact source-grounded instructions <script>data</script>',input_template={'pages':[{'page':'{{pdf_page_number}}','text':'{{original_extracted_page_text}}'}]},request_configuration={'model':'synthetic-model','reasoning':{'effort':'none'},'text':{'format':{'schema':{'type':'object'}}}})
+        self.paper_prompts=[paper]
+        result=catalog.index();self.assertEqual(len(result['prompts']),7)
+        summary=result['prompts'][-1];self.assertTrue(summary['recorded']);self.assertEqual(summary['module_id'],'research-paper-intake');self.assertFalse(summary['active']);self.assertIsNone(summary['published_at'])
+        self.assertNotIn('instructions',summary)
+        prompt=catalog.detail(paper['id'])['prompt'];self.assertEqual(prompt['system_prompt'],paper['instructions'])
+        configuration=json.loads(prompt['research_context']);self.assertEqual(configuration['request_configuration'],paper['request_configuration']);self.assertEqual(configuration['input_template'],paper['input_template'])
+        self.assertFalse(any('research_paper_intakes' in path or 'research_paper_prompt_uses' in path for path in self.calls))
+        with patch.object(catalog,'MAX_VERSIONS',6),self.assertRaises(store.StoreError):catalog.index()
 
 
 if __name__ == '__main__': unittest.main()

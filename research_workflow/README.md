@@ -175,17 +175,27 @@ The global **Prompts** link opens `/prompts`. Google-authenticated users can
 browse every saved `agent_prompt_versions` template, including drafts and older
 published versions, and open `/prompts/<version-id>` to read its exact system
 prompt and research context. Active status comes from `agent_prompt_settings`
-and requires a published version. This is a read-only template library; runtime
-messages, assessment conversations and source-controlled supplemental instructions
-are outside this catalogue.
+and requires a published version. The library also lists immutable
+`research_paper_prompt_versions` snapshots under Paper assessment with Recorded
+status. These preserve instructions, a parameterized input template and complete
+model/output settings from actual Next.js paper-assessment admissions. Private
+`research_paper_prompt_uses` links identify the exact version used by each intake.
+Recorded usage is not a prompt publication or an evaluation approval. Actual
+paper inputs, owner information, responses and conversations remain private and
+are never queried by the template catalogue.
 
 `GET /research/prompts` returns explicit version metadata only;
 `GET /research/prompts/<version-id>` loads one version's content. Both require the
 existing verified Google bearer session and return `Cache-Control: no-store`.
-No audit account fields or evaluations are projected, and no SQL grants, model
-calls, editing or publication operations are added. The index exhausts server
+No audit account fields, evaluations or original paper inputs are projected, and
+no anonymous SQL access, model calls, editing or publication operations are added. The index exhausts server
 page caps and fails visibly above 1,000 versions rather than omitting history.
 The frontend disables version-link prefetching to avoid downloading every body.
+
+Paper-template capture requires `202611110003_paper_prompt_catalog.sql` after the
+original Next.js intake migration and before deploying the updated catalog.
+See `jumpserve-front-end/docs/paper-assessment-prompts.md` for retention and local
+transaction checks.
 
 A future explicitly authorized release must deploy the research API and its two
 GET routes before enabling the frontend link. Existing Supabase grants remain

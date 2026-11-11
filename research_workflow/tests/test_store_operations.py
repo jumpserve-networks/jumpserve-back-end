@@ -83,6 +83,22 @@ class PersistenceOperations(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Unsupported research operation'): store.rpc('execute_arbitrary_sql', {})
             self.assertEqual(request.call_count, count)
 
+    def test_deleted_assessments_cannot_reenter_public_owner_lists_or_shared_snapshots(self):
+        import api
+        with patch.object(store,'request',return_value=[]) as read:
+            # Caller options cannot undo the application-wide visibility filter.
+            store.rows('studies',{'deleted_at':'not.is.null'},public=True)
+            query=urllib.parse.parse_qs(urllib.parse.urlsplit(read.call_args.args[0]).query)
+            self.assertEqual(query['deleted_at'],['is.null'])
+            for suffix,query in [('',{}),('/queue',{'public':'1'}),('/queue',{'public':'1','records':'sources'}),('/autonomy',{'public':'1','task':uid()})]:
+                event=dict(rawPath='/research/studies/'+self.study+suffix,requestContext={'http':{'method':'GET'}},queryStringParameters=query)
+                with self.subTest(suffix=suffix,query=query),self.assertRaises(api.HttpError) as error:api.dispatch(event)
+                self.assertEqual(error.exception.status,404)
+            self.assertFalse(store.owns(self.study,self.actor))
+            query=urllib.parse.parse_qs(urllib.parse.urlsplit(read.call_args.args[0]).query)
+            self.assertEqual(query['active_study.deleted_at'],['is.null'])
+            self.assertIn('active_study:research_studies!inner(id)',query['select'][0])
+
     def test_validated_bundle_is_atomic_and_owner_check_uses_both_current_identities(self):
         record = dict(id=uid(), identity='Synthetic configuration', details={'zero': 0}, input_versions=[{'identity': 'original', 'sha256': 'a' * 64}], requested_resources={'measured': None}); original = canonical(record)
         with patch.object(store, 'rpc', return_value={'recorded': True}) as rpc:
@@ -92,7 +108,7 @@ class PersistenceOperations(unittest.TestCase):
             with self.assertRaises(ValueError): store.append_bundle(self.study, self.actor, [{'kind': 'configurations', 'record': record}, {'kind': 'unknown', 'record': record}])
             self.assertEqual(rpc.call_count, count)
         with patch.object(store, 'rows', side_effect=[[], [{'owner_id': self.actor}]]) as rows:
-            self.assertFalse(store.owns(self.study, self.actor)); self.assertTrue(store.owns(self.study, self.actor)); rows.assert_called_with('study_owners', {'study_id': 'eq.' + self.study, 'owner_id': 'eq.' + self.actor, 'limit': 1})
+            self.assertFalse(store.owns(self.study, self.actor)); self.assertTrue(store.owns(self.study, self.actor)); rows.assert_called_with('study_owners', {'study_id': 'eq.' + self.study, 'owner_id': 'eq.' + self.actor, 'select': 'study_id,active_study:research_studies!inner(id)', 'active_study.deleted_at':'is.null','limit': 1})
 
     def test_artifact_upload_failures_never_overwrite_existing_bytes_or_reuse_changed_record_identity(self):
         args = (self.study, self.actor, b'Original retained bytes', self.identity, 'text/plain', {'scope': 'original'})
