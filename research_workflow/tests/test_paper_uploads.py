@@ -50,7 +50,7 @@ class PaperUploads(unittest.TestCase):
    with patch.dict('os.environ',{'RESEARCH_AUTONOMY_ENABLED':'false'}),self.assertRaises(api.HttpError):api.dispatch(event,ACTOR)
   submit.assert_not_called()
  def test_exact_main_paper_hash_and_size_can_reuse_a_retained_plan_but_filename_cannot(self):
-  plan=json.loads((Path(__file__).resolve().parents[1]/'plans/ipv6-archive-v1.json').read_bytes())
+  plan=json.loads((Path(__file__).resolve().parents[1]/'tests/fixtures/preparation/synthetic-plan.json').read_bytes())
   original=next(e['record'] for e in plan['records'] if e['kind']=='sources' and e['record']['source_url'] in plan['paper_urls'])
   study=dict(id=ID,paper_url=None,paper_upload=dict(sha256=original['sha256'],byte_count=original['byte_count'],filename='Any name.pdf'))
   self.assertTrue(preparation.matches_paper(plan,study));compiled=preparation.compile_plan(plan,workflow.canonical(plan),study);self.assertEqual(compiled['provenance']['paper_match']['sha256'],original['sha256'])

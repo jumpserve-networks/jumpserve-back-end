@@ -12,7 +12,7 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import autonomy,autonomy_inputs as inputs,model_dispatch as dispatch,paper_selection as selection
 import repair_validation,source_project,runtime_retry,store
-import bridge,budget_policy,prompt_catalog,ideas,claim_design
+import budget_policy,prompt_catalog,ideas,claim_design
 import autonomy_evidence,autonomy_sources,runner
 from workflow import canonical,digest
 from test_autonomy import task
@@ -64,8 +64,6 @@ class RetainedInputContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'24 KB'):ideas.document(draft)
         with self.assertRaisesRegex(ValueError,'identities only'):claim_design.adopt(current['study_id'],current['actor_id'],{})
 
-    def test_legacy_assessment_byte_limit_applies_before_decoding_or_importing_any_record(self):
-        with patch.object(Path,'read_bytes',return_value=b'x'*100_000_001),self.assertRaisesRegex(ValueError,'100 MB'):bridge.ipv6('original.json',task()['study_id'])
     def test_source_page_character_quote_and_delivery_bounds_preserve_originals(self):
         for defect in ['pages','duplicate','characters','quote','unanchored']:
             with self.subTest(defect=defect):
@@ -90,15 +88,7 @@ class RetainedInputContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'fragment offset'):inputs.retain_source_delivery(t,read)
         self.assertEqual(t,before)
 
-    def test_lossless_evidence_decoder_refuses_incomplete_rows_and_details(self):
-        packet=json.loads((Path(__file__).parent/'fixtures/legacy-evidence-columns-v1.json').read_bytes())['cases']['details']['packet']
-        for defect in ['representation','count','row','details']:
-            broken=copy.deepcopy(packet)
-            if defect=='representation':broken['representation']='unknown'
-            elif defect=='count':broken['record_count']+=1
-            elif defect=='row':broken['rows'][0].append('unbound value')
-            else:broken['rows'][0][broken['columns'].index('details')]=[]
-            with self.subTest(defect=defect),self.assertRaises(ValueError):autonomy.evidence_records(broken)
+    def test_retained_jobs_require_complete_identity_coverage(self):
         t=task();t['context']['job_ids']=['missing']
         with patch.object(autonomy,'rows',return_value=[]),self.assertRaisesRegex(ValueError,'identity coverage'):autonomy.retained_jobs(t)
 

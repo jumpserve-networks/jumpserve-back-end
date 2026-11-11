@@ -6,10 +6,6 @@ every paper. Scientific findings require appropriate checks and declared review.
 
 ## Autonomous method completion
 
-The [2026-10-29 recovery investigation](builder-recovery-20261029.md) documents
-the local builder continuation, lossless history and append-only dispatch
-reconciliation changes, their tests and the remaining production qualification.
-
 Builder continuation uses `builder-context-files-v1`. Each native slot receives
 the full trusted instructions and at most 16,000 startup bytes; exact research
 context and the retained native transcript are hash-bound workspace files.
@@ -80,15 +76,7 @@ configuration requires a new version; original outputs and prior-run references
 remain retained. This preview shares the existing source parser and is not an
 independent scientific check.
 
-Run `python3 -B -m unittest discover -s research_workflow/tests -v`. The protocol is
-[autonomy-methods-protocol-v1.md](autonomy-methods-protocol-v1.md). The separate
-infra command `python3 -B bin/replay-assessment-numerics.py --assessment <uuid>`
-performs a read-only independent arithmetic replay over public retained cell
-lexemes, with original response hashes, retrieval attempts and an explicit scope.
-It does not retrieve the protected PDF, execute a networking experiment or change
-the production assessment. An explicit release must qualify the augmented
-requests, pin the new `autonomy_methods.py` and changed runtime bytes, deploy them,
-and resume only reconciled tasks under their original budget and deadline.
+Run `python3 -B -m unittest discover -s research_workflow/tests -v` for local software verification. A release must qualify the exact runtime bytes and resume only reconciled tasks under their original budget and deadline.
 
 The data-only timing policy `data-only-window-v2` admits a 90-second total
 response stream, a 120-second CLI and a 130-second process timeout. Its dispatcher
@@ -492,13 +480,6 @@ complete-output artifact has a separate original-byte hash, verified after retri
 Do not compare these different hash scopes as if they identify the same bytes.
 Run provenance records the adapter implementation's file SHA256 and Python version.
 
-`import-ipv6` bridges the original assessment-v2 register: 74 sources, 15 claims,
-15 assessments and nine gaps. It does not copy/re-execute the 136,512 original
-measurements or change their statuses; the original module remains authoritative.
-The shared module links its existing evaluated chat. Generic AI interpretation is
-disabled pending a module prompt/tool design, frozen evaluation criteria, actual
-answer evaluation, provenance and declared publication checks.
-
 ## Unpublished research ideas
 
 Idea intake uses the existing authenticated study endpoint with
@@ -525,12 +506,6 @@ jobs are manual: an operator must supply an applicable implementation, retain
 actual observations and import/review the evidence through the existing workflow.
 Plan readiness and an AI recommendation never establish a research result.
 
-Run `python3 -B -m unittest discover -s research_workflow/tests -v` locally.
-The additive migrations, frozen evaluation protocols, actual development-answer
-reports and release order are recorded in jumpserve-infra's README and
-`docs/research-ideas-protocol-v1.json`. No production deployment is implied by
-local implementation or fixture publication.
-
 ## Autonomous AI turns
 
 The `research-autonomy-v3` application defaults are $100 in aggregate paper
@@ -554,13 +529,6 @@ an immutable policy-change event for existing papers without resetting costs,
 deadlines or evidence. The corrected worker can resume eligible historical
 `attempt-limit` stops at their retained stage; expired, exhausted, cancelled,
 externally blocked or uncertain work is not revived by that recovery gate.
-
-Earlier OpenClaw/Bedrock protocols, results and trajectory-evaluation policies
-are historical experiments with their own frozen ceilings. They remain intact;
-this application change does not replay them or overwrite their findings. A
-future pilot continuation needs a new versioned protocol within retained paper
-resources. Local validation and release gaps are documented in
-`jumpserve-infra/docs/autonomy-turn-policy-validation-v1.md`.
 
 ## OpenClaw subscription worker
 
@@ -600,11 +568,7 @@ or repeat an earlier model request. Safe reason/cooldown values are retained in
 private worker configuration and failed-turn provenance. Public status fields,
 RLS, prompts, model choice and inference billing/fallback rules are unchanged.
 
-See [the local auth recovery protocol](auth-recovery-protocol-v1.md), run
-`python3 -B -m unittest discover -s research_workflow/tests -v`, and consult
-`jumpserve-infra/docs/openclaw-auth-recovery-v1.md` before an explicitly requested
-release. These are local development checks with synthetic credentials/provider
-responses; they do not exercise production authorization or spend plan allowance.
+Run `python3 -B -m unittest discover -s research_workflow/tests -v` and consult `jumpserve-infra/docs/openclaw-auth-recovery-v1.md` before an explicitly requested release. These local checks use synthetic credentials/provider responses and do not exercise production authorization or spend plan allowance.
 
 The controller first reserves paper resources and saves the complete numbered
 turn. A private SQL dispatch binds that exact request to one fenced worker lease.
@@ -626,12 +590,6 @@ assessment. Candidate v9 failed substantive AI inspection and is preserved;
 candidate v10 has its own sixteen-answer evaluation. The evaluator and reviewer
 are the same AI implementer, not human or independent reviewers. These software
 checks do not reproduce a paper's scientific claims.
-
-Deployment order, immutable evaluation/publication guards, host setup and release
-evidence are in `jumpserve-infra/docs/openclaw-production-protocol-v1.json` and its
-versioned amendments. Native host authorization and deployed authenticated
-execution must be verified before announcing the subscription path as available.
-### Executable assessment methods (local implementation, pending release)
 
 `netem-iperf-v1` runs a fixed duration-based TCP loss sweep on one isolated Linux
 experiment host. Each invocation contains the complete loss grid in randomized
@@ -662,12 +620,3 @@ is scheduled with 15–300 second backoff. New turns use the original $100/7-day
 admission controls. Unconfirmed dispatches, auth/quota failures and experiments
 are not blindly replayed; cloud polling reconciles their original identities.
 There is no AI-turn-count cap and no paid API fallback.
-
-The fixed built-in EC2 runner uses a separately pinned executor version and
-server-owned cost envelope; it can be admitted while arbitrary custom-package
-submission stays disabled. The original built-in script bytes are retained as
-assessment artifacts and checked on the experiment host. Apply infrastructure
-migration `202610260001_executable_assessment_methods.sql` before releasing this
-backend. See `jumpserve-infra/docs/executable-methods-validation-v1.json` for exact
-verification commands, release blockers and conditional live checks. Existing
-assessments are not resumed or rewritten by this migration.

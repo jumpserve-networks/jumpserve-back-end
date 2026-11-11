@@ -31,5 +31,5 @@ def prepare(source,destination,patch_path):
 
 if __name__=='__main__':
     root=Path(__file__).resolve().parents[2]
-    path=prepare(root/'experiments/openclaw_pilot/runtime/node_modules/openclaw',root/'.test-artifacts/builder-vendor/node_modules/openclaw',root/'research_workflow/openclaw-builder-patch.json')
+    path=prepare(root/'openclaw_worker/node_modules/openclaw',root/'.test-artifacts/builder-vendor/node_modules/openclaw',root/'research_workflow/openclaw-builder-patch.json')
     print(json.dumps(dict(package=str(path),original_preserved=True)))

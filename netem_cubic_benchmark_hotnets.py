@@ -324,47 +324,6 @@ def parse_tc_sent_bytes(raw: str) -> int:
     return max(values)
 
 
-def _coerce_int(value: Any) -> int | None:
-    if isinstance(value, bool):
-        return None
-    if isinstance(value, int):
-        return value
-    if isinstance(value, float):
-        return int(value)
-    if isinstance(value, str):
-        text = value.strip()
-        if not text:
-            return None
-        try:
-            return int(text)
-        except ValueError:
-            return None
-    return None
-
-
-def parse_tc_root_qdisc_stats_json(raw: str) -> Dict[str, int] | None:
-    try:
-        payload = json.loads(raw)
-    except json.JSONDecodeError:
-        return None
-    if not isinstance(payload, list):
-        return None
-
-    entries = [item for item in payload if isinstance(item, dict)]
-    if not entries:
-        return None
-
-    root_entry = next((item for item in entries if item.get("root") is True), entries[0])
-    sent_bytes = _coerce_int(root_entry.get("bytes"))
-    backlog_bytes = _coerce_int(root_entry.get("backlog"))
-    if sent_bytes is None and backlog_bytes is None:
-        return None
-    return {
-        "sent_bytes": max(0, sent_bytes or 0),
-        "backlog_bytes": max(0, backlog_bytes or 0),
-    }
-
-
 def parse_ss_socket_address(token: str) -> tuple[str, int] | None:
     host, sep, port_text = token.rpartition(":")
     if not sep or not host or not port_text:
@@ -1328,12 +1287,6 @@ class NetnsBench:
             verbose=False,
         )
         return {"sent_bytes": parse_tc_sent_bytes(out), "backlog_bytes": parse_tc_backlog_bytes(out)}
-
-    def _read_bottleneck_backlog_bytes(self) -> int:
-        return self._read_bottleneck_qdisc_stats()["backlog_bytes"]
-
-    def _read_bottleneck_sent_bytes(self) -> int:
-        return self._read_bottleneck_qdisc_stats()["sent_bytes"]
 
     def _read_interface_counter_bytes(self, namespace: str, interface: str, counter_name: str) -> int:
         out = run_and_grab_shell(

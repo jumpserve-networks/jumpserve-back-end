@@ -120,8 +120,17 @@ def verify_live_result(name):
     destination=prior.parent/('retained-review-'+uuid.uuid4().hex+'.json');destination.write_bytes(canonical(result));print(json.dumps(dict(report=str(destination),status='passed',new_provider_calls=0)))
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--amd64',action='store_true');parser.add_argument('--live',action='store_true');parser.add_argument('--resume-live',action='store_true');parser.add_argument('--resume-live-v2',action='store_true');parser.add_argument('--verify-live-result');parser.add_argument('--completion-v2',action='store_true');credentials=parser.add_mutually_exclusive_group();credentials.add_argument('--qualification-auth',type=Path,help='Explicit sole-owner auth directory for a fresh isolated live completion qualification');credentials.add_argument('--qualification-access-token',type=Path,help='Owner-only expiring access token JSON; no OAuth grant or refresh');args=parser.parse_args()
-    if args.completion_v2 and (args.resume_live or args.resume_live_v2 or args.verify_live_result):parser.error('--completion-v2 requires a fresh qualification, never a resumed or relabeled trial')
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--amd64', action='store_true')
+    parser.add_argument('--live', action='store_true')
+    parser.add_argument('--verify-live-result')
+    parser.add_argument('--completion-v2', action='store_true')
+    credentials = parser.add_mutually_exclusive_group()
+    credentials.add_argument('--qualification-auth', type=Path, help='Explicit sole-owner auth directory for a fresh isolated live completion qualification')
+    credentials.add_argument('--qualification-access-token', type=Path, help='Owner-only expiring access token JSON; no OAuth grant or refresh')
+    args = parser.parse_args()
+    if args.completion_v2 and args.verify_live_result:
+        parser.error('--completion-v2 starts a fresh qualification and cannot be combined with --verify-live-result')
     if args.completion_v2 and args.live:
         if args.qualification_access_token:
             if not args.qualification_access_token.is_absolute():parser.error('Qualification access token path must be absolute.')
@@ -130,14 +139,12 @@ def main():
     if (args.qualification_auth or args.qualification_access_token) and not (args.completion_v2 and args.live):parser.error('Qualification credentials are only valid for a fresh live --completion-v2 run')
     credential=(lambda:qualification_token(args.qualification_access_token)) if args.qualification_access_token else runtime.credential
     if args.verify_live_result:return verify_live_result(args.verify_live_result)
-    if args.resume_live_v2:args.resume_live=True
-    if args.resume_live and not args.live:parser.error('--resume-live requires --live')
     directory=ROOT/'.test-artifacts/native-repair-handoff'/dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     directory.mkdir(parents=True)
     protocol=ROOT/'research_workflow/policies'/('repair-completion-validation-v1.json' if args.completion_v2 else 'native-repair-handoff-validation-v1.json')
     image_report=json.loads((ROOT/'.test-artifacts/builder-image'/('selected-linux-amd64.json' if args.amd64 else 'continuation-v1.json')).read_bytes());image=image_report['image']
     from check_experiment_builder_linux import Response,sse
-    live_protocol=ROOT.parent/'jumpserve-infra/docs/autonomy-recovery-execution-protocol-v1.json'
+    live_protocol=ROOT/'research_workflow/policies/native-repair-live-limits-v1.json'
     limits=json.loads(live_protocol.read_bytes())['qualification']
     if args.completion_v2:
         maximum=json.loads(protocol.read_bytes())['fresh_live_qualification']['maximum_actual_provider_calls']
@@ -147,7 +154,11 @@ def main():
         measured_charges_usd=None,unallocated_local_compute_cost_usd=None,reviewer=dict(identity='Codex implementing AI',type='AI',independent=False,human=False,held_out=False))
     if args.completion_v2:report.update(version='native-repair-completion-linux-v2',qualification_variant='fresh-completion-v2',maximum_actual_provider_calls=limits['maximum_actual_provider_calls'],credential_mode='access-token-only-no-refresh' if args.qualification_access_token else 'isolated-owner' if args.live else 'synthetic')
     names=['autonomy.py','autonomy_model.py','autonomous_repair.py','experiment_builder.py','repair_validation.py','source_project.py','generated_package.py','network_spec.py','netem_iperf.py','openclaw-builder-patch.json','policies/native-repair-handoff-validation-v1.json','tests/check_native_repair_handoff_linux.py','tests/test_native_repair_handoff.py']
-    if args.completion_v2:names+=['policies/repair-completion-validation-v1.json','tests/test_repair_completion.py','tests/check_repair_completion_retained.py']
+    if args.completion_v2:
+        names.extend([
+            'policies/repair-completion-validation-v1.json',
+            'tests/test_repair_completion.py',
+        ])
     report['source_files']={}
     for name in names:
         raw=(ROOT/'research_workflow'/name).read_bytes();dest=directory/'original-source'/name
@@ -194,29 +205,6 @@ def main():
         ctx['builder_feedback']='Software qualification only: convert(7) must return 14, and convert(None) must raise TypeError. Keep repair_test.py unchanged. Edit the actual function and run the incident checks. Write the exact incident-bound repair-test-plan.json required by repair_directive. After both checks pass, copy software-candidate-template.json verbatim to candidate.json. No research experiment or user input is needed.'
     if args.completion_v2:
         ctx['builder_feedback']='Software qualification only: convert(7) must return 14, and convert(None) must raise TypeError. Keep repair_test.py unchanged. Edit the actual function and run python3 -m unittest discover -s project -p repair_test.py -v. Incident-binding metadata is server supplied. After checks pass, explicitly stage the existing prospective software fixture with python3 /workspace/finish-repair.py software-candidate-template.json. No scientific campaign or user input is needed; server validation and fresh reviews remain required.'
-    if args.resume_live:
-        amendment_path=ROOT.parent/'jumpserve-infra/docs'/('autonomy-recovery-execution-followup-v2.json' if args.resume_live_v2 else 'autonomy-recovery-execution-followup-v1.json');amendment=json.loads(amendment_path.read_bytes())
-        prior=ROOT/'.test-artifacts/native-repair-handoff'/amendment['prior_directory'];prior_raw=(prior/'report.json').read_bytes();assert digest(prior_raw)==amendment['prior_report_sha256']
-        old=json.loads(prior_raw);assert old['actual_provider_calls']==amendment.get('prior_actual_provider_calls',12)
-        for index in range(1,old['actual_provider_calls']+1):
-            captured=json.loads((prior/'slice'/('call-'+str(index)+'-completion.json')).read_bytes());raw_response=(prior/'slice'/captured['response_filename']).read_bytes()
-            assert captured['status']=='complete' and captured['http_status']==200 and digest(raw_response)==captured['response_sha256']
-            assert digest((prior/('actual-request-'+str(index)+'.json')).read_bytes())==captured['request_sha256']
-            runtime.wire.read_terminal_stream(io.BytesIO(raw_response),io.BytesIO(),__import__('time').monotonic()+10,1048576)
-        checkpoint=(prior/('original-'+amendment.get('prior_checkpoint_filename','failed-checkpoint.zip'))).read_bytes();assert digest(checkpoint)==amendment['prior_checkpoint_sha256']
-        with zipfile.ZipFile(io.BytesIO(checkpoint)) as archive:ctx=json.loads(archive.read('research-context.json'))
-        origins=[*amendment.get('ancestors',[]),dict(directory=prior.name,report_sha256=digest(prior_raw))]
-        for origin in origins:
-            ancestor=prior.parent/origin['directory'];ancestor_raw=(ancestor/'report.json').read_bytes();assert digest(ancestor_raw)==origin['report_sha256'];ancestor_report=json.loads(ancestor_raw)
-            for item in ancestor_report['artifacts']:
-                raw_original=(ancestor/('original-'+item['path'])).read_bytes();assert digest(raw_original)==item['sha256']
-                ident=str(uuid.uuid5(uuid.UUID(json.loads((ancestor/'slice/call-1-completion.json').read_bytes())['dispatch_id']),item['path']));by_id[ident]=raw_original
-        ctx['builder_checkpoint']=old['receipt']['checkpoint'];by_id[ctx['builder_checkpoint']['artifact_id']]=checkpoint
-        baseline=ctx['native_repair_handoff']['baseline_checkpoint']
-        job['task_id']=json.loads((prior/'slice/call-1-completion.json').read_bytes())['task_id'];job['study_id']=json.loads((prior/'slice/call-1-completion.json').read_bytes())['study_id']
-        ctx['builder_feedback']='Source and unchanged tests already passed. Correct repair-test-plan.json using the exact work-packet repair_handoff.test_plan object. Then copy software-candidate-template.json verbatim to candidate.json. Do not reread contracts, edit the fixed function again or run empty test scripts. Server validation follows.'
-        limits=dict(limits,maximum_actual_provider_calls=amendment['prospective_limits']['maximum_new_actual_provider_calls'])
-        report['continuation']=dict(protocol_sha256=digest(amendment_path.read_bytes()),original_report_sha256=digest(prior_raw),checkpoint_sha256=digest(checkpoint),earlier_actual_provider_calls=amendment.get('earlier_aggregate_actual_provider_calls',12))
     steps=[('read',dict(path='/workspace/project/experiment.py')),
         ('exec',dict(command='python3 -m unittest discover -s /workspace/project -p repair_test.py -v',timeoutSeconds=10)),
         ('edit',dict(path='/workspace/project/experiment.py',oldText='return value',newText='return value * 2')),
@@ -245,8 +233,8 @@ def main():
         answer['usage']['research_runtime']=receipt
         return answer
     task=dict(job,stage='building',attempts=270,context=copy.deepcopy(ctx))
-    package=ROOT/'experiments/openclaw_pilot/runtime/node_modules/openclaw';node=package.parent/'node/bin/node'
-    auth=args.qualification_auth or directory/'unused-auth' if args.completion_v2 and args.live else ROOT/'experiments/openclaw_pilot/.subscription-auth'
+    package=ROOT/'openclaw_worker/node_modules/openclaw';node=package.parent/'node/bin/node'
+    auth=args.qualification_auth or directory/'unused-auth' if args.completion_v2 and args.live else ROOT/'.local/openclaw-auth'
     try:
         subprocess.run(['docker','image','inspect',image],capture_output=True,check=True,timeout=15)
         corrected=prepare(package,ROOT/'.test-artifacts/builder-vendor/node_modules/openclaw',builder.PATCH_PATH)

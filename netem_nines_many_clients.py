@@ -208,12 +208,6 @@ class ProxyDelayTwoFlowBench:
         )
         return {"sent_bytes": base.parse_tc_sent_bytes(raw), "backlog_bytes": base.parse_tc_backlog_bytes(raw)}
 
-    def _read_bottleneck_backlog_bytes(self) -> int:
-        return self._read_bottleneck_qdisc_stats()["backlog_bytes"]
-
-    def _read_bottleneck_sent_bytes(self) -> int:
-        return self._read_bottleneck_qdisc_stats()["sent_bytes"]
-
     def _read_snapshot_byte_counters(self) -> Dict[str, int]:
         counters = {
             client.name: base.read_counter_file(self._receiver_byte_files.get(client.name, ""))

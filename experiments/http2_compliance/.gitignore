@@ -1,7 +1,0 @@
-sources/
-.venv/
-results/raw/
-results/figures/
-results/relational.json
-results/assessment-v3.json
-__pycache__/

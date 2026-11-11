@@ -48,6 +48,13 @@ class WorkflowValidationBoundaries(unittest.TestCase):
         for reviewer in [None,{},dict(REVIEWER,type='service')]:
             with self.assertRaises(ValueError):workflow.reviewer(reviewer)
 
+    def test_origin_module_is_preserved_and_must_be_a_bounded_label(self):
+        paper = dict(title='Synthetic paper',domain='Networking',scope='Software fixture only',paper_url='https://example.org/paper')
+        self.assertEqual(workflow.paper_details(dict(paper,origin_module='synthetic-module'))['origin_module'],'synthetic-module')
+        for invalid in ('', 'x'*101, 42):
+            with self.subTest(origin_module=invalid), self.assertRaises(ValueError):
+                workflow.paper_details(dict(paper,origin_module=invalid))
+
     def test_protocol_rejects_unknown_origin_undeclared_algorithms_duplicate_metrics_and_reversed_bounds(self):
         _raw, protocol, _campaign = fixture(); original=protocol['document']
         mutations = [dict(data_origin='invented'),dict(prior_exposure='Template must be amended before execution'),dict(questions=[]),dict(input_versions=[{'sha256':'bad'}]),dict(algorithms=[]),dict(controls=[]),dict(configurations=[{}]),

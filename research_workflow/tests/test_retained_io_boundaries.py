@@ -56,7 +56,7 @@ class RetainedIO(unittest.TestCase):
         self.assertEqual(packet['pages'][0]['text'],'Original retained page');self.assertEqual(packet['document_metadata'],{'title':None,'author':None});self.assertEqual(packet['review_status'],'retrieved-unreviewed')
 
     def test_prepared_plan_original_binding_is_checked_before_enqueuing_the_saved_request(self):
-        study=dict(id=str(uuid.uuid4()),paper_url='https://pure.mpg.de/pubman/item/item_3670144_1');actor=str(uuid.uuid4());plan=small_plan();raw=workflow.canonical(plan);compiled=preparation.compile_plan(plan,raw,study);row=dict(id=compiled['id'],compiled_artifact_id=str(uuid.uuid4()),manifest_sha256=compiled['manifest_sha256'])
+        study=dict(id=str(uuid.uuid4()),paper_url='https://example.org/synthetic-preparation-paper');actor=str(uuid.uuid4());plan=small_plan();raw=workflow.canonical(plan);compiled=preparation.compile_plan(plan,raw,study);row=dict(id=compiled['id'],compiled_artifact_id=str(uuid.uuid4()),manifest_sha256=compiled['manifest_sha256'])
         with patch.object(store,'artifact_bytes',return_value=workflow.canonical(compiled)) as read:
             self.assertEqual(preparation.compiled(study['id'],row),compiled);self.assertEqual(read.call_args.kwargs,{'maximum':4000000})
             with self.assertRaisesRegex(store.StoreError,'identity differs'):preparation.compiled(str(uuid.uuid4()),row)

@@ -1,0 +1,18 @@
+{
+  "version": "maintained-manual-tools-v1",
+  "purpose": "Current Linux/native qualification and fixture/image preparation for maintained runtime behavior.",
+  "automated_entrypoints": "Existing package scripts, workflow files and fixed test-suite configuration remain authoritative. This registry reads as documentation and never executes commands.",
+  "manual_programs": [
+    "platform_supervisor/tests/check_platform_native.py",
+    "research_workflow/tests/build_experiment_builder_image.py",
+    "research_workflow/tests/check_experiment_builder_linux.py",
+    "research_workflow/tests/check_experiment_environment_linux.py",
+    "research_workflow/tests/check_generated_package_linux.py",
+    "research_workflow/tests/check_native_repair_handoff_linux.py",
+    "research_workflow/tests/check_netem_iperf_linux.py",
+    "research_workflow/tests/check_repair_validation_linux.py",
+    "research_workflow/tests/prepare_builder_image.py",
+    "research_workflow/tests/prepare_builder_vendor.py"
+  ],
+  "protected_protocol_directories": []
+}

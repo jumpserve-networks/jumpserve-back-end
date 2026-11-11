@@ -64,20 +64,13 @@ class NamespaceBenchmarks(unittest.TestCase):
                 named = benchmark(module, client_names='alpha,beta')
                 self.assertEqual([client.name for client in named.clients], ['alpha', 'beta'])
 
-    def test_qdisc_text_and_json_keep_root_backlog_and_sent_bytes_separate(self):
+    def test_qdisc_text_keeps_root_backlog_and_sent_bytes_separate(self):
         for module in MODULES:
             with self.subTest(module=module.__name__):
                 self.assertEqual(module.parse_tc_backlog_bytes('backlog 1.5Kb 2p\nbacklog 1KiB 1p'), 1536)
                 self.assertEqual(module.parse_tc_backlog_bytes('backlog 2MiB 2p'), 2 * 1024 ** 2)
                 self.assertEqual(module.parse_tc_backlog_bytes('missing backlog'), 0)
                 self.assertEqual(module.parse_tc_sent_bytes('Sent 40 bytes 2 pkt\nSent 50 bytes 3 pkt'), 50); self.assertEqual(module.parse_tc_sent_bytes('missing sent'), 0)
-                for raw in ['invalid JSON', '{}', '[]', '[null,3]', '[{"root":true,"bytes":true,"backlog":"not-a-number"}]']:
-                    self.assertIsNone(module.parse_tc_root_qdisc_stats_json(raw))
-                raw = json.dumps([None, {'bytes': 999, 'backlog': 1000}, {'root': True, 'bytes': ' 42 ', 'backlog': 1.9}])
-                self.assertEqual(module.parse_tc_root_qdisc_stats_json(raw), {'sent_bytes': 42, 'backlog_bytes': 1})
-                self.assertEqual(module.parse_tc_root_qdisc_stats_json('[{"bytes":-10,"backlog":-3}]'), {'sent_bytes': 0, 'backlog_bytes': 0})
-                for value in [None, True, [], {}, '', 'invalid']: self.assertIsNone(module._coerce_int(value))
-                for value, expected in [(0, 0), (2.9, 2), (' 42 ', 42)]: self.assertEqual(module._coerce_int(value), expected)
 
     def test_socket_sampler_parses_original_ipv4_and_ipv6_peer_identities_and_tcp_units(self):
         for module in MODULES:
@@ -174,9 +167,6 @@ class NamespaceBenchmarks(unittest.TestCase):
                 self.assertEqual(bench._read_snapshot_byte_counters(), {'client1': 100, 'client2': 200, '__total__': 400, '__bottleneck_backlog_bytes__': 1250})
             with patch.object(module, 'run_and_grab_shell', return_value='invalid counter'):
                 self.assertEqual(bench._read_interface_counter_bytes('ns', 'veth', 'rx_bytes'), 0)
-            with patch.object(module, 'run_and_grab_shell', return_value='Sent 400 bytes 4 pkt\n backlog 1250b 1p'):
-                self.assertEqual(bench._read_bottleneck_backlog_bytes(), 1250)
-                self.assertEqual(bench._read_bottleneck_sent_bytes(), 400)
             metrics = module.SSSocketMetrics(rtt_ms=10)
             with patch.object(module, 'run_and_grab_shell', side_effect=['first', 'second']), patch.object(module, 'parse_ss_metrics_by_peer', side_effect=[{}, {(bench.clients[1].client_ip, bench.clients[1].port): metrics}]):
                 raw, values = bench._read_ss_metrics_sample()

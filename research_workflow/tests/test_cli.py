@@ -186,15 +186,6 @@ class OperatorCLI(unittest.TestCase):
             prepare.assert_called_with('bundle.json', self.request)
             persist.assert_called_once_with(prepared, b'bundle bytes', originals, self.study, self.actor)
 
-    def test_ipv6_import_preserves_gap_count_and_explicit_write_scope(self):
-        original = dict(paper={'title': 'Fixture'}, records=[{'kind': 'gaps'}, {'kind': 'sources'}], provenance={'fixture': True})
-        with patch.object(cli.bridge, 'ipv6', return_value=original) as imported:
-            for persist in (False, True):
-                value, output = self.invoke('import-ipv6', '--assessment', 'assessment.json', persist=persist)
-                self.assertEqual(value, original)
-                self.assertEqual(json.loads(output)['gaps'], 1)
-            imported.assert_called_with('assessment.json', self.study)
-        self.append_bundle.assert_called_once_with(self.study, self.actor, original['records'])
 
     def test_source_inventory_retains_exact_originals_without_asserting_substantive_review(self):
         for raw in (b'%PDF-1.7\nsynthetic paper', b'plain source bytes'):
@@ -300,7 +291,7 @@ class OperatorCLI(unittest.TestCase):
 
     def test_preparation_preview_uses_registered_and_uploaded_original_plan_bytes(self):
         plan = small_plan()
-        args = ['--paper-url', 'https://pure.mpg.de/pubman/item/item_3670144_1', '--request-id', self.request]
+        args = ['--paper-url', 'https://example.org/synthetic-preparation-paper', '--request-id', self.request]
         with patch.object(cli.preparation, 'registered', return_value=(plan, workflow.canonical(plan))):
             value, output = self.invoke('prepare-plan', *args)
             self.assertEqual(json.loads(output)['jobs'], 1)
@@ -311,7 +302,7 @@ class OperatorCLI(unittest.TestCase):
 
     def test_persisted_preparation_exports_retained_timestamps_and_enqueues_only_unqueued_jobs(self):
         plan = small_plan(); raw = workflow.canonical(plan)
-        paper_url = 'https://pure.mpg.de/pubman/item/item_3670144_1'
+        paper_url = 'https://example.org/synthetic-preparation-paper'
         study = dict(id=self.study, paper_url=paper_url)
         compiled = cli.preparation.compile_plan(plan, raw, study)
         retained = copy.deepcopy(compiled)
@@ -331,7 +322,7 @@ class OperatorCLI(unittest.TestCase):
             enqueue.assert_called_once_with(study, self.actor, {'action': 'enqueue', 'prepared_id': compiled['id'], 'job_id': 'new-job'})
 
     def test_preparation_errors_do_not_overwrite_or_queue_unconfirmed_work(self):
-        paper_url = 'https://pure.mpg.de/pubman/item/item_3670144_1'
+        paper_url = 'https://example.org/synthetic-preparation-paper'
         args = ['--paper-url', paper_url, '--request-id', self.request]
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:
             self.invoke('prepare-plan', *args, '--enqueue')
@@ -358,7 +349,7 @@ class OperatorCLI(unittest.TestCase):
 
     def test_persisted_registered_preparation_without_enqueue_keeps_the_retained_plan(self):
         plan = small_plan(); raw = workflow.canonical(plan)
-        study = dict(id=self.study, paper_url='https://pure.mpg.de/pubman/item/item_3670144_1')
+        study = dict(id=self.study, paper_url='https://example.org/synthetic-preparation-paper')
         value = cli.preparation.compile_plan(plan, raw, study)
         self.rows.side_effect = [[study], [{'id': value['id']}]]
         with patch.object(cli.preparation, 'registered', return_value=(plan, raw)), \
