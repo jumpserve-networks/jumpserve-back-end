@@ -106,6 +106,7 @@ def rows(kind, params=None, public=False):
         raise ValueError("Unsupported research relation.")
     query = {"select": projection, "order": "created_at.asc,study_id.asc" if kind in ('autonomy_workflows','paper_reviews') else "created_at.asc,id.asc", "limit": 1000, **(params or {})}
     if kind == 'profiles': query['order'] = (params or {}).get('order', 'id.asc')
+    if kind == 'studies': query['deleted_at'] = 'is.null'
     if kind in ('measurements','published_values'):
         # Cast inside Postgres, before JSON decoding can round a decimal to a
         # binary float. A null remains null; zero remains an exact text value.
@@ -138,7 +139,10 @@ def rpc(name, payload):
     return request("/rest/v1/rpc/" + name, "POST", payload)
 
 def owns(study_id, actor):
-    return bool(rows("study_owners", {"study_id": "eq." + study_id, "owner_id": "eq." + actor, "limit": 1}))
+    # The key remains private. Deletion revokes application ownership access
+    # without discarding the original recorded owner or scientific evidence.
+    return bool(rows("study_owners", {"study_id": "eq." + study_id, "owner_id": "eq." + actor,
+        "select": "study_id,active_study:research_studies!inner(id)", "active_study.deleted_at": "is.null", "limit": 1}))
 
 def append(study_id, actor, kind, record):
     return rpc("research_append", dict(p_study=study_id, p_actor=actor, p_kind=kind, p_record=validate_record(kind, record)))

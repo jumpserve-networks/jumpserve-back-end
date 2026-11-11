@@ -164,7 +164,7 @@ def dispatch(event, actor=None):
         if method == "GET":
             if query.get("mine") == "1":
                 if not actor: raise HttpError(401, "Sign in to view your draft studies.")
-                owners = store.rows("study_owners", {"owner_id": "eq." + actor, "limit": 101})
+                owners = store.rows("study_owners", {"owner_id": "eq." + actor, "select": "study_id,active_study:research_studies!inner(id)", "active_study.deleted_at": "is.null", "limit": 101})
                 if len(owners) > 100: raise HttpError(413, "Owner study listing exceeds 100 records; use operator pagination.")
                 ids = [r["study_id"] for r in owners]
                 status_only = query.get('status') == '1'
