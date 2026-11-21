@@ -1,5 +1,10 @@
 # Congestion Control Real World Tests
 
+JumpServe serves the historical reports and artifacts from this module. Hosted
+EC2 test launches are retired. New paper assessments run through the local
+Claude Code or Codex skill and can share selected results through the JumpServe
+MCP connector. The following describes the retained EC2 implementation.
+
 This module runs **one EC2 server, one EC2 bottleneck, and 1–16 EC2 receivers**
 per test. It does not reuse the Linux network namespaces or `emulated_*` records.
 `jumpserve-infra` packages this directory at a pinned Git revision for Lambda;

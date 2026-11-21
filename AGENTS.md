@@ -8,17 +8,24 @@
   identifier is already available.
 - Prefer primary and official sources for technical claims.
 
-## Research assessment autonomy
+## Local assessment and sharing
+
+The standalone JumpServe skill in `jumpserve-front-end/skills` uses Claude Code
+or Codex to plan and run paper assessments locally. Optional sharing goes
+through the frontend's authenticated MCP connector after the owner approves
+the exact preview. The backend maintains historical read APIs and measurement
+formats. Hosted assessment controllers and supervision are retired.
+
+## Local research assessment autonomy
 
 The goal of JumpServe research assessments is **100% unattended autonomy** after
-the user submits the paper or idea and confirms the assessment scope. The system
+the user provides the paper or idea and confirms the assessment scope. The local skill
 should plan, implement, validate and execute experiments, analyze measurements,
 and diagnose, repair and resume recoverable failures without routine user input.
 Installing dependencies, writing instrumentation and repairing experiment
-packages are system responsibilities. Run claims in parallel where appropriate,
-share compatible acquisitions, and expose repair and execution progress in
-Experiment Queue. Persist prompts, responses, actions, failures, repairs and
-measurement provenance as versioned Supabase records.
+packages are local workflow responsibilities. Run claims in parallel where
+appropriate and share compatible acquisitions. Save the full evidence locally.
+Supabase stores selected results and measurement provenance on approved sharing.
 
 Continue useful work within approved spending, elapsed-time and authorization
 limits, honoring cancellation. Unattended operation does not guarantee conclusive
