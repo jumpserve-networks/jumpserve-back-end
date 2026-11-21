@@ -4,10 +4,22 @@ import json
 import sys
 import unittest
 import uuid
+from functools import partial
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import api,autonomy,autonomy_model as model,autonomy_sources as sources,store,workflow
+
+
+def use_fixture_model_pricing():
+ # These mocked provider calls exercise the checked-in pricing policy as of its review date.
+ pricing = partial(model.reservation, today=dt.date.fromisoformat(model.PRICING['checked_at']))
+ patcher = patch.object(model, 'reservation', pricing)
+ patcher.start()
+ unittest.addModuleCleanup(patcher.stop)
+
+
+setUpModule = use_fixture_model_pricing
 
 def answer(action='blocked'):
  return dict(action=action,reason='evidence-incomplete',blockers=[],claims=[],check_id=None,proposal=None,ready=None,coverage_complete=False,assessment_label=None,evidence_ids=[])

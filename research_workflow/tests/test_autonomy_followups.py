@@ -162,7 +162,7 @@ class Followups(unittest.TestCase):
             quote=autonomy_costs.bounded_quote(spec,today=dt.datetime(2026,10,19,tzinfo=dt.timezone.utc));self.assertEqual(quote['cents'],1);self.assertEqual(quote['quote']['spec_sha256'],workflow.digest(spec))
             with self.assertRaisesRegex(ValueError,'expired'):autonomy_costs.bounded_quote(spec,today=dt.datetime(2027,1,1,tzinfo=dt.timezone.utc))
         with patch.dict(os.environ,dict(env,NETWORK_BOUNDED_FUNCTION=env['NETWORK_BOUNDED_FUNCTION'].removesuffix(':1'))):
-            with self.assertRaisesRegex(ValueError,'immutable'):autonomy_costs.bounded_quote(spec)
+            with self.assertRaisesRegex(ValueError,'immutable'):autonomy_costs.bounded_quote(spec,today=dt.datetime(2026,10,19,tzinfo=dt.timezone.utc))
 
     def test_actual_tcp_exchanges_preserve_bytes_units_and_close_sockets(self):
         for size,count,delay in ((1,1,0),(65536,16,1)):

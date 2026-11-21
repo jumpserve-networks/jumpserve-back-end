@@ -9,6 +9,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import autonomy_model as model
 import experiment_builder as builder
 from test_autonomy import answer,response,task
+from test_autonomy import use_fixture_model_pricing as setUpModule
 
 
 def inspect():
