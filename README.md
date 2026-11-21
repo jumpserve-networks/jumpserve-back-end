@@ -1,5 +1,18 @@
 # JumpServe Test Runners
 
+## Local paper assessments
+
+Use the standalone JumpServe skill in `jumpserve-front-end/skills` with Claude
+Code or Codex to analyze papers, plan and run experiments, and save evidence
+locally. Users can ask their client to share a selected bundle through the
+JumpServe MCP connector. After browser approval, Next.js imports the bundle
+and its measurements into Supabase and returns the public assessment link.
+
+The backend still serves historical research and real-world reads. Cloud
+benchmark launches, hosted assessment execution, and supervisor services are
+retired. Executor instructions below describe retained code and historical
+reproduction paths.
+
 ## Application modules
 
 JumpServe's frontend presents a module chooser after sign-in. The existing

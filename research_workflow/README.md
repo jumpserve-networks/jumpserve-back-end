@@ -1,8 +1,11 @@
 # Research verification workflow
 
-Shared evidence records and bounded execution for `/module/research-verification`.
-The framework supports domain-specific studies; it does not automatically verify
-every paper. Scientific findings require appropriate checks and declared review.
+The JumpServe website serves historical research reads under the
+`/research-verification` module. New assessments and experiments run locally
+with the standalone Claude Code or Codex skill. The frontend's JumpServe MCP
+connector imports selected evidence after owner approval. The execution
+documentation below describes retained implementation and historical results.
+Scientific findings require appropriate checks and declared review.
 
 ## Autonomous method completion
 

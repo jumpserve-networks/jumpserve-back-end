@@ -11,6 +11,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import source_arithmetic as arithmetic
 import autonomy,autonomy_model,model_dispatch
 import netem_iperf,network_spec,network_execution,network_package,autonomy_costs,shared_campaigns,runtime_retry,workflow
+from test_autonomy import use_fixture_model_pricing as setUpModule
 
 def arithmetic_fixture():
     quote='Control 72.0; treatment 97.2; difference 25.2; change 35.0%.'

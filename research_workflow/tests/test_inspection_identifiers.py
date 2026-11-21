@@ -4,6 +4,7 @@ import unittest
 import uuid
 from unittest.mock import patch
 from test_autonomy import answer, response, task
+from test_autonomy import use_fixture_model_pricing as setUpModule
 import autonomy
 import autonomy_model as model
 

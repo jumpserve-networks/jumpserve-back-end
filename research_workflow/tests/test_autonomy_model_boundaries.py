@@ -11,6 +11,7 @@ import experiment_builder,model_dispatch,openclaw_runtime
 from test_native_repair_handoff import context as repair_context
 import workflow
 from test_autonomy import answer,response,task
+from test_autonomy import use_fixture_model_pricing as setUpModule
 
 
 class AutonomyModelBoundaries(unittest.TestCase):

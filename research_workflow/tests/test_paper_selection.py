@@ -10,6 +10,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import autonomy, autonomy_model as model, paper_selection as selection, paper_uploads, store
 from workflow import canonical, digest
 from test_autonomy import task, answer, response
+from test_autonomy import use_fixture_model_pricing as setUpModule
 
 def records(count):
  return [dict(id=str(uuid.uuid5(uuid.NAMESPACE_URL,'selection:'+str(i))),source_id=str(uuid.uuid4()),location='PDF page '+str(i+1),
